@@ -1,0 +1,22 @@
+Arithmetic operations:
+ADD     N   N   Add two operands together and push the result on the stack
+DIV     N   N   Divide the first operand by the second and push the result on the stack
+MUL     N   N   Multiplies two operands together and push the result on the stack
+SUB     N   N   Subtact the second operand from the first and push the result on the stack
+
+Memory operations:
+LOAD    ADDR            Push on the stack the value found at ADDR
+STORE   ADDR    VAL     Store VAL at ADDR in memory
+
+Stack operations:
+PUSH    VAL     Push a value on top of the stack
+POP             Pop the value at the top of the stack
+
+Thread operations:
+FORK    FILE    Start a new thread which will run the program contained in FILE
+BARRIER         Act as a barrier for all threads started by the current thread
+SLEEP   TIME    Put the current thread to sleep for TIME seconds
+
+Test operations:
+EXP     SIZE    Make the memory explode by allocating SIZE bytes
+PRINT		    Print the top of the stack
