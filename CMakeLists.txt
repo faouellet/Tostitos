@@ -3,5 +3,6 @@ project (Tostitos)
 
 add_subdirectory (Tostitos)
 
-set (CMAKE_CXX_FLAGS "-std=c++14 -pthread" CACHE STRING "" FORCE)
-
+if(NOT MSVC)
+	set (CMAKE_CXX_FLAGS "-std=c++14 -pthread" CACHE STRING "" FORCE)
+endif()
