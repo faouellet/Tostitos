@@ -6,7 +6,7 @@
 
 namespace MachineEngine
 {
-    namespace internalFunctions
+    namespace InternalFunctions
     {
         template <class L>
         void internalTimer(std::chrono::milliseconds timeToWait, L func)
