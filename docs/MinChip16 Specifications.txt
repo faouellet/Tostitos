@@ -1,0 +1,195 @@
+*****************************
+* MinChip16 virtual machine *
+*****************************
+
+MinChip16 is a minimalist version of the Chip16 architecture developped for the Tostitos operating system.
+The text below reproduce the relevant parts of the official Chip16 specifications.
+For informations about the Chip16 architecture, go to https://github.com/chip16/chip16.
+
+File Format:
+-----------
+
+ROMs are stored either in a Chip16 ROM file (.c16), or a raw binary file (preferred .bin, also .c16).
+The ROM file stores a 16-byte header, and the binary data after that.
+Emulators should load ROM headers for internal use, and only use the binary data for emulation.
+Binary data is always loaded at address 0x0000.
+
+The header is as follows (0x00 - 0x0F) :
+- 0x00: Magic number 'CH16'
+- 0x04: Reserved
+- 0x05: Spec version (high nibble=major, low nibble=minor, so 0.7 = 0x07 and 1.0 = 0x10)
+- 0x06: Rom size (excl. header, in bytes)
+- 0x0A: Start address (initial value of PC)
+- 0x0C: CRC32 checksum (excl. header, polynom = 0x04c11db7)
+
+- 0x10: Start of Chip16 raw rom, end of header
+
+CPU:
+-----
+
+1x 16 bit program counter (PC)
+1x 16 bit stack pointer (SP)
+16x 16 bit general purpose registers (R0 - RF)
+1x 8 bit flag register
+
+Machine uses little-endian byte ordering.
+
+All opcodes take exactly 1 cycle to execute.
+CPU speed is 1 Mhz.
+
+Memory:
+--------
+64 KB (65536 bytes).
+
+0x0000 - Start of ROM.
+0xFDF0 - Start of stack (512 bytes).
+0xFFF0 - IO ports.
+
+Flag register:
+---------------
+Bit[0] - Reserved
+Bit[1] - c (Unsigned Carry and Unsigned Borrow flag)
+Bit[2] - z (Zero flag)
+Bit[3] - Reserved
+Bit[4] - Reserved
+Bit[5] - Reserved
+Bit[6] - o (Signed Overflow Flag)
+Bit[7] - n (Negative Flag; aka Sign Flag)
+
+c flag:
+- for add - is set when the result would have imaginary bit[16] set, else its cleared.
+- for sub - is set when the operation needed to borrow from bit[16], else its cleared.
+- for mul - is set when the result is too big to fit into 16 bits, else its cleared.
+- for div - is set when the remainder of the division is non-zero, else it is cleared.
+
+z flag:
+- is set when the result is 0, else its cleared.
+
+o flag:
+- in general this flag is used when the sign of the result differs from what would be expected.
+- for addition it is set when the result is positive and both operands were negative,
+or if the result is negative and both operands were positive; else it is cleared.
+- for subtraction (x-y=z) it is set when z is positive and x is negative and y is positive,
+or if z is negative and x is positive and y is negative; else it is cleared.
+
+n flag:
+- it is set when the result is less than 0 (bit[15] == 1); else it is cleared.
+
+Conditional Types:
+---------------
+The conditions below are used for conditional jumps and conditional calls.
+For example: "jle some_label" or "cno some_label"
+The condition in brackets refer to the Flag register's flags.
+
+Z   = 0x0 // [z==1]         Equal (Zero)
+NZ  = 0x1 // [z==0]         Not Equal (Non-Zero)
+N   = 0x2 // [n==1]         Negative
+NN  = 0x3 // [n==0]         Not-Negative (Positive or Zero)
+P   = 0x4 // [n==0 && z==0] Positive
+O   = 0x5 // [o==1]         Overflow
+NO  = 0x6 // [o==0]         No Overflow
+A   = 0x7 // [c==0 && z==0] Above       (Unsigned Greater Than)
+AE  = 0x8 // [c==0]         Above Equal (Unsigned Greater Than or Equal)
+B   = 0x9 // [c==1]         Below       (Unsigned Less Than)
+BE  = 0xA // [c==1 || z==1] Below Equal (Unsigned Less Than or Equal)
+G   = 0xB // [o==n && z==0] Signed Greater Than
+GE  = 0xC // [o==n]         Signed Greater Than or Equal
+L   = 0xD // [o!=n]         Signed Less Than
+LE  = 0xE // [o!=n || z==1] Signed Less Than or Equal
+RES = 0xF // Reserved for future use
+
+Alternative Valid Mnemonics:
+C   = 0x9 // [c==1]         Carry     (Same as B)
+NC  = 0x8 // [c==0]         Not Carry (Same as GE)
+
+Opcodes:
+---------
+
+HH - high byte.
+LL - low byte.
+N - nibble (4 bit value).
+X, Y, Z - 4 bit register identifier.
+
+Opcode (Hex)	Mnemonic		Usage
+
+00 00 00 00	NOP					Not operation. Wastes a cycle.
+07 0X LL HH	RND RX, HHLL		Generate a random number and store it in register X. Maximum value is HHLL.
+
+// Jumps
+10 00 LL HH	JMP HHLL			Jump to the specified address.
+12 0x LL HH	Jx  HHLL			Jump to the specified address if condition 'x' (x refers to a Conditional Type)
+13 YX LL HH	JME RX, RY, HHLL	Jump to the specified address if value in register X is equal to value in register Y.
+16 0X 00 00	JMP RX				Jump to the address specified in register X (Indirect Jump)
+
+// Calls
+14 00 LL HH	CALL HHLL			Call subroutine at the specified address. Store PC to [SP]. Increase SP by 2.
+15 00 00 00	RET					Return from a subroutine. Decrease SP by 2. Get PC from [SP].
+17 0x LL HH     Cx   HHLL		If condition 'x', then performs a CALL; Else, does nothing. (x refers to a Conditional Type).
+18 0X 00 00	CALL RX				Call subroutine at the address specified in RX. Store PC to [SP]. Increase SP by 2.
+
+// Loads
+20 0X LL HH	LDI RX, HHLL		Load immediate value to register X.
+21 00 LL HH	LDI SP, HHLL		Point SP to the specified address. Does not move existing values in memory to new location.
+22 0X LL HH	LDM RX, HHLL		Load register X with the 16bit value at the specified address.
+23 YX 00 00	LDM RX, RY			Load register X with the 16bit value at the specified address pointed by register Y.
+24 YX 00 00	MOV RX, RY			Copy data from register Y to register X.
+
+// Stores
+30 0X LL HH	STM RX, HHLL		Store value of register X at the specified address.
+31 YX 00 00	STM RX, RY			Store value of register X at the specified address pointed by register Y.
+
+// Arithmetic
+40 0X LL HH	ADDI RX, HHLL		Add immediate value to register X. Affects [c,z,o,n]
+41 YX 00 00	ADD RX, RY			Add value of register Y to register X. Result is stored in register X. Affects [c,z,o,n]
+42 YX 0Z 00	ADD RX, RY, RZ		Add value of register Y to register X. Result is stored in register Z. Affects [c,z,o,n]
+
+50 0X LL HH	SUBI RX, HHLL		Subtract immediate value from register X. Result is stored in register X. Affects [c,z,o,n].
+51 YX 00 00	SUB RX, RY			Subtract value of register Y from register X. Result is stored in register X. Affects [c,z,o,n]
+52 YX 0Z 00	SUB RX, RY, RZ		Subtract value of register Y from register X. Result is stored in register Z. Affects [c,z,o,n]
+
+53 0X LL HH	CMPI RX, HHLL		Subtract immediate value from register X. Result is discarded. Affects [c,z,o,n].
+54 YX 00 00	CMP RX, RY			Subtract value of register Y from register X. Result is discarded. Affects [c,z,o,n]
+
+60 0X LL HH	ANDI RX, HHLL		AND immediate value with register X. Result is stored in register X. Affects [z,n]
+61 YX 00 00	AND RX, RY			AND value of register Y with value of register X. Result is stored in register X. Affects [z,n]
+62 YX 0Z 00	AND RX, RY, RZ		AND value of register Y with value of register X. Result is stored in register Z. Affects [z,n]
+
+63 0X LL HH	TSTI RX, HHLL		AND immediate value with register X. Result is discarded. Affects [z,n]
+64 YX 00 00	TST RX, RY			AND value of register Y with value of register X. Result is discarded. Affects [z,n]
+
+70 0X LL HH	ORI RX, HHLL		OR immediate value with register X. Result is stored in register X. Affects [z,n]
+71 YX 00 00	OR RX, RY			OR value of register Y with value of register X. Result is stored in register X. Affects [z,n]
+72 YX 0Z 00	OR RX, RY, RZ		OR value of register Y with value of register X. Result is stored in register Z. Affects [z,n]
+
+80 0X LL HH	XORI RX, HHLL		XOR immediate value with register X. Result is stored in register X. Affects [z,n]
+81 YX 00 00	XOR RX, RY			XOR value of register Y with value of register X. Result is stored in register X. Affects [z,n]
+82 YX 0Z 00	XOR RX, RY, RZ		XOR value of register Y with value of register X. Result is stored in register Z. Affects [z,n]
+
+90 0X LL HH	MULI RX, HHLL		Multiply immediate value with register X. Result is stored in register X. Affects [c,z,n]
+91 YX 00 00	MUL RX, RY			Multiply value of register Y with value of register X. Result is stored in register X. Affects [c,z,n]
+92 YX 0Z 00	MUL RX, RY, RZ		Multiply value of register Y with value of register X. Result is stored in register Z. Affects [c,z,n]
+
+A0 0X LL HH	DIVI RX, HHLL		Divide immediate value with register X. Result is stored in register X. Affects [c,z,n]
+A1 YX 00 00	DIV RX, RY			Divide value of register Y with value of register X. Result is stored in register X. Affects [c,z,n]
+A2 YX 0Z 00	DIV RX, RY, RZ		Divide value of register Y with value of register X. Result is stored in register Z. Affects [c,z,n]
+
+B0 0X 0N 00	SHL RX, N			Logical    Shift value in register X left N times.  Affects [z,n]
+B1 0X 0N 00	SHR RX, N			Logical    Shift value in register X right N times. Affects [z,n]
+B0 0X 0N 00	SAL RX, N			Arithmetic Shift value in register X left N times.  Affects [z,n] (same as SHL)
+B2 0X 0N 00	SAR RX, N			Arithmetic Shift value in register X right N times. Affects [z,n]
+B3 YX 00 00	SHL RX, RY			Logical    Shift value in register X left by the value in (RY & 0xf).  Affects [z,n]
+B4 YX 00 00	SHR RX, RY			Logical    Shift value in register X right by the value in (RY & 0xf). Affects [z,n]
+B3 YX 00 00	SAL RX, RY			Arithmetic Shift value in register X left by the value in (RY & 0xf).  Affects [z,n] (same as SHL)
+B5 YX 00 00	SAR RX, RY			Arithmetic Shift value in register X right by the value in (RY & 0xf). Affects [z,n]
+
+// Push / Pop
+C0 0X 00 00	PUSH RX				Store register X on stack. Increase SP by 2.
+C1 0X 00 00	POP  RX				Decrease SP by 2. Load register X from stack. 
+C2 00 00 00	PUSHALL				Store all general purpose registers (r0~rF) at [SP]. Increase SP by 32.
+C3 00 00 00	POPALL				Decrease SP by 32. Load all general purpose registers (r0~rF) from [SP].
+C4 00 00 00	PUSHF 				Store flags register on stack. Increase SP by 2.
+C5 00 00 00	POPF				Decrease SP by 2. Load flags register from stack.
+
+// Palette
+D0 00 LL HH     PAL HHLL   		Load the palette starting at address HHLL, 16*3 bytes, RGB format; used for all drawing since last vblank.
+D1 0x 00 00     PAL Rx   		Load the palette starting at the address pointed to by Register X, 16*3 bytes, RGB format; used for all drawing since last vblank.
