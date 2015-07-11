@@ -1,8 +1,8 @@
 #ifndef MACHINE_H__TOSTITOS
 #define MACHINE_H__TOSTITOS
 
-#include "cpu.h"
 #include "hardDrive.h"
+#include "interpreter.h"
 #include "memory.h"
 
 
@@ -26,10 +26,10 @@ namespace MachineEngine
             return memory;
         }
 
-        ProcessorSpace::CPU & getCpu()
+		ProcessorSpace::Interpreter & getInterpreter()
         {
-            static ProcessorSpace::CPU cpu;
-            return cpu;
+			static ProcessorSpace::Interpreter interpreter;
+			return interpreter;
         }
 
         DiskSpace::Disk & getHardDrive()

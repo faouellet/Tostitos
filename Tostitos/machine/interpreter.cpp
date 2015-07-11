@@ -2,7 +2,10 @@
 
 #include "constants.h"
 
+#include <fstream>
 #include <iostream>
+
+using namespace MachineEngine::ProcessorSpace;
 
 Interpreter::Interpreter() : m_Dist(0, std::numeric_limits<UInt16>::max()), m_ErrorCode(0)
 {
@@ -86,6 +89,28 @@ unsigned Interpreter::InterpretOne()
 		std::cout << "Unknown opcode" << std::endl;
 	
 	return m_ErrorCode;
+}
+
+unsigned Interpreter::AcquireROM(const std::string & in_ROMName)
+{
+	std::fstream l_FileStream(in_ROMName, std::ios::in | std::ios::binary);
+
+	if (l_FileStream.is_open())
+	{
+		l_FileStream.seekg(0, std::ios::end);
+		auto size = l_FileStream.tellg();
+		l_FileStream.seekg(0, std::ios::beg);
+
+		std::vector<UInt8> l_ROMData(size);
+		l_FileStream.read((char*)&l_ROMData[0], size);
+
+		l_FileStream.close();
+		return NoError;
+	}
+	else
+	{
+		return FileError;
+	}
 }
 
 void Interpreter::Reset()

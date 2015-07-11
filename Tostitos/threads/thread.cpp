@@ -8,7 +8,8 @@ using MachineEngine::ProcessorSpace::ThreadContext;
 Thread::Thread(const std::string & Filename) : mFinished{false}, mWaitForChildren{false}, mTimeToWakeup{0}
 {
 	mContext = std::make_unique<ThreadContext>();
-    MachineEngine::Machine::GetInstance().getCpu().AcquireROM(Filename, mContext);
+	// TODO: Should check if the ROM was correctly acquired
+    MachineEngine::Machine::GetInstance().getInterpreter().AcquireROM(Filename);
 }
 
 bool Thread::IsWaitingForChildren()

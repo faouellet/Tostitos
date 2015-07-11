@@ -4,6 +4,7 @@
 #include "instruction.h"
 
 #include <stack>
+#include <vector>
 
 namespace MachineEngine
 {

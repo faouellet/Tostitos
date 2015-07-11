@@ -21,7 +21,7 @@ Thread * Scheduler::FindNextThreadToRun(Thread * RunningThread)
 	if (!mThreadList.empty())
 	{
 		Thread * NewRunningThread = *mThreadList.begin();
-		Machine::GetInstance().getCpu().SwitchContext(NewRunningThread->DumpContext());
+		// Machine::GetInstance().getCpu().SwitchContext(NewRunningThread->DumpContext());
         return NewRunningThread;
 	}
 	else

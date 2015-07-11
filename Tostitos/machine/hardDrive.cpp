@@ -52,7 +52,7 @@ int Disk::Rotate(int sectorNumber)
     auto & currentSector = mCurrentSector;
 
     // TODO does not work
-    MachineEngine::internalFunctions::internalTimer(std::chrono::milliseconds(requiredTime),
+    MachineEngine::InternalFunctions::internalTimer(std::chrono::milliseconds(requiredTime),
                                                     [this, sectorNumber]
                                                         {
                                                             mCurrentSector = sectorNumber;
