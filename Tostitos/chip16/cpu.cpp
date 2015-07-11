@@ -1,7 +1,5 @@
 #include "cpu.h"
 
-#include "constants.h"
-
 #include <functional>
 #include <iostream>
 #include <iterator>
@@ -119,7 +117,7 @@ UInt8 CPU::SetRegister(const UInt8 in_RegID, const UInt16 in_Value)
 UInt8 CPU::SetStackPointer(const UInt16 in_Value)
 {
 	
-	if(in_Value < STACK_START || in_Value > CONTROLLER_1)
+	if(in_Value < STACK_START || in_Value > STACK_END)
 	{
 		std::cout << "Not a valid value for the SP: " << std::hex << in_Value << std::endl;
 		return MemoryError;
@@ -134,99 +132,6 @@ UInt8 CPU::SetStackPointer(const UInt16 in_Value)
 void CPU::StepBack()
 {
 	m_PC -= 4;
-}
-
-void CPU::UpdateController(SDL_KeyboardEvent & in_Event)
-{
-	std::function<void(const UInt16 in_ControllerID, const UInt16 in_Mask)> l_UpdateControllerData;
-	if(in_Event.type == SDL_KEYDOWN)
-		l_UpdateControllerData = [this](const UInt16 in_ControllerID, const UInt16 in_Mask){ (*m_Memory)[in_ControllerID] |= in_Mask; };
-	else
-		l_UpdateControllerData = [this](const UInt16 in_ControllerID, const UInt16 in_Mask){ (*m_Memory)[in_ControllerID] &= ~in_Mask; };
-
-	switch (in_Event.keysym.sym)
-	{
-		case SDLK_UP:
-		{
-			l_UpdateControllerData(CONTROLLER_1, UP);
-			break;
-		}
-		case SDLK_DOWN:
-		{
-			l_UpdateControllerData(CONTROLLER_1, DOWN);
-			break;
-		}
-		case SDLK_LEFT:
-		{
-			l_UpdateControllerData(CONTROLLER_1, LEFT);
-			break;
-		}
-		case SDLK_RIGHT:
-		{
-			l_UpdateControllerData(CONTROLLER_1, RIGHT);
-			break;
-		}
-		case SDLK_RSHIFT:
-		{
-			l_UpdateControllerData(CONTROLLER_1, SELECT);
-			break;
-		}
-		case SDLK_RETURN:
-		{
-			l_UpdateControllerData(CONTROLLER_1, START);
-			break;
-		}
-		case SDLK_o:
-		{
-			l_UpdateControllerData(CONTROLLER_1, A);
-			break;
-		}
-		case SDLK_p:
-		{
-			l_UpdateControllerData(CONTROLLER_1, B);
-			break;
-		}
-		case SDLK_w:
-		{
-			l_UpdateControllerData(CONTROLLER_2, UP);
-			break;
-		}
-		case SDLK_s:
-		{
-			l_UpdateControllerData(CONTROLLER_2, DOWN);
-			break;
-		}
-		case SDLK_a:
-		{
-			l_UpdateControllerData(CONTROLLER_2, LEFT);
-			break;
-		}
-		case SDLK_d:
-		{
-			l_UpdateControllerData(CONTROLLER_2, RIGHT);
-			break;
-		}
-		case SDLK_LSHIFT:
-		{
-			l_UpdateControllerData(CONTROLLER_2, SELECT);
-			break;
-		}
-		case SDLK_SPACE:
-		{
-			l_UpdateControllerData(CONTROLLER_2, START);
-			break;
-		}
-		case SDLK_v:
-		{
-			l_UpdateControllerData(CONTROLLER_2, A);
-			break;
-		}
-		case SDLK_b:
-		{
-			l_UpdateControllerData(CONTROLLER_2, B);
-			break;
-		}
-	}
 }
 
 std::vector<UInt8> CPU::FetchPalette(const UInt16 in_Address)
@@ -264,7 +169,7 @@ std::vector<UInt8> CPU::FetchSprite(const UInt16 in_Addr, const UInt16 in_Width,
 
 UInt8 CPU::Load(const UInt16 in_Address, UInt16 & out_Value) const
 {
-	if(STACK_START < in_Address && in_Address < CONTROLLER_1)
+	if(STACK_START < in_Address && in_Address < STACK_END)
 	{
 		std::cout << "Address out of memory: " << std::hex << in_Address << std::endl;
 		return MemoryError;
@@ -307,7 +212,7 @@ UInt8 CPU::Pop(UInt16 & out_Value)
 
 UInt8 CPU::Push(UInt16 in_Val)
 {
-	if(m_SP+2 > CONTROLLER_1)
+	if(m_SP+2 > STACK_END)
 	{
 		std::cout << "Stack overflow while pushing: " << in_Val << std::endl;
 		return StackOverflow;

@@ -2,8 +2,8 @@
 #define INTERPRETER_H
 
 #include "cpu.h"
-#include "instruction.h"
 
+#include <functional>
 #include <memory>
 #include <random>
 #include <unordered_map>

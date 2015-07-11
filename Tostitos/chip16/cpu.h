@@ -3,9 +3,6 @@
 
 #include "constants.h"
 #include "instruction.h"
-#include "../Utils/utils.h"
-
-#include "SDL.h"	// TODO: Can this be removed?
 
 #include <array>
 #include <memory>
@@ -57,7 +54,7 @@ private:
 	UInt16 m_ErrorCode;								/*!< Code used when an error happens during emulation */
 	
 	UInt16 m_Registers[NB_REGISTERS];				/*!< General purpose registers */
-	std::shared_ptr<std::array<Uint8, MEMORY_SIZE>> m_Memory;	/*!< Memory of the CPU. See specs for layout details */
+	std::shared_ptr<std::array<UInt8, MEMORY_SIZE>> m_Memory;	/*!< Memory of the CPU. See specs for layout details */
 
 public:
 	/**
@@ -188,13 +185,6 @@ public:
 	* \brief Make the PC go back to the previous instruction
 	*/
 	void StepBack();
-
-	/**
-	* \fn UpdateController
-	* \brief Update a controller memory mapped IO port
-	* \param in_Event The event causing this update
-	*/
-	void UpdateController(SDL_KeyboardEvent & in_Event);
 
 public:	// Memory helpers
 	/**
