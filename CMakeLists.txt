@@ -1,6 +1,7 @@
 cmake_minimum_required (VERSION 2.8)
 project (Tostitos)
 
+add_subdirectory (tests)
 add_subdirectory (Tostitos)
 
 if(MSVC)
