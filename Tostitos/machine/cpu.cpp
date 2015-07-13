@@ -59,6 +59,18 @@ Instruction CPU::FetchInstruction()
 	return Instruction(l_Instruction);
 }
 
+unsigned CPU::InitMemory(std::vector<UInt8> && in_Program)
+{
+	if (in_Program.empty())
+		return EmptyROMError;
+	else if (in_Program.size() > MEMORY_SIZE)
+		return ROMOverflowError;
+
+	std::copy_n(std::make_move_iterator(in_Program.begin()), in_Program.size(), m_Memory.begin());
+	
+	return NoError;
+}
+
 void CPU::InitPC(UInt8 in_PCStart)
 {
 	m_PC = in_PCStart;

@@ -105,6 +105,9 @@ unsigned Interpreter::AcquireROM(const std::string & in_ROMName)
 		l_FileStream.read((char*)&l_ROMData[0], size);
 
 		l_FileStream.close();
+
+		m_CPU.InitMemory(std::move(l_ROMData));
+
 		return NoError;
 	}
 	else

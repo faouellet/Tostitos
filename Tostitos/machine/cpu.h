@@ -14,7 +14,7 @@ namespace MachineEngine
 	{
 		/**
 		* \class CPU
-		* \brief Emulates the Central Processing Unit (CPU)
+		* \brief Emulates the Central Processing Unit (CPU) of the MinChip16 architecture
 		*/
 		class CPU
 		{
@@ -39,16 +39,6 @@ namespace MachineEngine
 			* \brief Number of registers
 			*/
 			enum { NB_REGISTERS = 16 };
-
-		private:
-			/**
-			* \enum
-			* \brief Masks for the controllers' bits
-			*/
-			enum {
-				UP = 1, DOWN = 2, LEFT = 4, RIGHT = 8, SELECT = 16,
-				START = 32, A = 64, B = 128
-			};
 
 		private:
 			UInt8 m_FR;										/*!< Flag register */
@@ -126,9 +116,17 @@ namespace MachineEngine
 			Instruction FetchInstruction();
 
 			/**
+			* \fn InitMemory
+			* \brief Initialize the CPU with a program
+			* \param in_Program Sequence of bytes representing a program
+			* \return Error code depending on the situation
+			*/
+			unsigned InitMemory(std::vector<UInt8> && in_Program);
+
+			/**
 			* \fn InitPC
 			* \brief Set the program counter at the start of the program
-			* \param in_PCStart
+			* \param in_PCStart Starting address of the program counter
 			*/
 			void InitPC(UInt8 in_PCStart);
 
