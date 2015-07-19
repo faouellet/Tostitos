@@ -5,7 +5,6 @@
 #include "interpreter.h"
 #include "memory.h"
 
-
 #include <memory>
 #include <functional>
 

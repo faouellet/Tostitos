@@ -1,5 +1,6 @@
 #include "cpu.h"
 
+#include <algorithm>
 #include <functional>
 #include <iostream>
 #include <iterator>
@@ -252,6 +253,7 @@ void CPU::SetSignZeroFlag(UInt16 in_Result)
 	m_FR = in_Result & 0x8000 ? m_FR | NegativeFlag : m_FR & ~NegativeFlag;
 }
 
+// TODO: Should this be removed
 void CPU::SetCarryOverflowFlag(UInt16 in_Op1, UInt16 in_Op2) { }
 
 void CPU::SetCarryOverflowFlagAdd(UInt16 in_Op1, UInt16 in_Op2) 

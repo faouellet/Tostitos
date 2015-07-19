@@ -66,7 +66,7 @@ namespace MachineEngine
 			* \fn Instruction
 			* \brief Destructor
 			*/
-			~Instruction();
+			~Instruction() = default;
 
 		private:
 			/**

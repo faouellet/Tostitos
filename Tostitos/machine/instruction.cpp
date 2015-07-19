@@ -53,8 +53,6 @@ Instruction::Instruction(const Utils::UInt32 in_Value) : m_Value(in_Value)
 	}
 }
 
-Instruction::~Instruction() { }
-
 UInt8 Instruction::FetchHalfByte(const UInt8 in_Pos) const
 {
 	return (m_Value >> (in_Pos*4)) & 0xF;

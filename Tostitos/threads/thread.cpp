@@ -9,7 +9,7 @@ Thread::Thread(const std::string & Filename) : mFinished{false}, mWaitForChildre
 {
 	mContext = std::make_unique<ThreadContext>();
 	// TODO: Should check if the ROM was correctly acquired
-    MachineEngine::Machine::GetInstance().getInterpreter().AcquireROM(Filename);
+    // MachineEngine::Machine::GetInstance().getInterpreter().AcquireROM(Filename);
 }
 
 bool Thread::IsWaitingForChildren()

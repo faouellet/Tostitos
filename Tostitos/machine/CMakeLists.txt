@@ -10,12 +10,12 @@ add_library( machine STATIC
 		cpu.h
 		hardDrive.h
 		hardDrive.cpp
-		machine.h
 		memory.h
 		memory.cpp
 		utils.h
 		threadInfo.h
 		internalHelperFunctions.h
+        machine.h
 		)
 	   
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
