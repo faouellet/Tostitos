@@ -4,6 +4,24 @@ compiler:
   - gcc
   - clang
 
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+      - llvm-toolchain-precise-3.6
+    packages:
+      - gcc-5
+      - g++-5
+      - clang-3.6
+
+before_install:
+  - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 50
+  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 50
+  - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-5 50
+  - if [ ${CC} == "clang" ]; then
+    export CC=/usr/bin/clang-3.6 CXX=/usr/bin/clang++-3.6;
+    fi
+	
 before_script:
   - sudo apt-get update -qq
   - sudo apt-get install libboost-dev
