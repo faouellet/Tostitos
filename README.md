@@ -1,6 +1,6 @@
 | Platform | Build Status |
 | -------- | ------------ |
-| Linux    | ![Build Status](https://travis-ci.org/Alex-B09/Tostitos.svg?branch=master)](https://travis-ci.org/Alex-B09/Tostitos) |
+| Linux    | [![Build Status](https://travis-ci.org/Alex-B09/Tostitos.svg?branch=master)](https://travis-ci.org/Alex-B09/Tostitos) |
 | OSX      | |
 | Windows  | |
 
