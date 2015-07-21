@@ -4,6 +4,21 @@ compiler:
   - gcc
   - clang
 
+env:
+  global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   - secure: "cWISiF8JWMGmVxKupfq94RiJcGoJXO1aLFAscWrAB1D868ydMm8PtADqhs4IRB4hnkDPwlkQrPcC8eZkI5HDBSYd2lyBbaGJom2j3QcuuTn2MTt9ysG1netXvS5fRufo0gDFli5mQQvUhRUpxeUHZv23zBu/ZAxO1lvE6xDj+b8G+pBL61SxTBEDmD05YTNPEVSzxViczmybsWlQTL45nDyRjbaKJtlNgkZsr5OZ80g8reoJkyWKxcPqYbsXHA9y3HS/12OBTvRUCUIAzIq6veRVP1wGiWBsZD/ug1+ZIA8FYaPzTRhL+H66KH7/vmt0a9pw+Xn7suMuOzwm39Y2B3QZGaBkY4sg21pYOD33aHxUHXH6DFPqk8vHD94qH1QmeNbdg5oRzDSHqpSwbe/HXiffalsUFj+fmDUvJKvKLdpYjqVJQ0EejKGSP5qo4KYiq0k86iFanxztqEbrCESLpieRur1QuKK62sHvGh7+HBpyyacrtsW0g58dZmlBmd69I797cGZEwZuibsoSkNwtfLZD4LQqbnZRAf5klcmxUfZ6AG8j7iH7z2jmG0jotJXiHpzWTO3pVpxHQN1E0B64CJTVQVMpEp2VmftNJqgGObgn2QTXoQ5itnEePSWbj/h82pwJTRFqVRKWgM3pfjkwrzqYUvcKjDQSW6AVFI68vFA="
+
+addons:
+  coverity_scan:
+    project:
+      name: "Alex-B09/Tostitos"
+    notification_email: faouellet@gmail.com
+    build_command_prepend: "mkdir build; cd build; cmake .."
+    build_command:   "make"
+    branch_pattern: coverity_scan
+	
 addons:
   apt:
     sources:
