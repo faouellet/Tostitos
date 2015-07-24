@@ -13,7 +13,7 @@ set( SOURCES
 
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")
 
-find_package(Boost COMPONENTS unit_test_framework)
+find_package(Boost REQUIRED COMPONENTS unit_test_framework)
 
 if(Boost_FOUND)
     # Boost
