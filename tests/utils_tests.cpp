@@ -1,5 +1,7 @@
 #ifdef STAND_ALONE
 #   define BOOST_TEST_MODULE Main
+#else
+#   define BOOST_TEST_MODULE Utils
 #endif
 
 #include <boost/test/unit_test.hpp>
