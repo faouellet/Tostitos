@@ -4,11 +4,32 @@ set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON) 
 set(Boost_USE_STATIC_RUNTIME ON)
 
-include(../cmake/BoostTestHelpers.cmake)
-
+find_package(Boost COMPONENTS unit_test_framework)
 include_directories("${CMAKE_SOURCE_DIR}/Tostitos/machine")
 
-find_package(Boost COMPONENTS unit_test_framework)
+if(WIN32)
+	set( SOURCES 
+			main.cpp 
+			interpreter_tests.cpp 
+			interpreter_tests.h 
+			utils_tests.cpp
+	)
 
-add_boost_test(interpreter_tests.cpp machine)
-add_boost_test(utils_tests.cpp machine)
+	set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")
+
+	# Boost
+    include_directories("${Boost_INCLUDE_DIR}")
+    link_directories("${Boost_LIBRARY_DIRS}")
+	
+    # Machine 
+    include_directories("${CMAKE_SOURCE_DIR}/Tostitos/machine")
+    link_directories("${CMAKE_BINARY_DIR}/lib")
+    
+    add_executable(MachineTests ${SOURCES}) 
+    target_link_libraries(MachineTests ${Boost_LIBRARIES} machine)
+else()
+	include(../cmake/BoostTestHelpers.cmake)
+
+	add_boost_test(interpreter_tests.cpp machine)
+	add_boost_test(utils_tests.cpp machine)
+endif()
