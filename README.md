@@ -4,7 +4,7 @@
 | OSX      | |
 | Windows  | |
 
-| Code Coverage | |
+| Code Coverage | [![Coverage Status](https://coveralls.io/repos/Alex-B09/Tostitos/badge.svg?branch=master&service=github)](https://coveralls.io/github/Alex-B09/Tostitos?branch=master) |
 | ------------- | ------------- |
 
 | Static Analysis   |[![Coverity scan status](https://scan.coverity.com/projects/5797/badge.svg)](https://scan.coverity.com/projects/5797) |
