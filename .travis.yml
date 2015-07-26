@@ -57,6 +57,7 @@ install:
 
 before_script:
   # init coverage to 0 (optional)
+  - cd ${TRAVIS_BUILD_DIR}
   - lcov --directory . --zerocounters
 
 script: 
@@ -76,6 +77,7 @@ script:
   - make test
 
 after_success:
+  - cd ${TRAVIS_BUILD_DIR}
   - lcov --directory . --capture --output-file coverage.info
   - lcov --remove coverage.info 'tests/*' '/usr/*' --output-file coverage.info
   - lcov --list coverage.info
