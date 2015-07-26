@@ -14,7 +14,6 @@ using namespace MachineEngine::ProcessorSpace;
 */
 struct InterpreterFixture
 {
-	CPU Cpu;							/*!< CPU implementation */
 	std::vector<Utils::UInt8> Header;	/*!< The header of a .c16 file. See specs for details */
 	Interpreter Interpret;				/*!< Interpretive emulator */
 
@@ -22,7 +21,7 @@ struct InterpreterFixture
 	* \enum
 	* \brief Uself constants
 	*/
-	enum { NB_REGISTERS = 16, STACK_START = 0xFDF0 };
+	enum { HEADER_SIZE = 16, NB_REGISTERS = 16, STACK_START = 0xFDF0 };
 
 	// Data for the arithmetic tests
 	std::vector<UInt8> AddTestData;
@@ -53,27 +52,13 @@ struct InterpreterFixture
 	* \fn Constructor
 	* \brief Setup the data for the cpu instructions tests
 	*/
-	InterpreterFixture() : Header(NB_REGISTERS, 0), Cpu{}
+	InterpreterFixture() : Interpret{}
 	{
 		SetupArithmeticData();
 		SetupLoadStoreData();
 		SetupShiftData();
 		SetupStackData();
 		SetupRandomData();
-	}
-
-	/**
-	* \fn PrepareData
-	* \brief Concatenate a data vector to the header
-	* \param in_Data Vector containing the data relevant to a specific instruction
-	*                testing procedure
-	* \return A data vector
-	*/
-	std::vector<UInt8> PrepareData(const std::vector<UInt8> & in_Data)
-	{
-		std::vector<UInt8> l_Data(Header);
-		l_Data.insert(l_Data.end(), in_Data.begin(), in_Data.end());
-		return l_Data;
 	}
 
 	/**
@@ -90,14 +75,14 @@ struct InterpreterFixture
 	{
 		std::vector<UInt8> l_ErrorTestData;
 		InsertInstruction(l_ErrorTestData, in_Op1, in_Op2, in_Op3, in_Op4);
-		Cpu.Reset();
-		Cpu.InitMemory(PrepareData(l_ErrorTestData));
+		Interpret.Reset();
+		Interpret.AcquireProgram(std::move(l_ErrorTestData));
 		return Interpret.InterpretOne();
 	}
 
 private:
 	/**
-	* \fn PrepareData
+	* \fn std::move
 	* \brief Insert a 32 bits instruction into a data vector
 	* \param out_DataVec Data vector to be inserted into
 	* \param in_Op1 Bit[0] to bit[3] of the instruction

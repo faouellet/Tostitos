@@ -94,20 +94,34 @@ namespace MachineEngine
 
 		public:
 			/**
-			* \fn InterpretOne
-			* \brief Read an opcode from the ROM and execute it
-			* \return An error code
-			*/
-			unsigned InterpretOne();
-
-			/**
 			* \fn AcquireROM
 			* \brief Read a ROM from disk to the CPU memory
 			* \param in_ROMName  The absolute path to the ROM
 			* \return Error code depending on the situation
 			*/
 			unsigned AcquireROM(const std::string & in_ROMName);
+
+			/**
+			* \fn AcquireProgram
+			* \brief Initialize the interpreter with a program
+			* \param in_Program  The program to run
+			*/
+			void AcquireProgram(std::vector<UInt8> && in_Program);
 				
+			/**
+			* \fn DumpCPUState
+			* \brief Dump the CPU state (flags, memory, registers)
+			* \return The CPU state
+			*/
+			const CPU & DumpCPUState() const;
+
+			/**
+			* \fn InterpretOne
+			* \brief Read an opcode from the ROM and execute it
+			* \return An error code
+			*/
+			unsigned InterpretOne();
+
 			/**
 			* \fn Reset
 			* \brief Restore the interpreter at its pre-initialized state

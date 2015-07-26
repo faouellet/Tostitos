@@ -1,7 +1,9 @@
 #ifdef STAND_ALONE
 #   define BOOST_TEST_MODULE Main
 #else
+#ifndef _WIN32
 #   define BOOST_TEST_MODULE Interpreter
+#endif
 #endif
 
 #include <boost/test/unit_test.hpp>
@@ -12,23 +14,23 @@
 
 BOOST_FIXTURE_TEST_SUITE( InterpreterTestSuite, InterpreterFixture )
 
-BOOST_AUTO_TEST_CASE( InitTest )
+BOOST_AUTO_TEST_CASE( InitMemoryTest )
 {
-	BOOST_REQUIRE_EQUAL(Cpu.InitMemory(PrepareData(AddTestData)), NoError);
-	std::vector<Utils::UInt8> l_MemoryDump(Cpu.DumpMemory());
+	// BOOST_REQUIRE_EQUAL(Interpret.AcquireProgram(std::move(AddTestData)), NoError);
+	Interpret.AcquireProgram(std::move(AddTestData));
+	std::vector<Utils::UInt8> l_MemoryDump(Interpret.DumpCPUState().DumpMemory());
 
 	for(unsigned i = 0; i < AddTestData.size(); ++i)
 		BOOST_REQUIRE_EQUAL(AddTestData[i], l_MemoryDump[i]);
-	for(unsigned i = AddTestData.size(); i < l_MemoryDump.size(); ++i)
-		BOOST_REQUIRE_EQUAL(l_MemoryDump[i], 0);
 
-	BOOST_REQUIRE_EQUAL(Cpu.InitMemory(std::vector<UInt8>()), EmptyROMError);
-	BOOST_REQUIRE_EQUAL(Cpu.InitMemory(std::vector<UInt8>(65535, 42)), ROMOverflowError);
+	// BOOST_REQUIRE_EQUAL(Interpret.AcquireProgram(std::vector<UInt8>()), EmptyROMError);
+	// BOOST_REQUIRE_EQUAL(Interpret.AcquireProgram(std::vector<UInt8>(2147483647, 42)), ROMOverflowError);
 }
 
 BOOST_AUTO_TEST_CASE( AddTest )
 {
-	Cpu.InitMemory(PrepareData(AddTestData));
+	Interpret.AcquireProgram(std::move(AddTestData));
+	const CPU& Cpu = Interpret.DumpCPUState();
 	Interpret.InterpretOne();										// ADDI : R0 += 0
 	BOOST_REQUIRE(Cpu.DumpFlagRegister() & 0x4);					// Zero flag set
 	Interpret.InterpretOne();										// ADDI : R0 += 65535
@@ -56,7 +58,8 @@ BOOST_AUTO_TEST_CASE( AddTest )
 
 BOOST_AUTO_TEST_CASE( AndTest )
 {
-	Cpu.InitMemory(PrepareData(AndTestData));
+	Interpret.AcquireProgram(std::move(AndTestData));
+	const CPU& Cpu = Interpret.DumpCPUState();
 	Interpret.InterpretOne();						// ANDI : R0 & 65535
 	BOOST_REQUIRE(Cpu.DumpFlagRegister() & 0x4);	// Zero flag set
 	Interpret.InterpretOne();						// AND : R1 &= R0
@@ -73,7 +76,8 @@ BOOST_AUTO_TEST_CASE( AndTest )
 
 BOOST_AUTO_TEST_CASE( DivTest )
 {
-	Cpu.InitMemory(PrepareData(DivTestData));
+	Interpret.AcquireProgram(std::move(DivTestData));
+	const CPU& Cpu = Interpret.DumpCPUState();
 	Interpret.InterpretOne();	// ADDI : R0 += 8
 	Interpret.InterpretOne();	// ADDI : R1 += 4
 	Interpret.InterpretOne();	// ADDI : R2 += 2
@@ -96,7 +100,7 @@ BOOST_AUTO_TEST_CASE( DivTest )
 
 BOOST_AUTO_TEST_CASE( ErrorTest )
 {
-	Cpu.InitMemory(PrepareData(ErrorTestData));
+	Interpret.AcquireProgram(std::move(ErrorTestData));
 	BOOST_REQUIRE_EQUAL(Interpret.InterpretOne(), CPU::StackUnderflow);
 	BOOST_REQUIRE_EQUAL(Interpret.InterpretOne(), CPU::MemoryError);
 	BOOST_REQUIRE_EQUAL(Interpret.InterpretOne(), CPU::MemoryError);
@@ -104,7 +108,8 @@ BOOST_AUTO_TEST_CASE( ErrorTest )
 
 BOOST_AUTO_TEST_CASE( MulTest )
 {
-	Cpu.InitMemory(PrepareData(MulTestData));
+	Interpret.AcquireProgram(std::move(MulTestData));
+	const CPU& Cpu = Interpret.DumpCPUState();
 	Interpret.InterpretOne();	// ADDI : R0 += 2
 	Interpret.InterpretOne();	// ADDI : R1 += 2
 	Interpret.InterpretOne();	// MULI : R0 *= 10
@@ -128,7 +133,8 @@ BOOST_AUTO_TEST_CASE( MulTest )
 
 BOOST_AUTO_TEST_CASE( OrTest )
 {
-	Cpu.InitMemory(PrepareData(OrTestData));
+	Interpret.AcquireProgram(std::move(OrTestData));
+	const CPU& Cpu = Interpret.DumpCPUState();
 	Interpret.InterpretOne();										// ORI : R0 | 0
 	BOOST_REQUIRE(Cpu.DumpFlagRegister() & 0x4);					// Zero flag set
 	Interpret.InterpretOne();										// ORI : R0 | 1
@@ -148,7 +154,8 @@ BOOST_AUTO_TEST_CASE( OrTest )
 
 BOOST_AUTO_TEST_CASE( SubTest )
 {
-	Cpu.InitMemory(PrepareData(SubTestData));
+	Interpret.AcquireProgram(std::move(SubTestData));
+	const CPU& Cpu = Interpret.DumpCPUState();
 	Interpret.InterpretOne();	// ADDI : R0 += 12
 	Interpret.InterpretOne();	// SUBI : R0 -= 4
 	Interpret.InterpretOne();	// SUB : R1 -= 4
@@ -178,7 +185,8 @@ BOOST_AUTO_TEST_CASE( SubTest )
 
 BOOST_AUTO_TEST_CASE( XorTest )
 {
-	Cpu.InitMemory(PrepareData(XorTestData));
+	Interpret.AcquireProgram(std::move(XorTestData));
+	const CPU& Cpu = Interpret.DumpCPUState();
 	Interpret.InterpretOne();										// XORI : R0 ^ 1
 	BOOST_REQUIRE_EQUAL((Cpu.DumpFlagRegister() >> 2) & 0x1, 0);	// Zero flag unset
 	Interpret.InterpretOne();										// XOR : R1 ^= R0
@@ -198,7 +206,8 @@ BOOST_AUTO_TEST_CASE( XorTest )
 
 BOOST_AUTO_TEST_CASE( MemoryTest )
 {
-	Cpu.InitMemory(PrepareData(MemoryTestData));
+	Interpret.AcquireProgram(std::move(MemoryTestData));
+	const CPU& Cpu = Interpret.DumpCPUState();
 	Interpret.InterpretOne();	// LDI : R0 = 255
 	Interpret.InterpretOne();	// STM : Memory[R0] = R0
 	Interpret.InterpretOne();	// LDI : SP = SP + 1
@@ -225,12 +234,13 @@ BOOST_AUTO_TEST_CASE( MemoryTest )
 
 BOOST_AUTO_TEST_CASE( StackTest )
 {
-	Cpu.InitMemory(PrepareData(StackTestData));
+	Interpret.AcquireProgram(std::move(StackTestData));
 	for(int i = 0; i < NB_REGISTERS; ++i)
 		Interpret.InterpretOne();	// LDI : Ri = i * 2
 
 	Interpret.InterpretOne();	// PUSHALL
 
+	const CPU& Cpu = Interpret.DumpCPUState();
 	std::vector<Utils::UInt8> l_MemoryDump(Cpu.DumpMemory());
 	for(int i = 0; i < NB_REGISTERS; ++i)
 		BOOST_REQUIRE_EQUAL(l_MemoryDump[i * 2 + STACK_START], i * 2);
@@ -260,10 +270,11 @@ BOOST_AUTO_TEST_CASE( StackTest )
 
 BOOST_AUTO_TEST_CASE( ShiftTest )
 {
-	Cpu.InitMemory(PrepareData(ShiftTestData));
+	Interpret.AcquireProgram(std::move(ShiftTestData));
 	for(int i = 0; i < NB_REGISTERS/2; ++i)
 		Interpret.InterpretOne();	// ADDI : Ri += 65535
 
+	const CPU& Cpu = Interpret.DumpCPUState();
 	Interpret.InterpretOne();										// SHL : R0 << 13 (Logical)
 	BOOST_REQUIRE(Cpu.DumpFlagRegister() & 0x80);					// Negative flag set
 	Interpret.InterpretOne();										// SHR : R1 >> 13 (Logical)
@@ -298,11 +309,11 @@ BOOST_AUTO_TEST_CASE( ShiftTest )
 
 BOOST_AUTO_TEST_CASE( RndTest )
 {
-	Cpu.InitMemory(PrepareData(RndTestData));
+	Interpret.AcquireProgram(std::move(RndTestData));
 	for(int i = 0; i < NB_REGISTERS; ++i)
 		Interpret.InterpretOne();
 
-	std::vector<UInt16> l_RndDump(Cpu.DumpRegisters());
+	std::vector<UInt16> l_RndDump(Interpret.DumpCPUState().DumpRegisters());
 	for(int i = 0; i < NB_REGISTERS; ++i)
 	{
 		BOOST_REQUIRE_GE(l_RndDump[i], 0);

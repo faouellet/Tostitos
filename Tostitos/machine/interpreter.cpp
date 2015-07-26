@@ -106,6 +106,12 @@ unsigned Interpreter::AcquireROM(const std::string & in_ROMName)
 
 		l_FileStream.close();
 
+		// TODO: Should check for a valid header
+
+		m_CPU.InitPC(l_ROMData[0x0A]);
+
+		l_ROMData.erase(l_ROMData.begin(), l_ROMData.begin() + HEADER_SIZE);
+
 		m_CPU.InitMemory(std::move(l_ROMData));
 
 		return NoError;
@@ -114,6 +120,16 @@ unsigned Interpreter::AcquireROM(const std::string & in_ROMName)
 	{
 		return FileError;
 	}
+}
+
+void Interpreter::AcquireProgram(std::vector<UInt8> && in_Program)
+{
+	m_CPU.InitMemory(std::move(in_Program));
+}
+
+const CPU & Interpreter::DumpCPUState() const
+{
+	return m_CPU;
 }
 
 void Interpreter::Reset()
@@ -436,7 +452,7 @@ void Interpreter::POP(const Instruction & in_Instruction)
 
 void Interpreter::PUSHALL(const Instruction & in_Instruction)
 {
-	for(UInt8 i = 0; i < 16; ++i)
+	for(UInt8 i = 0; i < CPU::NB_REGISTERS; ++i)
 		m_ErrorCode |= m_CPU.Push(m_CPU.DumpRegister(i));
 }
 

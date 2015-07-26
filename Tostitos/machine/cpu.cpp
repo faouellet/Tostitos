@@ -12,9 +12,10 @@
 
 using namespace MachineEngine::ProcessorSpace;
 
-CPU::CPU() : m_FR(0), m_PC(0), m_SP(0), m_ErrorCode(NoError)
+CPU::CPU() : m_FR{ 0 }, m_PC{ 0 }, m_SP{ STACK_START }, m_ErrorCode{ NoError }
 {
 	memset(m_Registers, 0, sizeof(UInt16)*16);
+	
 }
 
 UInt16 CPU::DumpFlagRegister() const
@@ -68,7 +69,7 @@ unsigned CPU::InitMemory(std::vector<UInt8> && in_Program)
 		return ROMOverflowError;
 
 	std::copy_n(std::make_move_iterator(in_Program.begin()), in_Program.size(), m_Memory.begin());
-	
+
 	return NoError;
 }
 
