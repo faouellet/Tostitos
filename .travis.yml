@@ -10,8 +10,8 @@ env:
    #   via the "travis encrypt" command using the project repo's public key
    - secure: "cWISiF8JWMGmVxKupfq94RiJcGoJXO1aLFAscWrAB1D868ydMm8PtADqhs4IRB4hnkDPwlkQrPcC8eZkI5HDBSYd2lyBbaGJom2j3QcuuTn2MTt9ysG1netXvS5fRufo0gDFli5mQQvUhRUpxeUHZv23zBu/ZAxO1lvE6xDj+b8G+pBL61SxTBEDmD05YTNPEVSzxViczmybsWlQTL45nDyRjbaKJtlNgkZsr5OZ80g8reoJkyWKxcPqYbsXHA9y3HS/12OBTvRUCUIAzIq6veRVP1wGiWBsZD/ug1+ZIA8FYaPzTRhL+H66KH7/vmt0a9pw+Xn7suMuOzwm39Y2B3QZGaBkY4sg21pYOD33aHxUHXH6DFPqk8vHD94qH1QmeNbdg5oRzDSHqpSwbe/HXiffalsUFj+fmDUvJKvKLdpYjqVJQ0EejKGSP5qo4KYiq0k86iFanxztqEbrCESLpieRur1QuKK62sHvGh7+HBpyyacrtsW0g58dZmlBmd69I797cGZEwZuibsoSkNwtfLZD4LQqbnZRAf5klcmxUfZ6AG8j7iH7z2jmG0jotJXiHpzWTO3pVpxHQN1E0B64CJTVQVMpEp2VmftNJqgGObgn2QTXoQ5itnEePSWbj/h82pwJTRFqVRKWgM3pfjkwrzqYUvcKjDQSW6AVFI68vFA="
   matrix:
-    - COVERAGE=0
-	- COVERAGE=1
+    -COVERAGE=0
+    -COVERAGE=1
    
 # Addons for the Coverity static analysis service
 addons:
@@ -43,18 +43,18 @@ install:
   - if [ ${CC} == "clang" ]; then
        export CC=/usr/bin/clang-3.6 CXX=/usr/bin/clang++-3.6; 
     fi
-	
+    
   # Getting the latest version of Boost Unit Test Framework
   - sudo apt-get install libboost-test-dev
   
   # Getting latest version of LCOV if needed
   - if [ ${COVERAGE} != 1 ]; then
        wget http://ftp.de.debian.org/debian/pool/main/l/lcov/lcov_1.11.orig.tar.gz
-	   tar xf lcov_1.11.orig.tar.gz
-	   sudo make -C lcov-1.11/ install
-	   gem install coveralls-lcov 
-	fi
-  
+       tar xf lcov_1.11.orig.tar.gz
+       sudo make -C lcov-1.11/ install
+       gem install coveralls-lcov 
+    fi
+
 before_script:
   # init coverage to 0 (optional)
   - lcov --directory . --zerocounters
@@ -63,11 +63,11 @@ script:
   # Debug code coverage Linux build
   - if [ ${COVERAGE} == 1 ]; then 
        cmake .. -DCMAKE_BUILD_TYPE=DEBUG; 
-	fi
+    fi
   # Release Linux build
   - if [ ${COVERAGE} != 1 ]; then 
        cmake .. -DCMAKE_BUILD_TYPE=RELEASE; 
-	fi
+    fi
   
   - mkdir build
   - cd build
