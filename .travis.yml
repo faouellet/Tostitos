@@ -65,7 +65,7 @@ before_script:
 script: 
   # Debug code coverage Linux build
   - if [ ${COVERAGE} == 1 ]; then 
-       cmake .. -DCMAKE_BUILD_TYPE=DEBUG; 
+       cmake .. -DCMAKE_BUILD_TYPE=RELEASE; 
     fi
   # Release Linux build
   - if [ ${COVERAGE} != 1 ]; then 
