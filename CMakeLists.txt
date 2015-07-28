@@ -3,17 +3,21 @@ project (Tostitos)
 
 enable_testing()
 
-add_subdirectory (Tostitos)
-add_subdirectory (tests)
-
 if(MSVC)
 	SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
 else()
 	set (CMAKE_CXX_FLAGS "-std=c++14" CACHE STRING "" FORCE)
-    #    if(CMAKE_BUILD_TYPE MATCHES DEBUG)
-    #        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
-    #    endif()
+    #if($ENV{COVERAGE}==1)
+        message("Adding flags for code coverage")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
+        set(CMAKE_EXE_LINKER_FLAGS "-fprofile-arcs -ftest-coverage")
+        #endif()
 endif()
+
+add_subdirectory (Tostitos)
+add_subdirectory (tests)
 
 # add a target to generate API documentation with Doxygen
 find_package(Doxygen)
