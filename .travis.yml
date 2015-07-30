@@ -4,6 +4,10 @@ compiler:
   - gcc
   - clang
 
+os:
+  - linux
+  - osx
+
 env:
   global:
    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
@@ -13,6 +17,12 @@ env:
     -COVERAGE=0
     -COVERAGE=1
    
+matrix:
+  # Don't do test coverage on Mac
+  exclude:
+   - os : osx
+     env: COVERAGE=1
+
 # Addons for the Coverity static analysis service
 addons:
   coverity_scan:
