@@ -6,7 +6,6 @@ compiler:
 
 os:
   - linux
-  - osx
 
 env:
   global:
@@ -17,12 +16,6 @@ env:
     -COVERAGE=0
     -COVERAGE=1
    
-matrix:
-  # Don't do test coverage on Mac
-  exclude:
-   - os : osx
-          env: COVERAGE=1
-
 # Addons for the Coverity static analysis service
 addons:
   coverity_scan:
