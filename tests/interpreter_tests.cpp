@@ -12,6 +12,8 @@
 
 #include "constants.h"
 
+#include <limits>
+
 BOOST_FIXTURE_TEST_SUITE( InterpreterTestSuite, InterpreterFixture )
 
 BOOST_AUTO_TEST_CASE( InitMemoryTest )
@@ -128,6 +130,9 @@ BOOST_AUTO_TEST_CASE( ModTest )
     Interpret.InterpretOne();										// MOD : R5 = R3 % R2
     BOOST_REQUIRE(Cpu.DumpFlagRegister() & 0x4);				    // Zero flag set
     BOOST_REQUIRE_EQUAL(Cpu.DumpRegister(5), 0);
+
+    for (int i = 5; i < NB_REGISTERS; ++i)
+        BOOST_REQUIRE_EQUAL(Cpu.DumpRegister(i), 0);
 }
 
 BOOST_AUTO_TEST_CASE( ErrorTest )
@@ -161,6 +166,38 @@ BOOST_AUTO_TEST_CASE( MulTest )
 
     for(int i = 4; i < NB_REGISTERS; ++i)
         BOOST_REQUIRE_EQUAL(l_MulDump[i], 0);
+}
+
+BOOST_AUTO_TEST_CASE(NotTest)
+{
+    Interpret.AcquireProgram(std::move(NotTestData));
+    const CPU& Cpu = Interpret.DumpCPUState();
+    const UInt16 l_MaxLimit = std::numeric_limits<UInt16>::max();
+    Interpret.InterpretOne();                                       // NOTI : R0 = !65535
+    BOOST_REQUIRE(Cpu.DumpFlagRegister() & 0x4);					// Zero flag set
+    BOOST_REQUIRE_EQUAL(Cpu.DumpRegister(0), 0);
+
+    Interpret.InterpretOne();                                       // NOTI : R0 = !0
+    BOOST_REQUIRE_EQUAL((Cpu.DumpFlagRegister() >> 2) & 0x1, 0);	// Zero flag unset
+    BOOST_REQUIRE_EQUAL(Cpu.DumpRegister(0), l_MaxLimit);
+
+    Interpret.InterpretOne();                                       // NOT : R0 = !R0
+    BOOST_REQUIRE(Cpu.DumpFlagRegister() & 0x4);					// Zero flag set
+    BOOST_REQUIRE_EQUAL(Cpu.DumpRegister(0), 0);
+
+    Interpret.InterpretOne();                                       // NOT : R0 = !R0
+    BOOST_REQUIRE_EQUAL((Cpu.DumpFlagRegister() >> 2) & 0x1, 0);	// Zero flag unset
+    BOOST_REQUIRE_EQUAL(Cpu.DumpRegister(0), l_MaxLimit);
+
+    Interpret.InterpretOne();                                       // ADDI : R1 += 2
+
+    Interpret.InterpretOne();                                       // NOT : R0 = !R1
+    BOOST_REQUIRE_EQUAL((Cpu.DumpFlagRegister() >> 2) & 0x1, 0);	// Zero flag unset
+    BOOST_REQUIRE_EQUAL(Cpu.DumpRegister(0), l_MaxLimit - 2);
+
+    Interpret.InterpretOne();                                       // NOT : R0 = !R2
+    BOOST_REQUIRE_EQUAL((Cpu.DumpFlagRegister() >> 2) & 0x1, 0);	// Zero flag unset
+    BOOST_REQUIRE_EQUAL(Cpu.DumpRegister(0), l_MaxLimit);
 }
 
 BOOST_AUTO_TEST_CASE( OrTest )

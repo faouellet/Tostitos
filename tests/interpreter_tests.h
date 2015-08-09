@@ -29,6 +29,7 @@ struct InterpreterFixture
     std::vector<UInt8> DivTestData;
     std::vector<UInt8> ModTestData;
     std::vector<UInt8> MulTestData;
+    std::vector<UInt8> NotTestData;
     std::vector<UInt8> OrTestData;
     std::vector<UInt8> SubTestData;
     std::vector<UInt8> XorTestData;
@@ -109,6 +110,7 @@ private:
         SetupDivTestData();
         SetupModTestData();
         SetupMulTestData();
+        SetupNotTestData();
         SetupOrTestData();
         SetupSubTestData();
         SetupXorTestData();
@@ -145,7 +147,7 @@ private:
 
     /**
     * \fn SetupDivTestData
-    * \brief Fills a vector with division opcodes
+    * \brief Fills a vector with opcodes for testing the division instruction
     */
     void SetupDivTestData()
     {
@@ -158,6 +160,10 @@ private:
         InsertInstruction(DivTestData, 0XA2, 0x12, 0x03, 0x00);	// DIV : R3 = R1 / R2
     }
 
+    /**
+    * \fn SetupModTestData
+    * \brief Fills a vector with opcodes for testing the modulus instruction
+    */
     void SetupModTestData()
     {
 
@@ -218,6 +224,25 @@ private:
         InsertInstruction(MulTestData, 0x92, 0x01, 0x02, 0x00);	// MUL : R2 = R1 * R0
         InsertInstruction(MulTestData, 0x90, 0x03, 0x00, 0x00);	// MUL : R3 *= 0
         InsertInstruction(MulTestData, 0x92, 0x22, 0x03, 0x00);	// MUL : R3 = R2 * R2
+    }
+
+    /**
+    * \fn SetupNotTestData
+    * \brief Fills a vector with opcodes for testing the not instruction
+    */
+    void SetupNotTestData()
+    {
+        InsertInstruction(NotTestData, 0xE0, 0x00, 0xFF, 0xFF); // NOTI : R0 = !65535
+        InsertInstruction(NotTestData, 0xE0, 0x00, 0x00, 0x00); // NOTI : R0 = !0
+
+        InsertInstruction(NotTestData, 0xE1, 0x00, 0x00, 0x00); // NOT : R0 = !R0
+        InsertInstruction(NotTestData, 0xE1, 0x00, 0x00, 0x00); // NOT : R0 = !R0
+
+        InsertInstruction(NotTestData, 0x40, 0x01, 0x02, 0x00);	// ADDI : R1 += 2
+
+        InsertInstruction(NotTestData, 0xE2, 0x10, 0x00, 0x00); // NOT : R0 = !R1
+        InsertInstruction(NotTestData, 0xE2, 0x20, 0x00, 0x00); // NOT : R0 = !R2
+
     }
 
     /**

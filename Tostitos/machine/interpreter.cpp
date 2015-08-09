@@ -81,6 +81,10 @@ Interpreter::Interpreter() : m_Dist(0, std::numeric_limits<UInt16>::max()), m_Er
     m_Ops[0xC3] = &Interpreter::POPALL;
     m_Ops[0xC4] = &Interpreter::PUSHF;
     m_Ops[0xC5] = &Interpreter::POPF;
+
+    m_Ops[0xE0] = &Interpreter::NOTI;
+    m_Ops[0xE1] = &Interpreter::InplaceNOT;
+    m_Ops[0xE2] = &Interpreter::NOT;
 }
 
 unsigned Interpreter::InterpretOne()
@@ -145,156 +149,171 @@ void Interpreter::Reset()
 
 void Interpreter::ADDI(const Instruction & in_Instruction)
 {
-    ImmediateArithmetic(in_Instruction, std::plus<UInt16>(),
+    ImmediateBinaryArithmetic(in_Instruction, std::plus<UInt16>(),
         [this](UInt16 in_Op1, UInt16 in_Op2) { m_CPU.SetCarryOverflowFlagAdd(in_Op1, in_Op2); });
 }
 
 void Interpreter::InplaceADD(const Instruction & in_Instruction)
 { 
-    InplaceArithmetic(in_Instruction, std::plus<UInt16>(),
+    InplaceBinaryArithmetic(in_Instruction, std::plus<UInt16>(),
         [this](UInt16 in_Op1, UInt16 in_Op2) { m_CPU.SetCarryOverflowFlagAdd(in_Op1, in_Op2); }); 
 }
 
 void Interpreter::ADD(const Instruction & in_Instruction)
 { 
-    BasicArithmetic(in_Instruction, std::plus<UInt16>(),
+    BasicBinaryArithmetic(in_Instruction, std::plus<UInt16>(),
         [this](UInt16 in_Op1, UInt16 in_Op2){ m_CPU.SetCarryOverflowFlagAdd(in_Op1, in_Op2); });
 }
 
 void Interpreter::SUBI(const Instruction & in_Instruction)
 {
-    ImmediateArithmetic(in_Instruction, std::minus<UInt16>(),
+    ImmediateBinaryArithmetic(in_Instruction, std::minus<UInt16>(),
         [this](UInt16 in_Op1, UInt16 in_Op2){ m_CPU.SetCarryOverflowFlagSub(in_Op1, in_Op2); });
 }
 
 void Interpreter::InplaceSUB(const Instruction & in_Instruction)
 { 
-    InplaceArithmetic(in_Instruction, std::minus<UInt16>(),
+    InplaceBinaryArithmetic(in_Instruction, std::minus<UInt16>(),
         [this](UInt16 in_Op1, UInt16 in_Op2){ m_CPU.SetCarryOverflowFlagSub(in_Op1, in_Op2); });
 }
 
 void Interpreter::SUB(const Instruction & in_Instruction)
 {
-    BasicArithmetic(in_Instruction, std::minus<UInt16>(),
+    BasicBinaryArithmetic(in_Instruction, std::minus<UInt16>(),
         [this](UInt16 in_Op1, UInt16 in_Op2){ m_CPU.SetCarryOverflowFlagSub(in_Op1, in_Op2); });
 }
 
 void Interpreter::CMPI(const Instruction & in_Instruction)
 { 
-    DiscardImmediateArithmetic(in_Instruction, std::minus<UInt16>(),
+    DiscardImmediateBinaryArithmetic(in_Instruction, std::minus<UInt16>(),
         [this](UInt16 in_Op1, UInt16 in_Op2){ m_CPU.SetCarryOverflowFlagSub(in_Op1, in_Op2); });
 }
 
 void Interpreter::CMP(const Instruction & in_Instruction)
 { 
-    DiscardArithmetic(in_Instruction, std::minus<UInt16>(),
+    DiscardBinaryArithmetic(in_Instruction, std::minus<UInt16>(),
         [this](UInt16 in_Op1, UInt16 in_Op2){ m_CPU.SetCarryOverflowFlagSub(in_Op1, in_Op2); });
 }
 
 void Interpreter::ANDI(const Instruction & in_Instruction)
 { 
-    ImmediateArithmetic(in_Instruction, std::bit_and<UInt16>());
+    ImmediateBinaryArithmetic(in_Instruction, std::bit_and<UInt16>());
 }
 
 void Interpreter::InplaceAND(const Instruction & in_Instruction)
 { 
-    InplaceArithmetic(in_Instruction, std::bit_and<UInt16>());
+    InplaceBinaryArithmetic(in_Instruction, std::bit_and<UInt16>());
 }
 
 void Interpreter::AND(const Instruction & in_Instruction)
 { 
-    BasicArithmetic(in_Instruction, std::bit_and<UInt16>());
+    BasicBinaryArithmetic(in_Instruction, std::bit_and<UInt16>());
 }
 
 void Interpreter::TSTI(const Instruction & in_Instruction)
 { 
-    DiscardImmediateArithmetic(in_Instruction, std::bit_and<UInt16>());
+    DiscardImmediateBinaryArithmetic(in_Instruction, std::bit_and<UInt16>());
 }
 
 void Interpreter::TST(const Instruction & in_Instruction)
 { 
-    DiscardArithmetic(in_Instruction, std::bit_and<UInt16>());
+    DiscardBinaryArithmetic(in_Instruction, std::bit_and<UInt16>());
 }
 
 void Interpreter::ORI(const Instruction & in_Instruction)
 { 
-    ImmediateArithmetic(in_Instruction, std::bit_or<UInt16>());
+    ImmediateBinaryArithmetic(in_Instruction, std::bit_or<UInt16>());
 }
 
 void Interpreter::InplaceOR(const Instruction & in_Instruction)
 { 
-    InplaceArithmetic(in_Instruction, std::bit_or<UInt16>());
+    InplaceBinaryArithmetic(in_Instruction, std::bit_or<UInt16>());
 }
 
 void Interpreter::OR(const Instruction & in_Instruction)
 { 
-    BasicArithmetic(in_Instruction, std::bit_or<UInt16>());
+    BasicBinaryArithmetic(in_Instruction, std::bit_or<UInt16>());
 }
 
 void Interpreter::XORI(const Instruction & in_Instruction)
 { 
-    ImmediateArithmetic(in_Instruction, std::bit_xor<UInt16>());
+    ImmediateBinaryArithmetic(in_Instruction, std::bit_xor<UInt16>());
 }
 
 void Interpreter::InplaceXOR(const Instruction & in_Instruction)
 { 
-    InplaceArithmetic(in_Instruction, std::bit_xor<UInt16>());
+    InplaceBinaryArithmetic(in_Instruction, std::bit_xor<UInt16>());
 }
 
 void Interpreter::XOR(const Instruction & in_Instruction)
 { 
-    BasicArithmetic(in_Instruction, std::bit_xor<UInt16>());
+    BasicBinaryArithmetic(in_Instruction, std::bit_xor<UInt16>());
 }
 
 void Interpreter::MULI(const Instruction & in_Instruction)
 { 
-    ImmediateArithmetic(in_Instruction, std::multiplies<UInt16>(),
+    ImmediateBinaryArithmetic(in_Instruction, std::multiplies<UInt16>(),
         [this](UInt16 in_Op1, UInt16 in_Op2){ m_CPU.SetCarryOverflowFlagMul(in_Op1, in_Op2); });
 }
 
 void Interpreter::InplaceMUL(const Instruction & in_Instruction)
 { 
-    InplaceArithmetic(in_Instruction, std::multiplies<UInt16>(),
+    InplaceBinaryArithmetic(in_Instruction, std::multiplies<UInt16>(),
         [this](UInt16 in_Op1, UInt16 in_Op2){ m_CPU.SetCarryOverflowFlagMul(in_Op1, in_Op2); });
 }
 
 void Interpreter::MUL(const Instruction & in_Instruction)
 { 
-    BasicArithmetic(in_Instruction, std::multiplies<UInt16>(),
+    BasicBinaryArithmetic(in_Instruction, std::multiplies<UInt16>(),
         [this](UInt16 in_Op1, UInt16 in_Op2){ m_CPU.SetCarryOverflowFlagMul(in_Op1, in_Op2); });
 }
 
 void Interpreter::DIVI(const Instruction & in_Instruction)
 { 
-    ImmediateArithmetic(in_Instruction, std::divides<UInt16>(),
+    ImmediateBinaryArithmetic(in_Instruction, std::divides<UInt16>(),
         [this](UInt16 in_Op1, UInt16 in_Op2){ m_CPU.SetCarryOverflowFlagDiv(in_Op1, in_Op2); });
 }
 
 void Interpreter::InplaceDIV(const Instruction & in_Instruction)
 { 
-    InplaceArithmetic(in_Instruction, std::divides<UInt16>(),
+    InplaceBinaryArithmetic(in_Instruction, std::divides<UInt16>(),
         [this](UInt16 in_Op1, UInt16 in_Op2){ m_CPU.SetCarryOverflowFlagDiv(in_Op1, in_Op2); });
 }
 
 void Interpreter::DIV(const Instruction & in_Instruction)
 { 
-    BasicArithmetic(in_Instruction, std::divides<UInt16>(),
+    BasicBinaryArithmetic(in_Instruction, std::divides<UInt16>(),
         [this](UInt16 in_Op1, UInt16 in_Op2){ m_CPU.SetCarryOverflowFlagDiv(in_Op1, in_Op2); });
 }
 
 void Interpreter::MODI(const Instruction & in_Instruction)
 {
-    ImmediateArithmetic(in_Instruction, std::modulus<UInt16>());
+    ImmediateBinaryArithmetic(in_Instruction, std::modulus<UInt16>());
 }
 
 void Interpreter::InplaceMOD(const Instruction & in_Instruction)
 {
-    InplaceArithmetic(in_Instruction, std::modulus<UInt16>());
+    InplaceBinaryArithmetic(in_Instruction, std::modulus<UInt16>());
 }
 
 void Interpreter::MOD(const Instruction & in_Instruction)
 {
-    BasicArithmetic(in_Instruction, std::modulus<UInt16>());
+    BasicBinaryArithmetic(in_Instruction, std::modulus<UInt16>());
+}
+
+void Interpreter::NOTI(const Instruction & in_Instruction)
+{
+    ImmediateUnaryArithmetic(in_Instruction, std::bit_not<UInt16>());
+}
+
+void Interpreter::InplaceNOT(const Instruction & in_Instruction)
+{
+    InplaceUnaryArithmetic(in_Instruction, std::bit_not<UInt16>());
+}
+
+void Interpreter::NOT(const Instruction & in_Instruction)
+{
+    BasicUnaryArithmetic(in_Instruction, std::bit_not<UInt16>());
 }
 
 /////////////// Call/Jump ///////////////
@@ -554,7 +573,7 @@ void Interpreter::IndirectSTM(const Instruction & in_Instruction)
 
 /////////////// Artihmetic Helpers ///////////////
 
-void Interpreter::BasicArithmetic(const Instruction & in_Instruction, 
+void Interpreter::BasicBinaryArithmetic(const Instruction & in_Instruction,
                                   std::function<UInt16(UInt16,UInt16)> in_Ins, 
                                   std::function<void(UInt16,UInt16)> in_FRH)
 {
@@ -569,7 +588,7 @@ void Interpreter::BasicArithmetic(const Instruction & in_Instruction,
     m_CPU.SetSignZeroFlag(m_CPU.DumpRegister(l_ZReg));
 }
 
-void Interpreter::DiscardArithmetic(const Instruction & in_Instruction, 
+void Interpreter::DiscardBinaryArithmetic(const Instruction & in_Instruction,
                                     std::function<UInt16(UInt16,UInt16)> in_Ins, 
                                     std::function<void(UInt16,UInt16)> in_FRH)
 {
@@ -583,7 +602,7 @@ void Interpreter::DiscardArithmetic(const Instruction & in_Instruction,
     m_CPU.SetSignZeroFlag(l_Result);
 }
 
-void Interpreter::DiscardImmediateArithmetic(const Instruction & in_Instruction, 
+void Interpreter::DiscardImmediateBinaryArithmetic(const Instruction & in_Instruction,
                                              std::function<UInt16(UInt16,UInt16)> in_Ins, 
                                              std::function<void(UInt16,UInt16)> in_FRH)
 {
@@ -597,7 +616,7 @@ void Interpreter::DiscardImmediateArithmetic(const Instruction & in_Instruction,
     m_CPU.SetSignZeroFlag(l_Result);
 }
 
-void Interpreter::ImmediateArithmetic(const Instruction & in_Instruction, 
+void Interpreter::ImmediateBinaryArithmetic(const Instruction & in_Instruction,
                                       std::function<UInt16(UInt16,UInt16)> in_Ins, 
                                       std::function<void(UInt16,UInt16)> in_FRH)
 {
@@ -611,7 +630,7 @@ void Interpreter::ImmediateArithmetic(const Instruction & in_Instruction,
     m_CPU.SetSignZeroFlag(m_CPU.DumpRegister(l_Reg));
 }
 
-void Interpreter::InplaceArithmetic(const Instruction & in_Instruction, 
+void Interpreter::InplaceBinaryArithmetic(const Instruction & in_Instruction,
                                     std::function<UInt16(UInt16,UInt16)> in_Ins, 
                                     std::function<void(UInt16,UInt16)> in_FRH)
 {
@@ -624,4 +643,33 @@ void Interpreter::InplaceArithmetic(const Instruction & in_Instruction,
 
     m_ErrorCode = m_CPU.SetRegister(l_XReg, in_Ins(l_XVal, l_YVal));
     m_CPU.SetSignZeroFlag(m_CPU.DumpRegister(l_XReg));
+}
+
+void Interpreter::BasicUnaryArithmetic(const Instruction & in_Instruction,
+    std::function<UInt16(UInt16)> in_Ins)
+{
+    UInt16 l_Val = m_CPU.DumpRegister(in_Instruction.GetSecondOperand());
+
+    m_ErrorCode = m_CPU.SetRegister(in_Instruction.GetFirstOperand(), in_Ins(l_Val));
+    m_CPU.SetSignZeroFlag(m_CPU.DumpRegister(in_Instruction.GetFirstOperand()));
+}
+
+void Interpreter::ImmediateUnaryArithmetic(const Instruction & in_Instruction,
+    std::function<UInt16(UInt16)> in_Ins)
+{
+    UInt8 l_Reg = in_Instruction.GetFirstOperand();
+    UInt16 l_IVal = in_Instruction.GetImmediateValue();
+
+    m_ErrorCode = m_CPU.SetRegister(l_Reg, in_Ins(l_IVal));
+    m_CPU.SetSignZeroFlag(m_CPU.DumpRegister(l_Reg));
+}
+
+void Interpreter::InplaceUnaryArithmetic(const Instruction & in_Instruction,
+    std::function<UInt16(UInt16)> in_Ins)
+{
+    UInt8 l_Reg = in_Instruction.GetFirstOperand();
+    UInt16 l_Val = m_CPU.DumpRegister(l_Reg);
+
+    m_ErrorCode = m_CPU.SetRegister(l_Reg, in_Ins(l_Val));
+    m_CPU.SetSignZeroFlag(m_CPU.DumpRegister(l_Reg));
 }

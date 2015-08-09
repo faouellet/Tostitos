@@ -130,55 +130,81 @@ namespace MachineEngine
 
         private:	// Arithmetic helpers
             /**
-            * \fn BasicArithmetic
+            * \fn BasicBinaryArithmetic
             * \brief Apply an instruction to two registers and store the result in a third register
             * \param in_Instruction 4 bytes Chip16 instruction containing the opcode and the operands
             * \param in_Ins The instruction to apply 
             * \param in_FRH Handler responsible for updating the flag register
             */
-            void BasicArithmetic(const Instruction & in_Instruction, std::function<UInt16(UInt16,UInt16)> in_Ins, 
+            void BasicBinaryArithmetic(const Instruction & in_Instruction, std::function<UInt16(UInt16,UInt16)> in_Ins, 
                 std::function<void(UInt16, UInt16)> in_FRH = std::function<void(UInt16, UInt16)>());
 
             /**
-            * \fn DiscardArithmetic
+            * \fn DiscardBinaryArithmetic
             * \brief Apply an instruction to two registers and discard the result
             * \param in_Instruction 4 bytes Chip16 instruction containing the opcode and the operands
             * \param in_Ins The instruction to apply 
             * \param in_FRH Handler responsible for updating the flag register
             */
-            void DiscardArithmetic(const Instruction & in_Instruction, std::function<UInt16(UInt16,UInt16)> in_Ins, 
+            void DiscardBinaryArithmetic(const Instruction & in_Instruction, std::function<UInt16(UInt16,UInt16)> in_Ins, 
                 std::function<void(UInt16, UInt16)> in_FRH = std::function<void(UInt16, UInt16)>());
 
             /**
-            * \fn DiscardImmediateArithmetic
+            * \fn DiscardImmediateBinaryArithmetic
             * \brief Apply an instruction to a register and an immediate value and discard the result
             * \param in_Instruction 4 bytes Chip16 instruction containing the opcode and the operands
             * \param in_Ins The instruction to apply 
             * \param in_FRH Handler responsible for updating the flag register
             */
-            void DiscardImmediateArithmetic(const Instruction & in_Instruction, std::function<UInt16(UInt16,UInt16)> in_Ins, 
+            void DiscardImmediateBinaryArithmetic(const Instruction & in_Instruction, std::function<UInt16(UInt16, UInt16)> in_Ins,
                 std::function<void(UInt16, UInt16)> in_FRH = std::function<void(UInt16, UInt16)>());
 
             /**
-            * \fn ImmediateArithmetic
+            * \fn ImmediateBinaryArithmetic
             * \brief Apply an instruction to a register and an immediate value and store the result in the first register
             * \param in_Instruction 4 bytes Chip16 instruction containing the opcode and the operands
             * \param in_Ins The instruction to apply 
             * \param in_FRH Handler responsible for updating the flag register
             */
-            void ImmediateArithmetic(const Instruction & in_Instruction, std::function<UInt16(UInt16,UInt16)> in_Ins, 
+            void ImmediateBinaryArithmetic(const Instruction & in_Instruction, std::function<UInt16(UInt16, UInt16)> in_Ins,
                 std::function<void(UInt16, UInt16)> in_FRH = std::function<void(UInt16, UInt16)>());
 
             /**
-            * \fn InplaceArithmetic
+            * \fn InplaceBinaryArithmetic
             * \brief Apply an instruction to two registers and store the result in the first register
             * \param in_Instruction 4 bytes Chip16 instruction containing the opcode and the operands
             * \param in_Ins The instruction to apply 
             * \param in_FRH Handler responsible for updating the flag register
             */
-            void InplaceArithmetic(const Instruction & in_Instruction, std::function<UInt16(UInt16,UInt16)> in_Ins,
+            void InplaceBinaryArithmetic(const Instruction & in_Instruction, std::function<UInt16(UInt16, UInt16)> in_Ins,
                 std::function<void(UInt16, UInt16)> in_FRH = std::function<void(UInt16, UInt16)>());
 
+            /**
+            * \fn BasicUnaryArithmetic
+            * \brief Apply an instruction to a register and store the result in another register
+            * \param in_Instruction 4 bytes Chip16 instruction containing the opcode and the operands
+            * \param in_Ins The instruction to apply
+            * \param in_FRH Handler responsible for updating the flag register
+            */
+            void BasicUnaryArithmetic(const Instruction & in_Instruction, std::function<UInt16(UInt16)> in_Ins);
+
+            /**
+            * \fn ImmediateUnaryArithmetic
+            * \brief Apply an instruction to an immediate value and store the result in a register
+            * \param in_Instruction 4 bytes Chip16 instruction containing the opcode and the operands
+            * \param in_Ins The instruction to apply
+            * \param in_FRH Handler responsible for updating the flag register
+            */
+            void ImmediateUnaryArithmetic(const Instruction & in_Instruction, std::function<UInt16(UInt16)> in_Ins);
+
+            /**
+            * \fn InplaceUnaryArithmetic
+            * \brief Apply an instruction to one register and store the result in the register
+            * \param in_Instruction 4 bytes Chip16 instruction containing the opcode and the operands
+            * \param in_Ins The instruction to apply
+            * \param in_FRH Handler responsible for updating the flag register
+            */
+            void InplaceUnaryArithmetic(const Instruction & in_Instruction, std::function<UInt16(UInt16)> in_Ins);
         private:
              /**
             * \fn InterpretConditions
@@ -259,6 +285,10 @@ namespace MachineEngine
 
             void DirectSTM(const Instruction & in_Instruction);
             void IndirectSTM(const Instruction & in_Instruction);
+
+            void NOTI(const Instruction & in_Instruction);
+            void InplaceNOT(const Instruction & in_Instruction);
+            void NOT(const Instruction & in_Instruction);
         };
     }
 }
