@@ -21,7 +21,7 @@ matrix:
   # Don't do test coverage on Mac
   exclude:
    - os : osx
-     env: COVERAGE=1
+          env: COVERAGE=1
 
 # Addons for the Coverity static analysis service
 addons:
