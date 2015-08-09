@@ -117,6 +117,7 @@ Opcode (Hex)	Mnemonic		Usage
 
 // Jumps
 10 00 LL HH	JMP HHLL			Jump to the specified address.
+11 00 LL HH	JMC HHLL			Jump to the specified address if the carry flag is raised.
 12 0x LL HH	Jx  HHLL			Jump to the specified address if condition 'x' (x refers to a Conditional Type)
 13 YX LL HH	JME RX, RY, HHLL	Jump to the specified address if value in register X is equal to value in register Y.
 16 0X 00 00	JMP RX				Jump to the address specified in register X (Indirect Jump)

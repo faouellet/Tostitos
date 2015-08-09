@@ -296,6 +296,12 @@ void Interpreter::DirectJMP(const Instruction & in_Instruction)
 	m_ErrorCode = m_CPU.SetProgramCounter(in_Instruction.GetImmediateValue());
 }
 
+void Interpreter::JMC(const Instruction & in_Instruction)
+{
+	if (m_CPU.DumpFlagRegister() & CPU::UnsignedCarryFlag)
+		m_ErrorCode = m_CPU.SetProgramCounter(in_Instruction.GetImmediateValue());
+}
+
 void Interpreter::Jx(const Instruction & in_Instruction)
 {
 	UInt8 l_CondCode = in_Instruction.GetFirstOperand();

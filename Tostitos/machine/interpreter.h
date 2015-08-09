@@ -216,6 +216,7 @@ namespace MachineEngine
 			void DIV(const Instruction & in_Instruction);
 
 			void DirectJMP(const Instruction & in_Instruction);
+			void JMC(const Instruction & in_Instruction);
 			void Jx(const Instruction & in_Instruction);
 			void JME(const Instruction & in_Instruction);
 			void DirectCALL(const Instruction & in_Instruction);
