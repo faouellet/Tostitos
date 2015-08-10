@@ -187,9 +187,12 @@ B4 YX 00 00	SHR RX, RY			Logical    Shift value in register X right by the value
 B3 YX 00 00	SAL RX, RY			Arithmetic Shift value in register X left by the value in (RY & 0xf).  Affects [z,n] (same as SHL)
 B5 YX 00 00	SAR RX, RY			Arithmetic Shift value in register X right by the value in (RY & 0xf). Affects [z,n]
 
-E0 0X LL HH	NOTI RX, HHLL		NOT immediate value with register X. Result is stored in register X. Affects [z,n]
-E1 YX 00 00	NOT RX, RY			NOT value of register Y with value of register X. Result is stored in register X. Affects [z,n]
-E2 YX 0Z 00	NOT RX, RY, RZ		NOT value of register Y with value of register X. Result is stored in register Z. Affects [z,n]
+E0 0X LL HH	NOTI RX, HHLL		NOT immediate. Result is stored in register X. Affects [z,n]
+E1 YX 00 00	NOT RX  			NOT value of register X. Result is stored in register X. Affects [z,n]
+E2 YX 0Z 00	NOT RX, RY  		NOT value of register Y. Result is stored in register X. Affects [z,n]
+E3 0X LL HH	NEGI RX, HHLL		NEG immediate value. Result is stored in register X. Affects [z,n]
+E4 YX 00 00	NEG RX  			NEG value of register X. Result is stored in register X. Affects [z,n]
+E5 YX 0Z 00	NEG RX, RY  		NEG value of register Y. Result is stored in register X. Affects [z,n]
 
 // Push / Pop
 C0 0X 00 00	PUSH RX				Store register X on stack. Increase SP by 2.

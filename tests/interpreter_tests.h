@@ -29,6 +29,7 @@ struct InterpreterFixture
     std::vector<UInt8> DivTestData;
     std::vector<UInt8> ModTestData;
     std::vector<UInt8> MulTestData;
+    std::vector<UInt8> NegTestData;
     std::vector<UInt8> NotTestData;
     std::vector<UInt8> OrTestData;
     std::vector<UInt8> SubTestData;
@@ -110,6 +111,7 @@ private:
         SetupDivTestData();
         SetupModTestData();
         SetupMulTestData();
+        SetupNegTestData();
         SetupNotTestData();
         SetupOrTestData();
         SetupSubTestData();
@@ -224,6 +226,22 @@ private:
         InsertInstruction(MulTestData, 0x92, 0x01, 0x02, 0x00);	// MUL : R2 = R1 * R0
         InsertInstruction(MulTestData, 0x90, 0x03, 0x00, 0x00);	// MUL : R3 *= 0
         InsertInstruction(MulTestData, 0x92, 0x22, 0x03, 0x00);	// MUL : R3 = R2 * R2
+    }
+
+    /**
+    * \fn SetupNegTestData
+    * \brief Fills a vector with opcodes for testing the neg instruction
+    */
+    void SetupNegTestData()
+    {
+        InsertInstruction(NotTestData, 0xE3, 0x00, 0x01, 0x00); // NEGI : R0 = -1
+
+        InsertInstruction(NotTestData, 0xE4, 0x00, 0x00, 0x00); // NEG : R0 = -R0
+        InsertInstruction(NotTestData, 0xE4, 0x00, 0x00, 0x00); // NEG : R0 = -R0
+
+        InsertInstruction(NotTestData, 0x40, 0x01, 0x02, 0x00);	// ADDI : R1 += 2
+
+        InsertInstruction(NotTestData, 0xE5, 0x10, 0x00, 0x00); // NEG : R0 = -R1
     }
 
     /**

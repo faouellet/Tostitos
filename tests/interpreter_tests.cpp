@@ -168,7 +168,30 @@ BOOST_AUTO_TEST_CASE( MulTest )
         BOOST_REQUIRE_EQUAL(l_MulDump[i], 0);
 }
 
-BOOST_AUTO_TEST_CASE(NotTest)
+// TODO: Add better support for signed operation
+BOOST_AUTO_TEST_CASE( NegTest )
+{
+    Interpret.AcquireProgram(std::move(NotTestData));
+    const CPU& Cpu = Interpret.DumpCPUState();
+    const UInt16 l_MaxLimit = std::numeric_limits<UInt16>::max();
+    Interpret.InterpretOne();                                       // NEGI : R0 = -1
+    BOOST_REQUIRE_EQUAL((Cpu.DumpFlagRegister() >> 2) & 0x1, 0);	// Zero flag unset
+    BOOST_REQUIRE_EQUAL(Cpu.DumpRegister(0), l_MaxLimit);
+
+    Interpret.InterpretOne();                                       // NEG : R0 = -R0
+    BOOST_REQUIRE_EQUAL((Cpu.DumpFlagRegister() >> 2) & 0x1, 0);	// Zero flag unset
+    BOOST_REQUIRE_EQUAL(Cpu.DumpRegister(0), 1);
+    Interpret.InterpretOne();                                       // NEG : R0 = -R0
+    BOOST_REQUIRE_EQUAL((Cpu.DumpFlagRegister() >> 2) & 0x1, 0);	// Zero flag unset
+    BOOST_REQUIRE_EQUAL(Cpu.DumpRegister(0), l_MaxLimit);
+
+    Interpret.InterpretOne();                                       // ADDI : R1 += 2
+    Interpret.InterpretOne();                                       // NEG : R0 = -R1
+    BOOST_REQUIRE_EQUAL((Cpu.DumpFlagRegister() >> 2) & 0x1, 0);	// Zero flag unset
+    BOOST_REQUIRE_EQUAL(Cpu.DumpRegister(0), l_MaxLimit - 1);
+}
+
+BOOST_AUTO_TEST_CASE( NotTest )
 {
     Interpret.AcquireProgram(std::move(NotTestData));
     const CPU& Cpu = Interpret.DumpCPUState();
@@ -198,6 +221,10 @@ BOOST_AUTO_TEST_CASE(NotTest)
     Interpret.InterpretOne();                                       // NOT : R0 = !R2
     BOOST_REQUIRE_EQUAL((Cpu.DumpFlagRegister() >> 2) & 0x1, 0);	// Zero flag unset
     BOOST_REQUIRE_EQUAL(Cpu.DumpRegister(0), l_MaxLimit);
+
+    std::vector<UInt16> l_NotDump(Cpu.DumpRegisters());
+    for (int i = 2; i < NB_REGISTERS; ++i)
+        BOOST_REQUIRE_EQUAL(l_NotDump[i], 0);
 }
 
 BOOST_AUTO_TEST_CASE( OrTest )

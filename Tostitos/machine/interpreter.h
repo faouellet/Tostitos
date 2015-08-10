@@ -289,6 +289,10 @@ namespace MachineEngine
             void NOTI(const Instruction & in_Instruction);
             void InplaceNOT(const Instruction & in_Instruction);
             void NOT(const Instruction & in_Instruction);
+
+            void NEGI(const Instruction & in_Instruction);
+            void InplaceNEG(const Instruction & in_Instruction);
+            void NEG(const Instruction & in_Instruction);
         };
     }
 }

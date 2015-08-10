@@ -85,6 +85,9 @@ Interpreter::Interpreter() : m_Dist(0, std::numeric_limits<UInt16>::max()), m_Er
     m_Ops[0xE0] = &Interpreter::NOTI;
     m_Ops[0xE1] = &Interpreter::InplaceNOT;
     m_Ops[0xE2] = &Interpreter::NOT;
+    m_Ops[0xE3] = &Interpreter::NEGI;
+    m_Ops[0xE4] = &Interpreter::InplaceNEG;
+    m_Ops[0xE5] = &Interpreter::NEG;
 }
 
 unsigned Interpreter::InterpretOne()
@@ -314,6 +317,21 @@ void Interpreter::InplaceNOT(const Instruction & in_Instruction)
 void Interpreter::NOT(const Instruction & in_Instruction)
 {
     BasicUnaryArithmetic(in_Instruction, std::bit_not<UInt16>());
+}
+
+void Interpreter::NEGI(const Instruction & in_Instruction)
+{
+    ImmediateUnaryArithmetic(in_Instruction, std::negate<Int16>());
+}
+
+void Interpreter::InplaceNEG(const Instruction & in_Instruction)
+{
+    InplaceUnaryArithmetic(in_Instruction, std::negate<Int16>());
+}
+
+void Interpreter::NEG(const Instruction & in_Instruction)
+{
+    BasicUnaryArithmetic(in_Instruction, std::negate<Int16>());
 }
 
 /////////////// Call/Jump ///////////////
