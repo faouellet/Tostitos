@@ -171,7 +171,7 @@ BOOST_AUTO_TEST_CASE( MulTest )
 // TODO: Add better support for signed operation
 BOOST_AUTO_TEST_CASE( NegTest )
 {
-    Interpret.AcquireProgram(std::move(NotTestData));
+    Interpret.AcquireProgram(std::move(NegTestData));
     const CPU& Cpu = Interpret.DumpCPUState();
     const UInt16 l_MaxLimit = std::numeric_limits<UInt16>::max();
     Interpret.InterpretOne();                                       // NEGI : R0 = -1

@@ -234,14 +234,14 @@ private:
     */
     void SetupNegTestData()
     {
-        InsertInstruction(NotTestData, 0xE3, 0x00, 0x01, 0x00); // NEGI : R0 = -1
+        InsertInstruction(NegTestData, 0xE3, 0x00, 0x01, 0x00); // NEGI : R0 = -1
 
-        InsertInstruction(NotTestData, 0xE4, 0x00, 0x00, 0x00); // NEG : R0 = -R0
-        InsertInstruction(NotTestData, 0xE4, 0x00, 0x00, 0x00); // NEG : R0 = -R0
+        InsertInstruction(NegTestData, 0xE4, 0x00, 0x00, 0x00); // NEG : R0 = -R0
+        InsertInstruction(NegTestData, 0xE4, 0x00, 0x00, 0x00); // NEG : R0 = -R0
 
-        InsertInstruction(NotTestData, 0x40, 0x01, 0x02, 0x00);	// ADDI : R1 += 2
+        InsertInstruction(NegTestData, 0x40, 0x01, 0x02, 0x00);	// ADDI : R1 += 2
 
-        InsertInstruction(NotTestData, 0xE5, 0x10, 0x00, 0x00); // NEG : R0 = -R1
+        InsertInstruction(NegTestData, 0xE5, 0x10, 0x00, 0x00); // NEG : R0 = -R1
     }
 
     /**
