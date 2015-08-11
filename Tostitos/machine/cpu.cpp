@@ -118,7 +118,7 @@ UInt8 CPU::SetProgramCounter(const UInt16 in_Value)
 
 UInt8 CPU::SetRegister(const UInt8 in_RegID, const UInt16 in_Value)
 {
-    if(in_RegID > NB_REGISTERS)
+    if(in_RegID >= NB_REGISTERS)
     {
         std::cout << "Not a valid register ID: " << std::hex << in_RegID << std::endl;
         return UnknownRegister;
@@ -168,19 +168,6 @@ void CPU::FetchRegistersValues(UInt16 & out_X, UInt16 & out_Y) const
 {
     out_X = m_Registers[m_Memory[m_PC] & 0xF];
     out_Y = m_Registers[(m_Memory[m_PC] & 0xF0) >> 4];
-}
-
-std::vector<UInt8> CPU::FetchSprite(const UInt16 in_Addr, const UInt16 in_Width, const UInt16 in_Height) const
-{
-    std::vector<UInt8> l_SpriteData(in_Width * in_Height);
-
-    for(int i = 0; i < (in_Width * in_Height)/2; ++i)
-    {
-        l_SpriteData[2*i] = m_Memory[in_Addr + i] >> 4;
-        l_SpriteData[2*i+1] = m_Memory[in_Addr + i] & 0xF;
-    }
-
-    return l_SpriteData;
 }
 
 UInt8 CPU::Load(const UInt16 in_Address, UInt16 & out_Value) const

@@ -208,16 +208,6 @@ namespace MachineEngine
             void FetchRegistersValues(UInt16 & out_X, UInt16 & out_Y) const;
 
             /**
-            * \fn FetchSprite
-            * \brief Read a number of bytes from memory which corresponds to a sprite data
-            * \param in_Addr Address in memory where the sprite is stored
-            * \param in_Width The horizontal dimension of the sprite
-            * \param in_Height The vertical dimension of the sprite
-            * \return The sprite data
-            */
-            std::vector<UInt8> FetchSprite(const UInt16 in_Addr, const UInt16 in_Width, const UInt16 in_Height) const;
-
-            /**
             * \fn Load
             * \brief Load a value from memory
             * \param in_Address Memory address of the value to fetch

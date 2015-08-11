@@ -2,7 +2,7 @@
 
 using namespace MachineEngine::ProcessorSpace;
 
-Instruction::Instruction(const Utils::UInt32 in_Value) : m_Value(in_Value) 
+Instruction::Instruction(const Utils::UInt32 in_Value) : m_Value{in_Value}, m_IsInplace{false}, m_UseImm{ false }
 {
     m_Opcode = m_Value >> 24;
     m_Type = m_Opcode & 0xF0;

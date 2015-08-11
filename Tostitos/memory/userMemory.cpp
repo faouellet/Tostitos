@@ -4,7 +4,7 @@
 
 using namespace UserMemory;
 
-Memory::Memory()
+Memory::Memory() : mOffset{0}
 {
     // right now, only the first page is used
     mCurrentPage = &MachineEngine::Machine::GetInstance().getMemory().RequestMemory(0);
