@@ -37,6 +37,7 @@ if(Boost_FOUND)
 
         add_boost_test(interpreter_tests.cpp machine)
         add_boost_test(utils_tests.cpp machine)
+		add_boost_test(lexer_tests.cpp lang)
 		
 		# Copy inputs
 		file(COPY inputs DESTINATION ${CMAKE_BINARY_DIR})
