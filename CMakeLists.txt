@@ -17,6 +17,7 @@ else()
 endif()
 
 add_subdirectory (Tostitos)
+add_subdirectory (TosLang)
 add_subdirectory (tests)
 
 # add a target to generate API documentation with Doxygen
