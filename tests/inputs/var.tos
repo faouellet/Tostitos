@@ -1,2 +1,2 @@
-var MyIntVar: Int = 42;
-var MyBoolVar : Bool = True;
+var MyIntVar: Int;
+var MyBoolVar : Bool;
