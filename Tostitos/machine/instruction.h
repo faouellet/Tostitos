@@ -18,18 +18,18 @@ namespace MachineEngine
         class Instruction
         {
         private:
-            UInt32 m_Value;		/*!< 4 byte value of the instruction */
+            UInt32 mValue;		    /*!< 4 byte value of the instruction */
 
-            UInt16 m_ImmediateValue;	/*!< Last 2 bytes interpreted as an immediate value */
+            UInt16 mImmediateValue;	/*!< Last 2 bytes interpreted as an immediate value */
 
-            UInt8 m_Op1;		/*!< 1st operand contained in the instruction */
-            UInt8 m_Op2;		/*!< 2nd operand contained in the instruction */
-            UInt8 m_Op3;		/*!< 3rd operand contained in the instruction */
-            UInt8 m_Opcode;		/*!< Opcode of the instruction */
-            UInt8 m_Type;		/*!< Type of the instruction */
+            UInt8 mOp1;		        /*!< 1st operand contained in the instruction */
+            UInt8 mOp2;	    	    /*!< 2nd operand contained in the instruction */
+            UInt8 mOp3; 		    /*!< 3rd operand contained in the instruction */
+            UInt8 mOpcode;		    /*!< Opcode of the instruction */
+            UInt8 mType;		    /*!< Type of the instruction */
 
-            bool m_UseImm;		/*!< Does the instruction use an immediate value? */
-            bool m_IsInplace;	/*!< Is the instruction done inplace? */
+            bool mUseImm;		    /*!< Does the instruction use an immediate value? */
+            bool mIsInplace;	    /*!< Is the instruction done inplace? */
 
         public:
             /**
@@ -38,29 +38,29 @@ namespace MachineEngine
             */
             enum
             {
-                Misc = 0x00,
-                Jump = 0x10,
-                Load = 0x20,
-                Store = 0x30,
-                Add = 0x40,
-                Sub = 0x50,
-                And = 0x60,
-                Or = 0x70,
-                Xor = 0x80,
-                Mul = 0x90,
-                Div = 0xA0,
-                Shift = 0xB0,
-                Stack = 0xC0,
-                Pal = 0xD0
+                MISC = 0x00,
+                JUMP = 0x10,
+                LOAD = 0x20,
+                STORE = 0x30,
+                ADD = 0x40,
+                SUB = 0x50,
+                AND = 0x60,
+                OR = 0x70,
+                XOR = 0x80,
+                MUL = 0x90,
+                DIV = 0xA0,
+                SHIFT = 0xB0,
+                STACK = 0xC0,
+                NOT = 0xE0
             };
 
         public:
             /**
             * \fn Instruction
             * \brief Default constructor
-            * \param in_Value Value of the instruction. 0 by default.
+            * \param value Value of the instruction. 0 by default.
             */
-            Instruction(const UInt32 in_Value = 0);
+            Instruction(const UInt32 value = 0);
 
             /**
             * \fn Instruction
@@ -72,10 +72,10 @@ namespace MachineEngine
             /**
             * \fn FetchHalfByte
             * \brief Fetch half of an instruction byte
-            * \param in_Pos 0-based position of the half-byte within the instruction starting from the right
+            * \param pos 0-based position of the half-byte within the instruction starting from the right
             * \return A 4 bits value
             */
-            UInt8 FetchHalfByte(const UInt8 in_Pos) const;
+            UInt8 FetchHalfByte(const UInt8 pos) const;
 
         public:
             /**

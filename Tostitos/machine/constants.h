@@ -9,13 +9,13 @@ namespace MachineEngine
 		* \enum
 		* \brief Masks for the possible errors that can happen during the initialization
 		*/
-		enum { NoError = 0, EmptyROMError = 1, ROMOverflowError = 2, FileError = 4 };
+		enum { NO_ERROR = 0, EMPTY_ROM_ERROR = 1, ROM_OVERFLOW_ERROR = 2, FILE_ERROR = 4 };
 
 		/**
 		* \enum
 		* \brief Masks for the possible errors that can happen during the emulation
 		*/
-		enum { StackError = 1, UnknownOpError = 2, EmulationDone = 4 };
+		enum { STACK_ERROR = 1, UNKNOWN_OP_ERROR = 2, EMULATION_DONE = 4 };
 
 		/**
 		* \enum

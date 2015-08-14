@@ -12,267 +12,267 @@
 
 using namespace MachineEngine::ProcessorSpace;
 
-CPU::CPU() : m_FR{ 0 }, m_PC{ 0 }, m_SP{ STACK_START }, m_ErrorCode{ NoError }
+CPU::CPU() : mFR{ 0 }, mPC{ 0 }, mSP{ STACK_START }, mErrorCode{ NO_ERROR }
 {
-    memset(m_Registers, 0, sizeof(UInt16)*16);
+    memset(mRegisters, 0, sizeof(UInt16)*16);
     
 }
 
 UInt16 CPU::DumpFlagRegister() const
 {
-    return m_FR;
+    return mFR;
 }
 
 std::vector<UInt8> CPU::DumpMemory() const
 {
-    return std::vector<UInt8>(std::begin(m_Memory), std::end(m_Memory));
+    return std::vector<UInt8>(std::begin(mMemory), std::end(mMemory));
 }
 
 UInt16 CPU::DumpProgramCounter() const
 {
-    return m_PC;
+    return mPC;
 }
 
 UInt16 CPU::DumpRegister(const UInt8 in_RegID) const
 {
-    return m_Registers[in_RegID];	
+    return mRegisters[in_RegID];
 }
 
 std::vector<UInt16> CPU::DumpRegisters() const
 {
-    return std::vector<UInt16>(std::begin(m_Registers), std::end(m_Registers));
+    return std::vector<UInt16>(std::begin(mRegisters), std::end(mRegisters));
 }
 
 UInt16 CPU::DumpStackPointer() const
 {
-    return m_SP;
+    return mSP;
 }
 
 Instruction CPU::FetchInstruction()
 {
-    UInt32 l_Instruction = 0;
+    UInt32 instruction = 0;
 
     for (int i = 0; i < 4; ++i)
     {
-        l_Instruction <<= 8;
-        l_Instruction |= m_Memory[m_PC++];
+        instruction <<= 8;
+        instruction |= mMemory[mPC++];
     }
 
-    return Instruction(l_Instruction);
+    return Instruction(instruction);
 }
 
-unsigned CPU::InitMemory(std::vector<UInt8> && in_Program)
+unsigned CPU::InitMemory(std::vector<UInt8> && program)
 {
-    if (in_Program.empty())
-        return EmptyROMError;
-    else if (in_Program.size() > MEMORY_SIZE)
-        return ROMOverflowError;
+    if (program.empty())
+        return EMLINK;
+    else if (program.size() > MEMORY_SIZE)
+        return ROM_OVERFLOW_ERROR;
 
-    std::copy_n(std::make_move_iterator(in_Program.begin()), in_Program.size(), m_Memory.begin());
+    std::copy_n(std::make_move_iterator(program.begin()), program.size(), mMemory.begin());
 
-    return NoError;
+    return NO_ERROR;
 }
 
-void CPU::InitPC(UInt8 in_PCStart)
+void CPU::InitPC(UInt8 pcStart)
 {
-    m_PC = in_PCStart;
+    mPC = pcStart;
 }
 
 void CPU::Reset()
 {
-    m_ErrorCode = 0;
-    m_FR = 0;
-    m_SP = 0;
-    m_PC = 0;
+    mErrorCode = 0;
+    mFR = 0;
+    mSP = 0;
+    mPC = 0;
 }
 
-void CPU::SetFlagRegister(const UInt16 in_Value)
+void CPU::SetFlagRegister(const UInt16 value)
 {
     // Discarding unused bits
-    m_FR = in_Value & 0xFF;
+    mFR = value & 0xFF;
 }
 
-void CPU::SetFlag(const UInt16 in_Value)
+void CPU::SetFlag(const UInt16 value)
 {
-    m_FR |= in_Value;
+    mFR |= value;
 }
 
-void CPU::UnsetFlag(const UInt16 in_Value)
+void CPU::UnsetFlag(const UInt16 value)
 {
-    m_FR &= ~in_Value;
+    mFR &= ~value;
 }
 
-UInt8 CPU::SetProgramCounter(const UInt16 in_Value)
+UInt8 CPU::SetProgramCounter(const UInt16 value)
 {
-    if(in_Value > STACK_START)
+    if(value > STACK_START)
     {
-        std::cout << "Not a valid value for the PC: " << std::hex << in_Value << std::endl;
-        return MemoryError;
+        std::cout << "Not a valid value for the PC: " << std::hex << value << std::endl;
+        return MEMORY_ERROR;
     }
     else
     {
-        m_PC = in_Value;
-        return NoError;
+        mPC = value;
+        return NO_ERROR;
     }
 }
 
-UInt8 CPU::SetRegister(const UInt8 in_RegID, const UInt16 in_Value)
+UInt8 CPU::SetRegister(const UInt8 regID, const UInt16 value)
 {
-    if(in_RegID >= NB_REGISTERS)
+    if(regID >= NB_REGISTERS)
     {
-        std::cout << "Not a valid register ID: " << std::hex << in_RegID << std::endl;
-        return UnknownRegister;
+        std::cout << "Not a valid register ID: " << std::hex << regID << std::endl;
+        return UNKNOWN_REGISTER;
     }
     else
     {
-        m_Registers[in_RegID] = in_Value;
-        return NoError;
+        mRegisters[regID] = value;
+        return NO_ERROR;
     }
 }
 
-UInt8 CPU::SetStackPointer(const UInt16 in_Value)
+UInt8 CPU::SetStackPointer(const UInt16 value)
 {
     
-    if(in_Value < STACK_START || in_Value > STACK_END)
+    if(value < STACK_START || value > STACK_END)
     {
-        std::cout << "Not a valid value for the SP: " << std::hex << in_Value << std::endl;
-        return MemoryError;
+        std::cout << "Not a valid value for the SP: " << std::hex << value << std::endl;
+        return MEMORY_ERROR;
     }
     else
     {
-        m_SP = in_Value;
-        return NoError;
+        mSP = value;
+        return NO_ERROR;
     }
 }
 
 void CPU::StepBack()
 {
-    m_PC -= 4;
+    mPC -= 4;
 }
 
-std::vector<UInt8> CPU::FetchPalette(const UInt16 in_Address)
+std::vector<UInt8> CPU::FetchPalette(const UInt16 address)
 {
-    std::vector<UInt8> l_PaletteData(16*3);	// Per specifications
+    std::vector<UInt8> paletteData(16*3);	// Per specifications
 
     for(int j = 0; j < 16*3; j+=3)
     {
-        l_PaletteData[j+2] = m_Memory[in_Address+j];
-        l_PaletteData[j+1] = m_Memory[in_Address+j+1];
-        l_PaletteData[j]   = m_Memory[in_Address+j+2];
+        paletteData[j+2] = mMemory[address+j];
+        paletteData[j+1] = mMemory[address+j+1];
+        paletteData[j]   = mMemory[address+j+2];
     }
 
-    return l_PaletteData;
+    return paletteData;
 }
 
-void CPU::FetchRegistersValues(UInt16 & out_X, UInt16 & out_Y) const
+void CPU::FetchRegistersValues(UInt16 & x, UInt16 & y) const
 {
-    out_X = m_Registers[m_Memory[m_PC] & 0xF];
-    out_Y = m_Registers[(m_Memory[m_PC] & 0xF0) >> 4];
+    x = mRegisters[mMemory[mPC] & 0xF];
+    y = mRegisters[(mMemory[mPC] & 0xF0) >> 4];
 }
 
-UInt8 CPU::Load(const UInt16 in_Address, UInt16 & out_Value) const
+UInt8 CPU::Load(const UInt16 address, UInt16 & value) const
 {
-    if(STACK_START < in_Address && in_Address < STACK_END)
+    if(STACK_START < address && address < STACK_END)
     {
-        std::cout << "Address out of memory: " << std::hex << in_Address << std::endl;
-        return MemoryError;
+        std::cout << "Address out of memory: " << std::hex << address << std::endl;
+        return MEMORY_ERROR;
     }
     else
     {
-        out_Value = (m_Memory[in_Address+1] << 8) | m_Memory[in_Address];
-        return NoError;
+        value = (mMemory[address+1] << 8) | mMemory[address];
+        return NO_ERROR;
     }
 }
 
-UInt8 CPU::Store(const UInt16 in_Address, const UInt16 in_Value)
+UInt8 CPU::Store(const UInt16 address, const UInt16 value)
 {
-    if(in_Address > STACK_START)
+    if(address > STACK_START)
     {
-        std::cout << "Address out of memory: " << std::hex << in_Address << std::endl;
-        return MemoryError;
+        std::cout << "Address out of memory: " << std::hex << address << std::endl;
+        return MEMORY_ERROR;
     }
     else
     {
-        m_Memory[in_Address] = in_Value & 0x00FF;
-        m_Memory[in_Address+1] = in_Value >> 8;
-        return NoError;
+        mMemory[address] = value & 0x00FF;
+        mMemory[address+1] = value >> 8;
+        return NO_ERROR;
     }
 }
 
-UInt8 CPU::Pop(UInt16 & out_Value)
+UInt8 CPU::Pop(UInt16 & value)
 {
-    if(m_SP-2 < STACK_START)
+    if(mSP-2 < STACK_START)
     {
         std::cout << "Stack underflow" << std::endl;
-        return StackUnderflow;
+        return STACK_UNDERFLOW;
     }
     else
     {
-        out_Value = UInt16(m_Memory[--m_SP] << 8 | (m_Memory[--m_SP]));
-        return NoError;
+        value = UInt16(mMemory[--mSP] << 8 | (mMemory[--mSP]));
+        return NO_ERROR;
     }
 }
 
-UInt8 CPU::Push(UInt16 in_Val)
+UInt8 CPU::Push(UInt16 val)
 {
-    if(m_SP+2 > STACK_END)
+    if(mSP + 2 > STACK_END)
     {
-        std::cout << "Stack overflow while pushing: " << in_Val << std::endl;
-        return StackOverflow;
+        std::cout << "Stack overflow while pushing: " << val << std::endl;
+        return STACK_OVERFLOW;
     }
     else
     {
-        m_Memory[m_SP++] = in_Val & 0x00FF;
-        m_Memory[m_SP++] = (in_Val & 0xFF00) >> 8;
-        return NoError;
+        mMemory[mSP++] = val & 0x00FF;
+        mMemory[mSP++] = (val & 0xFF00) >> 8;
+        return NO_ERROR;
     }
 }
 
 UInt8 CPU::PushPC()
 {
-    return Push(m_PC);
+    return Push(mPC);
 }
 
-void CPU::SetSignZeroFlag(UInt16 in_Result)
+void CPU::SetSignZeroFlag(UInt16 result)
 {
     // Set the zero flag (Bit[2])
-    m_FR = in_Result == 0 ? m_FR | ZeroFlag : m_FR & ~ZeroFlag;
+    mFR = result == 0 ? mFR | ZERO_FLAG : mFR & ~ZERO_FLAG;
     // Set the negative flag (Bit[7])
-    m_FR = in_Result & 0x8000 ? m_FR | NegativeFlag : m_FR & ~NegativeFlag;
+    mFR = result & 0x8000 ? mFR | NEGATIVE_FLAG : mFR & ~NEGATIVE_FLAG;
 }
 
-void CPU::SetCarryOverflowFlagAdd(UInt16 in_Op1, UInt16 in_Op2) 
+void CPU::SetCarryOverflowFlagAdd(UInt16 op1, UInt16 op2) 
 {
-    UInt16 l_Result = in_Op1 + in_Op2;
+    UInt16 result = op1 + op2;
     // Set carry flag
-    m_FR = l_Result < in_Op1 ? m_FR | UnsignedCarryFlag : m_FR & ~UnsignedCarryFlag;
+    mFR = result < op1 ? mFR | UNSIGNED_CARRY_FLAG : mFR & ~UNSIGNED_CARRY_FLAG;
     // Set overflow flag
-    m_FR = (l_Result >= 0 && in_Op1 & 0x8000 && in_Op2 & 0x8000)
-        || (l_Result & 0x8000 && in_Op1 >= 0 && in_Op2 >= 0) ?
-        m_FR | SignedOverflowFlag : m_FR & ~SignedOverflowFlag;
+    mFR = (result >= 0 && op1 & 0x8000 && op2 & 0x8000)
+        || (result & 0x8000 && op1 >= 0 && op2 >= 0) ?
+        mFR | SIGNED_OVERFLOW_FLAG : mFR & ~SIGNED_OVERFLOW_FLAG;
 }
 
-void CPU::SetCarryOverflowFlagDiv(UInt16 in_Op1, UInt16 in_Op2) 
+void CPU::SetCarryOverflowFlagDiv(UInt16 op1, UInt16 op2) 
 {
     // Set carry flag
-    m_FR = in_Op1 % in_Op2 ? m_FR | UnsignedCarryFlag : m_FR & ~UnsignedCarryFlag;
+    mFR = op1 % op2 ? mFR | UNSIGNED_CARRY_FLAG : mFR & ~UNSIGNED_CARRY_FLAG;
 }
 
-void CPU::SetCarryOverflowFlagMul(UInt16 in_Op1, UInt16 in_Op2) 
+void CPU::SetCarryOverflowFlagMul(UInt16 op1, UInt16 op2) 
 {
     // Set carry flag
-    UInt32 l_Result = in_Op1 * in_Op2;
-    m_FR = l_Result > std::numeric_limits<UInt16>::max() ? 
-        m_FR | UnsignedCarryFlag : m_FR & ~UnsignedCarryFlag;
+    UInt32 result = op1 * op2;
+    mFR = result > std::numeric_limits<UInt16>::max() ? 
+        mFR | UNSIGNED_CARRY_FLAG : mFR & ~UNSIGNED_CARRY_FLAG;
 }
 
-void CPU::SetCarryOverflowFlagSub(UInt16 in_Op1, UInt16 in_Op2) 
+void CPU::SetCarryOverflowFlagSub(UInt16 op1, UInt16 op2) 
 {
-    UInt32 l_Result = in_Op1 - in_Op2;
+    UInt32 result = op1 - op2;
     // Set carry flag
-    m_FR = l_Result & 0x10000 ? m_FR | UnsignedCarryFlag : m_FR & ~UnsignedCarryFlag;
+    mFR = result & 0x10000 ? mFR | UNSIGNED_CARRY_FLAG : mFR & ~UNSIGNED_CARRY_FLAG;
     // Set overflow flag
-    m_FR = (l_Result >= 0 && in_Op1 & 0x8000 && in_Op2 >= 0)
-        || (l_Result & 0x8000 && in_Op1 >= 0 && in_Op2 & 0x8000) ?
-        m_FR | SignedOverflowFlag : m_FR & ~SignedOverflowFlag;
+    mFR = (result >= 0 && op1 & 0x8000 && op2 >= 0)
+        || (result & 0x8000 && op1 >= 0 && op2 & 0x8000) ?
+        mFR | SIGNED_OVERFLOW_FLAG : mFR & ~SIGNED_OVERFLOW_FLAG;
 }
