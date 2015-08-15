@@ -143,8 +143,9 @@ private:
         InsertInstruction(AndTestData, 0x61, 0x01, 0x00, 0x00);	// AND : R1 &= R0
         InsertInstruction(AndTestData, 0x62, 0x01, 0x02, 0x00);	// AND : R2 = R0 & R1
         
-        // TODO: TSTI
-        // TODO: TST
+        InsertInstruction(AndTestData, 0x40, 0x00, 0x01, 0x00);	// ADDI : R0 += 1
+        InsertInstruction(AndTestData, 0x63, 0x00, 0xFF, 0xFF); // TSTI : R0 & 65535
+        InsertInstruction(AndTestData, 0x62, 0x01, 0x02, 0x00);	// TST : R0 & R1
     }
 
     /**
