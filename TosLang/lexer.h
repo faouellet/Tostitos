@@ -14,10 +14,7 @@ public:
     { 
         // Keywords
         VAR,
-
-        // Types
-        BOOL,
-        INT,
+        TYPE,
 
         // Boolean values
         FALSE,

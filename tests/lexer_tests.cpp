@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE( GetNextTokenVarTest )
     BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::IDENTIFIER);
     BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "MyIntVar");
     BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::COLON);
-    BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::INT);
+    BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TYPE);
     BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::SEMI_COLON);
 
     //var MyBoolVar : Bool = True;    
@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE( GetNextTokenVarTest )
     BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::IDENTIFIER);
     BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "MyBoolVar");
     BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::COLON);
-    BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::BOOL);
+    BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TYPE);
     BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::SEMI_COLON);
 
     // End of file

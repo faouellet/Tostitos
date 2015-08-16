@@ -15,6 +15,7 @@ if(Boost_FOUND)
                 interpreter_tests.cpp 
                 interpreter_tests.h 
 				lexer_tests.cpp
+				parser_tests.cpp
                 utils_tests.cpp
         )
 
