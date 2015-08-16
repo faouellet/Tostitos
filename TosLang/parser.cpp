@@ -45,10 +45,26 @@ std::unique_ptr<VarDecl> Parser::ParseVarDecl()
         {
             if (mLexer.GetNextToken() == Lexer::TYPE)
             {
-                if (mLexer.GetNextToken() == Lexer::SEMI_COLON)
+                if (mLexer.GetNextToken() == Lexer::EQUAL)   // Variable declaration with initialization
                 {
-                    return node;
+                    switch (mLexer.GetNextToken())
+                    {
+                    case Lexer::FALSE:
+                        node->AddValue(std::make_unique<BooleanExpr>(false));
+                        break;
+                    case Lexer::TRUE:
+                        node->AddValue(std::make_unique<BooleanExpr>(true));
+                        break;
+                    case Lexer::NUMBER:
+                        node->AddValue(std::make_unique<NumberExpr>(mLexer.GetCurrentNumber()));
+                        break;
+                    default:
+                        // Error
+                        break;
+                    }
                 }
+
+                return node;
             }
         }
     }

@@ -29,14 +29,14 @@ private:
     * \fn ParseProgramDecl
     * \brief programdecl 
     *           ::= decls
-    *           :: stmts
+    *           ::= stmts
     * \return A node representing a program
     */
     std::unique_ptr<ProgramDecl> ParseProgramDecl();
 
     /*
     * \fn ParseVarDecl
-    * \brief vardecl ::= 'var' identifierexpr ':' typeexpr ';'
+    * \brief vardecl ::= 'var' identifierexpr ':' typeexpr ( '=' expr ) ';'
     * \return A node representing a variable
     */
     std::unique_ptr<VarDecl> ParseVarDecl();

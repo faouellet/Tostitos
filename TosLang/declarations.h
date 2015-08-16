@@ -2,6 +2,7 @@
 #define DECL_H__TOSTITOS
 
 #include "ast.h"
+#include "expressions.h"
 
 #include <memory>
 #include <string>
@@ -34,13 +35,17 @@ private:
 class VarDecl : public ASTNode
 {
 public:
-    VarDecl(const std::string& varName) : mVarName(varName) { }
+    VarDecl(const std::string& varName) : mVarName(varName), mInitExpr{ nullptr } { }
     virtual ~VarDecl() { }
 
+    void AddValue(std::unique_ptr<Expr>&& value) { mInitExpr = std::move(value); }
+
+    const std::unique_ptr<Expr>& GetInitExpr() const { return mInitExpr; }
     const std::string& GetVarName() const { return mVarName; }
 
 private:
     std::string mVarName;
+    std::unique_ptr<Expr> mInitExpr;
 };
 
 #endif // DECL_H__TOSTITOS
