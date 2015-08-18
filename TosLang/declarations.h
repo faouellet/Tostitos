@@ -4,11 +4,8 @@
 #include "ast.h"
 #include "expressions.h"
 
-#include <memory>
+#include <cassert>
 #include <string>
-#include <vector>
-
-typedef std::vector<std::unique_ptr<ASTNode>> ChildrenNodes;
 
 /*
 * \class ProgramDecl
@@ -17,14 +14,8 @@ typedef std::vector<std::unique_ptr<ASTNode>> ChildrenNodes;
 class ProgramDecl : public ASTNode
 {
 public:
-    ProgramDecl() { }
+    ProgramDecl() : ASTNode(PROGRAM_DECL) { }
     virtual ~ProgramDecl() { }
-
-    void AddChildNode(std::unique_ptr<ASTNode>&& node) { mChildren.push_back(std::move(node)); }
-    const ChildrenNodes& GetChildrenNodes() const { return mChildren; }
-
-private:
-    ChildrenNodes mChildren;
 };
 
 /*
@@ -35,17 +26,16 @@ private:
 class VarDecl : public ASTNode
 {
 public:
-    VarDecl(const std::string& varName) : mVarName(varName), mInitExpr{ nullptr } { }
+    VarDecl(const std::string& varName) : ASTNode(VAR_DECL), mVarName(varName) { }
     virtual ~VarDecl() { }
 
-    void AddValue(std::unique_ptr<Expr>&& value) { mInitExpr = std::move(value); }
+    void AddValue(std::unique_ptr<Expr>&& value) { mChildren.push_back(std::move(value)); }
 
-    const std::unique_ptr<Expr>& GetInitExpr() const { return mInitExpr; }
+    const std::unique_ptr<ASTNode>& GetInitExpr() const { assert(mChildren.size() < 2); return mChildren[0]; }
     const std::string& GetVarName() const { return mVarName; }
 
 private:
     std::string mVarName;
-    std::unique_ptr<Expr> mInitExpr;
 };
 
 #endif // DECL_H__TOSTITOS

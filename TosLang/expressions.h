@@ -10,7 +10,7 @@
 class Expr : public ASTNode
 {
 public:
-    Expr() { }
+    Expr(NodeKind kind) : ASTNode(kind) { }
     virtual ~Expr() { }
 };
 
@@ -21,7 +21,7 @@ public:
 class NumberExpr : public Expr
 {
 public:
-    NumberExpr(int value) : mValue{ value } { }
+    NumberExpr(int value) : Expr(NUMBER_EXPR), mValue{ value } { }
     virtual ~NumberExpr() { }
 
     const int GetValue() const { return mValue; }
@@ -37,7 +37,7 @@ private:
 class BooleanExpr : public Expr
 {
 public:
-    BooleanExpr(bool value) : mValue{ value } { }
+    BooleanExpr(bool value) : Expr(BOOLEAN_EXPR), mValue{ value } { }
     virtual ~BooleanExpr() { }
 
     const bool GetValue() const { return mValue; }
