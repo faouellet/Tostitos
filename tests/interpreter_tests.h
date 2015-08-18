@@ -291,8 +291,10 @@ private:
         InsertInstruction(SubTestData, 0x52, 0x10, 0x02, 0x00);	// SUB : R2 = R0 - R1
         InsertInstruction(SubTestData, 0x52, 0x01, 0x03, 0x00);	// SUB : R3 = R1 - R0
 
-        // CMPI ??
-        // CMP ??
+        InsertInstruction(SubTestData, 0x53, 0x00, 0x04, 0x00);	// CMPI : R0 -= 4
+        InsertInstruction(SubTestData, 0x53, 0x04, 0x04, 0x00);	// CMPI : R4 -= 4
+        InsertInstruction(SubTestData, 0x54, 0x10, 0x00, 0x00);	// CMP : R0 -= R1
+        InsertInstruction(SubTestData, 0x54, 0x01, 0x00, 0x00);	// CMP : R1 -= R0
     }
     
     /**
