@@ -112,7 +112,7 @@ X, Y, Z - 4 bit register identifier.
 
 Opcode (Hex)	Mnemonic		Usage
 
-00 00 00 00	NOP					Not operation. Wastes a cycle.
+00 00 00 00	NOP					No operation. Wastes a cycle.
 07 0X LL HH	RND RX, HHLL		Generate a random number and store it in register X. Maximum value is HHLL.
 
 // Jumps
@@ -125,7 +125,7 @@ Opcode (Hex)	Mnemonic		Usage
 // Calls
 14 00 LL HH	CALL HHLL			Call subroutine at the specified address. Store PC to [SP]. Increase SP by 2.
 15 00 00 00	RET					Return from a subroutine. Decrease SP by 2. Get PC from [SP].
-17 0x LL HH     Cx   HHLL		If condition 'x', then performs a CALL; Else, does nothing. (x refers to a Conditional Type).
+17 0x LL HH Cx   HHLL			If condition 'x', then performs a CALL; Else, does nothing. (x refers to a Conditional Type).
 18 0X 00 00	CALL RX				Call subroutine at the address specified in RX. Store PC to [SP]. Increase SP by 2.
 
 // Loads
@@ -190,6 +190,7 @@ B5 YX 00 00	SAR RX, RY			Arithmetic Shift value in register X right by the value
 E0 0X LL HH	NOTI RX, HHLL		NOT immediate. Result is stored in register X. Affects [z,n]
 E1 YX 00 00	NOT RX  			NOT value of register X. Result is stored in register X. Affects [z,n]
 E2 YX 0Z 00	NOT RX, RY  		NOT value of register Y. Result is stored in register X. Affects [z,n]
+
 E3 0X LL HH	NEGI RX, HHLL		NEG immediate value. Result is stored in register X. Affects [z,n]
 E4 YX 00 00	NEG RX  			NEG value of register X. Result is stored in register X. Affects [z,n]
 E5 YX 0Z 00	NEG RX, RY  		NEG value of register Y. Result is stored in register X. Affects [z,n]
@@ -201,7 +202,3 @@ C2 00 00 00	PUSHALL				Store all general purpose registers (r0~rF) at [SP]. Incr
 C3 00 00 00	POPALL				Decrease SP by 32. Load all general purpose registers (r0~rF) from [SP].
 C4 00 00 00	PUSHF 				Store flags register on stack. Increase SP by 2.
 C5 00 00 00	POPF				Decrease SP by 2. Load flags register from stack.
-
-// Palette
-D0 00 LL HH     PAL HHLL   		Load the palette starting at address HHLL, 16*3 bytes, RGB format; used for all drawing since last vblank.
-D1 0x 00 00     PAL Rx   		Load the palette starting at the address pointed to by Register X, 16*3 bytes, RGB format; used for all drawing since last vblank.
