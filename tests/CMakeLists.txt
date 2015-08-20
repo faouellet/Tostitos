@@ -12,6 +12,7 @@ if(Boost_FOUND)
     if(WIN32)
         set( SOURCES 
                 main.cpp 
+				ast_printer_tests.cpp
                 interpreter_tests.cpp 
                 interpreter_tests.h 
 				lexer_tests.cpp
@@ -22,7 +23,8 @@ if(Boost_FOUND)
         set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")
 		
 		# Copy inputs
-		file(COPY inputs DESTINATION ${EXECUTABLE_OUTPUT_PATH})
+		file(COPY inputs DESTINATION ${CMAKE_BINARY_DIR})
+		file(COPY outputs DESTINATION ${CMAKE_BINARY_DIR})
 
         # Boost
         include_directories("${Boost_INCLUDE_DIR}")
@@ -36,12 +38,17 @@ if(Boost_FOUND)
     else()
         include(../cmake/BoostTestHelpers.cmake)
 
+		# Machine tests
         add_boost_test(interpreter_tests.cpp machine)
         add_boost_test(utils_tests.cpp machine)
+		
+		# TosLang tests
+		add_boost_test(ast_printer_tests.cpp lang)
 		add_boost_test(lexer_tests.cpp lang)
 		add_boost_test(parser_tests.cpp lang)
 		
-		# Copy inputs
+		# Copy inputs and outputs
 		file(COPY inputs DESTINATION ${CMAKE_BINARY_DIR})
+		file(COPY outputs DESTINATION ${EXECUTABLE_OUTPUT_PATH})
     endif()
 endif()

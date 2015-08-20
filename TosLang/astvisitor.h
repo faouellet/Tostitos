@@ -5,23 +5,50 @@
 
 /*
 * \class ASTVisitor
-* \brief Tree visitor that does a post-order traversal of the AST.
+* \brief Tree visitor that does a traversal of the AST.
 *        It is based of CRTP, so any derived class should provide itself as the template argument
 */
 template <typename Derived>
 class ASTVisitor
 {
 public:
-    void Visit(const std::unique_ptr<ASTNode>& root)
+    ASTVisitor() : mCurrentLevel(0), mCurrentNode(nullptr) { }
+    ~ASTVisitor() = default;
+
+protected:
+    void VisitPostOrder(const std::unique_ptr<ASTNode>& root)
     {
-        if (root)
+        if (root != nullptr)
         {
+            ++mCurrentLevel;
+
             for (auto& childNode : root->GetChildrenNodes())
-                Visit(childNode);
+                VisitPostOrder(childNode);
+
+            --mCurrentLevel;
+            mCurrentNode = root.get();
+            
             DispatchNode(root.get());
         }
     }
 
+    void VisitPreOrder(const std::unique_ptr<ASTNode>& root)
+    {
+        if (root != nullptr)
+        {
+            mCurrentNode = root.get();
+            DispatchNode(root.get());
+
+            ++mCurrentLevel;
+
+            for (auto& childNode : root->GetChildrenNodes())
+                VisitPreOrder(childNode);
+
+            --mCurrentLevel;
+        }
+    }
+
+public:
     // Declarations
     void HandleProgramDecl() { }
     void HandleVarDecl() { }
@@ -33,7 +60,7 @@ public:
 private:
     Derived& GetDerived()
     {
-        return static_cast<Derived*>(this);
+        return *static_cast<Derived*>(this);
     }
 
     void DispatchNode(const ASTNode* node)
@@ -56,6 +83,10 @@ private:
             break;
         }
     }
+
+protected:
+    unsigned int mCurrentLevel;
+    ASTNode* mCurrentNode;
 };
 
 #endif // AST_VISITOR_H__TOSTITOS

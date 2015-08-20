@@ -1,0 +1,7 @@
+ProgramDecl
+	VarDecl: MyIntVar
+		NumberExpr: 42
+	VarDecl: MyTrueVar
+		BooleanExpr: True
+	VarDecl: MyFalseVar
+		BooleanExpr: False
