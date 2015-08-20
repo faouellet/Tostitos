@@ -22,7 +22,7 @@ public:
 public:
     void Print(const std::unique_ptr<ASTNode>& root)
     {
-        VisitPreOrder(root);
+        this->VisitPreOrder(root);
     }
 
 protected:
@@ -35,7 +35,7 @@ protected:
     
     void HandleVarDecl() 
     {
-        const VarDecl* vDecl = dynamic_cast<const VarDecl*>(mCurrentNode);
+        const VarDecl* vDecl = dynamic_cast<const VarDecl*>(this->mCurrentNode);
         Indent();
         mStream << "VarDecl: " << vDecl->GetVarName() << "\n";
     }
@@ -43,7 +43,7 @@ protected:
     // Expressions
     void HandleBooleanExpr() 
     {
-        const BooleanExpr* bExpr = dynamic_cast<const BooleanExpr*>(mCurrentNode);
+        const BooleanExpr* bExpr = dynamic_cast<const BooleanExpr*>(this->mCurrentNode);
         Indent();
         mStream << "BooleanExpr: ";
 
@@ -57,7 +57,7 @@ protected:
 
     void HandleNumberExpr()
     {
-        const NumberExpr* nExpr = dynamic_cast<const NumberExpr*>(mCurrentNode);
+        const NumberExpr* nExpr = dynamic_cast<const NumberExpr*>(this->mCurrentNode);
         Indent();
         mStream << "NumberExpr: " << nExpr->GetValue() << "\n";
     }
@@ -65,7 +65,7 @@ protected:
 private:
     void Indent()
     {
-        for (unsigned i = 0; i < mCurrentLevel; ++i)
+        for (unsigned i = 0; i < this->mCurrentLevel; ++i)
             mStream << "\t";
     }
 

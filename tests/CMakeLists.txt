@@ -49,6 +49,6 @@ if(Boost_FOUND)
 		
 		# Copy inputs and outputs
 		file(COPY inputs DESTINATION ${CMAKE_BINARY_DIR})
-		file(COPY outputs DESTINATION ${EXECUTABLE_OUTPUT_PATH})
+		file(COPY outputs DESTINATION ${CMAKE_BINARY_DIR})
     endif()
 endif()
