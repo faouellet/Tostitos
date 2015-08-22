@@ -71,11 +71,11 @@ public:
     const std::string& GetCurrentStr() const { return mCurrentStr; }
 
 private:
-    int mCurrentNumber;
-    std::string mCurrentStr;
+    int mCurrentNumber;                 /*!< Current number in the lexer buffer */
+    std::string mCurrentStr;            /*!< Current string in the lexer buffer */
     
-    std::string mBuffer;
-    std::string::iterator mBufferIt;
+    std::string mBuffer;                /*!< The lexer buffer */
+    std::string::iterator mBufferIt;    /*!< Iterator of the lexer buffer */
 };
 
 #endif // LEXER_H__TOSTITOS

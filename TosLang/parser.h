@@ -42,7 +42,7 @@ private:
     std::unique_ptr<VarDecl> ParseVarDecl();
 
 private:
-    Lexer mLexer;
+    Lexer mLexer;   /*!< Lexer used by the parser to acquire tokens */
 };
 
 #endif // PARSER_H__TOSTITOS

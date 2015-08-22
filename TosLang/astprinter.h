@@ -20,27 +20,43 @@ public:
     ~ASTPrinter() = default;
 
 public:
+    /*
+    * \fn           Print
+    * \param root   Root of the tree to print
+    * \brief        Print the tree rooted at root.
+    */
     void Print(const std::unique_ptr<ASTNode>& root)
     {
         this->VisitPreOrder(root);
     }
 
-protected:
-    // Declarations
+protected:  // Declarations
+    /*
+    * \fn       HandleNumberExpr
+    * \brief    Prints a node of the PROGRAM_DECL kind
+    */
     void HandleProgramDecl() 
     {
         Indent();
         mStream << "ProgramDecl\n";
     }
-    
-    void HandleVarDecl() 
+
+    /*
+    * \fn       HandleNumberExpr
+    * \brief    Prints a node of the VAR_DECL kind
+    */
+    void HandleVarDecl()
     {
         const VarDecl* vDecl = dynamic_cast<const VarDecl*>(this->mCurrentNode);
         Indent();
         mStream << "VarDecl: " << vDecl->GetVarName() << "\n";
     }
 
-    // Expressions
+protected:  // Expressions
+    /*
+    * \fn       HandleNumberExpr
+    * \brief    Prints a node of the BOOLEAN_EXPR kind
+    */
     void HandleBooleanExpr() 
     {
         const BooleanExpr* bExpr = dynamic_cast<const BooleanExpr*>(this->mCurrentNode);
@@ -55,6 +71,10 @@ protected:
         mStream<< "\n";
     }
 
+    /*
+    * \fn       HandleNumberExpr
+    * \brief    Prints a node of the NUMBER_EXPR kind
+    */
     void HandleNumberExpr()
     {
         const NumberExpr* nExpr = dynamic_cast<const NumberExpr*>(this->mCurrentNode);
@@ -63,6 +83,10 @@ protected:
     }
 
 private:
+    /*
+    * \fn       Indent
+    * \brief    Indent the text to print according to the current level in the traversal
+    */
     void Indent()
     {
         for (unsigned i = 0; i < this->mCurrentLevel; ++i)
@@ -70,7 +94,7 @@ private:
     }
 
 private:
-    OS mStream;
+    OS mStream;     /*!< Output stream to which the AST will be printed */
 };
 
 #endif // AST_PRINTER_H__TOSTITOS
