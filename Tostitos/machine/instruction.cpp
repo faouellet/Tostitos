@@ -32,7 +32,7 @@ Instruction::Instruction(const Utils::UInt32 value) : mValue{ value }, mIsInplac
             {
                 mOp2 = FetchHalfByte(5);
         
-                if ((mOpcode & 0xF) == 2 || ((mOpcode & 0xF) == 5 && mType == DIV))
+                if ((mOpcode & 0xF) == 2 || ((mOpcode & 0xF) == 5 && mType == DIV_IMM))
                 {
                     mIsInplace = false;
                     mOp3 = FetchHalfByte(2);

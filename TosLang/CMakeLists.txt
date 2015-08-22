@@ -6,10 +6,14 @@ add_library( lang STATIC
 		astvisitor.h
 		declarations.h
 		expressions.h
+        instructionselector.h
+        instructionselector.cpp
 		lexer.h
 		lexer.cpp
 		parser.h
 		parser.cpp
+        ruletable.h
+        ruletable.cpp
 		statements.h
 		)
 		

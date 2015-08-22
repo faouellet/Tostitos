@@ -48,7 +48,7 @@ protected:
         }
     }
 
-public:
+protected:
     // Declarations
     void HandleProgramDecl() { }
     void HandleVarDecl() { }

@@ -33,25 +33,39 @@ namespace MachineEngine
 
         public:
             /**
-            * \enum
+            * \enum InstructionType
             * \brief Leading byte for the different types of instruction
             */
-            enum
+            enum InstructionType
             {
-                MISC = 0x00,
-                JUMP = 0x10,
-                LOAD = 0x20,
-                STORE = 0x30,
-                ADD = 0x40,
-                SUB = 0x50,
-                AND = 0x60,
-                OR = 0x70,
-                XOR = 0x80,
-                MUL = 0x90,
-                DIV = 0xA0,
-                SHIFT = 0xB0,
-                STACK = 0xC0,
-                NOT = 0xE0
+                MISC        = 0x00,
+                JUMP        = 0x10,
+                LOAD_IMM    = 0x20,
+                MOV         = 0x24,
+                STORE       = 0x30,
+                ADD_IMM     = 0x40,
+                ADD         = 0x42,
+                SUB_IMM     = 0x50,
+                SUB         = 0x52,
+                AND_IMM     = 0x60,
+                AND         = 0x62,
+                OR_IMM      = 0x70,
+                OR          = 0x72,
+                XOR_IMM     = 0x80,
+                XOR         = 0x82,
+                MUL_IMM     = 0x90,
+                MUL         = 0x92,
+                DIV_IMM     = 0xA0,
+                DIV         = 0xA2,
+                MOD_IMM     = 0xA3,
+                MOD         = 0xA5,
+                SHIFT       = 0xB0,
+                STACK       = 0xC0,
+                NOT_IMM     = 0xE0,
+                NOT         = 0xE2,
+                NEG_IMM     = 0xE3,
+                NEG         = 0xE5,
+                UNKNOWN     = 0xF0,
             };
 
         public:
