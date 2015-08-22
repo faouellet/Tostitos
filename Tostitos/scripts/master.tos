@@ -1,7 +1,0 @@
-PUSH 1
-PUSH 2
-PUSH worker.tos
-FORK 
-ADD
-JOIN
-PRINT

@@ -6,7 +6,6 @@ add_subdirectory(dataStructures)
 add_subdirectory(fileSystem)
 add_subdirectory(machine)
 add_subdirectory(memory)
-add_subdirectory(scripts)
 add_subdirectory(threads)
 
 set( SOURCES main.cpp system.h system.cpp )
