@@ -16,6 +16,7 @@ if(Boost_FOUND)
                 interpreter_tests.cpp 
                 interpreter_tests.h 
 				lexer_tests.cpp
+				parser_error_tests.cpp
 				parser_tests.cpp
                 utils_tests.cpp
         )
@@ -45,6 +46,7 @@ if(Boost_FOUND)
 		# TosLang tests
 		add_boost_test(ast_printer_tests.cpp lang)
 		add_boost_test(lexer_tests.cpp lang)
+		add_boost_test(parser_error_tests.cpp lang)
 		add_boost_test(parser_tests.cpp lang)
 		
 		# Copy inputs and outputs

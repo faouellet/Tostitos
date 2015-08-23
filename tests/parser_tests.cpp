@@ -10,12 +10,6 @@
 
 #include "parser.h"
 
-BOOST_AUTO_TEST_CASE( BadInitTest )
-{
-    Parser parser;
-    BOOST_REQUIRE(parser.ParseProgram("BadFile.tos") == nullptr);
-}
-
 BOOST_AUTO_TEST_CASE( ParseVarDeclTest )
 {
     Parser parser;

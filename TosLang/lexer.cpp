@@ -11,6 +11,8 @@ bool Lexer::Init(const std::string& filename)
     {
         mBuffer.assign(std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>());
         mBufferIt = mBuffer.begin();
+        mCurrentColumn = 0;
+        mCurrentLine = 0;
         return true;
     }
     return false;
@@ -18,12 +20,23 @@ bool Lexer::Init(const std::string& filename)
 
 Lexer::Token Lexer::GetNextToken()
 {
-    // End of file, we're done
-    if (mBufferIt == mBuffer.end())
-        return TOK_EOF;
-    
     // Skipping any whitespaces
-    mBufferIt = std::find_if(mBufferIt, mBuffer.end(), [](const char c) { return !isspace(c); });
+    while (mBufferIt != mBuffer.end() && isspace(*mBufferIt))
+    {
+        if (*mBufferIt == '\n')
+        {
+            ++mCurrentLine;
+            mCurrentColumn = 0;
+        }
+        else
+        {
+            ++mCurrentColumn;
+        }
+
+        ++mBufferIt;
+    }
+
+    // End of file, we're done
     if (mBufferIt == mBuffer.end())
         return TOK_EOF;
 

@@ -1,15 +1,25 @@
 #include "parser.h"
 
+#include <iostream>
+
 std::unique_ptr<ASTNode> Parser::ParseProgram(const std::string& filename)
 {
-    // TODO: At which level file type validation should be done?
-    if (!mLexer.Init(filename))
+    if (filename.substr(filename.size() - 4) != ".tos")
+    {
+        std::cerr << "FILE ERROR: Wrong file type" << std::endl;
         return nullptr;
+    }
+
+    if (!mLexer.Init(filename))
+    {
+        std::cerr << "FILE ERROR: Problem opening the specified file" << std::endl;
+        return nullptr;
+    }
 
     return ParseProgramDecl();
 }
 
-std::unique_ptr<ProgramDecl> Parser::ParseProgramDecl()
+std::unique_ptr<ASTNode> Parser::ParseProgramDecl()
 {
     std::unique_ptr<ProgramDecl> programNode = std::make_unique<ProgramDecl>();
     Lexer::Token currentToken = mLexer.GetNextToken();
@@ -31,13 +41,11 @@ std::unique_ptr<ProgramDecl> Parser::ParseProgramDecl()
         }
     }
 
-    return programNode;
+    return std::move(programNode);
 }
 
-std::unique_ptr<VarDecl> Parser::ParseVarDecl()
+std::unique_ptr<ASTNode> Parser::ParseVarDecl()
 {
-    // TODO: Handle possible errors at each level of the parsing of a variable
-    // TODO: Is there no other way to parse a variable expression?
     if (mLexer.GetNextToken() == Lexer::IDENTIFIER)
     {
         std::unique_ptr<VarDecl> node = std::make_unique<VarDecl>(mLexer.GetCurrentStr());
@@ -64,9 +72,22 @@ std::unique_ptr<VarDecl> Parser::ParseVarDecl()
                     }
                 }
 
-                return node;
+                return std::move(node);
+            }
+            else
+            {
+                std::cerr << "VAR ERROR: Missing type from variable declaration" << std::endl;
             }
         }
+        else
+        {
+            std::cerr << "VAR ERROR: Missing : between a variable and its type" << std::endl;
+        }
     }
-    return nullptr;
+    else
+    {
+        std::cerr << "VAR ERROR: The var keyword should be followed by an identifier" << std::endl;
+    }
+
+    return std::make_unique<ASTNode>();
 }

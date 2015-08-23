@@ -32,7 +32,7 @@ public:
     };
 
 public:
-    ASTNode(NodeKind kind) : mKind(kind) { }
+    ASTNode(NodeKind kind = ERROR) : mKind(kind) { }
     virtual ~ASTNode() { }
 
     NodeKind GetKind() const { return mKind; }

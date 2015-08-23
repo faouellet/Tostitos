@@ -42,35 +42,52 @@ public:
 
 public:
     /*
-    * \fn Init
-    * \brief Initialize the lexer by acquiring the content of a TosLang file
-    * \param filename Name of a file containing a TosLang program
-    * \return Has the initialization been successful
+    * \fn               Init
+    * \brief            Initialize the lexer by acquiring the content of a TosLang file
+    * \param filename   Name of a file containing a TosLang program
+    * \return           Has the initialization been successful?
     */
     bool Init(const std::string& filename);
 
     /*
-    * \fn GetNextToken
-    * \brief Get the next token in the program
-    * \return A TosLang token
+    * \fn       GetNextToken
+    * \brief    Get the next token in the program
+    * \return   A TosLang token
     */
     Token GetNextToken();
 
     /*
-    * \fn GetCurrentNumber
-    * \brief Give the current number
-    * \return The current number
+    * \fn       GetCurrentColumn
+    * \brief    Give the current number
+    * \return   The current column
+    */
+    const int GetCurrentColumn() const { return mCurrentColumn; }
+    
+    /*
+    * \fn       GetCurrentLine
+    * \brief    Give the current number
+    * \return   The current line
+    */
+    const int GetCurrentLine() const { return mCurrentLine; }
+
+    /*
+    * \fn       GetCurrentNumber
+    * \brief    Give the current number
+    * \return   The current number
     */
     const int GetCurrentNumber() const { return mCurrentNumber; }
 
     /*
-    * \fn GetCurrentStr
-    * \brief Give the current string
-    * \return The current string
+    * \fn       GetCurrentStr
+    * \brief    Give the current string
+    * \return   The current string
     */
     const std::string& GetCurrentStr() const { return mCurrentStr; }
 
 private:
+    int mCurrentLine;                   /*!< Current line in the file the lexer is at */
+    int mCurrentColumn;                 /*!< Current column in the file the lexer is at */
+
     int mCurrentNumber;                 /*!< Current number in the lexer buffer */
     std::string mCurrentStr;            /*!< Current string in the lexer buffer */
     
