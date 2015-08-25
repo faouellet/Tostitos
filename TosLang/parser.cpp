@@ -30,11 +30,23 @@ std::unique_ptr<ASTNode> Parser::ParseProgramDecl()
         switch (currentToken)
         {
         case Lexer::VAR:
-            programNode->AddChildNode(ParseVarDecl());
-            currentToken = mLexer.GetNextToken();
+            {
+                std::unique_ptr<ASTNode> node = ParseVarDecl();
+                // If there was an error in parsing the variable declaration, we skip everything until the next statement
+                if (node != nullptr)
+                    programNode->AddChildNode(std::move(node));
+                else
+                    while (currentToken != Lexer::SEMI_COLON || currentToken != Lexer::TOK_EOF)
+                        currentToken = mLexer.GetNextToken();
+
+                if (currentToken != Lexer::TOK_EOF)
+                    currentToken = mLexer.GetNextToken();
+            }
             break;
         case Lexer::SEMI_COLON:
-            currentToken = mLexer.GetNextToken();
+            {
+                currentToken = mLexer.GetNextToken();
+            }
             break;
         default:
             break;
@@ -53,7 +65,9 @@ std::unique_ptr<ASTNode> Parser::ParseVarDecl()
         {
             if (mLexer.GetNextToken() == Lexer::TYPE)
             {
-                if (mLexer.GetNextToken() == Lexer::EQUAL)   // Variable declaration with initialization
+                Lexer::Token currentToken = mLexer.GetNextToken();
+
+                if (currentToken == Lexer::EQUAL)   // Variable declaration with initialization
                 {
                     switch (mLexer.GetNextToken())
                     {
@@ -67,12 +81,21 @@ std::unique_ptr<ASTNode> Parser::ParseVarDecl()
                         node->AddValue(std::make_unique<NumberExpr>(mLexer.GetCurrentNumber()));
                         break;
                     default:
-                        // Error
                         break;
                     }
+
+                    currentToken = mLexer.GetNextToken();
+                }
+                
+                if (currentToken == Lexer::SEMI_COLON)
+                {
+                    return std::move(node);
+                }
+                else
+                {
+                    std::cerr << "ERROR: Expected a ;" << std::endl;
                 }
 
-                return std::move(node);
             }
             else
             {

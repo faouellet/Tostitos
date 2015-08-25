@@ -47,7 +47,7 @@ Lexer::Token Lexer::GetNextToken()
     if (isalpha(currentChar))
     {
         mCurrentStr = currentChar;
-        while (isalnum(*(++mBufferIt)))
+        while (++mBufferIt != mBuffer.end() && isalnum(*mBufferIt))
             mCurrentStr += *mBufferIt;
 
         if (mCurrentStr == "var")

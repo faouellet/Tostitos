@@ -3,3 +3,5 @@ var Bool;
 var MyVar Bool;
 var MyVar;
 var MyVar:;
+var MyBoolVar: Bool
+var;
