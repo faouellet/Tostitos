@@ -5,6 +5,8 @@ add_library( lang STATIC
 		astprinter.h
 		astvisitor.h
 		declarations.h
+		errorlogger.h
+		errorlogger.cpp
 		expressions.h
         instructionselector.h
         instructionselector.cpp

@@ -1,21 +1,20 @@
 #include "parser.h"
 
 #include "declarations.h"
+#include "errorlogger.h"
 #include "expressions.h"
-
-#include <iostream>
 
 std::unique_ptr<ASTNode> Parser::ParseProgram(const std::string& filename)
 {
     if (filename.substr(filename.size() - 4) != ".tos")
     {
-        std::cerr << "FILE ERROR: Wrong file type" << std::endl;
+        ErrorLogger::PrintError(ErrorLogger::WRONG_FILE_TYPE);
         return nullptr;
     }
 
     if (!mLexer.Init(filename))
     {
-        std::cerr << "FILE ERROR: Problem opening the specified file" << std::endl;
+        ErrorLogger::PrintError(ErrorLogger::ERROR_OPENING_FILE);
         return nullptr;
     }
 
@@ -96,23 +95,23 @@ std::unique_ptr<ASTNode> Parser::ParseVarDecl()
                 }
                 else
                 {
-                    std::cerr << "ERROR: Expected a ;" << std::endl;
+                    ErrorLogger::PrintError(ErrorLogger::MISSING_SEMI_COLON);
                 }
 
             }
             else
             {
-                std::cerr << "VAR ERROR: Missing type from variable declaration" << std::endl;
+                ErrorLogger::PrintError(ErrorLogger::VAR_MISSING_TYPE);
             }
         }
         else
         {
-            std::cerr << "VAR ERROR: Missing : between a variable and its type" << std::endl;
+            ErrorLogger::PrintError(ErrorLogger::VAR_MISSING_COLON);
         }
     }
     else
     {
-        std::cerr << "VAR ERROR: The var keyword should be followed by an identifier" << std::endl;
+        ErrorLogger::PrintError(ErrorLogger::VAR_MISSING_IDENTIFIER);
     }
 
     return std::make_unique<ASTNode>();

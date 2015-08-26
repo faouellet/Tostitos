@@ -1,9 +1,9 @@
 #include "typechecker.h"
 
 #include "declarations.h"
+#include "errorlogger.h"
 
 #include <cassert>
-#include <iostream>
 
 // Declarations
 
@@ -27,7 +27,7 @@ void TypeChecker::HandleVarDecl()
         if (initExpr->GetKind() == ASTNode::BOOLEAN_EXPR || initExpr->GetKind() == ASTNode::NUMBER_EXPR) // Either Int or Bool
         {
             if (initExpr->GetKind() != vDecl->GetType())
-                std::cerr << "TYPE ERROR: Trying to instantiate variable with a literal of the wrong type" << std::endl;
+                ErrorLogger::PrintError(ErrorLogger::WRONG_LITERAL_TYPE);
 
         }
         else
