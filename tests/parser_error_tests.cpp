@@ -8,42 +8,12 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include "console_error_fixture.h"
 #include "parser.h"
 #include "declarations.h"
 #include "expressions.h"
 
-#include <iostream>
-#include <sstream>
-
-struct ParserErrorFixture
-{
-    ParserErrorFixture()
-    {
-        oldBuffer = std::cerr.rdbuf();
-        std::cerr.rdbuf(buffer.rdbuf());
-    }
-
-    ~ParserErrorFixture()
-    {
-        std::cerr.rdbuf(oldBuffer);
-        buffer.clear();
-    }
-
-    std::vector<std::string> GetErrorMessages()
-    {
-        std::vector<std::string> errorMessages;
-        std::string message;
-        while (std::getline(buffer, message))
-            errorMessages.push_back(message);
-
-        return errorMessages;
-    }
-
-    std::stringstream buffer;
-    std::streambuf* oldBuffer;
-};
-
-BOOST_FIXTURE_TEST_CASE( BadInitTest, ParserErrorFixture )
+BOOST_FIXTURE_TEST_CASE( BadInitTest, ConsoleErrorFixture )
 {
     Parser parser;
     BOOST_REQUIRE(parser.ParseProgram("../inputs/vardecl.cpp") == nullptr);
@@ -57,7 +27,7 @@ BOOST_FIXTURE_TEST_CASE( BadInitTest, ParserErrorFixture )
     BOOST_REQUIRE(messages[1] == "FILE ERROR: Problem opening the specified file");
 }
 
-BOOST_FIXTURE_TEST_CASE( ParseBadVarDeclTest, ParserErrorFixture )
+BOOST_FIXTURE_TEST_CASE( ParseBadVarDeclTest, ConsoleErrorFixture )
 {
     Parser parser;
     std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/badvardecl.tos");

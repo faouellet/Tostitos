@@ -1,5 +1,5 @@
-#ifndef CPU_TESTS_H
-#define CPU_TESTS_H
+#ifndef INTERPRETER_TESTS_H__TOSTITOS
+#define INTERPRETER_TESTS_H__TOSTITOS
 
 #include "cpu.h"
 #include "interpreter.h"
@@ -362,4 +362,4 @@ private:
     }
 };
 
-#endif // CPU_TESTS_H
+#endif // INTERPRETER_TESTS_H__TOSTITOS

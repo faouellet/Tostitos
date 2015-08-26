@@ -8,40 +8,11 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include "console_error_fixture.h"
 #include "parser.h"
 #include "typechecker.h"
 
-#include <iostream>
-
-struct TypeErrorFixture
-{
-    TypeErrorFixture()
-    {
-        oldBuffer = std::cerr.rdbuf();
-        std::cerr.rdbuf(buffer.rdbuf());
-    }
-
-    ~TypeErrorFixture()
-    {
-        std::cerr.rdbuf(oldBuffer);
-        buffer.clear();
-    }
-
-    std::vector<std::string> GetErrorMessages()
-    {
-        std::vector<std::string> errorMessages;
-        std::string message;
-        while (std::getline(buffer, message))
-            errorMessages.push_back(message);
-
-        return errorMessages;
-    }
-
-    std::stringstream buffer;
-    std::streambuf* oldBuffer;
-};
-
-BOOST_FIXTURE_TEST_CASE( VarInitTypeError, TypeErrorFixture )
+BOOST_FIXTURE_TEST_CASE( VarInitTypeError, ConsoleErrorFixture )
 {
     Parser parser;
     std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/typeerror.tos");
