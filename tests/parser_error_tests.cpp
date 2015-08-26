@@ -9,6 +9,8 @@
 #include <boost/test/unit_test.hpp>
 
 #include "parser.h"
+#include "declarations.h"
+#include "expressions.h"
 
 #include <iostream>
 #include <sstream>
@@ -65,7 +67,7 @@ BOOST_FIXTURE_TEST_CASE( ParseBadVarDeclTest, ParserErrorFixture )
     BOOST_REQUIRE(pDecl != nullptr);
 
     const ChildrenNodes& cNodes = pDecl->GetChildrenNodes();
-    BOOST_REQUIRE_EQUAL(cNodes.size(), 7);
+    BOOST_REQUIRE_EQUAL(cNodes.size(), 6);
 
     // Check if we only have error nodes
     for (auto& node : cNodes)
@@ -77,12 +79,11 @@ BOOST_FIXTURE_TEST_CASE( ParseBadVarDeclTest, ParserErrorFixture )
     std::vector<std::string> messages{ GetErrorMessages() };
 
     // Check if the correct error messages got printed
-    BOOST_REQUIRE_EQUAL(messages.size(), 7);
+    BOOST_REQUIRE_EQUAL(messages.size(), 6);
     BOOST_REQUIRE(messages[0] == "VAR ERROR: The var keyword should be followed by an identifier");
     BOOST_REQUIRE(messages[1] == "VAR ERROR: The var keyword should be followed by an identifier");
     BOOST_REQUIRE(messages[2] == "VAR ERROR: Missing : between a variable and its type");
     BOOST_REQUIRE(messages[3] == "VAR ERROR: Missing : between a variable and its type");
     BOOST_REQUIRE(messages[4] == "VAR ERROR: Missing type from variable declaration");
     BOOST_REQUIRE(messages[5] == "ERROR: Expected a ;");
-    BOOST_REQUIRE(messages[6] == "ERROR: Expected a ;");
 }

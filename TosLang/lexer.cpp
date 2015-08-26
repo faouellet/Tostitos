@@ -52,8 +52,16 @@ Lexer::Token Lexer::GetNextToken()
 
         if (mCurrentStr == "var")
             return Lexer::Token::VAR;
-        else if (mCurrentStr == "Int" || mCurrentStr == "Bool")
+        else if (mCurrentStr == "Int")
+        {
+            mCurrentType = INT;
             return TYPE;
+        }
+        else if (mCurrentStr == "Bool")
+        {
+            mCurrentType = BOOL;
+            return TYPE;
+        }
         else if (mCurrentStr == "True")
             return TRUE;
         else if (mCurrentStr == "False")

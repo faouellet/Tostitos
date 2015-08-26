@@ -1,10 +1,11 @@
 #ifndef PARSER_H__TOSTITOS
 #define PARSER_H__TOSTITOS
 
-#include "declarations.h"
-#include "expressions.h"
 #include "lexer.h"
-#include "statements.h"
+
+#include <memory>
+
+class ASTNode;
 
 /*
 * \class Parser
@@ -42,7 +43,8 @@ private:
     std::unique_ptr<ASTNode> ParseVarDecl();
 
 private:
-    Lexer mLexer;   /*!< Lexer used by the parser to acquire tokens */
+    Lexer mLexer;               /*!< Lexer used by the parser to acquire tokens */
+    Lexer::Token mCurrentToken; /*!< Current token being treated by the parser */
 };
 
 #endif // PARSER_H__TOSTITOS

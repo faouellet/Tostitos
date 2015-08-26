@@ -15,6 +15,9 @@ add_library( lang STATIC
         ruletable.h
         ruletable.cpp
 		statements.h
+		symbols.h
+		typechecker.h
+		typechecker.cpp
 		)
 		
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)

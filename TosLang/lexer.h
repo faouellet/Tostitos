@@ -1,6 +1,8 @@
 #ifndef LEXER_H__TOSTITOS
 #define LEXER_H__TOSTITOS
 
+#include "symbols.h"
+
 #include <string>
 
 /**
@@ -84,12 +86,20 @@ public:
     */
     const std::string& GetCurrentStr() const { return mCurrentStr; }
 
+    /*
+    * \fn       GetCurrentType
+    * \brief    Give the current type
+    * \return   The current type
+    */
+    Type GetCurrentType() const { return mCurrentType;  }
+
 private:
     int mCurrentLine;                   /*!< Current line in the file the lexer is at */
     int mCurrentColumn;                 /*!< Current column in the file the lexer is at */
 
     int mCurrentNumber;                 /*!< Current number in the lexer buffer */
     std::string mCurrentStr;            /*!< Current string in the lexer buffer */
+    Type mCurrentType;                  /*!< Current type in the lexer buffer */
     
     std::string mBuffer;                /*!< The lexer buffer */
     std::string::iterator mBufferIt;    /*!< Iterator of the lexer buffer */

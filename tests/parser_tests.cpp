@@ -9,6 +9,8 @@
 #include <boost/test/unit_test.hpp>
 
 #include "parser.h"
+#include "declarations.h"
+#include "expressions.h"
 
 BOOST_AUTO_TEST_CASE( ParseVarDeclTest )
 {

@@ -1,5 +1,8 @@
 #include "parser.h"
 
+#include "declarations.h"
+#include "expressions.h"
+
 #include <iostream>
 
 std::unique_ptr<ASTNode> Parser::ParseProgram(const std::string& filename)
@@ -22,30 +25,28 @@ std::unique_ptr<ASTNode> Parser::ParseProgram(const std::string& filename)
 std::unique_ptr<ASTNode> Parser::ParseProgramDecl()
 {
     std::unique_ptr<ProgramDecl> programNode = std::make_unique<ProgramDecl>();
-    Lexer::Token currentToken = mLexer.GetNextToken();
+    mCurrentToken = mLexer.GetNextToken();
     
     // TODO: Error handling when encountering an unknown token
-    while (currentToken != Lexer::TOK_EOF)
+    while (mCurrentToken != Lexer::TOK_EOF)
     {
-        switch (currentToken)
+        switch (mCurrentToken)
         {
         case Lexer::VAR:
             {
                 std::unique_ptr<ASTNode> node = ParseVarDecl();
-                // If there was an error in parsing the variable declaration, we skip everything until the next statement
-                if (node != nullptr)
-                    programNode->AddChildNode(std::move(node));
-                else
-                    while (currentToken != Lexer::SEMI_COLON || currentToken != Lexer::TOK_EOF)
-                        currentToken = mLexer.GetNextToken();
 
-                if (currentToken != Lexer::TOK_EOF)
-                    currentToken = mLexer.GetNextToken();
+                // If there was an error in parsing the variable declaration, we skip everything until the next statement
+                if (node->GetKind() == ASTNode::ERROR)
+                    while (mCurrentToken != Lexer::SEMI_COLON && mCurrentToken != Lexer::TOK_EOF)
+                        mCurrentToken = mLexer.GetNextToken();
+
+                programNode->AddChildNode(std::move(node));
             }
             break;
         case Lexer::SEMI_COLON:
             {
-                currentToken = mLexer.GetNextToken();
+                mCurrentToken = mLexer.GetNextToken();
             }
             break;
         default:
@@ -58,16 +59,18 @@ std::unique_ptr<ASTNode> Parser::ParseProgramDecl()
 
 std::unique_ptr<ASTNode> Parser::ParseVarDecl()
 {
-    if (mLexer.GetNextToken() == Lexer::IDENTIFIER)
+    if ((mCurrentToken = mLexer.GetNextToken()) == Lexer::IDENTIFIER)
     {
-        std::unique_ptr<VarDecl> node = std::make_unique<VarDecl>(mLexer.GetCurrentStr());
-        if (mLexer.GetNextToken() == Lexer::COLON)
+        std::string varName = mLexer.GetCurrentStr();
+        if ((mCurrentToken = mLexer.GetNextToken()) == Lexer::COLON)
         {
-            if (mLexer.GetNextToken() == Lexer::TYPE)
+            if ((mCurrentToken = mLexer.GetNextToken()) == Lexer::TYPE)
             {
-                Lexer::Token currentToken = mLexer.GetNextToken();
+                std::unique_ptr<VarDecl> node = std::make_unique<VarDecl>(varName, mLexer.GetCurrentType());
 
-                if (currentToken == Lexer::EQUAL)   // Variable declaration with initialization
+                mCurrentToken = mLexer.GetNextToken();
+
+                if (mCurrentToken == Lexer::EQUAL)   // Variable declaration with initialization
                 {
                     switch (mLexer.GetNextToken())
                     {
@@ -84,10 +87,10 @@ std::unique_ptr<ASTNode> Parser::ParseVarDecl()
                         break;
                     }
 
-                    currentToken = mLexer.GetNextToken();
+                    mCurrentToken = mLexer.GetNextToken();
                 }
                 
-                if (currentToken == Lexer::SEMI_COLON)
+                if (mCurrentToken == Lexer::SEMI_COLON)
                 {
                     return std::move(node);
                 }

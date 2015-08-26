@@ -12,6 +12,9 @@ class Expr : public ASTNode
 public:
     Expr(NodeKind kind) : ASTNode(kind) { }
     virtual ~Expr() { }
+
+public:
+    bool IsLiteral() const { return mKind == BOOLEAN_EXPR && mKind == NUMBER_EXPR; }
 };
 
 /*

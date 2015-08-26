@@ -18,6 +18,7 @@ if(Boost_FOUND)
 				lexer_tests.cpp
 				parser_error_tests.cpp
 				parser_tests.cpp
+				typechecker_tests.cpp
                 utils_tests.cpp
         )
 
@@ -48,6 +49,7 @@ if(Boost_FOUND)
 		add_boost_test(lexer_tests.cpp lang)
 		add_boost_test(parser_error_tests.cpp lang)
 		add_boost_test(parser_tests.cpp lang)
+		add_boost_test(typechecker_tests.cpp lang)
 		
 		# Copy inputs and outputs
 		file(COPY inputs DESTINATION ${CMAKE_BINARY_DIR})
