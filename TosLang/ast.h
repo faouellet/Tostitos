@@ -4,45 +4,51 @@
 #include <memory>
 #include <vector>
 
-class ASTNode;
-
-typedef std::vector<std::unique_ptr<ASTNode>> ChildrenNodes;
-
-/*
-* \class ASTNode
-* \brief Basic clas for every node of the AST
-*/
-class ASTNode
+namespace TosLang
 {
-public:
-    enum NodeKind
+    namespace FrontEnd
     {
-        // Declarations
-        PROGRAM_DECL,
-        VAR_DECL,
+        class ASTNode;
 
-        // Statements
+        typedef std::vector<std::unique_ptr<ASTNode>> ChildrenNodes;
 
-        // Expressions
-        BOOLEAN_EXPR,
-        NUMBER_EXPR,
+        /*
+        * \class ASTNode
+        * \brief Basic clas for every node of the AST
+        */
+        class ASTNode
+        {
+        public:
+            enum NodeKind
+            {
+                // Declarations
+                PROGRAM_DECL,
+                VAR_DECL,
 
-        // Misc
-        ERROR,
-    };
+                // Statements
 
-public:
-    ASTNode(NodeKind kind = ERROR) : mKind(kind) { }
-    virtual ~ASTNode() { }
+                // Expressions
+                BOOLEAN_EXPR,
+                NUMBER_EXPR,
 
-    NodeKind GetKind() const { return mKind; }
+                // Misc
+                ERROR,
+            };
 
-    void AddChildNode(std::unique_ptr<ASTNode>&& node) { mChildren.push_back(std::move(node)); }
-    const ChildrenNodes& GetChildrenNodes() const { return mChildren; }
+        public:
+            ASTNode(NodeKind kind = ERROR) : mKind(kind) { }
+            virtual ~ASTNode() { }
 
-protected:
-    NodeKind mKind;
-    ChildrenNodes mChildren;
-};
+            NodeKind GetKind() const { return mKind; }
+
+            void AddChildNode(std::unique_ptr<ASTNode>&& node) { mChildren.push_back(std::move(node)); }
+            const ChildrenNodes& GetChildrenNodes() const { return mChildren; }
+
+        protected:
+            NodeKind mKind;
+            ChildrenNodes mChildren;
+        };
+    }
+}
 
 #endif // AST_H__TOSTITOS

@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+using namespace TosLang::Utils;
+
 std::map<ErrorLogger::ErrorType, std::string> ErrorLogger::mErrorMessages =
 {
     // File

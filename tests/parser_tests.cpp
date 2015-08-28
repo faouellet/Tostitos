@@ -12,6 +12,8 @@
 #include "declarations.h"
 #include "expressions.h"
 
+using namespace TosLang::FrontEnd;
+
 BOOST_AUTO_TEST_CASE( ParseVarDeclTest )
 {
     Parser parser;

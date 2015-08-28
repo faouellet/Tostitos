@@ -4,6 +4,8 @@
 #include <fstream>
 #include <iterator>
 
+using namespace TosLang::FrontEnd;
+
 bool Lexer::Init(const std::string& filename)
 {
     std::ifstream stream(filename);

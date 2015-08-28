@@ -7,22 +7,28 @@
 #include <map>
 #include <string>
 
-class TypeChecker : public ASTVisitor<TypeChecker>
+namespace TosLang
 {
-    friend class ASTVisitor<TypeChecker>;
+    namespace FrontEnd
+    {
+        class TypeChecker : public Utils::ASTVisitor<TypeChecker>
+        {
+            friend class Utils::ASTVisitor<TypeChecker>;
 
-public:
-    TypeChecker() = default;
-    ~TypeChecker() = default;
+        public:
+            TypeChecker() = default;
+            ~TypeChecker() = default;
 
-public:
-    void TypeCheck(const std::unique_ptr<ASTNode>& root);
+        public:
+            void TypeCheck(const std::unique_ptr<ASTNode>& root);
 
-protected:  // Declarations
-    void HandleVarDecl();
-        
-private:
-    std::map<std::string, Type> mTypeTable; /*!< Lexer used by the parser to acquire tokens */
-};
+        protected:  // Declarations
+            void HandleVarDecl();
+
+        private:
+            std::map<std::string, Type> mTypeTable; /*!< Lexer used by the parser to acquire tokens */
+        };
+    }
+}
 
 #endif // TYPE_CHECKER_H__TOSTITOS

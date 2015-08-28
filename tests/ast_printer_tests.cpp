@@ -14,6 +14,9 @@
 #include <fstream>
 #include <string>
 
+using namespace TosLang::FrontEnd;
+using namespace TosLang::Utils;
+
 BOOST_AUTO_TEST_CASE( ASTPrinterTest )
 {
     Parser parser;

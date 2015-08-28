@@ -5,6 +5,9 @@
 
 #include <cassert>
 
+using namespace TosLang::FrontEnd;
+using namespace TosLang::Utils;
+
 // Declarations
 
 void TypeChecker::TypeCheck(const std::unique_ptr<ASTNode>& root)

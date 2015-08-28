@@ -4,6 +4,9 @@
 #include "errorlogger.h"
 #include "expressions.h"
 
+using namespace TosLang::FrontEnd;
+using namespace TosLang::Utils;
+
 std::unique_ptr<ASTNode> Parser::ParseProgram(const std::string& filename)
 {
     if (filename.substr(filename.size() - 4) != ".tos")

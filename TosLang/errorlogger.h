@@ -4,41 +4,47 @@
 #include <map>
 #include <string>
 
-class ErrorLogger
+namespace TosLang
 {
-public:
-    enum ErrorType
+    namespace Utils
     {
-        // File
-        WRONG_FILE_TYPE,
-        ERROR_OPENING_FILE,
+        class ErrorLogger
+        {
+        public:
+            enum ErrorType
+            {
+                // File
+                WRONG_FILE_TYPE,
+                ERROR_OPENING_FILE,
 
-        // Type
-        WRONG_LITERAL_TYPE,
+                // Type
+                WRONG_LITERAL_TYPE,
 
-        // Var
-        VAR_MISSING_TYPE,
-        VAR_MISSING_COLON,
-        VAR_MISSING_IDENTIFIER,
+                // Var
+                VAR_MISSING_TYPE,
+                VAR_MISSING_COLON,
+                VAR_MISSING_IDENTIFIER,
 
-        // Misc
-        MISSING_SEMI_COLON,
-    };
+                // Misc
+                MISSING_SEMI_COLON,
+            };
 
-public:
-    ErrorLogger(const ErrorLogger&) = delete;
-    ErrorLogger& operator=(const ErrorLogger&) = delete;
-    ~ErrorLogger() = default;
+        public:
+            ErrorLogger(const ErrorLogger&) = delete;
+            ErrorLogger& operator=(const ErrorLogger&) = delete;
+            ~ErrorLogger() = default;
 
-public:
-    static void PrintError(ErrorType eType);
+        public:
+            static void PrintError(ErrorType eType);
 
-private:
-    ErrorLogger() = default;
+        private:
+            ErrorLogger() = default;
 
-private:
-    static std::map<ErrorType, std::string> mErrorMessages;
-    static ErrorLogger mInstance;
-};
+        private:
+            static std::map<ErrorType, std::string> mErrorMessages;
+            static ErrorLogger mInstance;
+        };
+    }
+}
 
 #endif // ERROR_LOGGER_H__TOSTITOS

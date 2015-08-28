@@ -12,6 +12,8 @@
 #include "parser.h"
 #include "typechecker.h"
 
+using namespace TosLang::FrontEnd;
+
 BOOST_FIXTURE_TEST_CASE( VarInitTypeError, ConsoleErrorFixture )
 {
     Parser parser;

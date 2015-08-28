@@ -10,6 +10,8 @@
 
 #include "lexer.h"
 
+using namespace TosLang::FrontEnd;
+
 BOOST_AUTO_TEST_CASE( InitTest )
 {
     Lexer lex;
