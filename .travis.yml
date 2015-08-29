@@ -52,7 +52,7 @@ install:
   - sudo apt-get install libboost-test-dev
   
   # Getting latest version of LCOV if needed
-  - if [ "${COVERAGE}" == "1" ]; then
+  - if [ ${COVERAGE} == 1 ]; then
        wget http://ftp.de.debian.org/debian/pool/main/l/lcov/lcov_1.11.orig.tar.gz &&
        tar xf lcov_1.11.orig.tar.gz &&
        sudo make -C lcov-1.11/ install &&
@@ -70,19 +70,19 @@ script:
   - mkdir build
   - cd build
   
-  - if [ "${COVERITY_SCAN_BRANCH}" != 1 ]; then
-       # Debug code coverage Linux build
-       - if [ ${COVERAGE} == 1 ]; then 
-            cmake .. -DCMAKE_BUILD_TYPE=DEBUG;
-        fi
-       # Release Linux build
-       - if [ ${COVERAGE} != 1 ]; then 
-            cmake .. -DCMAKE_BUILD_TYPE=RELEASE;
-         fi
+  # Debug code coverage Linux build
+  - if [ ${COVERAGE} == 1 && ${COVERITY_SCAN_BRANCH} != 1 ]; then 
+       cmake .. -DCMAKE_BUILD_TYPE=DEBUG;
+    fi
+  # Release Linux build
+  - if [ ${COVERAGE} != 1 && ${COVERITY_SCAN_BRANCH} != 1 ]; then 
+       cmake .. -DCMAKE_BUILD_TYPE=RELEASE;
+    fi
     
-       - make
-       - ctest --verbose
-  fi
+  - if [ ${COVERAGE} != 1 && ${COVERITY_SCAN_BRANCH} != 1 ]; then 
+       make
+       ctest --verbose
+    fi
 
 after_success:
   - cd ${TRAVIS_BUILD_DIR}
