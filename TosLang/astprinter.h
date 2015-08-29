@@ -51,7 +51,7 @@ namespace TosLang
             */
             void HandleVarDecl()
             {
-                const VarDecl* vDecl = dynamic_cast<const VarDecl*>(this->mCurrentNode);
+                const FrontEnd::VarDecl* vDecl = dynamic_cast<const FrontEnd::VarDecl*>(this->mCurrentNode);
                 Indent();
                 mStream << "VarDecl: " << vDecl->GetVarName() << "\n";
             }
@@ -63,7 +63,7 @@ namespace TosLang
             */
             void HandleBooleanExpr()
             {
-                const BooleanExpr* bExpr = dynamic_cast<const BooleanExpr*>(this->mCurrentNode);
+                const FrontEnd::BooleanExpr* bExpr = dynamic_cast<const FrontEnd::BooleanExpr*>(this->mCurrentNode);
                 Indent();
                 mStream << "BooleanExpr: ";
 
@@ -81,7 +81,7 @@ namespace TosLang
             */
             void HandleNumberExpr()
             {
-                const NumberExpr* nExpr = dynamic_cast<const NumberExpr*>(this->mCurrentNode);
+                const FrontEnd::NumberExpr* nExpr = dynamic_cast<const FrontEnd::NumberExpr*>(this->mCurrentNode);
                 Indent();
                 mStream << "NumberExpr: " << nExpr->GetValue() << "\n";
             }
