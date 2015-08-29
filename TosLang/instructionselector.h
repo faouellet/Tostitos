@@ -7,29 +7,36 @@
 
 #include <map>
 
-class InstructionSelector : ASTVisitor<InstructionSelector>
+namespace TosLang
 {
-    friend class ASTVisitor<InstructionSelector>;
+    namespace BackEnd
+    {
+        class InstructionSelector : Utils::ASTVisitor<InstructionSelector>
+        {
+            friend class Utils::ASTVisitor<InstructionSelector>;
 
-public:
-    InstructionSelector() = default;
-    ~InstructionSelector() = default;
+        public:
+            InstructionSelector() = default;
+            ~InstructionSelector() = default;
 
-public:
-    std::vector<Instruction> Execute(const std::unique_ptr<ASTNode>& root);
-        
-protected:
-    // Declarations
-    void HandleProgramDecl();
-    void HandleVarDecl();
+        public:
+            std::vector<Instruction> Execute(const std::unique_ptr<FrontEnd::ASTNode>& root);
 
-    // Expressions
-    void HandleBooleanExpr();
-    void HandleNumberExpr();
-    
-private:
-    std::map<const unsigned, Rule> mNodeLabels;
-    std::vector<Instruction> mProgram;
-};
+        protected:  // Declarations
+            void HandleProgramDecl();
+            void HandleVarDecl();
+
+        protected:  // Expressions
+            void HandleBooleanExpr();
+            void HandleNumberExpr();
+
+        private:
+            RuleTable mRuleTable;
+
+            std::map<const FrontEnd::ASTNode*, Rule> mNodeLabels;
+            std::vector<Instruction> mProgram;
+        };
+    }
+}
 
 #endif // INSTRUCTION_SELECTOR_H__TOSTITOS
