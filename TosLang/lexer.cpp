@@ -50,7 +50,10 @@ Lexer::Token Lexer::GetNextToken()
     {
         mCurrentStr = currentChar;
         while (++mBufferIt != mBuffer.end() && isalnum(*mBufferIt))
+        {
             mCurrentStr += *mBufferIt;
+            ++mCurrentColumn;
+        }
 
         if (mCurrentStr == "var")
             return Lexer::Token::VAR;

@@ -98,8 +98,8 @@ namespace TosLang
             Type GetCurrentType() const { return mCurrentType; }
 
         private:
-            int mCurrentLine;                   /*!< Current line in the file the lexer is at */
-            int mCurrentColumn;                 /*!< Current column in the file the lexer is at */
+            unsigned mCurrentLine;              /*!< Current line in the file the lexer is at */
+            unsigned mCurrentColumn;            /*!< Current column in the file the lexer is at */
 
             int mCurrentNumber;                 /*!< Current number in the lexer buffer */
             std::string mCurrentStr;            /*!< Current string in the lexer buffer */

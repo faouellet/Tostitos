@@ -52,10 +52,10 @@ BOOST_FIXTURE_TEST_CASE( ParseBadVarDeclTest, ConsoleErrorFixture )
 
     // Check if the correct error messages got printed
     BOOST_REQUIRE_EQUAL(messages.size(), 6);
-    BOOST_REQUIRE(messages[0] == "VAR ERROR: The var keyword should be followed by an identifier");
-    BOOST_REQUIRE(messages[1] == "VAR ERROR: The var keyword should be followed by an identifier");
-    BOOST_REQUIRE(messages[2] == "VAR ERROR: Missing : between a variable and its type");
-    BOOST_REQUIRE(messages[3] == "VAR ERROR: Missing : between a variable and its type");
-    BOOST_REQUIRE(messages[4] == "VAR ERROR: Missing type from variable declaration");
-    BOOST_REQUIRE(messages[5] == "ERROR: Expected a ;");
+    BOOST_REQUIRE(messages[0] == "VAR ERROR: The var keyword should be followed by an identifier at line 0, column 2");
+    BOOST_REQUIRE(messages[1] == "VAR ERROR: The var keyword should be followed by an identifier at line 1, column 6");
+    BOOST_REQUIRE(messages[2] == "VAR ERROR: Missing : between a variable and its type at line 2, column 11");
+    BOOST_REQUIRE(messages[3] == "VAR ERROR: Missing : between a variable and its type at line 3, column 7");
+    BOOST_REQUIRE(messages[4] == "VAR ERROR: Missing type from variable declaration at line 4, column 7");
+    BOOST_REQUIRE(messages[5] == "ERROR: Expected a ; at line 6, column 2");
 }

@@ -36,6 +36,7 @@ namespace TosLang
 
         public:
             static void PrintError(ErrorType eType);
+            static void PrintErrorAtLocation(ErrorType eType, unsigned line, unsigned column);
 
         private:
             ErrorLogger() = default;

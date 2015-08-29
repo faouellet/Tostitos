@@ -61,61 +61,60 @@ std::unique_ptr<ASTNode> Parser::ParseProgramDecl()
 
 std::unique_ptr<ASTNode> Parser::ParseVarDecl()
 {
-    if ((mCurrentToken = mLexer.GetNextToken()) == Lexer::IDENTIFIER)
+    std::unique_ptr<ASTNode> node = std::make_unique<ASTNode>();
+    if ((mCurrentToken = mLexer.GetNextToken()) != Lexer::IDENTIFIER)
     {
-        std::string varName = mLexer.GetCurrentStr();
-        if ((mCurrentToken = mLexer.GetNextToken()) == Lexer::COLON)
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::VAR_MISSING_IDENTIFIER, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
+        return std::move(node);
+    }
+
+    std::string varName = mLexer.GetCurrentStr();
+    
+    if ((mCurrentToken = mLexer.GetNextToken()) != Lexer::COLON)
+    {
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::VAR_MISSING_COLON, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
+        return std::move(node);
+    }
+
+    if ((mCurrentToken = mLexer.GetNextToken()) != Lexer::TYPE)
+    {
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::VAR_MISSING_TYPE, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
+        return std::move(node);
+    }
+     
+    VarDecl* vDecl = new VarDecl(varName, mLexer.GetCurrentType());
+
+    mCurrentToken = mLexer.GetNextToken();
+
+    if (mCurrentToken == Lexer::EQUAL)   // Variable declaration with initialization
+    {
+        switch (mLexer.GetNextToken())
         {
-            if ((mCurrentToken = mLexer.GetNextToken()) == Lexer::TYPE)
-            {
-                std::unique_ptr<VarDecl> node = std::make_unique<VarDecl>(varName, mLexer.GetCurrentType());
-
-                mCurrentToken = mLexer.GetNextToken();
-
-                if (mCurrentToken == Lexer::EQUAL)   // Variable declaration with initialization
-                {
-                    switch (mLexer.GetNextToken())
-                    {
-                    case Lexer::FALSE:
-                        node->AddValue(std::make_unique<BooleanExpr>(false));
-                        break;
-                    case Lexer::TRUE:
-                        node->AddValue(std::make_unique<BooleanExpr>(true));
-                        break;
-                    case Lexer::NUMBER:
-                        node->AddValue(std::make_unique<NumberExpr>(mLexer.GetCurrentNumber()));
-                        break;
-                    default:
-                        break;
-                    }
-
-                    mCurrentToken = mLexer.GetNextToken();
-                }
-                
-                if (mCurrentToken == Lexer::SEMI_COLON)
-                {
-                    return std::move(node);
-                }
-                else
-                {
-                    ErrorLogger::PrintError(ErrorLogger::MISSING_SEMI_COLON);
-                }
-
-            }
-            else
-            {
-                ErrorLogger::PrintError(ErrorLogger::VAR_MISSING_TYPE);
-            }
+        case Lexer::FALSE:
+            vDecl->AddValue(std::make_unique<BooleanExpr>(false));
+            break;
+        case Lexer::TRUE:
+            vDecl->AddValue(std::make_unique<BooleanExpr>(true));
+            break;
+        case Lexer::NUMBER:
+            vDecl->AddValue(std::make_unique<NumberExpr>(mLexer.GetCurrentNumber()));
+            break;
+        default:
+            break;
         }
-        else
-        {
-            ErrorLogger::PrintError(ErrorLogger::VAR_MISSING_COLON);
-        }
+
+        mCurrentToken = mLexer.GetNextToken();
+    }
+    
+
+    if (mCurrentToken == Lexer::SEMI_COLON)
+    {
+        node.reset(vDecl);
+        return std::move(node);
     }
     else
     {
-        ErrorLogger::PrintError(ErrorLogger::VAR_MISSING_IDENTIFIER);
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::MISSING_SEMI_COLON, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
+        return std::move(node);
     }
-
-    return std::make_unique<ASTNode>();
 }

@@ -27,3 +27,7 @@ void ErrorLogger::PrintError(ErrorType eType)
     std::cerr << mErrorMessages[eType] << std::endl;
 }
 
+void ErrorLogger::PrintErrorAtLocation(ErrorType eType, unsigned line, unsigned column)
+{
+    std::cerr << mErrorMessages[eType] << " at line " << line << ", column " << column << std::endl;
+}
