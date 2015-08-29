@@ -70,17 +70,19 @@ script:
   - mkdir build
   - cd build
   
-  # Debug code coverage Linux build
-  - if [ ${COVERAGE} == 1 ]; then 
-       cmake .. -DCMAKE_BUILD_TYPE=DEBUG;
-    fi
-  # Release Linux build
-  - if [ ${COVERAGE} != 1 ]; then 
-       cmake .. -DCMAKE_BUILD_TYPE=RELEASE;
-    fi
-
-  - make
-  - ctest --verbose
+  - if [ "${COVERITY_SCAN_BRANCH}" != 1 ]; then
+       # Debug code coverage Linux build
+       - if [ ${COVERAGE} == 1 ]; then 
+            cmake .. -DCMAKE_BUILD_TYPE=DEBUG;
+        fi
+       # Release Linux build
+       - if [ ${COVERAGE} != 1 ]; then 
+            cmake .. -DCMAKE_BUILD_TYPE=RELEASE;
+         fi
+    
+       - make
+       - ctest --verbose
+  fi
 
 after_success:
   - cd ${TRAVIS_BUILD_DIR}
