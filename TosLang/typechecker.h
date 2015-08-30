@@ -16,7 +16,7 @@ namespace TosLang
             friend class Utils::ASTVisitor<TypeChecker>;
 
         public:
-            TypeChecker() = default;
+            TypeChecker(const std::shared_ptr<SymbolTable>& symTab) : mSymbolTable(symTab) { }
             ~TypeChecker() = default;
 
         public:
@@ -26,7 +26,8 @@ namespace TosLang
             void HandleVarDecl();
 
         private:
-            unsigned mErrorCount;
+            unsigned mErrorCount;                       /*!< Number of errors found by the type checker */
+            std::shared_ptr<SymbolTable> mSymbolTable;  /*!< Symbol table to be used by the type checker */
         };
     }
 }

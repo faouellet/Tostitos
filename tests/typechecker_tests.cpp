@@ -8,27 +8,27 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "console_error_fixture.h"
+#include "frontend_error_fixture.h"
 #include "parser.h"
 #include "typechecker.h"
 
-using namespace TosLang::FrontEnd;
-
-BOOST_FIXTURE_TEST_CASE( VarInitTypeError, ConsoleErrorFixture )
+BOOST_FIXTURE_TEST_CASE( VarInitTypeError, FrontEndErrorFixture )
 {
-    Parser parser;
+    Parser parser(symTab);
     std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/typeerror.tos");
     BOOST_REQUIRE(rootNode != nullptr);
 
-    TypeChecker tChecker;
+    TypeChecker tChecker(symTab);
     tChecker.TypeCheck(rootNode);
 
     std::vector<std::string> messages{ GetErrorMessages() };
 
     // Check if the correct error messages got printed
-    BOOST_REQUIRE_EQUAL(messages.size(), 3);
-    for (auto& m : messages)
+    BOOST_REQUIRE_EQUAL(messages.size(), 4);
+    for (int i = 0; i < 3; ++i)
     {
-        BOOST_REQUIRE_EQUAL(m, "TYPE ERROR: Trying to instantiate variable with a literal of the wrong type");
+        BOOST_REQUIRE_EQUAL(messages[i], "TYPE ERROR: Trying to instantiate variable with a literal of the wrong type");
     }
+
+    BOOST_REQUIRE_EQUAL(messages.back(), "VAR ERROR: Trying to assign an undeclared variable");
 }

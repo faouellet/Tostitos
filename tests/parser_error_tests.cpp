@@ -8,16 +8,14 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "console_error_fixture.h"
+#include "frontend_error_fixture.h"
 #include "parser.h"
 #include "declarations.h"
 #include "expressions.h"
 
-using namespace TosLang::FrontEnd;
-
-BOOST_FIXTURE_TEST_CASE( BadInitTest, ConsoleErrorFixture )
+BOOST_FIXTURE_TEST_CASE( BadInitTest, FrontEndErrorFixture )
 {
-    Parser parser;
+    Parser parser(symTab);
     BOOST_REQUIRE(parser.ParseProgram("../inputs/vardecl.cpp") == nullptr);
     BOOST_REQUIRE(parser.ParseProgram("BadFile.tos") == nullptr);
 
@@ -25,13 +23,13 @@ BOOST_FIXTURE_TEST_CASE( BadInitTest, ConsoleErrorFixture )
 
     // Check if the correct error messages got printed
     BOOST_REQUIRE_EQUAL(messages.size(), 2);
-    BOOST_REQUIRE(messages[0] == "FILE ERROR: Wrong file type");
-    BOOST_REQUIRE(messages[1] == "FILE ERROR: Problem opening the specified file");
+    BOOST_REQUIRE_EQUAL(messages[0], "FILE ERROR: Wrong file type");
+    BOOST_REQUIRE_EQUAL(messages[1], "FILE ERROR: Problem opening the specified file");
 }
 
-BOOST_FIXTURE_TEST_CASE( ParseBadVarDeclTest, ConsoleErrorFixture )
+BOOST_FIXTURE_TEST_CASE( ParseBadVarDeclTest, FrontEndErrorFixture )
 {
-    Parser parser;
+    Parser parser(symTab);
     std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/badvardecl.tos");
     BOOST_REQUIRE(rootNode != nullptr);
 
@@ -39,23 +37,20 @@ BOOST_FIXTURE_TEST_CASE( ParseBadVarDeclTest, ConsoleErrorFixture )
     BOOST_REQUIRE(pDecl != nullptr);
 
     const ChildrenNodes& cNodes = pDecl->GetChildrenNodes();
-    BOOST_REQUIRE_EQUAL(cNodes.size(), 6);
+    BOOST_REQUIRE_EQUAL(cNodes.size(), 8);
 
-    // Check if we only have error nodes
-    for (auto& node : cNodes)
-    {
-        BOOST_REQUIRE(node != nullptr);
-        BOOST_REQUIRE(node->GetKind() == ASTNode::ERROR);
-    }
+    // Check that we only have one non-error node
+    BOOST_REQUIRE_EQUAL(std::count_if(cNodes.begin(), cNodes.end(), [](const std::unique_ptr<ASTNode>& node){ return node->GetKind() != ASTNode::ERROR; }), 1);
     
     std::vector<std::string> messages{ GetErrorMessages() };
 
     // Check if the correct error messages got printed
-    BOOST_REQUIRE_EQUAL(messages.size(), 6);
-    BOOST_REQUIRE(messages[0] == "VAR ERROR: The var keyword should be followed by an identifier at line 0, column 2");
-    BOOST_REQUIRE(messages[1] == "VAR ERROR: The var keyword should be followed by an identifier at line 1, column 6");
-    BOOST_REQUIRE(messages[2] == "VAR ERROR: Missing : between a variable and its type at line 2, column 11");
-    BOOST_REQUIRE(messages[3] == "VAR ERROR: Missing : between a variable and its type at line 3, column 7");
-    BOOST_REQUIRE(messages[4] == "VAR ERROR: Missing type from variable declaration at line 4, column 7");
-    BOOST_REQUIRE(messages[5] == "ERROR: Expected a ; at line 6, column 2");
+    BOOST_REQUIRE_EQUAL(messages.size(), 7);
+    BOOST_REQUIRE_EQUAL(messages[0], "VAR ERROR: The var keyword should be followed by an identifier at line 1, column 3");
+    BOOST_REQUIRE_EQUAL(messages[1], "VAR ERROR: The var keyword should be followed by an identifier at line 2, column 7");
+    BOOST_REQUIRE_EQUAL(messages[2], "VAR ERROR: Missing : between a variable and its type at line 3, column 12");
+    BOOST_REQUIRE_EQUAL(messages[3], "VAR ERROR: Missing : between a variable and its type at line 4, column 8");
+    BOOST_REQUIRE_EQUAL(messages[4], "VAR ERROR: Missing type from variable declaration at line 5, column 8");
+    BOOST_REQUIRE_EQUAL(messages[5], "ERROR: Expected a ; at line 7, column 3");
+    BOOST_REQUIRE_EQUAL(messages[6], "VAR ERROR: Trying to redefine already define variable at line 9, column 14");
 }

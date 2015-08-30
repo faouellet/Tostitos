@@ -19,7 +19,7 @@ using namespace TosLang::Utils;
 
 BOOST_AUTO_TEST_CASE( ASTPrinterTest )
 {
-    Parser parser;
+    Parser parser(std::make_shared<SymbolTable>());
     std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/varinit.tos");
     BOOST_REQUIRE(rootNode != nullptr);
 

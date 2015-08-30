@@ -1,19 +1,25 @@
 #ifndef CONSOLE_ERROR_FIXTURE_H__TOSTITOS
 #define CONSOLE_ERROR_FIXTURE_H__TOSTITOS
 
+#include "symboltable.h"
+
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <vector>
 
-struct ConsoleErrorFixture
+using namespace TosLang::FrontEnd;
+
+struct FrontEndErrorFixture
 {
-    ConsoleErrorFixture()
+    FrontEndErrorFixture()
     {
         oldBuffer = std::cerr.rdbuf();
         std::cerr.rdbuf(buffer.rdbuf());
+        symTab = std::make_shared<SymbolTable>();
     }
 
-    ~ConsoleErrorFixture()
+    ~FrontEndErrorFixture()
     {
         std::cerr.rdbuf(oldBuffer);
         buffer.clear();
@@ -31,6 +37,7 @@ struct ConsoleErrorFixture
         return errorMessages;
     }
 
+    std::shared_ptr<SymbolTable> symTab;
     std::stringstream buffer;
     std::streambuf* oldBuffer;
 };

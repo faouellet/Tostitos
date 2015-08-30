@@ -13,8 +13,8 @@ bool Lexer::Init(const std::string& filename)
     {
         mBuffer.assign(std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>());
         mBufferIt = mBuffer.begin();
-        mCurrentColumn = 0;
-        mCurrentLine = 0;
+        mCurrentColumn = 1;
+        mCurrentLine = 1;
         return true;
     }
     return false;
@@ -28,7 +28,7 @@ Lexer::Token Lexer::GetNextToken()
         if (*mBufferIt == '\n')
         {
             ++mCurrentLine;
-            mCurrentColumn = 0;
+            mCurrentColumn = 1;
         }
         else
         {
@@ -58,15 +58,9 @@ Lexer::Token Lexer::GetNextToken()
         if (mCurrentStr == "var")
             return Lexer::Token::VAR;
         else if (mCurrentStr == "Int")
-        {
-            mCurrentType = INT;
             return TYPE;
-        }
         else if (mCurrentStr == "Bool")
-        {
-            mCurrentType = BOOL;
             return TYPE;
-        }
         else if (mCurrentStr == "True")
             return TRUE;
         else if (mCurrentStr == "False")

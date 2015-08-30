@@ -84,7 +84,7 @@ std::unique_ptr<ASTNode> Parser::ParseVarDecl()
     }
      
     VarDecl* vDecl = new VarDecl(varName);
-    if (!SymbolTable::AddSymbol(varName, mLexer.GetCurrentStr() == "Int" ? Symbol(INT) : Symbol(BOOL)))
+    if (!mSymbolTable->AddSymbol(varName, mLexer.GetCurrentStr() == "Int" ? Symbol(INT) : Symbol(BOOL)))
     {
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::VAR_REDEFINITION, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
         return std::move(node);
@@ -104,8 +104,10 @@ std::unique_ptr<ASTNode> Parser::ParseVarDecl()
             break;
         case Lexer::NUMBER:
             vDecl->AddValue(std::make_unique<NumberExpr>(mLexer.GetCurrentNumber()));
-            SymbolTable::AddSymbol(mLexer.GetCurrentNumber());
+            mSymbolTable->AddSymbol(mLexer.GetCurrentNumber());
             break;
+        case Lexer::IDENTIFIER:
+            vDecl->AddValue(std::make_unique<IdentifierExpr>(mLexer.GetCurrentStr()));
         default:
             break;
         }

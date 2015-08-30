@@ -19,22 +19,6 @@ namespace TosLang
         };
 
         /*
-        * \class NumberExpr
-        * \brief Node of the AST representing a number literal
-        */
-        class NumberExpr : public Expr
-        {
-        public:
-            NumberExpr(int value) : Expr(NUMBER_EXPR), mValue{ value } { mName = std::to_string(value); }
-            virtual ~NumberExpr() { }
-
-            const int GetValue() const { return mValue; }
-
-        private:
-            int mValue;
-        };
-
-        /*
         * \class BooleanExpr
         * \brief Node of the AST representing a boolean literal
         */
@@ -48,6 +32,33 @@ namespace TosLang
 
         private:
             bool mValue;
+        };
+
+        /*
+        * \class IdentifierExpr 
+        * \brief Node of the AST representing a string literal
+        */
+        class IdentifierExpr : public Expr
+        {
+        public:
+            IdentifierExpr(std::string value) : Expr(IDENTIFIER_EXPR) { mName = value; }
+            virtual ~IdentifierExpr() { }
+        };
+
+        /*
+        * \class NumberExpr
+        * \brief Node of the AST representing a number literal
+        */
+        class NumberExpr : public Expr
+        {
+        public:
+            NumberExpr(int value) : Expr(NUMBER_EXPR), mValue{ value } { mName = std::to_string(value); }
+            virtual ~NumberExpr() { }
+
+            const int GetValue() const { return mValue; }
+
+        private:
+            int mValue;
         };
     }
 }

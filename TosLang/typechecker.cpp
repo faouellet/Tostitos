@@ -26,13 +26,17 @@ void TypeChecker::HandleVarDecl()
     if (initExpr != nullptr)
     {
         Symbol initSymbol;
-        if (!SymbolTable::GetSymbol(initExpr->GetName(), initSymbol))
+        Symbol varSymbol;
+
+        if (!mSymbolTable->GetSymbol(vDecl->GetName(), varSymbol) 
+            || !mSymbolTable->GetSymbol(initExpr->GetName(), initSymbol))
         {
+            // TODO: Should this be in another semantic analysis pass?
             ErrorLogger::PrintError(ErrorLogger::VAR_UNDECLARED_IDENTIFIER);
             ++mErrorCount;
         }
-        else if ((initExpr->GetKind() == ASTNode::BOOLEAN_EXPR && initSymbol.mType != BOOL) 
-            || (initExpr->GetKind() == ASTNode::NUMBER_EXPR && initSymbol.mType != INT)) 
+        else if ((initExpr->GetKind() == ASTNode::BOOLEAN_EXPR || initExpr->GetKind() == ASTNode::NUMBER_EXPR) 
+            && varSymbol.mType != initSymbol.mType) 
         {
             ErrorLogger::PrintError(ErrorLogger::WRONG_LITERAL_TYPE);
             ++mErrorCount;
@@ -41,7 +45,7 @@ void TypeChecker::HandleVarDecl()
         {
             Symbol varSymbol;
             // TODO: Generalize to include the case when we try to assign to an undeclared variable
-            SymbolTable::GetSymbol(initExpr->GetName(), initSymbol);
+            mSymbolTable->GetSymbol(initExpr->GetName(), initSymbol);
             if (varSymbol.mType != initSymbol.mType)
             {
                 ErrorLogger::PrintError(ErrorLogger::WRONG_VARIABLE_TYPE);

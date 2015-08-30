@@ -30,6 +30,7 @@ namespace TosLang
 
                 // Expressions
                 BOOLEAN_EXPR,
+                IDENTIFIER_EXPR,
                 NUMBER_EXPR,
 
                 // Misc
@@ -41,7 +42,7 @@ namespace TosLang
             virtual ~ASTNode() { }
 
             NodeKind GetKind() const { return mKind; }
-            std::string GetName() const { return mName; }
+            const std::string& GetName() const { return mName; }
 
             void AddChildNode(std::unique_ptr<ASTNode>&& node) { mChildren.push_back(std::move(node)); }
             const ChildrenNodes& GetChildrenNodes() const { return mChildren; }

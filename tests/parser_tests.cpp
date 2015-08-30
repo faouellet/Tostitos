@@ -16,7 +16,7 @@ using namespace TosLang::FrontEnd;
 
 BOOST_AUTO_TEST_CASE( ParseVarDeclTest )
 {
-    Parser parser;
+    Parser parser(std::make_shared<SymbolTable>());
     std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/vardecl.tos");
     BOOST_REQUIRE(rootNode != nullptr);
     
@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE( ParseVarDeclTest )
 
 BOOST_AUTO_TEST_CASE( ParseVarInitTest )
 {
-    Parser parser;
+    Parser parser(std::make_shared<SymbolTable>());
     std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/varinit.tos");
     BOOST_REQUIRE(rootNode != nullptr);
 

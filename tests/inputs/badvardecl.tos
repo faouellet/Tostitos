@@ -5,3 +5,5 @@ var MyVar;
 var MyVar:;
 var MyBoolVar: Bool
 var;
+var MyIntVar: Int;
+var MyIntVar: Int;

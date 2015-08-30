@@ -2,11 +2,11 @@
 
 using namespace TosLang::FrontEnd;
 
-std::map<std::string, Symbol> SymbolTable::mSymTable = 
+SymbolTable::SymbolTable()
 {
-    { "False", Symbol(BOOL) },
-    { "True",  Symbol(BOOL) }
-};
+    mSymTable["False"] = Symbol(BOOL);
+    mSymTable["True"] = Symbol(BOOL);
+}
 
 bool SymbolTable::AddSymbol(const std::string& varName, const Symbol& sym)
 {

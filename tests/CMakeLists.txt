@@ -13,7 +13,7 @@ if(Boost_FOUND)
         set( SOURCES 
                 main.cpp 
 				ast_printer_tests.cpp
-				console_error_fixture.h
+				frontend_error_fixture.h
                 interpreter_tests.cpp 
                 interpreter_tests.h 
 				lexer_tests.cpp

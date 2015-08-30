@@ -35,7 +35,7 @@ namespace TosLang
 
             void AddValue(std::unique_ptr<Expr>&& value) { mChildren.push_back(std::move(value)); }
 
-            const std::unique_ptr<ASTNode>& GetInitExpr() const { assert(mChildren.size() < 2); return mChildren[0]; }
+            const std::unique_ptr<ASTNode>& GetInitExpr() const { assert(mChildren.size() == 1); return mChildren[0]; }
             const std::string& GetVarName() const { return mName; }
         };
     }

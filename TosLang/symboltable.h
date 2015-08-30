@@ -24,25 +24,16 @@ namespace TosLang
         class SymbolTable
         {
         public:
-            SymbolTable(const SymbolTable&) = delete;
-            SymbolTable& operator=(const SymbolTable&) = delete;
+            SymbolTable();
             ~SymbolTable() = default;
 
         public:
-            static bool AddSymbol(const std::string& varName, const Symbol& sym);
-            static void AddSymbol(int value);
-            static bool GetSymbol(const std::string& varName, Symbol& sym);
+            bool AddSymbol(const std::string& varName, const Symbol& sym);
+            void AddSymbol(int value);
+            bool GetSymbol(const std::string& varName, Symbol& sym);
 
         private:
-            /*
-            * \fn       SymbolTable
-            * \brief    Default constructor
-            */
-            SymbolTable() = default;
-
-        private:
-            static std::map<std::string, Symbol> mSymTable;
-            static Symbol mInstance;
+            std::map<std::string, Symbol> mSymTable;
         };
     }
 }
