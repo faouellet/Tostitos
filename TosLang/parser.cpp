@@ -3,6 +3,7 @@
 #include "declarations.h"
 #include "errorlogger.h"
 #include "expressions.h"
+#include "symboltable.h"
 
 using namespace TosLang::FrontEnd;
 using namespace TosLang::Utils;
@@ -82,7 +83,12 @@ std::unique_ptr<ASTNode> Parser::ParseVarDecl()
         return std::move(node);
     }
      
-    VarDecl* vDecl = new VarDecl(varName, mLexer.GetCurrentType());
+    VarDecl* vDecl = new VarDecl(varName);
+    if (!SymbolTable::AddSymbol(varName, mLexer.GetCurrentStr() == "Int" ? Symbol(INT) : Symbol(BOOL)))
+    {
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::VAR_REDEFINITION, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
+        return std::move(node);
+    }
 
     mCurrentToken = mLexer.GetNextToken();
 
@@ -98,6 +104,7 @@ std::unique_ptr<ASTNode> Parser::ParseVarDecl()
             break;
         case Lexer::NUMBER:
             vDecl->AddValue(std::make_unique<NumberExpr>(mLexer.GetCurrentNumber()));
+            SymbolTable::AddSymbol(mLexer.GetCurrentNumber());
             break;
         default:
             break;

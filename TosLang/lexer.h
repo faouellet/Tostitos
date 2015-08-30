@@ -1,7 +1,7 @@
 #ifndef LEXER_H__TOSTITOS
 #define LEXER_H__TOSTITOS
 
-#include "symbols.h"
+#include "symboltable.h"
 
 #include <string>
 

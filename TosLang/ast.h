@@ -2,6 +2,7 @@
 #define AST_H__TOSTITOS
 
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace TosLang
@@ -36,16 +37,18 @@ namespace TosLang
             };
 
         public:
-            ASTNode(NodeKind kind = ERROR) : mKind(kind) { }
+            ASTNode(NodeKind kind = ERROR) : mKind(kind), mName("") { }
             virtual ~ASTNode() { }
 
             NodeKind GetKind() const { return mKind; }
+            std::string GetName() const { return mName; }
 
             void AddChildNode(std::unique_ptr<ASTNode>&& node) { mChildren.push_back(std::move(node)); }
             const ChildrenNodes& GetChildrenNodes() const { return mChildren; }
 
         protected:
             NodeKind mKind;
+            std::string mName;
             ChildrenNodes mChildren;
         };
     }
