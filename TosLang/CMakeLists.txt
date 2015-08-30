@@ -17,7 +17,8 @@ add_library( lang STATIC
         ruletable.h
         ruletable.cpp
 		statements.h
-		symbols.h
+		symboltable.h
+		symboltable.cpp
 		typechecker.h
 		typechecker.cpp
 		)

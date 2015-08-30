@@ -2,7 +2,7 @@
 #define TYPE_CHECKER_H__TOSTITOS
 
 #include "astvisitor.h"
-#include "symbols.h"
+#include "symboltable.h"
 
 #include <map>
 #include <string>
@@ -20,13 +20,13 @@ namespace TosLang
             ~TypeChecker() = default;
 
         public:
-            void TypeCheck(const std::unique_ptr<ASTNode>& root);
+            unsigned TypeCheck(const std::unique_ptr<ASTNode>& root);
 
         protected:  // Declarations
             void HandleVarDecl();
 
         private:
-            std::map<std::string, Type> mTypeTable; /*!< Lexer used by the parser to acquire tokens */
+            unsigned mErrorCount;
         };
     }
 }

@@ -19,11 +19,14 @@ namespace TosLang
 
                 // Type
                 WRONG_LITERAL_TYPE,
+                WRONG_VARIABLE_TYPE,
 
                 // Var
                 VAR_MISSING_TYPE,
                 VAR_MISSING_COLON,
                 VAR_MISSING_IDENTIFIER,
+                VAR_REDEFINITION,
+                VAR_UNDECLARED_IDENTIFIER,
 
                 // Misc
                 MISSING_SEMI_COLON,
