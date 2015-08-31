@@ -58,6 +58,7 @@ BOOST_AUTO_TEST_CASE( GetNextTokenVarInitTest )
     BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TYPE);
     BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::EQUAL);
     BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::NUMBER);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentNumber(), 42);
     BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::SEMI_COLON);
 
     //var MyTrueVar : Bool = True;    
