@@ -435,4 +435,19 @@ BOOST_AUTO_TEST_CASE( RndTest )
     }
 }
 
+BOOST_AUTO_TEST_CASE( NopTest )
+{
+    const CPU& Cpu = Interpret.DumpCPUState();
+    Interpret.AcquireProgram(std::move(NopTestData));
+    Interpret.InterpretOne();
+
+    // Make sure nothing has changed
+    std::vector<UInt16> nopDump(Interpret.DumpCPUState().DumpRegisters());
+    for (int i = 0; i < NB_REGISTERS; ++i)
+        BOOST_REQUIRE_EQUAL(nopDump[i], 0);
+
+    BOOST_REQUIRE_EQUAL((Cpu.DumpFlagRegister() >> 7) & 0x1, 0);	// Negative flag unset
+    BOOST_REQUIRE_EQUAL((Cpu.DumpFlagRegister() >> 2) & 0x1, 0);	// Zero flag unset
+}
+
 BOOST_AUTO_TEST_SUITE_END()

@@ -49,6 +49,9 @@ struct InterpreterFixture
     
     // Data for the rnd test
     std::vector<UInt8> RndTestData;
+
+    // Data for the nop test
+    std::vector<UInt8> NopTestData;
     
     
     /**
@@ -62,6 +65,7 @@ struct InterpreterFixture
         SetupShiftData();
         SetupStackData();
         SetupRandomData();
+        SetupNopData();
     }
 
     /**
@@ -353,12 +357,21 @@ private:
     
     /**
     * \fn SetupRandomData
-    * \brief Fills a vector with random values
+    * \brief Fills a vector with RND opcodes
     */
     void SetupRandomData()
     {
         for (int i = 0; i < NB_REGISTERS; ++i)
             InsertInstruction(RndTestData, 0x07, i, 0x00, 0xFF);	// Ri = Random
+    }
+
+    /**
+    * \fn SetupNopData
+    * \brief Push a Nop opcode in a vector
+    */
+    void SetupNopData()
+    {
+        InsertInstruction(NopTestData, 0x00, 0x00, 0x00, 0x00);	   // Nop
     }
 };
 
