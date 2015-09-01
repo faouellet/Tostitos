@@ -124,6 +124,7 @@ std::unique_ptr<ASTNode> Parser::ParseVarDecl()
     else
     {
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::MISSING_SEMI_COLON, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
+        delete vDecl;
         return std::move(node);
     }
 }

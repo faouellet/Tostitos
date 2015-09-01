@@ -20,6 +20,7 @@ unsigned TypeChecker::TypeCheck(const std::unique_ptr<ASTNode>& root)
 void TypeChecker::HandleVarDecl()
 {
     const VarDecl* vDecl = dynamic_cast<const VarDecl*>(this->mCurrentNode);
+    assert(vDecl != nullptr);
         
     // We only perform a type check when a variable is declared AND initialized at the same time
     const Expr* initExpr = dynamic_cast<const Expr*>(vDecl->GetInitExpr().get());
