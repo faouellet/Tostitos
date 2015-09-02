@@ -21,6 +21,7 @@ namespace TosLang
 
         public:
             unsigned TypeCheck(const std::unique_ptr<ASTNode>& root);
+            unsigned GetErrorCount() const { return mErrorCount; }
 
         protected:  // Declarations
             void HandleVarDecl();

@@ -21,6 +21,8 @@ BOOST_FIXTURE_TEST_CASE( VarInitTypeError, FrontEndErrorFixture )
     TypeChecker tChecker(symTab);
     tChecker.TypeCheck(rootNode);
 
+    BOOST_REQUIRE_EQUAL(tChecker.GetErrorCount(), 4);
+
     std::vector<std::string> messages{ GetErrorMessages() };
 
     // Check if the correct error messages got printed
