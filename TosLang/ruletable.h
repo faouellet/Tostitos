@@ -12,17 +12,17 @@ namespace TosLang
 {
     namespace BackEnd
     {
-        enum OperandType
+        enum class OperandType
         {
             IMMEDIATE, LABEL, REGISTER, UNKNOWN
         };
 
-        enum OperatorType
+        enum class OperatorType
         {
             OP_ASSIGN, /*ADD, DIV, MOD, MUL, SUB*/ NO_OP
         };
 
-        enum ResultType
+        enum class ResultType
         {
             RES_ASSIGN, RES_REGISTER, RES_UNKNOWN
         };
@@ -37,6 +37,8 @@ namespace TosLang
         *                                               (RY) +
         *                                                  /   \
         *                                                RX    IMM
+        *           which is then represented as the following expression for later matching:
+        *                                               ( + ( RX IMM ) )
         */
         struct Rule
         {
@@ -44,22 +46,25 @@ namespace TosLang
             * \fn       Rule
             * \brief    Constructor
             */
-            Rule(ResultType result = RES_UNKNOWN, OperatorType op = NO_OP,
+            Rule(ResultType result = ResultType::RES_UNKNOWN, OperatorType op = OperatorType::NO_OP,
                 std::vector<OperandType> operands = std::vector<OperandType>{},
                 Instruction::InstructionType inst = Instruction::UNKNOWN) :
-                mResult{ result }, mOperator{ op }, mInst{ static_cast<UInt32>(inst) }
+                mResult{ result }, mOperator{ op }, mInstType{ Instruction::UNKNOWN }
             {
                 mOperands = operands;   // Is not in the initialization list because VS2013 won't accept it
+                static unsigned ID = 0;
+                mID = ID++;
             }
 
-            /* The 3 following data members represent the pattern against which will try to match a part of the AST.
-            They're essentially a tree pattern linearized as an S-expression.  */
+            /* The 2 following data members represent the pattern against which will try to match a part of the AST.
+               They're essentially a tree pattern linearized as an S-expression.  */
 
-            ResultType mResult;                     /*!< Type of the result produced by the pattern */
             OperatorType mOperator;                 /*!< Operator in the pattern */
             std::vector < OperandType > mOperands;  /*!< Operands used in th pattern */
 
-            Instruction mInst;                      /*!< Chip16 instruction to be produced for the given pattern */
+            ResultType  mResult;                    /*!< Type of the result produced by the pattern */
+            Instruction::InstructionType mInstType; /*!< Chip16 instruction to be produced for the given pattern */
+            unsigned    mID;                        /*!< ID of the rule */
         };
 
         /*
@@ -79,7 +84,9 @@ namespace TosLang
             * \brief            Find all the rules that match against the specified pattern
             * \return           Rules that matched against the pattern
             */
-            std::vector<Rule> MatchPattern(const std::pair<OperatorType, std::vector<OperandType>>& pattern) const;
+            std::vector<Rule> MatchPattern(std::pair<OperatorType, std::vector<OperandType>>&& pattern) const;
+
+            const Rule& GetRule(const unsigned id) const { return mRules[id]; }
 
         private:
             std::vector<Rule> mRules;    /*!< Tree rewriting rules. */

@@ -88,6 +88,29 @@ UInt8 Instruction::GetType() const
     return mType;
 }
 
+void Instruction::SetFirstOperand(UInt8 value)
+{
+    mOp1 = value;
+}
+
+void Instruction::SetSecondOperand(UInt8 value)
+{
+    if (!mUseImm)
+        mOp2 = value;
+}
+
+void Instruction::SetThirdOperand(UInt8 value)
+{
+    if (!mUseImm && !mIsInplace)
+        mOp3 = value;
+}
+
+void Instruction::SetImmediateValue(UInt16 value)
+{
+    if (mUseImm)
+        mImmediateValue = value;
+}
+
 bool Instruction::UseImmediateValue() const
 {
     return mUseImm;

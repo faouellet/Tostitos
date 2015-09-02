@@ -8,16 +8,17 @@ using namespace TosLang::BackEnd;
 RuleTable::RuleTable()
 {
     // ( Assign ( = ( REG IMM ) ) LDI )
-    mRules.emplace_back(RES_ASSIGN, OP_ASSIGN, std::vector<OperandType>{ REGISTER, IMMEDIATE }, Instruction::LOAD_IMM);
+    mRules.emplace_back(ResultType::RES_ASSIGN, 
+                        OperatorType::OP_ASSIGN, std::vector<OperandType>{ OperandType::REGISTER, OperandType::IMMEDIATE }, 
+                        Instruction::InstructionType::LOAD_IMM);
     // ( Assign ( = ( REG REG ) ) MOV )
-    mRules.emplace_back(RES_ASSIGN, OP_ASSIGN, std::vector<OperandType>{ REGISTER, REGISTER }, Instruction::MOV);
-    
-    // ( Reg ( no-op ( IMMEDIATE ) ) LDI )
-    mRules.emplace_back(RES_REGISTER, NO_OP, std::vector<OperandType>{ IMMEDIATE }, Instruction::LOAD_IMM);
+    mRules.emplace_back(ResultType::RES_ASSIGN, 
+                        OperatorType::OP_ASSIGN, std::vector<OperandType>{ OperandType::REGISTER, OperandType::REGISTER }, 
+                        Instruction::InstructionType::MOV);
 }
 
 // TODO: That seems a bit too costly in the long run
-std::vector<Rule> RuleTable::MatchPattern(const std::pair<OperatorType, std::vector<OperandType>>& pattern) const
+std::vector<Rule> RuleTable::MatchPattern(std::pair<OperatorType, std::vector<OperandType>>&& pattern) const
 {
     std::vector<Rule> matchedRules;
 

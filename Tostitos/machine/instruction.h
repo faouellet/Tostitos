@@ -17,24 +17,10 @@ namespace MachineEngine
         */
         class Instruction
         {
-        private:
-            UInt32 mValue;		    /*!< 4 byte value of the instruction */
-
-            UInt16 mImmediateValue;	/*!< Last 2 bytes interpreted as an immediate value */
-
-            UInt8 mOp1;		        /*!< 1st operand contained in the instruction */
-            UInt8 mOp2;	    	    /*!< 2nd operand contained in the instruction */
-            UInt8 mOp3; 		    /*!< 3rd operand contained in the instruction */
-            UInt8 mOpcode;		    /*!< Opcode of the instruction */
-            UInt8 mType;		    /*!< Type of the instruction */
-
-            bool mUseImm;		    /*!< Does the instruction use an immediate value? */
-            bool mIsInplace;	    /*!< Is the instruction done inplace? */
-
         public:
             /**
-            * \enum InstructionType
-            * \brief Leading byte for the different types of instruction
+            * \enum     InstructionType
+            * \brief    Leading byte for the different types of instruction
             */
             enum InstructionType
             {
@@ -70,86 +56,130 @@ namespace MachineEngine
 
         public:
             /**
-            * \fn Instruction
-            * \brief Default constructor
-            * \param value Value of the instruction. 0 by default.
+            * \fn           Instruction
+            * \brief        Default constructor
+            * \param value  Value of the instruction. 0 by default.
             */
             Instruction(const UInt32 value = 0);
 
             /**
-            * \fn Instruction
-            * \brief Destructor
+            * \fn       Instruction
+            * \brief    Destructor
             */
             ~Instruction() = default;
 
         private:
             /**
-            * \fn FetchHalfByte
-            * \brief Fetch half of an instruction byte
-            * \param pos 0-based position of the half-byte within the instruction starting from the right
-            * \return A 4 bits value
+            * \fn           FetchHalfByte
+            * \brief        Fetch half of an instruction byte
+            * \param pos    0-based position of the half-byte within the instruction starting from the right
+            * \return       A 4 bits value
             */
             UInt8 FetchHalfByte(const UInt8 pos) const;
 
         public:
             /**
-            * \fn GetOpcode
-            * \brief Fetch the instruction opcode
-            * \return The instruction opcode
+            * \fn       GetOpcode
+            * \brief    Fetch the instruction opcode
+            * \return   The instruction opcode
             */
             UInt8 GetOpcode() const;
 
             /**
-            * \fn GetFirstOperand
-            * \brief Fetch the first operand of the instruction
-            * \return The first operand of the instruction
+            * \fn       GetFirstOperand
+            * \brief    Fetch the first operand of the instruction
+            * \return   The first operand of the instruction
             */
             UInt8 GetFirstOperand() const;
 
             /**
-            * \fn GetSecondOperand
-            * \brief Fetch the second operand of the instruction when the instruction
-            *        doesn't use an immediate value
-            * \return The second operand of the instruction or pure garbage
+            * \fn       GetSecondOperand
+            * \brief    Fetch the second operand of the instruction when the instruction
+            *           doesn't use an immediate value
+            * \return   The second operand of the instruction or pure garbage
             */
             UInt8 GetSecondOperand() const;
 
             /**
-            * \fn GetThirdOperand
-            * \brief Fetch the third operand of the instruction when the instruction
-            *        doesn't use an immediate value or isn't inplace
-            * \return The third operand of the instruction or pure garbage
+            * \fn       GetThirdOperand
+            * \brief    Fetch the third operand of the instruction when the instruction
+            *           doesn't use an immediate value or isn't inplace
+            * \return   The third operand of the instruction or pure garbage
             */
             UInt8 GetThirdOperand() const;
 
             /**
-            * \fn GetImmediateValue
-            * \brief Fetch the immediate value contained in the instruction
-            * \return The immediate value contained in the instruction
+            * \fn       GetImmediateValue
+            * \brief    Fetch the immediate value contained in the instruction
+            * \return   The immediate value contained in the instruction
             */
             UInt16 GetImmediateValue() const;
 
             /**
-            * \fn GetType
-            * \brief Fetch the type of the instruction
-            * \return The type of the instruction
+            * \fn           SetFirstOperand
+            * \brief        Set the first operand of the instruction
+            * \param value  The value to assign to the first operand
+            */
+            void SetFirstOperand(UInt8 value);
+
+            /**
+            * \fn           SetSecondOperand
+            * \brief        Set the second operand of the instruction when the instruction
+            *               doesn't use an immediate value
+            * \param value  The value to assign to the second operand
+            */
+            void SetSecondOperand(UInt8 value);
+
+            /**
+            * \fn           SetThirdOperand
+            * \brief        Set the third operand of the instruction when the instruction
+            *               doesn't use an immediate value or isn't inplace
+            * \param value  The value to assign to the third operand
+            */
+            void SetThirdOperand(UInt8 value);
+
+            /**
+            * \fn           SetImmediateValue
+            * \brief        Set the immediate value contained in the instruction if it uses an immediate value
+            * \param value  The value to assign to the immediate value of the instruction
+            */
+            void SetImmediateValue(UInt16 value);
+
+            /**
+            * \fn       GetType
+            * \brief    Fetch the type of the instruction
+            * \return   The type of the instruction
             */
             UInt8 GetType() const;
 
         public:
             /**
-            * \fn UseImmediateValue
-            * \brief Indicate if the instruction make use of an immediate value
-            * \return Boolean indicating the use of an immediate value
+            * \fn       UseImmediateValue
+            * \brief    Indicate if the instruction make use of an immediate value
+            * \return   Boolean indicating the use of an immediate value
             */
             bool UseImmediateValue() const;
 
             /**
-            * \fn IsInplace
-            * \brief Indicate if the instruction is an inplace operation
-            * \return Boolean indicating if the instruction us an inplace operation
+            * \fn       IsInplace
+            * \brief    Indicate if the instruction is an inplace operation
+            * \return   Boolean indicating if the instruction us an inplace operation
             */
             bool IsInplace() const;
+
+        private:
+            UInt32 mValue;		    /*!< 4 byte value of the instruction */
+
+            UInt16 mImmediateValue;	/*!< Last 2 bytes interpreted as an immediate value */
+
+            UInt8 mOp1;		        /*!< 1st operand contained in the instruction */
+            UInt8 mOp2;	    	    /*!< 2nd operand contained in the instruction */
+            UInt8 mOp3; 		    /*!< 3rd operand contained in the instruction */
+            UInt8 mOpcode;		    /*!< Opcode of the instruction */
+            UInt8 mType;		    /*!< Type of the instruction */
+
+            bool mUseImm;		    /*!< Does the instruction use an immediate value? */
+            bool mIsInplace;	    /*!< Is the instruction done inplace? */
         };
     }
 }

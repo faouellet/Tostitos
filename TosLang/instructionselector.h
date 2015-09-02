@@ -6,6 +6,7 @@
 #include "ruletable.h"
 
 #include <map>
+#include <stack>
 
 namespace TosLang
 {
@@ -16,25 +17,28 @@ namespace TosLang
             friend class Utils::ASTVisitor<InstructionSelector>;
 
         public:
-            InstructionSelector() = default;
+            InstructionSelector() : mNextRegister{ 0 } { };
             ~InstructionSelector() = default;
 
         public:
             std::vector<Instruction> Execute(const std::unique_ptr<FrontEnd::ASTNode>& root);
 
         protected:  // Declarations
-            void HandleProgramDecl();
             void HandleVarDecl();
 
         protected:  // Expressions
-            void HandleBooleanExpr();
-            void HandleNumberExpr();
 
         private:
+            std::vector<Instruction> GenerateProgram();
+            Instruction GenerateInstruction(const FrontEnd::ASTNode* node, Instruction::InstructionType iType);
+
+        private:
+            unsigned mNextRegister;
+
             RuleTable mRuleTable;
 
-            std::map<const FrontEnd::ASTNode*, Rule> mNodeLabels;
-            std::vector<Instruction> mProgram;
+            std::map<const FrontEnd::ASTNode*, unsigned> mNodeLabels;
+            std::stack<const FrontEnd::ASTNode*> mNodesVisited;
         };
     }
 }

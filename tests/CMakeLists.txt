@@ -14,6 +14,7 @@ if(Boost_FOUND)
                 main.cpp 
 				ast_printer_tests.cpp
 				frontend_error_fixture.h
+                instruction_selector_tests.cpp
                 interpreter_tests.cpp 
                 interpreter_tests.h 
 				lexer_tests.cpp
