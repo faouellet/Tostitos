@@ -41,7 +41,7 @@ namespace TosLang
             };
 
         public:
-            Lexer() = default;
+            Lexer() : mCurrentColumn{ 0 }, mCurrentLine{ 0 }, mCurrentNumber{ 0 } { };
             ~Lexer() = default;
 
         public:
