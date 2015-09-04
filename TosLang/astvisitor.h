@@ -1,4 +1,4 @@
-#ifndef AST_VISTOR_H__TOSTITOS
+#ifndef AST_VISITOR_H__TOSTITOS
 #define AST_VISITOR_H__TOSTITOS
 
 #include "ast.h"

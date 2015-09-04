@@ -50,7 +50,7 @@ if(Boost_FOUND)
 		
 		# TosLang tests
 		add_boost_test(ast_printer_tests.cpp lang)
-		add_boost_test(instruction_selector_tests.cpp lang)
+		#add_boost_test(instruction_selector_tests.cpp lang)
 		add_boost_test(lexer_tests.cpp lang)
 		add_boost_test(parser_error_tests.cpp lang)
 		add_boost_test(parser_tests.cpp lang)
