@@ -43,14 +43,14 @@ namespace MachineEngine
                 MUL         = 0x92,
                 DIV_IMM     = 0xA0,
                 DIV         = 0xA2,
-                MOD_IMM     = 0xA3,
-                MOD         = 0xA5,
                 SHIFT       = 0xB0,
                 STACK       = 0xC0,
+                MOD_IMM     = 0xD0,
+                MOD         = 0xD2,
                 NOT_IMM     = 0xE0,
                 NOT         = 0xE2,
-                NEG_IMM     = 0xE3,
-                NEG         = 0xE5,
+                NEG_IMM     = 0xF0,
+                NEG         = 0xF2,
                 UNKNOWN     = 0xF0,
             };
 
@@ -63,19 +63,17 @@ namespace MachineEngine
             Instruction(const UInt32 value = 0);
 
             /**
+            * \fn           Instruction
+            * \brief        Constructor
+            * \param value  Value of the instruction. 0 by default.
+            */
+            Instruction(InstructionType iType);
+
+            /**
             * \fn       Instruction
             * \brief    Destructor
             */
             ~Instruction() = default;
-
-        private:
-            /**
-            * \fn           FetchHalfByte
-            * \brief        Fetch half of an instruction byte
-            * \param pos    0-based position of the half-byte within the instruction starting from the right
-            * \return       A 4 bits value
-            */
-            UInt8 FetchHalfByte(const UInt8 pos) const;
 
         public:
             /**
@@ -169,17 +167,6 @@ namespace MachineEngine
 
         private:
             UInt32 mValue;		    /*!< 4 byte value of the instruction */
-
-            UInt16 mImmediateValue;	/*!< Last 2 bytes interpreted as an immediate value */
-
-            UInt8 mOp1;		        /*!< 1st operand contained in the instruction */
-            UInt8 mOp2;	    	    /*!< 2nd operand contained in the instruction */
-            UInt8 mOp3; 		    /*!< 3rd operand contained in the instruction */
-            UInt8 mOpcode;		    /*!< Opcode of the instruction */
-            UInt8 mType;		    /*!< Type of the instruction */
-
-            bool mUseImm;		    /*!< Does the instruction use an immediate value? */
-            bool mIsInplace;	    /*!< Is the instruction done inplace? */
         };
     }
 }

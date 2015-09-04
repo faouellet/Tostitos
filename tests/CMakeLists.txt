@@ -15,9 +15,10 @@ if(Boost_FOUND)
 				ast_printer_tests.cpp
 				frontend_error_fixture.h
                 instruction_selector_tests.cpp
+				instruction_tests.cpp
+                interpreter_fixture.h                 
                 interpreter_tests.cpp 
-                interpreter_tests.h 
-				lexer_tests.cpp
+                lexer_tests.cpp
 				parser_error_tests.cpp
 				parser_tests.cpp
 				typechecker_tests.cpp
@@ -43,11 +44,13 @@ if(Boost_FOUND)
         include(../cmake/BoostTestHelpers.cmake)
 
 		# Machine tests
+		add_boost_test(instruction_tests.cpp machine)
         add_boost_test(interpreter_tests.cpp machine)
         add_boost_test(utils_tests.cpp machine)
 		
 		# TosLang tests
 		add_boost_test(ast_printer_tests.cpp lang)
+		add_boost_test(instruction_selector_tests.cpp lang)
 		add_boost_test(lexer_tests.cpp lang)
 		add_boost_test(parser_error_tests.cpp lang)
 		add_boost_test(parser_tests.cpp lang)

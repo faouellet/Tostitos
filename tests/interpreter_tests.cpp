@@ -8,7 +8,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "interpreter_tests.h"
+#include "interpreter_fixture.h"
 
 #include "constants.h"
 
@@ -18,15 +18,15 @@ BOOST_FIXTURE_TEST_SUITE( InterpreterTestSuite, InterpreterFixture )
 
 BOOST_AUTO_TEST_CASE( InitMemoryTest )
 {
-    // BOOST_REQUIRE_EQUAL(Interpret.AcquireProgram(std::move(AddTestData)), NoError);
+    BOOST_REQUIRE_EQUAL(Interpret.AcquireProgram(std::move(AddTestData)), NO_ERROR);
     Interpret.AcquireProgram(std::move(AddTestData));
     std::vector<Utils::UInt8> memoryDump(Interpret.DumpCPUState().DumpMemory());
 
     for(unsigned i = 0; i < AddTestData.size(); ++i)
         BOOST_REQUIRE_EQUAL(AddTestData[i], memoryDump[i]);
 
-    // BOOST_REQUIRE_EQUAL(Interpret.AcquireProgram(std::vector<UInt8>()), EmptyROMError);
-    // BOOST_REQUIRE_EQUAL(Interpret.AcquireProgram(std::vector<UInt8>(2147483647, 42)), ROMOverflowError);
+    BOOST_REQUIRE_EQUAL(Interpret.AcquireProgram(std::vector<UInt8>()), EMPTY_ROM_ERROR);
+    BOOST_REQUIRE_EQUAL(Interpret.AcquireProgram(std::vector<UInt8>(2147483647, 42)), ROM_OVERFLOW_ERROR);
 }
 
 BOOST_AUTO_TEST_CASE( AddTest )

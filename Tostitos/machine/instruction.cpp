@@ -1,122 +1,90 @@
 #include "instruction.h"
 
+#include <cstring>
+
 using namespace MachineEngine::ProcessorSpace;
 
-Instruction::Instruction(const Utils::UInt32 value) : mValue{ value }, mIsInplace{ false }, mUseImm{ false }
-{
-    mOpcode = mValue >> 24;
-    mType = mOpcode & 0xF0;
-    mOp1 = FetchHalfByte(4);
+Instruction::Instruction(const Utils::UInt32 value) : mValue{ value } { }
 
-    if(STORE < mType && mType < STACK)	// Arithmetic instructions
-    {
-        if(mType == SHIFT)
-        {
-            mUseImm = (mOpcode & 0xF) < 3;
-        
-            if(mUseImm)
-                mOp3 = FetchHalfByte(2);
-            else
-                mOp2 = FetchHalfByte(5);
-        }
-        else
-        {
-            mUseImm = ((mOpcode & 0xF) == 0) || ((mOpcode & 0xF) == 3);
-        
-            if(mUseImm)
-            {
-                UInt16 iVal = (mValue >> 8) & 0xFF;
-                mImmediateValue = iVal | ((mValue & 0xFF) << 8);
-            }
-            else
-            {
-                mOp2 = FetchHalfByte(5);
-        
-                if ((mOpcode & 0xF) == 2 || ((mOpcode & 0xF) == 5 && mType == DIV_IMM))
-                {
-                    mIsInplace = false;
-                    mOp3 = FetchHalfByte(2);
-                }
-                else
-                {
-                    mIsInplace = true;
-                }
-            }
-        }
-    }
-    else
-    {
-        mOp2 = FetchHalfByte(5);
-        mOp3 = FetchHalfByte(2);
-        UInt16 iVal = (mValue >> 8) & 0xFF;
-        mImmediateValue = iVal | ((mValue & 0xFF) << 8);
-    }
-}
-
-UInt8 Instruction::FetchHalfByte(const UInt8 pos) const
+Instruction::Instruction(Instruction::InstructionType iType)
 {
-    return (mValue >> (pos * 4)) & 0xF;
+    mValue = static_cast<UInt32>(iType) << 24;
 }
 
 UInt8 Instruction::GetOpcode() const
 {
-    return mOpcode;
+    return mValue >> 24;
 }
 
 UInt8 Instruction::GetFirstOperand() const
 {
-    return mOp1;
+    return (mValue >> 16) & 0xF;
 }
 
 UInt8 Instruction::GetSecondOperand() const
 {
-    return mOp2;
+    return (mValue >> 20) & 0xF;
 }
 
 UInt8 Instruction::GetThirdOperand() const
 {
-    return mOp3;
+    return (mValue >> 8) & 0xF;
 }
 
 UInt16 Instruction::GetImmediateValue() const
 {
-    return mImmediateValue;
+    return ((mValue << 8) & 0xFF00) | ((mValue >> 8) & 0xFF);
 }
 
 UInt8 Instruction::GetType() const
 {
-    return mType;
+    return static_cast<InstructionType>(mValue >> 24);
 }
+
+// TODO: The setters are good for now, but they might need to change in the long term. I see 2 possibles options:
+//       1- Find a way to set only part of an integer
+//       2- Restrict the use of these functions to instructions not already having their operands set
 
 void Instruction::SetFirstOperand(UInt8 value)
 {
-    mOp1 = value;
+    mValue |= static_cast<UInt32>(value) << 16;
+
+    // mValue &= static_cast<UInt32>(value) << 16;
 }
 
 void Instruction::SetSecondOperand(UInt8 value)
 {
-    if (!mUseImm)
-        mOp2 = value;
+    if (!UseImmediateValue())
+    {
+        mValue |= static_cast<UInt32>(value) << 20;
+        // mValue &= static_cast<UInt32>(value) << 20;
+    }
 }
 
 void Instruction::SetThirdOperand(UInt8 value)
 {
-    if (!mUseImm && !mIsInplace)
-        mOp3 = value;
+    if (!UseImmediateValue() && !IsInplace())
+    {
+        mValue |= static_cast<UInt32>(value) << 8;
+        // mValue &= static_cast<UInt32>(value) << 8;
+    }
 }
 
 void Instruction::SetImmediateValue(UInt16 value)
 {
-    if (mUseImm)
-        mImmediateValue = value;
+    if (UseImmediateValue())
+    {
+        mValue |= (((value << 8) & 0xFF00) | ((value >> 8) & 0xFF));
+        // mValue &= (((value << 8) & 0xFF00) & ((value >> 8) & 0xFF));
+    }
 }
 
 bool Instruction::UseImmediateValue() const
 {
-    return mUseImm;
+    return !(mValue & 0x0F000000);
 }
 
 bool Instruction::IsInplace() const
 {
-    return mIsInplace;
+    return (mValue & 0x01000000);
 }

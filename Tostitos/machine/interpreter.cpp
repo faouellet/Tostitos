@@ -64,10 +64,7 @@ Interpreter::Interpreter() : mDist{ 0, std::numeric_limits<UInt16>::max() }, mEr
     mOps[0xA0] = &Interpreter::DIVI;
     mOps[0xA1] = &Interpreter::InplaceDIV;
     mOps[0xA2] = &Interpreter::DIV;
-    mOps[0xA3] = &Interpreter::MODI;
-    mOps[0xA4] = &Interpreter::InplaceMOD;
-    mOps[0xA5] = &Interpreter::MOD;
-    
+        
     mOps[0xB0] = &Interpreter::NSHL;
     mOps[0xB1] = &Interpreter::NSHR;
     mOps[0xB2] = &Interpreter::NSAR;
@@ -82,12 +79,17 @@ Interpreter::Interpreter() : mDist{ 0, std::numeric_limits<UInt16>::max() }, mEr
     mOps[0xC4] = &Interpreter::PUSHF;
     mOps[0xC5] = &Interpreter::POPF;
 
+    mOps[0xD0] = &Interpreter::MODI;
+    mOps[0xD1] = &Interpreter::InplaceMOD;
+    mOps[0xD2] = &Interpreter::MOD;
+
     mOps[0xE0] = &Interpreter::NOTI;
     mOps[0xE1] = &Interpreter::InplaceNOT;
     mOps[0xE2] = &Interpreter::NOT;
-    mOps[0xE3] = &Interpreter::NEGI;
-    mOps[0xE4] = &Interpreter::InplaceNEG;
-    mOps[0xE5] = &Interpreter::NEG;
+    
+    mOps[0xF0] = &Interpreter::NEGI;
+    mOps[0xF1] = &Interpreter::InplaceNEG;
+    mOps[0xF2] = &Interpreter::NEG;
 }
 
 unsigned Interpreter::InterpretOne()
@@ -133,9 +135,9 @@ unsigned Interpreter::AcquireROM(const std::string & romName)
     }
 }
 
-void Interpreter::AcquireProgram(std::vector<UInt8> && program)
+unsigned Interpreter::AcquireProgram(std::vector<UInt8> && program)
 {
-    mCPU.InitMemory(std::move(program));
+    return mCPU.InitMemory(std::move(program));
 }
 
 const CPU & Interpreter::DumpCPUState() const

@@ -175,20 +175,20 @@ private:
     {
 
         InsertInstruction(ModTestData, 0x40, 0x00, 0x08, 0x00);	// ADDI : R0 += 8
-        InsertInstruction(ModTestData, 0xA3, 0x00, 0x20, 0x00);	// MODI : R0 = R0 % 32
+        InsertInstruction(ModTestData, 0xD0, 0x00, 0x20, 0x00);	// MODI : R0 = R0 % 32
 
-        InsertInstruction(ModTestData, 0xA3, 0x00, 0x08, 0x00);	// MODI : R0 = R0 % 8
+        InsertInstruction(ModTestData, 0xD0, 0x00, 0x08, 0x00);	// MODI : R0 = R0 % 8
 
         InsertInstruction(ModTestData, 0x40, 0x01, 0x04, 0x00);	// ADDI : R1 += 4
         InsertInstruction(ModTestData, 0x40, 0x02, 0x05, 0x00);	// ADDI : R2 += 5
-        InsertInstruction(ModTestData, 0XA4, 0x12, 0x00, 0x00);	// MOD : R2 = R2 % R1
-        InsertInstruction(ModTestData, 0XA4, 0x11, 0x00, 0x00);	// MOD : R1 = R1 % R1
+        InsertInstruction(ModTestData, 0XD1, 0x12, 0x00, 0x00);	// MOD : R2 = R2 % R1
+        InsertInstruction(ModTestData, 0XD1, 0x11, 0x00, 0x00);	// MOD : R1 = R1 % R1
 
         InsertInstruction(ModTestData, 0x40, 0x03, 0x04, 0x00);	// ADDI : R3 += 4
         InsertInstruction(ModTestData, 0x40, 0x04, 0x05, 0x00);	// ADDI : R4 += 5
                 
-        InsertInstruction(ModTestData, 0XA5, 0x34, 0x05, 0x00);	// MOD : R5 = R4 % R3
-        InsertInstruction(ModTestData, 0XA5, 0x23, 0x05, 0x00);	// MOD : R5 = R3 % R2
+        InsertInstruction(ModTestData, 0XD2, 0x34, 0x05, 0x00);	// MOD : R5 = R4 % R3
+        InsertInstruction(ModTestData, 0XD2, 0x23, 0x05, 0x00);	// MOD : R5 = R3 % R2
     }
 
     /**
@@ -239,14 +239,14 @@ private:
     */
     void SetupNegTestData()
     {
-        InsertInstruction(NegTestData, 0xE3, 0x00, 0x01, 0x00); // NEGI : R0 = -1
+        InsertInstruction(NegTestData, 0xF0, 0x00, 0x01, 0x00); // NEGI : R0 = -1
 
-        InsertInstruction(NegTestData, 0xE4, 0x00, 0x00, 0x00); // NEG : R0 = -R0
-        InsertInstruction(NegTestData, 0xE4, 0x00, 0x00, 0x00); // NEG : R0 = -R0
+        InsertInstruction(NegTestData, 0xF1, 0x00, 0x00, 0x00); // NEG : R0 = -R0
+        InsertInstruction(NegTestData, 0xF1, 0x00, 0x00, 0x00); // NEG : R0 = -R0
 
         InsertInstruction(NegTestData, 0x40, 0x01, 0x02, 0x00);	// ADDI : R1 += 2
 
-        InsertInstruction(NegTestData, 0xE5, 0x10, 0x00, 0x00); // NEG : R0 = -R1
+        InsertInstruction(NegTestData, 0xF2, 0x10, 0x00, 0x00); // NEG : R0 = -R1
     }
 
     /**

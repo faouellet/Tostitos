@@ -64,7 +64,7 @@ Instruction CPU::FetchInstruction()
 unsigned CPU::InitMemory(std::vector<UInt8> && program)
 {
     if (program.empty())
-        return EMLINK;
+        return EMPTY_ROM_ERROR;
     else if (program.size() > MEMORY_SIZE)
         return ROM_OVERFLOW_ERROR;
 

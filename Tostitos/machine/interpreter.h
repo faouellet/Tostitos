@@ -22,8 +22,8 @@ namespace MachineEngine
         {
         private:
             /**
-            * \struct LeftShift
-            * \brief Functor wrapping the left shift operator
+            * \struct   LeftShift
+            * \brief    Functor wrapping the left shift operator
             */
             struct LeftShift
             {
@@ -34,9 +34,9 @@ namespace MachineEngine
             };
 
             /**
-            * \struct ArithmeticRightShift
-            * \brief Functor wrapping the right shift operator when the value to shift doesn't
-            *        have its sign bit on. Otherwise, it uses a mask to copy the sign bit.
+            * \struct   ArithmeticRightShift
+            * \brief    Functor wrapping the right shift operator when the value to shift doesn't
+            *           have its sign bit on. Otherwise, it uses a mask to copy the sign bit.
             */
             struct ArithmeticRightShift
             {
@@ -47,8 +47,8 @@ namespace MachineEngine
             };
 
             /**
-            * \struct LogicalRightShift
-            * \brief Functor wrapping the right shift operator
+            * \struct   LogicalRightShift
+            * \brief    Functor wrapping the right shift operator
             */
             struct LogicalRightShift
             {
@@ -73,146 +73,147 @@ namespace MachineEngine
 
         public:
             /**
-            * \fn Interpreter
-            * \brief Default constructor
+            * \fn           Interpreter
+            * \brief        Default constructor
             * \param in_CPU Pointer to a central processing unit implementation
             */
             Interpreter();
     
             /**
-            * \fn ~Interpreter
-            * \brief Destructor
+            * \fn       ~Interpreter
+            * \brief    Destructor
             */
             ~Interpreter() = default;
 
         private:
             /**
-            * \fn InitOpcodesTable
-            * \brief Setup the opcode interpretation table
+            * \fn       InitOpcodesTable
+            * \brief    Setup the opcode interpretation table
             */
             void InitOpcodesTable();
 
         public:
             /**
-            * \fn AcquireROM
-            * \brief Read a ROM from disk to the CPU memory
-            * \param romName  The absolute path to the ROM
-            * \return Error code depending on the situation
+            * \fn               AcquireROM
+            * \brief            Read a ROM from disk to the CPU memory
+            * \param romName    The absolute path to the ROM
+            * \return           Error code depending on the situation
             */
             unsigned AcquireROM(const std::string & romName);
 
             /**
-            * \fn AcquireProgram
-            * \brief Initialize the interpreter with a program
-            * \param program  The program to run
+            * \fn               AcquireProgram
+            * \brief            Initialize the interpreter with a program
+            * \param program    The program to run
+            * \return           Error code
             */
-            void AcquireProgram(std::vector<UInt8> && program);
+            unsigned AcquireProgram(std::vector<UInt8> && program);
                 
             /**
-            * \fn DumpCPUState
-            * \brief Dump the CPU state (flags, memory, registers)
-            * \return The CPU state
+            * \fn       DumpCPUState
+            * \brief    Dump the CPU state (flags, memory, registers)
+            * \return   The CPU state
             */
             const CPU & DumpCPUState() const;
 
             /**
-            * \fn InterpretOne
-            * \brief Read an opcode from the ROM and execute it
-            * \return An error code
+            * \fn       InterpretOne
+            * \brief    Read an opcode from the ROM and execute it
+            * \return   An error code
             */
             unsigned InterpretOne();
 
             /**
-            * \fn Reset
-            * \brief Restore the interpreter at its pre-initialized state
+            * \fn       Reset
+            * \brief    Restore the interpreter at its pre-initialized state
             */
             void Reset();
 
         private:	// Arithmetic helpers
             /**
-            * \fn BasicBinaryArithmetic
-            * \brief Apply an instruction to two registers and store the result in a third register
-            * \param instruction 4 bytes Chip16 instruction containing the opcode and the operands
-            * \param ins The instruction to apply 
-            * \param frh Handler responsible for updating the flag register
+            * \fn                   BasicBinaryArithmetic
+            * \brief                Apply an instruction to two registers and store the result in a third register
+            * \param instruction    4 bytes Chip16 instruction containing the opcode and the operands
+            * \param ins            The instruction to apply 
+            * \param frh            Handler responsible for updating the flag register
             */
             void BasicBinaryArithmetic(const Instruction & instruction, std::function<UInt16(UInt16,UInt16)> ins, 
                 std::function<void(UInt16, UInt16)> frh = std::function<void(UInt16, UInt16)>());
 
             /**
-            * \fn DiscardBinaryArithmetic
-            * \brief Apply an instruction to two registers and discard the result
-            * \param instruction 4 bytes Chip16 instruction containing the opcode and the operands
-            * \param ins The instruction to apply 
-            * \param frh Handler responsible for updating the flag register
+            * \fn                   DiscardBinaryArithmetic
+            * \brief                Apply an instruction to two registers and discard the result
+            * \param instruction    4 bytes Chip16 instruction containing the opcode and the operands
+            * \param ins            The instruction to apply 
+            * \param frh            Handler responsible for updating the flag register
             */
             void DiscardBinaryArithmetic(const Instruction & instruction, std::function<UInt16(UInt16,UInt16)> ins, 
                 std::function<void(UInt16, UInt16)> frh = std::function<void(UInt16, UInt16)>());
 
             /**
-            * \fn DiscardImmediateBinaryArithmetic
-            * \brief Apply an instruction to a register and an immediate value and discard the result
-            * \param instruction 4 bytes Chip16 instruction containing the opcode and the operands
-            * \param ins The instruction to apply 
-            * \param frh Handler responsible for updating the flag register
+            * \fn                   DiscardImmediateBinaryArithmetic
+            * \brief                Apply an instruction to a register and an immediate value and discard the result
+            * \param instruction    4 bytes Chip16 instruction containing the opcode and the operands
+            * \param ins            The instruction to apply 
+            * \param frh            Handler responsible for updating the flag register
             */
             void DiscardImmediateBinaryArithmetic(const Instruction & instruction, std::function<UInt16(UInt16, UInt16)> ins,
                 std::function<void(UInt16, UInt16)> frh = std::function<void(UInt16, UInt16)>());
 
             /**
-            * \fn ImmediateBinaryArithmetic
-            * \brief Apply an instruction to a register and an immediate value and store the result in the first register
-            * \param instruction 4 bytes Chip16 instruction containing the opcode and the operands
-            * \param ins The instruction to apply 
-            * \param frh Handler responsible for updating the flag register
+            * \fn                   ImmediateBinaryArithmetic
+            * \brief                Apply an instruction to a register and an immediate value and store the result in the first register
+            * \param instruction    4 bytes Chip16 instruction containing the opcode and the operands
+            * \param ins            The instruction to apply 
+            * \param frh            Handler responsible for updating the flag register
             */
             void ImmediateBinaryArithmetic(const Instruction & instruction, std::function<UInt16(UInt16, UInt16)> ins,
                 std::function<void(UInt16, UInt16)> frh = std::function<void(UInt16, UInt16)>());
 
             /**
-            * \fn InplaceBinaryArithmetic
-            * \brief Apply an instruction to two registers and store the result in the first register
-            * \param instruction 4 bytes Chip16 instruction containing the opcode and the operands
-            * \param ins The instruction to apply 
-            * \param frh Handler responsible for updating the flag register
+            * \fn                   InplaceBinaryArithmetic
+            * \brief                Apply an instruction to two registers and store the result in the first register
+            * \param instruction    4 bytes Chip16 instruction containing the opcode and the operands
+            * \param ins            The instruction to apply 
+            * \param frh            Handler responsible for updating the flag register
             */
             void InplaceBinaryArithmetic(const Instruction & instruction, std::function<UInt16(UInt16, UInt16)> ins,
                 std::function<void(UInt16, UInt16)> frh = std::function<void(UInt16, UInt16)>());
 
             /**
-            * \fn BasicUnaryArithmetic
-            * \brief Apply an instruction to a register and store the result in another register
-            * \param instruction 4 bytes Chip16 instruction containing the opcode and the operands
-            * \param ins The instruction to apply
-            * \param frh Handler responsible for updating the flag register
+            * \fn                   BasicUnaryArithmetic
+            * \brief                Apply an instruction to a register and store the result in another register
+            * \param instruction    4 bytes Chip16 instruction containing the opcode and the operands
+            * \param ins            The instruction to apply
+            * \param frh            Handler responsible for updating the flag register
             */
             void BasicUnaryArithmetic(const Instruction & instruction, std::function<UInt16(UInt16)> ins);
 
             /**
-            * \fn ImmediateUnaryArithmetic
-            * \brief Apply an instruction to an immediate value and store the result in a register
-            * \param instruction 4 bytes Chip16 instruction containing the opcode and the operands
-            * \param ins The instruction to apply
-            * \param frh Handler responsible for updating the flag register
+            * \fn                   ImmediateUnaryArithmetic
+            * \brief                Apply an instruction to an immediate value and store the result in a register
+            * \param instruction    4 bytes Chip16 instruction containing the opcode and the operands
+            * \param ins            The instruction to apply
+            * \param frh            Handler responsible for updating the flag register
             */
             void ImmediateUnaryArithmetic(const Instruction & instruction, std::function<UInt16(UInt16)> ins);
 
             /**
-            * \fn InplaceUnaryArithmetic
-            * \brief Apply an instruction to one register and store the result in the register
-            * \param instruction 4 bytes Chip16 instruction containing the opcode and the operands
-            * \param ins The instruction to apply
-            * \param frh Handler responsible for updating the flag register
+            * \fn                   InplaceUnaryArithmetic
+            * \brief                Apply an instruction to one register and store the result in the register
+            * \param instruction    4 bytes Chip16 instruction containing the opcode and the operands
+            * \param ins            The instruction to apply
+            * \param frh            Handler responsible for updating the flag register
             */
             void InplaceUnaryArithmetic(const Instruction & instruction, std::function<UInt16(UInt16)> ins);
         private:
              /**
-            * \fn InterpretConditions
-            * \brief Decode and execute a condition
-            * \param in_CondCode A byte containing the condition to be evaluated
-            * \return Condition evalution result
+            * \fn               InterpretConditions
+            * \brief            Decode and execute a condition
+            * \param CondCode   A byte containing the condition to be evaluated
+            * \return           Condition evalution result
             */
-            unsigned InterpretConditions(UInt8 in_CondCode);
+            unsigned InterpretConditions(UInt8 condCode);
 
         private:	// Opcodes : See spec for more information
             void ADDI(const Instruction & instruction);
