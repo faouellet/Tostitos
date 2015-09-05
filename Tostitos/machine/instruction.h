@@ -151,26 +151,40 @@ namespace MachineEngine
             UInt8 GetType() const;
 
         public:
-            /**
-            * \fn       UseImmediateValue
-            * \brief    Indicate if the instruction make use of an immediate value
-            * \return   Boolean indicating the use of an immediate value
-            */
-            bool UseImmediateValue() const;
-
             /*
             * \fn       IsArithmeticInstruction
-            * \brief    Indicate if the instruction is an arithmetic operation
+            * \brief    Indicates if the instruction is an arithmetic operation
             * \return   Boolean indicating if the instruction is an arithmetic operation
             */
             bool IsArithmeticInstruction() const;
 
             /**
             * \fn       IsInplace
-            * \brief    Indicate if the instruction is an inplace operation
+            * \brief    Indicates if the instruction is an inplace operation
             * \return   Boolean indicating if the instruction us an inplace operation
             */
             bool IsInplace() const;
+
+            /**
+            * \fn       UseImmediateValue
+            * \brief    Indicates if the instruction make use of an immediate value
+            * \return   Boolean indicating the use of an immediate value
+            */
+            bool UseImmediateValue() const;
+
+            /*
+            * \fn       UseSecondOperand
+            * \brief    Indicates if the instruction uses of a second operand
+            * \return   Boolean indicating the use of a second operand
+            */
+            bool UseSecondOperand() const;
+
+            /*
+            * \fn       UseThirdOperand
+            * \brief    Indicates if the instruction uses of a third operand
+            * \return   Boolean indicating the use of a third operand
+            */
+            bool UseThirdOperand() const;
 
         private:
             UInt32 mValue;		    /*!< 4 byte value of the instruction */

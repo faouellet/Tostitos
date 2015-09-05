@@ -79,6 +79,8 @@ void Instruction::SetImmediateValue(UInt16 value)
     }
 }
 
+// TODO: Lack of precondition checking UseImmediateValue and IsInplace
+
 bool Instruction::UseImmediateValue() const
 {
     return !(mValue & 0x0F000000);
@@ -92,4 +94,50 @@ bool Instruction::IsArithmeticInstruction() const
 bool Instruction::IsInplace() const
 {
     return (mValue & 0x01000000);
+}
+
+// TODO: Find a better way to test for second operand
+
+bool Instruction::UseSecondOperand() const
+{
+    switch (GetOpcode())
+    {
+    case 0x13:
+    case 0x23:
+    case 0x24:
+    case 0x31:
+    case 0x51:
+    case 0x52:
+    case 0x61:
+    case 0x62:
+    case 0x64:
+    case 0x71:
+    case 0x72:
+    case 0x74:
+    case 0x81:
+    case 0x82:
+    case 0x91:
+    case 0x92:
+    case 0xA1:
+    case 0xA2:
+    case 0xB1:
+    case 0xB2:
+    case 0xC3:
+    case 0xC4:
+    case 0xC5:
+    case 0xD1:
+    case 0xD2:
+    case 0xE1:
+    case 0xE2:
+    case 0xF1:
+    case 0xF2:
+        return true;
+    default:
+        return false;
+    }
+}
+
+bool Instruction::UseThirdOperand() const
+{
+    return IsArithmeticInstruction() && (((mValue >> 24) & 0x0F) == 2);
 }
