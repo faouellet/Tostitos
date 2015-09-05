@@ -84,6 +84,11 @@ bool Instruction::UseImmediateValue() const
     return !(mValue & 0x0F000000);
 }
 
+bool Instruction::IsArithmeticInstruction() const
+{
+    return mValue >= 0x05000000;
+}
+
 bool Instruction::IsInplace() const
 {
     return (mValue & 0x01000000);

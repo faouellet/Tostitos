@@ -158,6 +158,13 @@ namespace MachineEngine
             */
             bool UseImmediateValue() const;
 
+            /*
+            * \fn       IsArithmeticInstruction
+            * \brief    Indicate if the instruction is an arithmetic operation
+            * \return   Boolean indicating if the instruction is an arithmetic operation
+            */
+            bool IsArithmeticInstruction() const;
+
             /**
             * \fn       IsInplace
             * \brief    Indicate if the instruction is an inplace operation

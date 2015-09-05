@@ -31,53 +31,53 @@ Interpreter::Interpreter() : mDist{ 0, std::numeric_limits<UInt16>::max() }, mEr
     mOps[0x30] = &Interpreter::DirectSTM; 
     mOps[0x31] = &Interpreter::IndirectSTM;
 
-    mOps[0x40] = &Interpreter::ADDI;
-    mOps[0x41] = &Interpreter::InplaceADD;
-    mOps[0x42] = &Interpreter::ADD;
+    mOps[0x40] = &Interpreter::PUSH;
+    mOps[0x41] = &Interpreter::POP;
+    mOps[0x42] = &Interpreter::PUSHALL;
+    mOps[0x43] = &Interpreter::POPALL;
+    mOps[0x44] = &Interpreter::PUSHF;
+    mOps[0x45] = &Interpreter::POPF;
 
-    mOps[0x50] = &Interpreter::SUBI;
-    mOps[0x51] = &Interpreter::InplaceSUB;
-    mOps[0x52] = &Interpreter::SUB;
+    mOps[0x50] = &Interpreter::ADDI;
+    mOps[0x51] = &Interpreter::InplaceADD;
+    mOps[0x52] = &Interpreter::ADD;
 
-    mOps[0x53] = &Interpreter::CMPI;
-    mOps[0x54] = &Interpreter::CMP;
+    mOps[0x60] = &Interpreter::SUBI;
+    mOps[0x61] = &Interpreter::InplaceSUB;
+    mOps[0x62] = &Interpreter::SUB;
 
-    mOps[0x60] = &Interpreter::ANDI;
-    mOps[0x61] = &Interpreter::InplaceAND;
-    mOps[0x62] = &Interpreter::AND;
+    mOps[0x63] = &Interpreter::CMPI;
+    mOps[0x64] = &Interpreter::CMP;
+
+    mOps[0x70] = &Interpreter::ANDI;
+    mOps[0x71] = &Interpreter::InplaceAND;
+    mOps[0x72] = &Interpreter::AND;
     
-    mOps[0x63] = &Interpreter::TSTI;
-    mOps[0x64] = &Interpreter::TST;
+    mOps[0x73] = &Interpreter::TSTI;
+    mOps[0x74] = &Interpreter::TST;
 
-    mOps[0x70] = &Interpreter::ORI;
-    mOps[0x71] = &Interpreter::InplaceOR;
-    mOps[0x72] = &Interpreter::OR;
+    mOps[0x80] = &Interpreter::ORI;
+    mOps[0x81] = &Interpreter::InplaceOR;
+    mOps[0x82] = &Interpreter::OR;
 
-    mOps[0x80] = &Interpreter::XORI;
-    mOps[0x81] = &Interpreter::InplaceXOR;
-    mOps[0x82] = &Interpreter::XOR;
+    mOps[0x90] = &Interpreter::XORI;
+    mOps[0x91] = &Interpreter::InplaceXOR;
+    mOps[0x92] = &Interpreter::XOR;
 
-    mOps[0x90] = &Interpreter::MULI;
-    mOps[0x91] = &Interpreter::InplaceMUL;
-    mOps[0x92] = &Interpreter::MUL;
+    mOps[0xA0] = &Interpreter::MULI;
+    mOps[0xA1] = &Interpreter::InplaceMUL;
+    mOps[0xA2] = &Interpreter::MUL;
     
-    mOps[0xA0] = &Interpreter::DIVI;
-    mOps[0xA1] = &Interpreter::InplaceDIV;
-    mOps[0xA2] = &Interpreter::DIV;
+    mOps[0xB0] = &Interpreter::DIVI;
+    mOps[0xB1] = &Interpreter::InplaceDIV;
+    mOps[0xB2] = &Interpreter::DIV;
         
-    mOps[0xB0] = &Interpreter::NSHL;
-    mOps[0xB1] = &Interpreter::NSHR;
-    mOps[0xB2] = &Interpreter::NSAR;
-    mOps[0xB3] = &Interpreter::RegisterSHL;
-    mOps[0xB4] = &Interpreter::RegisterSHR;
-    mOps[0xB5] = &Interpreter::RegisterSAR;
-
-    mOps[0xC0] = &Interpreter::PUSH;
-    mOps[0xC1] = &Interpreter::POP;
-    mOps[0xC2] = &Interpreter::PUSHALL;
-    mOps[0xC3] = &Interpreter::POPALL;
-    mOps[0xC4] = &Interpreter::PUSHF;
-    mOps[0xC5] = &Interpreter::POPF;
+    mOps[0xC0] = &Interpreter::NSHL;
+    mOps[0xC1] = &Interpreter::NSHR;
+    mOps[0xC2] = &Interpreter::NSAR;
+    mOps[0xC3] = &Interpreter::RegisterSHL;
+    mOps[0xC4] = &Interpreter::RegisterSHR;
+    mOps[0xC5] = &Interpreter::RegisterSAR;
 
     mOps[0xD0] = &Interpreter::MODI;
     mOps[0xD1] = &Interpreter::InplaceMOD;

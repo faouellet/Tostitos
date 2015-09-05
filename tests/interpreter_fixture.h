@@ -129,12 +129,12 @@ private:
     */
     void SetupAddTestData()
     {
-        InsertInstruction(AddTestData, 0x40, 0x00, 0x00, 0x00);	// ADDI : R0 += 0
-        InsertInstruction(AddTestData, 0x40, 0x00, 0xFF, 0xFF);	// ADDI : R0 += 65535
-        InsertInstruction(AddTestData, 0x41, 0x01, 0x00, 0x00);	// ADD : R1 += R0
-        InsertInstruction(AddTestData, 0x42, 0x03, 0x02, 0x00);	// ADD : R2 = R0 + R3
+        InsertInstruction(AddTestData, 0x50, 0x00, 0x00, 0x00);	// ADDI : R0 += 0
+        InsertInstruction(AddTestData, 0x50, 0x00, 0xFF, 0xFF);	// ADDI : R0 += 65535
+        InsertInstruction(AddTestData, 0x51, 0x01, 0x00, 0x00);	// ADD : R1 += R0
+        InsertInstruction(AddTestData, 0x52, 0x03, 0x02, 0x00);	// ADD : R2 = R0 + R3
         // Should overflow (65535 + 65535)
-        InsertInstruction(AddTestData, 0x42, 0x01, 0x03, 0x00);	// ADD : R3 = R0 + R1
+        InsertInstruction(AddTestData, 0x52, 0x01, 0x03, 0x00);	// ADD : R3 = R0 + R1
     }
 
     /**
@@ -143,13 +143,13 @@ private:
     */
     void SetupAndTestData()
     {
-        InsertInstruction(AndTestData, 0x60, 0x00, 0xFF, 0xFF);	// ANDI : R0 & 65535
-        InsertInstruction(AndTestData, 0x61, 0x01, 0x00, 0x00);	// AND : R1 &= R0
-        InsertInstruction(AndTestData, 0x62, 0x01, 0x02, 0x00);	// AND : R2 = R0 & R1
+        InsertInstruction(AndTestData, 0x70, 0x00, 0xFF, 0xFF);	// ANDI : R0 & 65535
+        InsertInstruction(AndTestData, 0x71, 0x01, 0x00, 0x00);	// AND : R1 &= R0
+        InsertInstruction(AndTestData, 0x72, 0x01, 0x02, 0x00);	// AND : R2 = R0 & R1
         
-        InsertInstruction(AndTestData, 0x40, 0x00, 0x01, 0x00);	// ADDI : R0 += 1
-        InsertInstruction(AndTestData, 0x63, 0x00, 0xFF, 0xFF); // TSTI : R0 & 65535
-        InsertInstruction(AndTestData, 0x62, 0x01, 0x02, 0x00);	// TST : R0 & R1
+        InsertInstruction(AndTestData, 0x50, 0x00, 0x01, 0x00);	// ADDI : R0 += 1
+        InsertInstruction(AndTestData, 0x73, 0x00, 0xFF, 0xFF); // TSTI : R0 & 65535
+        InsertInstruction(AndTestData, 0x72, 0x01, 0x02, 0x00);	// TST : R0 & R1
     }
 
     /**
@@ -158,13 +158,13 @@ private:
     */
     void SetupDivTestData()
     {
-        InsertInstruction(DivTestData, 0x40, 0x00, 0x08, 0x00);	// ADDI : R0 += 8
-        InsertInstruction(DivTestData, 0x40, 0x01, 0x04, 0x00);	// ADDI : R1 += 4
-        InsertInstruction(DivTestData, 0x40, 0x02, 0x02, 0x00);	// ADDI : R2 += 2
+        InsertInstruction(DivTestData, 0x50, 0x00, 0x08, 0x00);	// ADDI : R0 += 8
+        InsertInstruction(DivTestData, 0x50, 0x01, 0x04, 0x00);	// ADDI : R1 += 4
+        InsertInstruction(DivTestData, 0x50, 0x02, 0x02, 0x00);	// ADDI : R2 += 2
 
-        InsertInstruction(DivTestData, 0xA0, 0x00, 0x20, 0x00);	// DIVI : R0 = 32 / R0
-        InsertInstruction(DivTestData, 0XA1, 0x21, 0x00, 0x00);	// DIV : R1 = R2 / R1
-        InsertInstruction(DivTestData, 0XA2, 0x12, 0x03, 0x00);	// DIV : R3 = R1 / R2
+        InsertInstruction(DivTestData, 0xB0, 0x00, 0x20, 0x00);	// DIVI : R0 = 32 / R0
+        InsertInstruction(DivTestData, 0XB1, 0x21, 0x00, 0x00);	// DIV : R1 = R2 / R1
+        InsertInstruction(DivTestData, 0XB2, 0x12, 0x03, 0x00);	// DIV : R3 = R1 / R2
     }
 
     /**
@@ -174,18 +174,18 @@ private:
     void SetupModTestData()
     {
 
-        InsertInstruction(ModTestData, 0x40, 0x00, 0x08, 0x00);	// ADDI : R0 += 8
+        InsertInstruction(ModTestData, 0x50, 0x00, 0x08, 0x00);	// ADDI : R0 += 8
         InsertInstruction(ModTestData, 0xD0, 0x00, 0x20, 0x00);	// MODI : R0 = R0 % 32
 
         InsertInstruction(ModTestData, 0xD0, 0x00, 0x08, 0x00);	// MODI : R0 = R0 % 8
 
-        InsertInstruction(ModTestData, 0x40, 0x01, 0x04, 0x00);	// ADDI : R1 += 4
-        InsertInstruction(ModTestData, 0x40, 0x02, 0x05, 0x00);	// ADDI : R2 += 5
+        InsertInstruction(ModTestData, 0x50, 0x01, 0x04, 0x00);	// ADDI : R1 += 4
+        InsertInstruction(ModTestData, 0x50, 0x02, 0x05, 0x00);	// ADDI : R2 += 5
         InsertInstruction(ModTestData, 0XD1, 0x12, 0x00, 0x00);	// MOD : R2 = R2 % R1
         InsertInstruction(ModTestData, 0XD1, 0x11, 0x00, 0x00);	// MOD : R1 = R1 % R1
 
-        InsertInstruction(ModTestData, 0x40, 0x03, 0x04, 0x00);	// ADDI : R3 += 4
-        InsertInstruction(ModTestData, 0x40, 0x04, 0x05, 0x00);	// ADDI : R4 += 5
+        InsertInstruction(ModTestData, 0x50, 0x03, 0x04, 0x00);	// ADDI : R3 += 4
+        InsertInstruction(ModTestData, 0x50, 0x04, 0x05, 0x00);	// ADDI : R4 += 5
                 
         InsertInstruction(ModTestData, 0XD2, 0x34, 0x05, 0x00);	// MOD : R5 = R4 % R3
         InsertInstruction(ModTestData, 0XD2, 0x23, 0x05, 0x00);	// MOD : R5 = R3 % R2
@@ -197,7 +197,7 @@ private:
     */
     void SetupErrorData()
     {
-        InsertInstruction(ErrorTestData, 0xC1, 0x00, 0x00, 0x00);	// POP
+        InsertInstruction(ErrorTestData, 0x41, 0x00, 0x00, 0x00);	// POP
         InsertInstruction(ErrorTestData, 0x30, 0x00, 0xFF, 0xFF);	// STM R0 FFFF
         InsertInstruction(ErrorTestData, 0x22, 0x00, 0xE0, 0xFF);	// STM R0 FFFF
     }
@@ -223,14 +223,14 @@ private:
     */
     void SetupMulTestData()
     {
-        InsertInstruction(MulTestData, 0x40, 0x00, 0x02, 0x00);	// ADDI : R0 += 2
-        InsertInstruction(MulTestData, 0x40, 0x01, 0x02, 0x00);	// ADDI : R1 += 2
+        InsertInstruction(MulTestData, 0x50, 0x00, 0x02, 0x00);	// ADDI : R0 += 2
+        InsertInstruction(MulTestData, 0x50, 0x01, 0x02, 0x00);	// ADDI : R1 += 2
 
-        InsertInstruction(MulTestData, 0x90, 0x00, 0x0A, 0x00);	// MULI : R0 *= 10
-        InsertInstruction(MulTestData, 0x91, 0x01, 0x00, 0x00);	// MUL : R1 *= R0
-        InsertInstruction(MulTestData, 0x92, 0x01, 0x02, 0x00);	// MUL : R2 = R1 * R0
-        InsertInstruction(MulTestData, 0x90, 0x03, 0x00, 0x00);	// MUL : R3 *= 0
-        InsertInstruction(MulTestData, 0x92, 0x22, 0x03, 0x00);	// MUL : R3 = R2 * R2
+        InsertInstruction(MulTestData, 0xA0, 0x00, 0x0A, 0x00);	// MULI : R0 *= 10
+        InsertInstruction(MulTestData, 0xA1, 0x01, 0x00, 0x00);	// MUL : R1 *= R0
+        InsertInstruction(MulTestData, 0xA2, 0x01, 0x02, 0x00);	// MUL : R2 = R1 * R0
+        InsertInstruction(MulTestData, 0xA0, 0x03, 0x00, 0x00);	// MUL : R3 *= 0
+        InsertInstruction(MulTestData, 0xA2, 0x22, 0x03, 0x00);	// MUL : R3 = R2 * R2
     }
 
     /**
@@ -244,7 +244,7 @@ private:
         InsertInstruction(NegTestData, 0xF1, 0x00, 0x00, 0x00); // NEG : R0 = -R0
         InsertInstruction(NegTestData, 0xF1, 0x00, 0x00, 0x00); // NEG : R0 = -R0
 
-        InsertInstruction(NegTestData, 0x40, 0x01, 0x02, 0x00);	// ADDI : R1 += 2
+        InsertInstruction(NegTestData, 0x50, 0x01, 0x02, 0x00);	// ADDI : R1 += 2
 
         InsertInstruction(NegTestData, 0xF2, 0x10, 0x00, 0x00); // NEG : R0 = -R1
     }
@@ -261,7 +261,7 @@ private:
         InsertInstruction(NotTestData, 0xE1, 0x00, 0x00, 0x00); // NOT : R0 = !R0
         InsertInstruction(NotTestData, 0xE1, 0x00, 0x00, 0x00); // NOT : R0 = !R0
 
-        InsertInstruction(NotTestData, 0x40, 0x01, 0x02, 0x00);	// ADDI : R1 += 2
+        InsertInstruction(NotTestData, 0x50, 0x01, 0x02, 0x00);	// ADDI : R1 += 2
 
         InsertInstruction(NotTestData, 0xE2, 0x10, 0x00, 0x00); // NOT : R0 = !R1
         InsertInstruction(NotTestData, 0xE2, 0x20, 0x00, 0x00); // NOT : R0 = !R2
@@ -274,10 +274,10 @@ private:
     */
     void SetupOrTestData()
     {
-        InsertInstruction(OrTestData, 0x70, 0x00, 0x00, 0x00);	// ORI : R0 | 0
-        InsertInstruction(OrTestData, 0x70, 0x00, 0x01, 0x00);	// ORI : R0 | 1
-        InsertInstruction(OrTestData, 0x71, 0x01, 0x00, 0x00);	// OR : R1 |= R0
-        InsertInstruction(OrTestData, 0x72, 0x03, 0x02, 0x00);	// OR : R2 = R0 | R3
+        InsertInstruction(OrTestData, 0x80, 0x00, 0x00, 0x00);	// ORI : R0 | 0
+        InsertInstruction(OrTestData, 0x80, 0x00, 0x01, 0x00);	// ORI : R0 | 1
+        InsertInstruction(OrTestData, 0x81, 0x01, 0x00, 0x00);	// OR : R1 |= R0
+        InsertInstruction(OrTestData, 0x82, 0x03, 0x02, 0x00);	// OR : R2 = R0 | R3
     }
 
     /**
@@ -286,19 +286,19 @@ private:
     */
     void SetupSubTestData()
     {
-        InsertInstruction(SubTestData, 0x40, 0x00, 0x0C, 0x00);	// ADDI : R0 += 12
+        InsertInstruction(SubTestData, 0x50, 0x00, 0x0C, 0x00);	// ADDI : R0 += 12
         
-        InsertInstruction(SubTestData, 0x50, 0x00, 0x04, 0x00);	// SUBI : R0 -= 4
-        InsertInstruction(SubTestData, 0x50, 0x01, 0x04, 0x00);	// SUB : R1 -= 4
-        InsertInstruction(SubTestData, 0x51, 0x10, 0x00, 0x00);	// SUB : R0 -= R1
-        InsertInstruction(SubTestData, 0x51, 0x01, 0x00, 0x00);	// SUB : R1 -= R0
-        InsertInstruction(SubTestData, 0x52, 0x10, 0x02, 0x00);	// SUB : R2 = R0 - R1
-        InsertInstruction(SubTestData, 0x52, 0x01, 0x03, 0x00);	// SUB : R3 = R1 - R0
+        InsertInstruction(SubTestData, 0x60, 0x00, 0x04, 0x00);	// SUBI : R0 -= 4
+        InsertInstruction(SubTestData, 0x60, 0x01, 0x04, 0x00);	// SUB : R1 -= 4
+        InsertInstruction(SubTestData, 0x61, 0x10, 0x00, 0x00);	// SUB : R0 -= R1
+        InsertInstruction(SubTestData, 0x61, 0x01, 0x00, 0x00);	// SUB : R1 -= R0
+        InsertInstruction(SubTestData, 0x62, 0x10, 0x02, 0x00);	// SUB : R2 = R0 - R1
+        InsertInstruction(SubTestData, 0x62, 0x01, 0x03, 0x00);	// SUB : R3 = R1 - R0
 
-        InsertInstruction(SubTestData, 0x53, 0x00, 0x04, 0x00);	// CMPI : R0 -= 4
-        InsertInstruction(SubTestData, 0x53, 0x04, 0x04, 0x00);	// CMPI : R4 -= 4
-        InsertInstruction(SubTestData, 0x54, 0x10, 0x00, 0x00);	// CMP : R0 -= R1
-        InsertInstruction(SubTestData, 0x54, 0x01, 0x00, 0x00);	// CMP : R1 -= R0
+        InsertInstruction(SubTestData, 0x63, 0x00, 0x04, 0x00);	// CMPI : R0 -= 4
+        InsertInstruction(SubTestData, 0x63, 0x04, 0x04, 0x00);	// CMPI : R4 -= 4
+        InsertInstruction(SubTestData, 0x64, 0x10, 0x00, 0x00);	// CMP : R0 -= R1
+        InsertInstruction(SubTestData, 0x64, 0x01, 0x00, 0x00);	// CMP : R1 -= R0
     }
     
     /**
@@ -307,9 +307,9 @@ private:
     */
     void SetupXorTestData()
     {
-        InsertInstruction(XorTestData, 0x80, 0x00, 0x01, 0x00);	// XORI : R0 ^ 1
-        InsertInstruction(XorTestData, 0x81, 0x01, 0x00, 0x00);	// XOR : R1 ^= R0
-        InsertInstruction(XorTestData, 0x82, 0x01, 0x02, 0x00);	// XOR : R2 = R0 ^ R3
+        InsertInstruction(XorTestData, 0x90, 0x00, 0x01, 0x00);	// XORI : R0 ^ 1
+        InsertInstruction(XorTestData, 0x91, 0x01, 0x00, 0x00);	// XOR : R1 ^= R0
+        InsertInstruction(XorTestData, 0x92, 0x01, 0x02, 0x00);	// XOR : R2 = R0 ^ R3
     }
 
     /**
@@ -319,17 +319,17 @@ private:
     void SetupShiftData()
     {
         for(int i = 0; i < NB_REGISTERS/2; ++i)
-            InsertInstruction(ShiftTestData, 0x40, i, 0xFF, 0xFF);	// ADDI : Ri += 65535
+            InsertInstruction(ShiftTestData, 0x50, i, 0xFF, 0xFF);	// ADDI : Ri += 65535
 
-        InsertInstruction(ShiftTestData, 0xB0, 0x00, 0x0D, 0x00);	// SHL : R0 << 13 (Logical)
-        InsertInstruction(ShiftTestData, 0xB1, 0x01, 0x0D, 0x00);	// SHR : R1 >> 13 (Logical)
-        InsertInstruction(ShiftTestData, 0xB0, 0x02, 0x0D, 0x00);	// SAL : R2 << 13 (Arithmetic)
-        InsertInstruction(ShiftTestData, 0xB2, 0x03, 0x0D, 0x00);	// SAR : R3 >> 13 (Arithmetic)
+        InsertInstruction(ShiftTestData, 0xC0, 0x00, 0x0D, 0x00);	// SHL : R0 << 13 (Logical)
+        InsertInstruction(ShiftTestData, 0xC1, 0x01, 0x0D, 0x00);	// SHR : R1 >> 13 (Logical)
+        InsertInstruction(ShiftTestData, 0xC0, 0x02, 0x0D, 0x00);	// SAL : R2 << 13 (Arithmetic)
+        InsertInstruction(ShiftTestData, 0xC2, 0x03, 0x0D, 0x00);	// SAR : R3 >> 13 (Arithmetic)
 
-        InsertInstruction(ShiftTestData, 0xB3, 0x14, 0x00, 0x00);	// SHL : R4 << R1 (Logical)
-        InsertInstruction(ShiftTestData, 0xB4, 0x15, 0x00, 0x00);	// SHR : R5 >> R1 (Logical)
-        InsertInstruction(ShiftTestData, 0xB3, 0x16, 0x00, 0x00);	// SAL : R6 << R1 (Arithmetic)
-        InsertInstruction(ShiftTestData, 0xB5, 0x17, 0x00, 0x00);	// SAR : R7 >> R1 (Arithmetic)
+        InsertInstruction(ShiftTestData, 0xC3, 0x14, 0x00, 0x00);	// SHL : R4 << R1 (Logical)
+        InsertInstruction(ShiftTestData, 0xC4, 0x15, 0x00, 0x00);	// SHR : R5 >> R1 (Logical)
+        InsertInstruction(ShiftTestData, 0xC3, 0x16, 0x00, 0x00);	// SAL : R6 << R1 (Arithmetic)
+        InsertInstruction(ShiftTestData, 0xC5, 0x17, 0x00, 0x00);	// SAR : R7 >> R1 (Arithmetic)
     }
 
     /**
@@ -341,18 +341,18 @@ private:
         for(int i = 0; i < NB_REGISTERS; ++i)
             InsertInstruction(StackTestData, 0x20, i, i*2, 0x00);	// LDI : Ri = i * 2
 
-        InsertInstruction(StackTestData, 0xC2, 0x00, 0x00, 0x00);	// PUSHALL
+        InsertInstruction(StackTestData, 0x42, 0x00, 0x00, 0x00);	// PUSHALL
 
         for(int i = 0; i < NB_REGISTERS; ++i)
             InsertInstruction(StackTestData, 0x20, i, 0x00, 0x00);	// LDI : Ri = 0
 
-        InsertInstruction(StackTestData, 0xC3, 0x00, 0x00, 0x00);	// POPALL
+        InsertInstruction(StackTestData, 0x43, 0x00, 0x00, 0x00);	// POPALL
 
         for(int i = 0; i < NB_REGISTERS; ++i)
-            InsertInstruction(StackTestData, 0xC0, i, 0x00, 0x00);	// PUSH Ri
+            InsertInstruction(StackTestData, 0x40, i, 0x00, 0x00);	// PUSH Ri
 
         for(int i = 0; i < NB_REGISTERS; ++i)
-            InsertInstruction(StackTestData, 0xC1, i, 0x00, 0x00);	// POP Ri
+            InsertInstruction(StackTestData, 0x41, i, 0x00, 0x00);	// POP Ri
     }
     
     /**
