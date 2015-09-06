@@ -16,6 +16,13 @@
 
 BOOST_FIXTURE_TEST_SUITE( InterpreterTestSuite, InterpreterFixture )
 
+BOOST_AUTO_TEST_CASE( AcquireROMTest )
+{
+	// TODO: Complete this test
+
+	BOOST_REQUIRE_EQUAL(Interpret.AcquireROM("BadFile.c16"), FILE_ERROR);
+}
+
 BOOST_AUTO_TEST_CASE( InitMemoryTest )
 {
     BOOST_REQUIRE_EQUAL(Interpret.AcquireProgram(std::move(AddTestData)), NO_ERROR);
@@ -28,6 +35,26 @@ BOOST_AUTO_TEST_CASE( InitMemoryTest )
     BOOST_REQUIRE_EQUAL(Interpret.AcquireProgram(std::vector<UInt8>()), EMPTY_ROM_ERROR);
     BOOST_REQUIRE_EQUAL(Interpret.AcquireProgram(std::vector<UInt8>(2147483647, 42)), ROM_OVERFLOW_ERROR);
 }
+
+BOOST_AUTO_TEST_CASE( BadInstructionTest )
+{
+	BOOST_REQUIRE_EQUAL(ExecuteBadInstruction(0xFF, 0x00, 0x00, 0x00), UNKNOWN_OP_ERROR);
+}
+
+BOOST_AUTO_TEST_CASE( ResetTest )
+{
+	BOOST_REQUIRE_EQUAL(ExecuteBadInstruction(0xFF, 0x00, 0x00, 0x00), UNKNOWN_OP_ERROR);
+	Interpret.Reset();
+	const CPU& Cpu = Interpret.DumpCPUState();
+	BOOST_REQUIRE_EQUAL(Cpu.DumpProgramCounter(), 0);
+	BOOST_REQUIRE_EQUAL(Cpu.DumpFlagRegister(), 0);
+	BOOST_REQUIRE_EQUAL(Cpu.DumpStackPointer(), 0);
+
+	for (int i = 0; i < 16; i++)
+		BOOST_REQUIRE_EQUAL(Cpu.DumpRegister(i), 0);
+}
+
+////////////////////////////// OPCODE TESTS //////////////////////////////
 
 BOOST_AUTO_TEST_CASE( AddTest )
 {

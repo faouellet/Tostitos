@@ -7,7 +7,7 @@
 
 using namespace MachineEngine::ProcessorSpace;
 
-Interpreter::Interpreter() : mDist{ 0, std::numeric_limits<UInt16>::max() }, mErrorCode(NO_ERROR)
+Interpreter::Interpreter() : mDist{ 0, std::numeric_limits<UInt16>::max() }, mErrorCode{ NO_ERROR }
 {
     mOps[0x00] = &Interpreter::NOP; 
     mOps[0x07] = &Interpreter::RND;
@@ -96,10 +96,15 @@ unsigned Interpreter::InterpretOne()
 {
     Instruction inst = mCPU.FetchInstruction();
     InstructionExec func = mOps[inst.GetOpcode()];
-    if(func)
-        (this->*func)(inst);
-    else
-        std::cout << "Unknown opcode" << std::endl;
+	if (func)
+	{
+		(this->*func)(inst);
+	}
+	else
+	{
+		std::cout << "Unknown opcode" << std::endl;
+		mErrorCode = UNKNOWN_OP_ERROR;
+	}
     
     return mErrorCode;
 }

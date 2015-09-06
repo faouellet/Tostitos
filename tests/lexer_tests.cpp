@@ -18,12 +18,16 @@ BOOST_AUTO_TEST_CASE( InitTest )
     BOOST_REQUIRE(!lex.Init("BadFile.tos"));
     BOOST_REQUIRE(lex.Init("../inputs/vardecl.tos"));
     BOOST_REQUIRE(lex.Init("../inputs/varinit.tos"));
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 0);
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 0);
 }
 
 BOOST_AUTO_TEST_CASE( GetNextTokenVarTest )
 {
     Lexer lex;
     BOOST_REQUIRE(lex.Init("../inputs/vardecl.tos"));
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
 
     // var MyIntVar : Int;
     BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::VAR);
@@ -49,6 +53,8 @@ BOOST_AUTO_TEST_CASE( GetNextTokenVarInitTest )
 {
     Lexer lex;
     BOOST_REQUIRE(lex.Init("../inputs/varinit.tos"));
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
 
     // var MyIntVar : Int = 42;
     BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::VAR);
