@@ -87,6 +87,7 @@ std::unique_ptr<ASTNode> Parser::ParseVarDecl()
     if (!mSymbolTable->AddSymbol(varName, mLexer.GetCurrentStr() == "Int" ? Symbol(INT) : Symbol(BOOL)))
     {
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::VAR_REDEFINITION, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
+		delete vDecl;
         return std::move(node);
     }
 

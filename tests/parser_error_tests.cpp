@@ -39,6 +39,9 @@ BOOST_FIXTURE_TEST_CASE( ParseBadVarDeclTest, FrontEndErrorFixture )
     const ChildrenNodes& cNodes = pDecl->GetChildrenNodes();
     BOOST_REQUIRE_EQUAL(cNodes.size(), 8);
 
+	// Check that we have no nullptr. There should only be error nodes with one non-error node
+	BOOST_REQUIRE(std::all_of(cNodes.begin(), cNodes.end(), [](const std::unique_ptr<ASTNode>& node) { return node != nullptr; }));
+
     // Check that we only have one non-error node
     BOOST_REQUIRE_EQUAL(std::count_if(cNodes.begin(), cNodes.end(), [](const std::unique_ptr<ASTNode>& node){ return node->GetKind() != ASTNode::ERROR; }), 1);
     

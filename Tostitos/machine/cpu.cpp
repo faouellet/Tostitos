@@ -1,16 +1,17 @@
 #include "cpu.h"
 
 #include <algorithm>
-#include <functional>
 #include <iostream>
 #include <iterator>
 #include <limits>
+#include <string>
 
 #ifdef __unix__ 
 #include <string.h>
 #endif
 
 using namespace MachineEngine::ProcessorSpace;
+using MachineEngine::ProcessorSpace::Utils::Int16;
 
 CPU::CPU() : mFR{ 0 }, mPC{ 0 }, mSP{ STACK_START }, mErrorCode{ NO_ERROR }
 {
@@ -106,7 +107,7 @@ UInt8 CPU::SetProgramCounter(const UInt16 value)
 {
     if(value > STACK_START)
     {
-        std::cout << "Not a valid value for the PC: " << std::hex << value << std::endl;
+		PrintHex("Not a valid value for the PC", value);
         return MEMORY_ERROR;
     }
     else
@@ -120,7 +121,7 @@ UInt8 CPU::SetRegister(const UInt8 regID, const UInt16 value)
 {
     if(regID >= NB_REGISTERS)
     {
-        std::cout << "Not a valid register ID: " << std::hex << regID << std::endl;
+		PrintHex("Not a valid register ID", regID);
         return UNKNOWN_REGISTER;
     }
     else
@@ -150,18 +151,11 @@ void CPU::StepBack()
     mPC -= 4;
 }
 
-std::vector<UInt8> CPU::FetchPalette(const UInt16 address)
+void CPU::PrintHex(const std::string& message, UInt16 value) const
 {
-    std::vector<UInt8> paletteData(16*3);	// Per specifications
-
-    for(int j = 0; j < 16*3; j+=3)
-    {
-        paletteData[j+2] = mMemory[address+j];
-        paletteData[j+1] = mMemory[address+j+1];
-        paletteData[j]   = mMemory[address+j+2];
-    }
-
-    return paletteData;
+	std::ios::fmtflags f(std::cout.flags());
+	std::cout << message << ": " << std::hex << value << std::endl;
+	std::cout.flags(f);
 }
 
 void CPU::FetchRegistersValues(UInt16 & x, UInt16 & y) const
@@ -174,7 +168,7 @@ UInt8 CPU::Load(const UInt16 address, UInt16 & value) const
 {
     if(STACK_START < address && address < STACK_END)
     {
-        std::cout << "Address out of memory: " << std::hex << address << std::endl;
+		PrintHex("Address out of memory", address);
         return MEMORY_ERROR;
     }
     else
@@ -188,7 +182,7 @@ UInt8 CPU::Store(const UInt16 address, const UInt16 value)
 {
     if(address > STACK_START)
     {
-        std::cout << "Address out of memory: " << std::hex << address << std::endl;
+		PrintHex("Address out of memory", address);
         return MEMORY_ERROR;
     }
     else
@@ -201,14 +195,14 @@ UInt8 CPU::Store(const UInt16 address, const UInt16 value)
 
 UInt8 CPU::Pop(UInt16 & value)
 {
-    if(mSP-2 < STACK_START)
+    if((mSP - 2) < STACK_START)
     {
         std::cout << "Stack underflow" << std::endl;
         return STACK_UNDERFLOW;
     }
     else
     {
-        value = UInt16(mMemory[--mSP] << 8 | (mMemory[--mSP]));
+        value = UInt16((mMemory[--mSP] << 8) | (mMemory[--mSP]));
         return NO_ERROR;
     }
 }
@@ -243,12 +237,18 @@ void CPU::SetSignZeroFlag(UInt16 result)
 
 void CPU::SetCarryOverflowFlagAdd(UInt16 op1, UInt16 op2) 
 {
+	// TODO: Simplify this function. The conditions are too error-prone.
+
     UInt16 result = op1 + op2;
     // Set carry flag
     mFR = result < op1 ? mFR | UNSIGNED_CARRY_FLAG : mFR & ~UNSIGNED_CARRY_FLAG;
+
+	Int16 op1Signed = static_cast<Int16>(op1);
+	Int16 op2Signed = static_cast<Int16>(op2);
+
     // Set overflow flag
-    mFR = (result >= 0 && op1 & 0x8000 && op2 & 0x8000)
-        || (result & 0x8000 && op1 >= 0 && op2 >= 0) ?
+    mFR = (result >= 0 && (op1Signed & 0x8000) && (op2Signed & 0x8000))
+        || ((result & 0x8000) && (op1Signed >= 0) && (op2Signed >= 0)) ?
         mFR | SIGNED_OVERFLOW_FLAG : mFR & ~SIGNED_OVERFLOW_FLAG;
 }
 

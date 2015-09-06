@@ -93,7 +93,7 @@ bool Instruction::IsArithmeticInstruction() const
 
 bool Instruction::IsInplace() const
 {
-    return (mValue & 0x01000000);
+    return static_cast<bool>(mValue & 0x01000000);
 }
 
 // TODO: Find a better way to test for second operand

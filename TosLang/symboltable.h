@@ -10,15 +10,15 @@ namespace TosLang
     {
         enum Type
         {
-            BOOL, INT
+            BOOL, INT, UNKNOWN
         };
 
         struct Symbol
         {
             Type mType;
             // TODO: Scope
-            Symbol() = default;
-            Symbol(Type t) : mType(t) { }
+			Symbol() : mType{ Type::UNKNOWN } { };
+			Symbol(Type t) : mType{ t } { }
         };
 
         class SymbolTable

@@ -8,6 +8,8 @@
 #include <memory>
 #include <vector>
 
+class string;
+
 namespace MachineEngine
 {
     namespace ProcessorSpace
@@ -191,15 +193,16 @@ namespace MachineEngine
             */
             void StepBack();
 
-        private:	// Memory helpers
-            /**
-            * \fn FetchPalette
-            * \brief Read a number of bytes from memory which corresponds to a palette data
-            * \param address Address in memory where the palette is stored
-            * \return The palette data
-            */
-            std::vector<UInt8> FetchPalette(const UInt16 address);
+		private:
+			/*
+			* \fn				PrintHex
+			* \brief			Prints a message and numerical value in hexadecimal format to the standard output
+			* \param message	Message to be printed on the standard output
+			* \param value		Value to be printed in hexadecimal format
+			*/
+			void PrintHex(const std::string& message, UInt16 value) const;
 
+        private:	// Memory helpers
             /**
             * \fn FetchRegistersValues
             * \brief Extract the values contained within the registers whose addresses

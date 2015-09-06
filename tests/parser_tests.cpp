@@ -25,6 +25,7 @@ BOOST_AUTO_TEST_CASE( ParseVarDeclTest )
     
     const ChildrenNodes& cNodes = pDecl->GetChildrenNodes();
     BOOST_REQUIRE_EQUAL(cNodes.size(), 2);
+	BOOST_REQUIRE(std::all_of(cNodes.begin(), cNodes.end(), [](const std::unique_ptr<ASTNode>& node) { return node != nullptr; }));
 
     BOOST_REQUIRE_EQUAL(cNodes[0]->GetKind(), ASTNode::VAR_DECL);
     const VarDecl* vDecl = dynamic_cast<const VarDecl*>(cNodes[0].get());
