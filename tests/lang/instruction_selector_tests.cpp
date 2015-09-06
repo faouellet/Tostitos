@@ -8,8 +8,8 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "parser.h"
-#include "instructionselector.h"
+#include "Parse/parser.h"
+#include "CodeGen/instructionselector.h"
 
 using namespace TosLang::FrontEnd;
 

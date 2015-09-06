@@ -8,8 +8,8 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "astprinter.h"
-#include "parser.h"
+#include "Utils/astprinter.h"
+#include "Parse/parser.h"
 
 #include <fstream>
 #include <string>

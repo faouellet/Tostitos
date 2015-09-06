@@ -9,8 +9,9 @@
 #include <boost/test/unit_test.hpp>
 
 #include "frontend_error_fixture.h"
-#include "parser.h"
-#include "typechecker.h"
+
+#include "Parse/parser.h"
+#include "Sema/typechecker.h"
 
 BOOST_FIXTURE_TEST_CASE( VarInitTypeError, FrontEndErrorFixture )
 {

@@ -8,7 +8,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "lexer.h"
+#include "Parse/lexer.h"
 
 using namespace TosLang::FrontEnd;
 

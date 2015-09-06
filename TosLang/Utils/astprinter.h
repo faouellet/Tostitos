@@ -3,8 +3,8 @@
 
 #include "astvisitor.h"
 
-#include "declarations.h"
-#include "expressions.h"
+#include "../AST/declarations.h"
+#include "../AST/expressions.h"
 
 namespace TosLang
 {

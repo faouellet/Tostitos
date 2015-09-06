@@ -9,9 +9,10 @@
 #include <boost/test/unit_test.hpp>
 
 #include "frontend_error_fixture.h"
-#include "parser.h"
-#include "declarations.h"
-#include "expressions.h"
+
+#include "Parse/parser.h"
+#include "AST/declarations.h"
+#include "AST/expressions.h"
 
 BOOST_FIXTURE_TEST_CASE( BadInitTest, FrontEndErrorFixture )
 {

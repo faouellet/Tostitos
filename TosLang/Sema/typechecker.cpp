@@ -1,7 +1,7 @@
 #include "typechecker.h"
 
-#include "declarations.h"
-#include "errorlogger.h"
+#include "../AST/declarations.h"
+#include "../Utils/errorlogger.h"
 
 #include <cassert>
 

@@ -1,7 +1,7 @@
 #ifndef AST_VISITOR_H__TOSTITOS
 #define AST_VISITOR_H__TOSTITOS
 
-#include "ast.h"
+#include "../AST/ast.h"
 
 namespace TosLang
 {

@@ -1,7 +1,7 @@
 #ifndef RULE_TABLE_H__TOSTITOS
 #define RULE_TABLE_H__TOSTITOS
 
-#include "../Tostitos/machine/instruction.h"
+#include "../../Tostitos/machine/instruction.h"
 
 #include <vector>
 #include <tuple>

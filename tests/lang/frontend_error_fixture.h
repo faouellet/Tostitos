@@ -1,7 +1,7 @@
 #ifndef CONSOLE_ERROR_FIXTURE_H__TOSTITOS
 #define CONSOLE_ERROR_FIXTURE_H__TOSTITOS
 
-#include "symboltable.h"
+#include "Parse\symboltable.h"
 
 #include <iostream>
 #include <memory>

@@ -1,8 +1,8 @@
 #ifndef TYPE_CHECKER_H__TOSTITOS
 #define TYPE_CHECKER_H__TOSTITOS
 
-#include "astvisitor.h"
-#include "symboltable.h"
+#include "../Utils/astvisitor.h"
+#include "../Parse/symboltable.h"
 
 #include <map>
 #include <string>

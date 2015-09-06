@@ -1,8 +1,9 @@
 #include "parser.h"
 
-#include "declarations.h"
-#include "errorlogger.h"
-#include "expressions.h"
+#include "../AST/declarations.h"
+#include "../AST/expressions.h"
+#include "../Utils/errorlogger.h"
+
 #include "symboltable.h"
 
 using namespace TosLang::FrontEnd;

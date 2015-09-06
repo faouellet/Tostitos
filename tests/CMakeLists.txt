@@ -7,30 +7,17 @@ set(Boost_USE_STATIC_RUNTIME OFF)
 include_directories("${CMAKE_SOURCE_DIR}/Tostitos/machine")
 include_directories("${CMAKE_SOURCE_DIR}/TosLang")
 
+# Copy files for lang
+file(COPY lang/inputs DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY lang/outputs DESTINATION ${CMAKE_BINARY_DIR})
+
 find_package(Boost COMPONENTS unit_test_framework)
 if(Boost_FOUND)
     if(WIN32)
-        set( SOURCES 
-                main.cpp 
-				ast_printer_tests.cpp
-				frontend_error_fixture.h
-                instruction_selector_tests.cpp
-				instruction_tests.cpp
-                interpreter_fixture.h                 
-                interpreter_tests.cpp 
-                lexer_tests.cpp
-				parser_error_tests.cpp
-				parser_tests.cpp
-				typechecker_tests.cpp
-                utils_tests.cpp
-        )
-
+		file(GLOB_RECURSE SOURCES "*.cpp" "*.h")
+        
         set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")
 		
-		# Copy inputs
-		file(COPY inputs DESTINATION ${CMAKE_BINARY_DIR})
-		file(COPY outputs DESTINATION ${CMAKE_BINARY_DIR})
-
         # Boost
         include_directories("${Boost_INCLUDE_DIR}")
         link_directories("${Boost_LIBRARY_DIRS}")
@@ -55,9 +42,5 @@ if(Boost_FOUND)
 		add_boost_test(parser_error_tests.cpp lang)
 		add_boost_test(parser_tests.cpp lang)
 		add_boost_test(typechecker_tests.cpp lang)
-		
-		# Copy inputs and outputs
-		file(COPY inputs DESTINATION ${CMAKE_BINARY_DIR})
-		file(COPY outputs DESTINATION ${CMAKE_BINARY_DIR})
     endif()
 endif()

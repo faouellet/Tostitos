@@ -8,9 +8,9 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "parser.h"
-#include "declarations.h"
-#include "expressions.h"
+#include "Parse/parser.h"
+#include "AST/declarations.h"
+#include "AST/expressions.h"
 
 using namespace TosLang::FrontEnd;
 
