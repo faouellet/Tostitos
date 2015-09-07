@@ -99,17 +99,17 @@ std::unique_ptr<ASTNode> Parser::ParseVarDecl()
         switch (mLexer.GetNextToken())
         {
         case Lexer::FALSE:
-            vDecl->AddValue(std::make_unique<BooleanExpr>(false));
+            vDecl->AddInitialization(std::make_unique<BooleanExpr>(false));
             break;
         case Lexer::TRUE:
-            vDecl->AddValue(std::make_unique<BooleanExpr>(true));
+            vDecl->AddInitialization(std::make_unique<BooleanExpr>(true));
             break;
         case Lexer::NUMBER:
-            vDecl->AddValue(std::make_unique<NumberExpr>(mLexer.GetCurrentNumber()));
+            vDecl->AddInitialization(std::make_unique<NumberExpr>(mLexer.GetCurrentNumber()));
             mSymbolTable->AddSymbol(mLexer.GetCurrentNumber());
             break;
         case Lexer::IDENTIFIER:
-            vDecl->AddValue(std::make_unique<IdentifierExpr>(mLexer.GetCurrentStr()));
+            vDecl->AddInitialization(std::make_unique<IdentifierExpr>(mLexer.GetCurrentStr()));
         default:
             break;
         }

@@ -25,7 +25,14 @@ namespace TosLang
                 TRUE,
 
                 // Operators
+				AND,
+				DIVIDE,
                 EQUAL,
+				MINUS,
+				MODULO,
+				MULT,
+				OR,
+				PLUS,
 
                 // Misc
                 COLON,

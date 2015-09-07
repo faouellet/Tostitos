@@ -29,6 +29,7 @@ namespace TosLang
                 // Statements
 
                 // Expressions
+				BINARY_EXPR,
                 BOOLEAN_EXPR,
                 IDENTIFIER_EXPR,
                 NUMBER_EXPR,

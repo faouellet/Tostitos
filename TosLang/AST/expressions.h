@@ -18,6 +18,25 @@ namespace TosLang
             virtual ~Expr() { }
         };
 
+		/*
+		* \class BinaryOpExpr
+		* \brief Node of the AST representing a binary expression be it arithmetic (+, -, *, \, %) or logical (||, &&)
+		*/
+		class BinaryOpExpr : public Expr
+		{
+		public:
+			BinaryOpExpr(char op, std::unique_ptr<Expr>&& lhs, std::unique_ptr<Expr>&& rhs) : Expr(BINARY_EXPR), mOp{ op } 
+			{
+				mChildren.push_back(std::move(lhs));
+				mChildren.push_back(std::move(rhs));
+			}
+
+			virtual ~BinaryOpExpr() { }
+
+		private:
+			char mOp;
+		};
+
         /*
         * \class BooleanExpr
         * \brief Node of the AST representing a boolean literal

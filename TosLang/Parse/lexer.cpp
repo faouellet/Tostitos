@@ -82,23 +82,38 @@ Lexer::Token Lexer::GetNextToken()
 
         return NUMBER;
     }
-    else if (currentChar == ':')
-    {
-        ++mBufferIt;
-        return COLON;
-    }
-    else if (currentChar == ';')
-    {
-        ++mBufferIt;
-        return SEMI_COLON;
-    }
-    else if (currentChar == '=')
-    {
-        ++mBufferIt;
-        return EQUAL;
-    }
-    else
-    {
-        return UNKNOWN;
-    }
+
+	++mBufferIt;
+
+	// We have an operator or an error
+	switch (currentChar)
+	{
+	case ':':
+		return COLON;
+		break;
+	case ';':
+		return SEMI_COLON;
+		break;
+	case '=':
+		return EQUAL;
+		break;
+	case '+':
+		return PLUS;
+		break;
+	case '-':
+		return MINUS;
+		break;
+	case '*':
+		return MULT;
+		break;
+	case '/':
+		return DIVIDE;
+		break;
+	case '%':
+		return MODULO;
+		break;
+	default:
+		return UNKNOWN;
+		break;
+	}
 }
