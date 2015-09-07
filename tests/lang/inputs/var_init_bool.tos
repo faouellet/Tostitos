@@ -1,3 +1,2 @@
-var MyIntVar: Int = 42;
 var MyTrueVar : Bool = True;
 var MyFalseVar : Bool = False;

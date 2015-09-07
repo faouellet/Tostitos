@@ -1,0 +1,2 @@
+var MyIntVar: Int = 42;
+var MyIntVar2: Int = MyIntVar;
