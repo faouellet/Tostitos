@@ -45,75 +45,126 @@ Lexer::Token Lexer::GetNextToken()
     // Caching the current char because we will use it a lot
     const char currentChar = *mBufferIt;
 
-    // We have and identifier or a keyword
-    if (isalpha(currentChar))
-    {
-        mCurrentStr = currentChar;
-        while (++mBufferIt != mBuffer.end() && isalnum(*mBufferIt))
-        {
-            mCurrentStr += *mBufferIt;
-            ++mCurrentColumn;
-        }
-
-        if (mCurrentStr == "var")
-            return Lexer::Token::VAR;
-        else if (mCurrentStr == "Int")
-            return TYPE;
-        else if (mCurrentStr == "Bool")
-            return TYPE;
-        else if (mCurrentStr == "True")
-            return TRUE;
-        else if (mCurrentStr == "False")
-            return FALSE;
-        else
-            return IDENTIFIER;
-
-    }
-    // We have a numeric value
-    else if (isdigit(currentChar))
-    {
-        std::string numberStr;
-        do
-        {
-            numberStr += *mBufferIt;
-        } while (isdigit(*(++mBufferIt)));
-
-        mCurrentNumber = std::stoi(numberStr);
-
-        return NUMBER;
-    }
-
-	++mBufferIt;
-
-	// We have an operator or an error
 	switch (currentChar)
 	{
 	case ':':
+		++mBufferIt;
 		return COLON;
-		break;
 	case ';':
+		++mBufferIt;
 		return SEMI_COLON;
-		break;
 	case '=':
+		++mBufferIt;
 		return EQUAL;
-		break;
 	case '+':
+		++mBufferIt;
 		return PLUS;
-		break;
 	case '-':
+		++mBufferIt;
 		return MINUS;
-		break;
 	case '*':
+		++mBufferIt;
 		return MULT;
-		break;
 	case '/':
+		++mBufferIt;
 		return DIVIDE;
-		break;
 	case '%':
+		++mBufferIt;
 		return MODULO;
-		break;
+	case '&':
+		if (*(++mBufferIt) == '&')
+		{
+			++mBufferIt;
+			return AND_BOOL;
+		}
+		else if (*mBufferIt == ' ')
+		{
+			return AND_INT;
+		}
+		else
+		{
+			return UNKNOWN;
+		}
+	case '|':
+		if (*(++mBufferIt) == '|')
+		{
+			++mBufferIt;
+			return OR_BOOL;
+		}
+		else if (*mBufferIt == ' ')
+		{
+			return OR_INT;
+		}
+		else
+		{
+			return UNKNOWN;
+		}
+	case '>':
+		if (*(++mBufferIt) == '>')
+		{
+			++mBufferIt;
+			return RIGHT_SHIFT;
+		}
+		else if (*mBufferIt == ' ')
+		{
+			return GREATER_THAN;
+		}
+		else
+		{
+			return UNKNOWN;
+		}
+	case '<':
+		if (*(++mBufferIt) == '<')
+		{
+			++mBufferIt;
+			return LEFT_SHIFT;
+		}	
+		else if (*mBufferIt == ' ')
+		{
+			return LESS_THAN;
+		}
+		else
+		{
+			return UNKNOWN;
+		}
 	default:
+		// We have and identifier or a keyword
+		if (isalpha(currentChar))
+		{
+			mCurrentStr = currentChar;
+			while (++mBufferIt != mBuffer.end() && isalnum(*mBufferIt))
+			{
+				mCurrentStr += *mBufferIt;
+				++mCurrentColumn;
+			}
+
+			if (mCurrentStr == "var")
+				return Lexer::Token::VAR;
+			else if (mCurrentStr == "Int")
+				return TYPE;
+			else if (mCurrentStr == "Bool")
+				return TYPE;
+			else if (mCurrentStr == "True")
+				return TRUE;
+			else if (mCurrentStr == "False")
+				return FALSE;
+			else
+				return IDENTIFIER;
+
+		}
+		// We have a numeric value
+		else if (isdigit(currentChar))
+		{
+			std::string numberStr;
+			do
+			{
+				numberStr += *mBufferIt;
+			} while (isdigit(*(++mBufferIt)));
+
+			mCurrentNumber = std::stoi(numberStr);
+
+			return NUMBER;
+		}
 		return UNKNOWN;
-		break;
 	}
 }

@@ -1,0 +1,4 @@
+var V1 : Bool = True && False;
+var V2 : Bool = True || False;
+var V3 : Bool = 1 > 2;
+var V4 : Bool = 1 < 2;

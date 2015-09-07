@@ -1,5 +1,0 @@
-var V1 : Int = 1 + 1;
-var V2 : Int = 1 - 1;
-var V3 : Int = 1 * 1;
-var V4 : Int = 1 / 1;
-var V5 : Int = 1 % 1;

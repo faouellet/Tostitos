@@ -25,14 +25,20 @@ namespace TosLang
                 TRUE,
 
                 // Operators
-				AND,
+				AND_BOOL,
+				AND_INT,
 				DIVIDE,
                 EQUAL,
+				GREATER_THAN,
+				LEFT_SHIFT,
+				LESS_THAN,
 				MINUS,
 				MODULO,
 				MULT,
-				OR,
+				OR_BOOL,
+				OR_INT,
 				PLUS,
+				RIGHT_SHIFT,
 
                 // Misc
                 COLON,
