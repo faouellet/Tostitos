@@ -17,8 +17,13 @@ namespace TosLang
             enum Token
             {
                 // Keywords
-                VAR,
+				FUNCTION,
+				IF,
+				SPAWN,
+				SYNC,
                 TYPE,
+				VAR,
+				WHILE,
 
                 // Boolean values
                 FALSE,
@@ -43,8 +48,14 @@ namespace TosLang
                 // Misc
                 COLON,
                 IDENTIFIER,
+				LEFT_BRACE,
+				LEFT_BRACKET,
+				LEFT_PAREN,
                 NUMBER,
                 SEMI_COLON,
+				RIGHT_BRACE,
+				RIGHT_BRACKET,
+				RIGHT_PAREN,
 
                 // End of file
                 TOK_EOF,

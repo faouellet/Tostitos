@@ -53,6 +53,24 @@ Lexer::Token Lexer::GetNextToken()
 	case ';':
 		++mBufferIt;
 		return SEMI_COLON;
+	case '{':
+		++mBufferIt;
+		return LEFT_BRACE;
+	case '[':
+		++mBufferIt;
+		return LEFT_BRACKET;
+	case '(':
+		++mBufferIt;
+		return LEFT_PAREN;
+	case '}':
+		++mBufferIt;
+		return RIGHT_BRACE;
+	case ']':
+		++mBufferIt;
+		return RIGHT_BRACKET;
+	case ')':
+		++mBufferIt;
+		return RIGHT_PAREN;
 	case '=':
 		++mBufferIt;
 		return EQUAL;
@@ -138,8 +156,10 @@ Lexer::Token Lexer::GetNextToken()
 				++mCurrentColumn;
 			}
 
-			if (mCurrentStr == "var")
-				return Lexer::Token::VAR;
+			if (mCurrentStr == "fn")
+				return FUNCTION;
+			else if (mCurrentStr == "var")
+				return VAR;
 			else if (mCurrentStr == "Int")
 				return TYPE;
 			else if (mCurrentStr == "Bool")
@@ -148,6 +168,14 @@ Lexer::Token Lexer::GetNextToken()
 				return TRUE;
 			else if (mCurrentStr == "False")
 				return FALSE;
+			else if (mCurrentStr == "if")
+				return IF;
+			else if (mCurrentStr == "while")
+				return WHILE;
+			else if (mCurrentStr == "spawn")
+				return SPAWN;
+			else if (mCurrentStr == "sync")
+				return SYNC;
 			else
 				return IDENTIFIER;
 
