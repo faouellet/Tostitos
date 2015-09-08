@@ -83,12 +83,25 @@ Lexer::Token Lexer::GetNextToken()
 	case '*':
 		++mBufferIt;
 		return MULT;
-	case '/':
-		++mBufferIt;
-		return DIVIDE;
 	case '%':
 		++mBufferIt;
 		return MODULO;
+	case '/':
+		if (*(++mBufferIt) == '/')
+		{
+			// A comment covers a whole line
+			while (*mBufferIt != '\n')
+				++mBufferIt;
+			return COMMENT;
+		}
+		else if (*mBufferIt == ' ')
+		{
+			return DIVIDE;
+		}
+		else
+		{
+			return UNKNOWN;
+		}
 	case '&':
 		if (*(++mBufferIt) == '&')
 		{
@@ -158,6 +171,10 @@ Lexer::Token Lexer::GetNextToken()
 
 			if (mCurrentStr == "fn")
 				return FUNCTION;
+			else if (mCurrentStr == "print")
+				return PRINT;
+			else if (mCurrentStr == "scan")
+				return SCAN;
 			else if (mCurrentStr == "var")
 				return VAR;
 			else if (mCurrentStr == "Int")

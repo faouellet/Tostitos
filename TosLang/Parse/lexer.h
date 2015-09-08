@@ -19,6 +19,8 @@ namespace TosLang
                 // Keywords
 				FUNCTION,
 				IF,
+				PRINT,
+				SCAN,
 				SPAWN,
 				SYNC,
                 TYPE,
@@ -46,6 +48,7 @@ namespace TosLang
 				RIGHT_SHIFT,
 
                 // Misc
+				COMMENT,
                 COLON,
                 IDENTIFIER,
 				LEFT_BRACE,
