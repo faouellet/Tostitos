@@ -14,7 +14,7 @@ namespace TosLang
         class Expr : public ASTNode
         {
         public:
-            Expr(NodeKind kind) : ASTNode(kind) { }
+			explicit Expr(NodeKind kind) : ASTNode(kind) { }
             virtual ~Expr() { }
         };
 
@@ -44,7 +44,7 @@ namespace TosLang
         class BooleanExpr : public Expr
         {
         public:
-            BooleanExpr(bool value) : Expr(BOOLEAN_EXPR), mValue{ value } { mName = mValue ? "True" : "False"; }
+			explicit BooleanExpr(bool value) : Expr(BOOLEAN_EXPR), mValue{ value } { mName = mValue ? "True" : "False"; }
             virtual ~BooleanExpr() { }
 
             const bool GetValue() const { return mValue; }
@@ -60,7 +60,7 @@ namespace TosLang
         class IdentifierExpr : public Expr
         {
         public:
-            IdentifierExpr(std::string value) : Expr(IDENTIFIER_EXPR) { mName = value; }
+			explicit IdentifierExpr(std::string value) : Expr(IDENTIFIER_EXPR) { mName = value; }
             virtual ~IdentifierExpr() { }
         };
 
@@ -71,7 +71,7 @@ namespace TosLang
         class NumberExpr : public Expr
         {
         public:
-            NumberExpr(int value) : Expr(NUMBER_EXPR), mValue{ value } { mName = std::to_string(value); }
+			explicit NumberExpr(int value) : Expr(NUMBER_EXPR), mValue{ value } { mName = std::to_string(value); }
             virtual ~NumberExpr() { }
 
             const int GetValue() const { return mValue; }

@@ -39,7 +39,7 @@ namespace TosLang
             };
 
         public:
-            ASTNode(NodeKind kind = ERROR) : mKind(kind), mName("") { }
+			explicit ASTNode(NodeKind kind = ERROR) : mKind(kind), mName("") { }
             virtual ~ASTNode() { }
 
             NodeKind GetKind() const { return mKind; }
