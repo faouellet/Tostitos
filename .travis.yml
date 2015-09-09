@@ -51,6 +51,9 @@ install:
   # Getting the latest version of Boost Unit Test Framework
   - sudo apt-get install libboost-test-dev
   
+  # Getting CppCheck for continuous static analysis
+  - sudo apt-get install cppcheck
+  
   # Getting latest version of LCOV if needed
   - if [[ ${COVERAGE} == 1 ]]; then
        wget http://ftp.de.debian.org/debian/pool/main/l/lcov/lcov_1.11.orig.tar.gz &&
@@ -69,6 +72,10 @@ before_script:
 script: 
   - mkdir build
   - cd build
+  
+  - if [[ ${COVERITY_SCAN_BRANCH} != 1 ]]; then 
+        cppcheck --error-exitcode=1 --quiet .
+    fi
   
   # Debug code coverage Linux build
   - if [[ ${COVERAGE} == 1 && ${COVERITY_SCAN_BRANCH} != 1 ]]; then 
