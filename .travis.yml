@@ -71,7 +71,7 @@ before_script:
 
 script:  
   - if [[ ${COVERITY_SCAN_BRANCH} != 1 ]]; then 
-        cppcheck --error-exitcode=1 --quiet .
+        cppcheck --error-exitcode=1 --quiet .;
     fi
     
   - mkdir build
