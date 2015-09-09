@@ -69,13 +69,13 @@ before_script:
   - cd ${TRAVIS_BUILD_DIR}
   - lcov --directory . --zerocounters
 
-script: 
-  - mkdir build
-  - cd build
-  
+script:  
   - if [[ ${COVERITY_SCAN_BRANCH} != 1 ]]; then 
         cppcheck --error-exitcode=1 --quiet .
     fi
+    
+  - mkdir build
+  - cd build
   
   # Debug code coverage Linux build
   - if [[ ${COVERAGE} == 1 && ${COVERITY_SCAN_BRANCH} != 1 ]]; then 
