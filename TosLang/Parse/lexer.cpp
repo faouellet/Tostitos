@@ -47,12 +47,16 @@ Lexer::Token Lexer::GetNextToken()
 
 	switch (currentChar)
 	{
+		// TODO: Should the balance of " be checked here?
 	case ':':
 		++mBufferIt;
 		return COLON;
 	case ';':
 		++mBufferIt;
 		return SEMI_COLON;
+	case '"':
+		++mBufferIt;
+		return QUOTE;
 	case '{':
 		++mBufferIt;
 		return LEFT_BRACE;
@@ -175,8 +179,12 @@ Lexer::Token Lexer::GetNextToken()
 				return PRINT;
 			else if (mCurrentStr == "scan")
 				return SCAN;
+			else if (mCurrentStr == "String")
+				return TYPE;
 			else if (mCurrentStr == "var")
 				return VAR;
+			else if (mCurrentStr == "Void")
+				return TYPE;
 			else if (mCurrentStr == "Int")
 				return TYPE;
 			else if (mCurrentStr == "Bool")
@@ -193,6 +201,8 @@ Lexer::Token Lexer::GetNextToken()
 				return SPAWN;
 			else if (mCurrentStr == "sync")
 				return SYNC;
+			else if (mCurrentStr == "return")
+				return RETURN;
 			else
 				return IDENTIFIER;
 

@@ -60,14 +60,14 @@ namespace MachineEngine
             * \brief        Default constructor
             * \param value  Value of the instruction. 0 by default.
             */
-            Instruction(const UInt32 value = 0);
+            explicit Instruction(const UInt32 value = 0);
 
             /**
             * \fn           Instruction
             * \brief        Constructor
             * \param value  Value of the instruction. 0 by default.
             */
-            Instruction(InstructionType iType);
+			explicit Instruction(InstructionType iType);
 
             /**
             * \fn       Instruction
