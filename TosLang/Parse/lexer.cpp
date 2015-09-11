@@ -81,15 +81,29 @@ Lexer::Token Lexer::GetNextToken()
 	case '+':
 		++mBufferIt;
 		return PLUS;
-	case '-':
-		++mBufferIt;
-		return MINUS;
 	case '*':
 		++mBufferIt;
 		return MULT;
 	case '%':
 		++mBufferIt;
 		return MODULO;
+	case '!':
+		++mBufferIt;
+		return NOT;
+	case '-':
+		if (*(++mBufferIt) == '>')
+		{
+			++mBufferIt;
+			return ARROW;
+		}
+		else if (*mBufferIt == ' ')
+		{
+			return MINUS;
+		}
+		else
+		{
+			return UNKNOWN;
+		}
 	case '/':
 		if (*(++mBufferIt) == '/')
 		{

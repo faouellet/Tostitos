@@ -43,12 +43,14 @@ namespace TosLang
 				MINUS,
 				MODULO,
 				MULT,
+				NOT,
 				OR_BOOL,
 				OR_INT,
 				PLUS,
 				RIGHT_SHIFT,
 
                 // Misc
+				ARROW,
 				COMMENT,
                 COLON,
                 IDENTIFIER,
