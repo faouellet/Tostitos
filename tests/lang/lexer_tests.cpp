@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE( LexerInitTest )
 BOOST_AUTO_TEST_CASE( LexerVarDeclTest )
 {
     Lexer lex;
-    BOOST_REQUIRE(lex.Init("../inputs/vardecl.tos"));
+    BOOST_REQUIRE(lex.Init("../inputs/var_decl.tos"));
 	BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
 	BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
 
@@ -319,4 +319,39 @@ BOOST_AUTO_TEST_CASE( LexerVarInitBinOpBoolTest )
 	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::LESS_THAN);
 	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::NUMBER);
 	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::SEMI_COLON);
+}
+
+BOOST_AUTO_TEST_CASE( LexerFunctionDefinitionTest )
+{
+	Lexer lex;
+	BOOST_REQUIRE(lex.Init("../inputs/fn_def.tos"));
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
+
+	// fn MyFunc(arg1: Int, arg2 : Int) -> Int {
+	//     return arg1 + arg2;
+	// }
+
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::FUNCTION);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::IDENTIFIER);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::LEFT_PAREN);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::IDENTIFIER);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::COLON);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TYPE);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::COMMA);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::IDENTIFIER);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::COLON);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TYPE);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::RIGHT_PAREN);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::ARROW);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TYPE);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::LEFT_BRACE);
+
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::RETURN);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::IDENTIFIER);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::PLUS);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::IDENTIFIER);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::SEMI_COLON);
+
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::RIGHT_BRACE);
 }

@@ -18,7 +18,7 @@ namespace TosLang
             Type mType;
             // TODO: Scope
 			Symbol() : mType{ Type::UNKNOWN } { };
-			Symbol(Type t) : mType{ t } { }
+			explicit Symbol(Type t) : mType{ t } { }
         };
 
         class SymbolTable

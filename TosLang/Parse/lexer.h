@@ -51,6 +51,7 @@ namespace TosLang
 
                 // Misc
 				ARROW,
+				COMMA,
 				COMMENT,
                 COLON,
                 IDENTIFIER,

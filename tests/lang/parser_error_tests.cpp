@@ -17,7 +17,7 @@
 BOOST_FIXTURE_TEST_CASE( BadInitTest, FrontEndErrorFixture )
 {
     Parser parser(symTab);
-    BOOST_REQUIRE(parser.ParseProgram("../inputs/vardecl.cpp") == nullptr);
+    BOOST_REQUIRE(parser.ParseProgram("../inputs/var_decl.cpp") == nullptr);
     BOOST_REQUIRE(parser.ParseProgram("BadFile.tos") == nullptr);
 
     std::vector<std::string> messages{ GetErrorMessages() };
@@ -31,7 +31,7 @@ BOOST_FIXTURE_TEST_CASE( BadInitTest, FrontEndErrorFixture )
 BOOST_FIXTURE_TEST_CASE( ParseBadVarDeclTest, FrontEndErrorFixture )
 {
     Parser parser(symTab);
-    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/badvardecl.tos");
+    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/bad_var_decl.tos");
     BOOST_REQUIRE(rootNode != nullptr);
 
     const ProgramDecl* pDecl = dynamic_cast<const ProgramDecl*>(rootNode.get());

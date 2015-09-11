@@ -17,7 +17,7 @@ using namespace TosLang::FrontEnd;
 BOOST_AUTO_TEST_CASE( ParseVarDeclTest )
 {
     Parser parser(std::make_shared<SymbolTable>());
-    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/vardecl.tos");
+    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/var_decl.tos");
     BOOST_REQUIRE(rootNode != nullptr);
     
     const ProgramDecl* pDecl = dynamic_cast<const ProgramDecl*>(rootNode.get());

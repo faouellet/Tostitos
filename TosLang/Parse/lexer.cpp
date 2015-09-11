@@ -48,6 +48,9 @@ Lexer::Token Lexer::GetNextToken()
 	switch (currentChar)
 	{
 		// TODO: Should the balance of " be checked here?
+	case ',':
+		++mBufferIt;
+		return COMMA;
 	case ':':
 		++mBufferIt;
 		return COLON;
