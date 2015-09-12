@@ -99,6 +99,9 @@ BOOST_AUTO_TEST_CASE( LexerVarInitIntTest )
 	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::NUMBER);
 	BOOST_REQUIRE_EQUAL(lex.GetCurrentNumber(), 42);
 	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::SEMI_COLON);
+
+	// End of file
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TOK_EOF);
 }
 
 BOOST_AUTO_TEST_CASE( LexerVarInitIdentifierTest )
@@ -129,6 +132,9 @@ BOOST_AUTO_TEST_CASE( LexerVarInitIdentifierTest )
 	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::IDENTIFIER);
 	BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "MyIntVar");
 	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::SEMI_COLON);
+
+	// End of file
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TOK_EOF);
 }
 
 BOOST_AUTO_TEST_CASE( LexerVarInitBinOpIntTest )
@@ -263,6 +269,9 @@ BOOST_AUTO_TEST_CASE( LexerVarInitBinOpIntTest )
 	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::NUMBER);
 	BOOST_REQUIRE_EQUAL(lex.GetCurrentNumber(), 1);
 	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::SEMI_COLON);
+	
+	// End of file
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TOK_EOF);
 }
 
 BOOST_AUTO_TEST_CASE( LexerVarInitBinOpBoolTest )
@@ -319,6 +328,9 @@ BOOST_AUTO_TEST_CASE( LexerVarInitBinOpBoolTest )
 	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::LESS_THAN);
 	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::NUMBER);
 	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::SEMI_COLON);
+
+	// End of file
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TOK_EOF);
 }
 
 BOOST_AUTO_TEST_CASE( LexerVarInitUnaryOpTest )
@@ -377,4 +389,41 @@ BOOST_AUTO_TEST_CASE( LexerFunctionDefinitionTest )
 	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::SEMI_COLON);
 
 	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::RIGHT_BRACE);
+
+	// End of file
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TOK_EOF);
+}
+
+BOOST_AUTO_TEST_CASE( LexerIfTest )
+{
+	Lexer lex;
+	BOOST_REQUIRE(lex.Init("../inputs/simple_if.tos"));
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
+
+	// var MyBool: Bool = True
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::VAR);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::IDENTIFIER);
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "BoolVar");
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::COLON);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TYPE);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::EQUAL);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TRUE);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::SEMI_COLON);
+
+	// if BoolVar {
+	//     BoolVar = False;
+	// }
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::IF);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::IDENTIFIER);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::LEFT_BRACE);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::IDENTIFIER);
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "BoolVar");
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::EQUAL);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::FALSE);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::SEMI_COLON);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::RIGHT_BRACE);
+	
+	// End of file
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TOK_EOF);
 }

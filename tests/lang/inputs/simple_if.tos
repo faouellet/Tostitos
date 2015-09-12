@@ -1,0 +1,5 @@
+var BoolVar: Bool = True;
+
+if BoolVar {
+    BoolVar = False;
+}
