@@ -99,7 +99,7 @@ Lexer::Token Lexer::GetNextToken()
 			++mBufferIt;
 			return ARROW;
 		}
-		else if (*mBufferIt == ' ')
+		else if (*mBufferIt == ' ' || isalpha(*mBufferIt))
 		{
 			return MINUS;
 		}
@@ -115,7 +115,7 @@ Lexer::Token Lexer::GetNextToken()
 				++mBufferIt;
 			return COMMENT;
 		}
-		else if (*mBufferIt == ' ')
+		else if (*mBufferIt == ' ' || isalpha(*mBufferIt))
 		{
 			return DIVIDE;
 		}
@@ -129,7 +129,7 @@ Lexer::Token Lexer::GetNextToken()
 			++mBufferIt;
 			return AND_BOOL;
 		}
-		else if (*mBufferIt == ' ')
+		else if (*mBufferIt == ' ' || isalpha(*mBufferIt))
 		{
 			return AND_INT;
 		}
@@ -143,7 +143,7 @@ Lexer::Token Lexer::GetNextToken()
 			++mBufferIt;
 			return OR_BOOL;
 		}
-		else if (*mBufferIt == ' ')
+		else if (*mBufferIt == ' ' || isalpha(*mBufferIt))
 		{
 			return OR_INT;
 		}
@@ -157,7 +157,7 @@ Lexer::Token Lexer::GetNextToken()
 			++mBufferIt;
 			return RIGHT_SHIFT;
 		}
-		else if (*mBufferIt == ' ')
+		else if (*mBufferIt == ' ' || isalpha(*mBufferIt))
 		{
 			return GREATER_THAN;
 		}
@@ -171,7 +171,7 @@ Lexer::Token Lexer::GetNextToken()
 			++mBufferIt;
 			return LEFT_SHIFT;
 		}	
-		else if (*mBufferIt == ' ')
+		else if (*mBufferIt == ' ' || isalpha(*mBufferIt))
 		{
 			return LESS_THAN;
 		}
