@@ -427,3 +427,45 @@ BOOST_AUTO_TEST_CASE( LexerIfTest )
 	// End of file
 	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TOK_EOF);
 }
+
+BOOST_AUTO_TEST_CASE( LexerWhileTest )
+{
+	Lexer lex;
+	BOOST_REQUIRE(lex.Init("../inputs/simple_while.tos"));
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
+
+	// var IntVar: Int = 0;
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::VAR);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::IDENTIFIER);
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "IntVar");
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::COLON);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TYPE);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::EQUAL);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::NUMBER);
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentNumber(), 0);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::SEMI_COLON);
+
+	// while IntVar < 5 {
+	//     IntVar = IntVar + 1;
+	// }
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::WHILE);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::IDENTIFIER);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::LESS_THAN);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::NUMBER);
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentNumber(), 5);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::LEFT_BRACE);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::IDENTIFIER);
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "IntVar");
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::EQUAL);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::IDENTIFIER);
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "IntVar");
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::PLUS);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::NUMBER);
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentNumber(), 1);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::SEMI_COLON);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::RIGHT_BRACE);
+
+	// End of file
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TOK_EOF);
+}
