@@ -57,9 +57,6 @@ Lexer::Token Lexer::GetNextToken()
 	case ';':
 		++mBufferIt;
 		return SEMI_COLON;
-	case '"':
-		++mBufferIt;
-		return QUOTE;
 	case '{':
 		++mBufferIt;
 		return LEFT_BRACE;
@@ -179,6 +176,19 @@ Lexer::Token Lexer::GetNextToken()
 		{
 			return UNKNOWN;
 		}
+	case '\"':
+		mCurrentStr.clear();
+		while (*(++mBufferIt) != '\n' && *mBufferIt != '\"')
+			mCurrentStr += *mBufferIt;
+		if (*mBufferIt == '\n')
+		{
+			return UNKNOWN;	// TODO: This needs to be logged by the error logger
+		}
+		else
+		{
+			++mBufferIt;
+			return STRING_LITERAL;
+		}		
 	default:
 		// We have and identifier or a keyword
 		if (isalpha(currentChar))
@@ -222,7 +232,6 @@ Lexer::Token Lexer::GetNextToken()
 				return RETURN;
 			else
 				return IDENTIFIER;
-
 		}
 		// We have a numeric value
 		else if (isdigit(currentChar))

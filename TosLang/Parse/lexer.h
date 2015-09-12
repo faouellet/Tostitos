@@ -59,7 +59,7 @@ namespace TosLang
 				LEFT_BRACKET,
 				LEFT_PAREN,
                 NUMBER,
-				QUOTE,
+				STRING_LITERAL,
                 SEMI_COLON,
 				RIGHT_BRACE,
 				RIGHT_BRACKET,

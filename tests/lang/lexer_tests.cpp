@@ -137,6 +137,29 @@ BOOST_AUTO_TEST_CASE( LexerVarInitIdentifierTest )
 	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TOK_EOF);
 }
 
+BOOST_AUTO_TEST_CASE(LexerVarInitStringTest)
+{
+	Lexer lex;
+	BOOST_REQUIRE(lex.Init("../inputs/var_init_string.tos"));
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
+
+	// var MyStringVar: String = "Hello World";
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::VAR);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::IDENTIFIER);
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "MyStringVar");
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::COLON);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TYPE);
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "String");
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::EQUAL);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::STRING_LITERAL);
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "Hello World");
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::SEMI_COLON);
+	
+	// End of file
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TOK_EOF);
+}
+
 BOOST_AUTO_TEST_CASE( LexerVarInitBinOpIntTest )
 {
 	Lexer lex;
