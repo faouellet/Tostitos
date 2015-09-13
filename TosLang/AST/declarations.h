@@ -30,13 +30,25 @@ namespace TosLang
         class VarDecl : public ASTNode
         {
         public:
-            VarDecl(const std::string& varName) : ASTNode(VAR_DECL) { mName = varName; }
+            explicit VarDecl(const std::string& varName) : ASTNode(VAR_DECL) { mName = varName; }
             virtual ~VarDecl() { }
 
 		public:
             void AddInitialization(std::unique_ptr<Expr>&& value) { mChildren.push_back(std::move(value)); }
 
-            const std::unique_ptr<ASTNode>& GetInitExpr() const { assert(mChildren.size() == 1); return mChildren[0]; }
+            const std::unique_ptr<ASTNode>& GetInitExpr() const 
+			{ 
+				if (mChildren.empty())
+				{
+					return nullptr;
+				}
+				else
+				{
+					assert(mChildren.size() == 1);
+					return mChildren[0];
+				}
+			}
+
             const std::string& GetVarName() const { return mName; }
         };
     }

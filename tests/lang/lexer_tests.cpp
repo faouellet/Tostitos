@@ -31,21 +31,45 @@ BOOST_AUTO_TEST_CASE( LexerVarDeclTest )
 	BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
 	BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
 
-    // var MyIntVar : Int;
+    // var MyIntVar: Int;
     BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::VAR);
     BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::IDENTIFIER);
     BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "MyIntVar");
     BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::COLON);
     BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TYPE);
-    BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::SEMI_COLON);
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "Int");
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::SEMI_COLON);
 
-    //var MyBoolVar : Bool;    
+    // var MyBoolVar: Bool;    
     BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::VAR);
     BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::IDENTIFIER);
     BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "MyBoolVar");
     BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::COLON);
     BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TYPE);
-    BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::SEMI_COLON);
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "Bool");
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::SEMI_COLON);
+
+	// var MyStringVar: String;    
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::VAR);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::IDENTIFIER);
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "MyStringVar");
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::COLON);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TYPE);
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "String");
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::SEMI_COLON);
+
+	// var MyTabVar[10]: Int;
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::VAR);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::IDENTIFIER);
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "MyTabVar");
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::LEFT_BRACKET);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::NUMBER);
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentNumber(), 10);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::RIGHT_BRACKET);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::COLON);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TYPE);
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "Int");
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::SEMI_COLON);
 
     // End of file
     BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TOK_EOF);

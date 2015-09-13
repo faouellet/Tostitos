@@ -32,7 +32,7 @@ namespace TosLang
 			}
 
 			virtual ~BinaryOpExpr() { }
-
+			
 		private:
 			char mOp;
 		};
