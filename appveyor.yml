@@ -4,22 +4,25 @@ branches:
   only:
     - master
 
-environment:
-  matrix:
+os:
+  - Visual Studio 2013
+  - Visual Studio 2015
+
+platform:
+  - x64
+  - x86
+
+configuration:
+  - Debug
+  - Release
   
-  # VS 2013
-  - BUILD_TYPE: cmake
-    VS_VERSION: Visual Studio 12
-    
-  # VS 2015
-  - BUILD_TYPE: cmake
-    VS_VERSION: Visual Studio 14
-
 build_script:
-  - if "%BUILD_TYPE%" == "cmake" if "%platform%" == "x64" SET VS_FULL=%VS_VERSION% Win64
-  - if "%BUILD_TYPE%" == "cmake" if "%platform%" == "x86" SET VS_FULL=%VS_VERSION%
-  - if "%BUILD_TYPE%" == "cmake" echo "%VS_FULL%"
-  - if "%BUILD_TYPE%" == "cmake" cmake -G "%VS_FULL%" . -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=../bin -DBUILD_LIBPROJ_SHARED=ON
-  - if "%BUILD_TYPE%" == "cmake" cmake --build . --config Release
+  - mkdir cmake-build
+  - cd cmake-build
+  - cmake -DBUILD_TESTING=OFF ..
+  - cmake --build .
+  - cmake --build . --config Release
 
+test: OFF
+test_script: OFF
 deploy: off
