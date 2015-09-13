@@ -24,6 +24,7 @@ platform:
 build_script:
 - mkdir cmake-build
 - cd cmake-build
+- cmake ..
 - cmake --build .
 - cmake --build . --config Release
 
