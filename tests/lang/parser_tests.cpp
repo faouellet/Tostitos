@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE( ParseVarDeclTest )
     BOOST_REQUIRE(pDecl != nullptr);
     
     const ChildrenNodes& cNodes = pDecl->GetChildrenNodes();
-    BOOST_REQUIRE_EQUAL(cNodes.size(), 2);
+    BOOST_REQUIRE_EQUAL(cNodes.size(), 3);
 	BOOST_REQUIRE(std::all_of(cNodes.begin(), cNodes.end(), [](const std::unique_ptr<ASTNode>& node) { return node != nullptr; }));
 
     BOOST_REQUIRE_EQUAL(cNodes[0]->GetKind(), ASTNode::VAR_DECL);
@@ -32,10 +32,15 @@ BOOST_AUTO_TEST_CASE( ParseVarDeclTest )
     BOOST_REQUIRE(vDecl != nullptr);
     BOOST_REQUIRE_EQUAL(vDecl->GetVarName(), "MyIntVar");
 
-    BOOST_REQUIRE_EQUAL(cNodes[0]->GetKind(), ASTNode::VAR_DECL);
+    BOOST_REQUIRE_EQUAL(cNodes[1]->GetKind(), ASTNode::VAR_DECL);
     vDecl = dynamic_cast<const VarDecl*>(cNodes[1].get());
     BOOST_REQUIRE(vDecl != nullptr);
     BOOST_REQUIRE_EQUAL(vDecl->GetVarName(), "MyBoolVar");
+
+	BOOST_REQUIRE_EQUAL(cNodes[2]->GetKind(), ASTNode::VAR_DECL);
+	vDecl = dynamic_cast<const VarDecl*>(cNodes[2].get());
+	BOOST_REQUIRE(vDecl != nullptr);
+	BOOST_REQUIRE_EQUAL(vDecl->GetVarName(), "MyStringVar");
 }
 
 BOOST_AUTO_TEST_CASE( ParseVarInitBoolTest )

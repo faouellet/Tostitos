@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE( LexerVarDeclTest )
 	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::SEMI_COLON);
 
 	// var MyTabVar[10]: Int;
-	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::VAR);
+	/*BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::VAR);
 	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::IDENTIFIER);
 	BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "MyTabVar");
 	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::LEFT_BRACKET);
@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE( LexerVarDeclTest )
 	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::COLON);
 	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TYPE);
 	BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "Int");
-	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::SEMI_COLON);
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::SEMI_COLON);*/
 
     // End of file
     BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TOK_EOF);

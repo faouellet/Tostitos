@@ -1,5 +1,3 @@
 var MyIntVar: Int;
 var MyBoolVar: Bool;
 var MyStringVar: String;
-
-var MyTabVar[10]: Int;
