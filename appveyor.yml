@@ -1,25 +1,32 @@
-# branches to build
+version: 1.0.{build}
+
+pull_requests:
+  do_not_increment_build_number: true
+
 branches:
-  # whitelist
   only:
-    - master
+  - master
 
-os: Visual Studio 2015
+skip_tags: true
 
-platform:
-  - x64
-  - x86
+os:
+- Visual Studio 2014 CTP4
+- Visual Studio 2015
 
 configuration:
-  - Debug
-  - Release
-  
+- Debug
+- Release
+
+platform:
+- x86
+- x64
+
 build_script:
-  - mkdir cmake-build
-  - cd cmake-build
-  - cmake --build .
-  - cmake --build . --config Release
+- mkdir cmake-build
+- cd cmake-build
+- cmake --build .
+- cmake --build . --config Release
 
 test: off
-test_script: off
+
 deploy: off
