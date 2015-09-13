@@ -17,10 +17,9 @@ configuration:
 build_script:
   - mkdir cmake-build
   - cd cmake-build
-  - cmake -DBUILD_TESTING=OFF ..
   - cmake --build .
   - cmake --build . --config Release
 
-test: OFF
-test_script: OFF
+test: off
+test_script: off
 deploy: off
