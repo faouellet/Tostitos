@@ -10,7 +10,7 @@ environment:
   # VS 2013
   - BUILD_TYPE: cmake
     VS_VERSION: Visual Studio 12
-	
+    
   # VS 2015
   - BUILD_TYPE: cmake
     VS_VERSION: Visual Studio 14
