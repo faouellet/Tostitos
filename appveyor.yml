@@ -1,0 +1,25 @@
+# branches to build
+branches:
+  # whitelist
+  only:
+    - master
+
+environment:
+  matrix:
+  
+  # VS 2013
+  - BUILD_TYPE: cmake
+    VS_VERSION: Visual Studio 12
+	
+  # VS 2015
+  - BUILD_TYPE: cmake
+    VS_VERSION: Visual Studio 14
+
+build_script:
+  - if "%BUILD_TYPE%" == "cmake" if "%platform%" == "x64" SET VS_FULL=%VS_VERSION% Win64
+  - if "%BUILD_TYPE%" == "cmake" if "%platform%" == "x86" SET VS_FULL=%VS_VERSION%
+  - if "%BUILD_TYPE%" == "cmake" echo "%VS_FULL%"
+  - if "%BUILD_TYPE%" == "cmake" cmake -G "%VS_FULL%" . -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=../bin -DBUILD_LIBPROJ_SHARED=ON
+  - if "%BUILD_TYPE%" == "cmake" cmake --build . --config Release
+
+deploy: off
