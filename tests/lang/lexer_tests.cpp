@@ -608,3 +608,16 @@ BOOST_AUTO_TEST_CASE( LexerThreadTest )
 	// End of file
 	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TOK_EOF);
 }
+
+BOOST_AUTO_TEST_CASE( LexerCommentTest )
+{
+	Lexer lex;
+	BOOST_REQUIRE(lex.Init("../inputs/comment.tos"));
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
+
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::COMMENT);
+
+	// End of file
+	BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TOK_EOF);
+}

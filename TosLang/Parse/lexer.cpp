@@ -108,7 +108,7 @@ Lexer::Token Lexer::GetNextToken()
 		if (*(++mBufferIt) == '/')
 		{
 			// A comment covers a whole line
-			while (*mBufferIt != '\n')
+			while (mBufferIt != mBuffer.end() && *mBufferIt != '\n')
 				++mBufferIt;
 			return COMMENT;
 		}
