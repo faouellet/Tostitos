@@ -65,5 +65,5 @@ BOOST_FIXTURE_TEST_CASE( LexerBadVarNameTest, FrontEndErrorFixture )
 
     // Check if the correct error messages got printed
     BOOST_REQUIRE_EQUAL(messages.size(), 1);
-    BOOST_REQUIRE_EQUAL(messages[0], "ERROR: Newline in string literal at line 1, column 4");
+    BOOST_REQUIRE_EQUAL(messages[0], "ERROR: Bad suffix on number at line 1, column 4");
 }

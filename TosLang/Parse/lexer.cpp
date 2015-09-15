@@ -162,7 +162,7 @@ Lexer::Token Lexer::GetNextToken()
 		if ((mBufferIt == mBuffer.end()) || (*mBufferIt == '\n'))
 		{
             Utils::ErrorLogger::PrintErrorAtLocation(Utils::ErrorLogger::NEW_LINE_IN_LITERAL, mCurrentLine, mCurrentColumn);
-			return UNKNOWN;	// TODO: This needs to be logged by the error logger
+			return UNKNOWN;	
 		}
 		else
 		{
@@ -225,7 +225,7 @@ Lexer::Token Lexer::GetNextToken()
             if (isalpha(*mBufferIt))
             {
                 // Error: letter in a number
-                Utils::ErrorLogger::PrintErrorAtLocation(Utils::ErrorLogger::NEW_LINE_IN_LITERAL, mCurrentLine, mCurrentColumn);
+                Utils::ErrorLogger::PrintErrorAtLocation(Utils::ErrorLogger::NUMBER_BAD_SUFFIX, mCurrentLine, mCurrentColumn);
                 // Advance to the next statement
                 while ((mBufferIt != mBuffer.end()) && (*mBufferIt != ';'))
                     ++mBufferIt;
