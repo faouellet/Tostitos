@@ -17,6 +17,9 @@ namespace TosLang
                 WRONG_FILE_TYPE,
                 ERROR_OPENING_FILE,
 
+                // Literal
+                NEW_LINE_IN_LITERAL,
+
                 // Type
                 WRONG_LITERAL_TYPE,
                 WRONG_VARIABLE_TYPE,

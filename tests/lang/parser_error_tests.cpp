@@ -2,7 +2,7 @@
 #   define BOOST_TEST_MODULE Main
 #else
 #ifndef _WIN32
-#   define BOOST_TEST_MODULE Parser_Error
+#   define BOOST_TEST_MODULE ParserError
 #endif
 #endif
 
@@ -14,7 +14,7 @@
 #include "AST/declarations.h"
 #include "AST/expressions.h"
 
-BOOST_FIXTURE_TEST_CASE( BadInitTest, FrontEndErrorFixture )
+BOOST_FIXTURE_TEST_CASE( ParserBadInitTest, FrontEndErrorFixture )
 {
     Parser parser(symTab);
     BOOST_REQUIRE(parser.ParseProgram("../inputs/var_decl.cpp") == nullptr);

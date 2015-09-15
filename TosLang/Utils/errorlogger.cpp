@@ -10,6 +10,9 @@ std::map<ErrorLogger::ErrorType, std::string> ErrorLogger::mErrorMessages =
     { WRONG_FILE_TYPE,              "FILE ERROR: Wrong file type" },
     { ERROR_OPENING_FILE,           "FILE ERROR: Problem opening the specified file" },
 
+    // Literal
+    { NEW_LINE_IN_LITERAL,          "ERROR: Newline in string literal" },
+
     // Misc
     { MISSING_SEMI_COLON,           "ERROR: Expected a ;" },
 

@@ -15,10 +15,6 @@ using namespace TosLang::FrontEnd;
 BOOST_AUTO_TEST_CASE( LexerInitTest )
 {
     Lexer lex;
-    BOOST_REQUIRE(!lex.Init("BadFile.tos"));
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 0);
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 0);
-
 	BOOST_REQUIRE(lex.Init("../inputs/var_init_bool.tos"));
 	BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
 	BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);

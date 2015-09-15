@@ -1,5 +1,7 @@
 #include "lexer.h"
 
+#include "../Utils/errorlogger.h"
+
 #include <algorithm>
 #include <fstream>
 #include <iterator>
@@ -96,13 +98,9 @@ Lexer::Token Lexer::GetNextToken()
 			++mBufferIt;
 			return ARROW;
 		}
-		else if (*mBufferIt == ' ' || isalpha(*mBufferIt))
-		{
-			return MINUS;
-		}
 		else
 		{
-			return UNKNOWN;
+			return MINUS;
 		}
 	case '/':
 		if (*(++mBufferIt) == '/')
@@ -112,13 +110,9 @@ Lexer::Token Lexer::GetNextToken()
 				++mBufferIt;
 			return COMMENT;
 		}
-		else if (*mBufferIt == ' ' || isalpha(*mBufferIt))
-		{
-			return DIVIDE;
-		}
 		else
 		{
-			return UNKNOWN;
+			return DIVIDE;
 		}
 	case '&':
 		if (*(++mBufferIt) == '&')
@@ -126,13 +120,9 @@ Lexer::Token Lexer::GetNextToken()
 			++mBufferIt;
 			return AND_BOOL;
 		}
-		else if (*mBufferIt == ' ' || isalpha(*mBufferIt))
-		{
-			return AND_INT;
-		}
 		else
 		{
-			return UNKNOWN;
+			return AND_INT;
 		}
 	case '|':
 		if (*(++mBufferIt) == '|')
@@ -140,13 +130,9 @@ Lexer::Token Lexer::GetNextToken()
 			++mBufferIt;
 			return OR_BOOL;
 		}
-		else if (*mBufferIt == ' ' || isalpha(*mBufferIt))
-		{
-			return OR_INT;
-		}
 		else
 		{
-			return UNKNOWN;
+			return OR_INT;
 		}
 	case '>':
 		if (*(++mBufferIt) == '>')
@@ -154,13 +140,9 @@ Lexer::Token Lexer::GetNextToken()
 			++mBufferIt;
 			return RIGHT_SHIFT;
 		}
-		else if (*mBufferIt == ' ' || isalpha(*mBufferIt))
-		{
-			return GREATER_THAN;
-		}
 		else
 		{
-			return UNKNOWN;
+			return GREATER_THAN;
 		}
 	case '<':
 		if (*(++mBufferIt) == '<')
@@ -168,27 +150,25 @@ Lexer::Token Lexer::GetNextToken()
 			++mBufferIt;
 			return LEFT_SHIFT;
 		}	
-		else if (*mBufferIt == ' ' || isalpha(*mBufferIt))
+		else
 		{
 			return LESS_THAN;
 		}
-		else
-		{
-			return UNKNOWN;
-		}
 	case '\"':
 		mCurrentStr.clear();
-		while (*(++mBufferIt) != '\n' && *mBufferIt != '\"')
-			mCurrentStr += *mBufferIt;
-		if (*mBufferIt == '\n')
+        while ((++mBufferIt != mBuffer.end()) && (*mBufferIt != '\n') && (*mBufferIt != '\"'))
+            mCurrentStr += *mBufferIt;
+
+		if ((mBufferIt == mBuffer.end()) || (*mBufferIt == '\n'))
 		{
+            Utils::ErrorLogger::PrintErrorAtLocation(Utils::ErrorLogger::NEW_LINE_IN_LITERAL, mCurrentLine, mCurrentColumn);
 			return UNKNOWN;	// TODO: This needs to be logged by the error logger
 		}
 		else
 		{
 			++mBufferIt;
 			return STRING_LITERAL;
-		}		
+		}
 	default:
 		// We have and identifier or a keyword
 		if (isalpha(currentChar))
@@ -246,6 +226,7 @@ Lexer::Token Lexer::GetNextToken()
 
 			return NUMBER;
 		}
+
 		return UNKNOWN;
 	}
 }
