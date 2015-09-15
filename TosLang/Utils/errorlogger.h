@@ -19,6 +19,7 @@ namespace TosLang
 
                 // Literal
                 NEW_LINE_IN_LITERAL,
+                NUMBER_BAD_SUFFIX,
 
                 // Type
                 WRONG_LITERAL_TYPE,

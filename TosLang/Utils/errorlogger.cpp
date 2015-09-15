@@ -12,6 +12,7 @@ std::map<ErrorLogger::ErrorType, std::string> ErrorLogger::mErrorMessages =
 
     // Literal
     { NEW_LINE_IN_LITERAL,          "ERROR: Newline in string literal" },
+    { NUMBER_BAD_SUFFIX,            "ERROR: Bad suffix on number" },
 
     // Misc
     { MISSING_SEMI_COLON,           "ERROR: Expected a ;" },

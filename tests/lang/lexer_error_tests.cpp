@@ -46,3 +46,24 @@ BOOST_FIXTURE_TEST_CASE( LexerBadStrLitTest, FrontEndErrorFixture )
     BOOST_REQUIRE_EQUAL(messages.size(), 1);
     BOOST_REQUIRE_EQUAL(messages[0], "ERROR: Newline in string literal at line 1, column 16");
 }
+
+BOOST_FIXTURE_TEST_CASE( LexerBadVarNameTest, FrontEndErrorFixture )
+{
+    Lexer lex;
+    BOOST_REQUIRE(lex.Init("../inputs/bad_var_name.tos"));
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
+
+    // var 1Var: Int = 1;
+    BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::VAR);
+    BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::UNKNOWN);
+
+    // End of file
+    BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TOK_EOF);
+
+    std::vector<std::string> messages{ GetErrorMessages() };
+
+    // Check if the correct error messages got printed
+    BOOST_REQUIRE_EQUAL(messages.size(), 1);
+    BOOST_REQUIRE_EQUAL(messages[0], "ERROR: Newline in string literal at line 1, column 4");
+}

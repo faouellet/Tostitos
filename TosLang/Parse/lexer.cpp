@@ -222,9 +222,24 @@ Lexer::Token Lexer::GetNextToken()
 				numberStr += *mBufferIt;
 			} while (isdigit(*(++mBufferIt)));
 
-			mCurrentNumber = std::stoi(numberStr);
+            if (isalpha(*mBufferIt))
+            {
+                // Error: letter in a number
+                Utils::ErrorLogger::PrintErrorAtLocation(Utils::ErrorLogger::NEW_LINE_IN_LITERAL, mCurrentLine, mCurrentColumn);
+                // Advance to the next statement
+                while ((mBufferIt != mBuffer.end()) && (*mBufferIt != ';'))
+                    ++mBufferIt;
 
-			return NUMBER;
+                if (mBufferIt != mBuffer.end())
+                    ++mBufferIt;
+
+                return UNKNOWN;
+            }
+            else
+            {
+                mCurrentNumber = std::stoi(numberStr);
+                return NUMBER;
+            }
 		}
 
 		return UNKNOWN;
