@@ -74,11 +74,6 @@ unsigned CPU::InitMemory(std::vector<UInt8> && program)
     return NO_ERROR;
 }
 
-void CPU::InitPC(UInt8 pcStart)
-{
-    mPC = pcStart;
-}
-
 void CPU::Reset()
 {
     mErrorCode = 0;
@@ -91,16 +86,6 @@ void CPU::SetFlagRegister(const UInt16 value)
 {
     // Discarding unused bits
     mFR = value & 0xFF;
-}
-
-void CPU::SetFlag(const UInt16 value)
-{
-    mFR |= value;
-}
-
-void CPU::UnsetFlag(const UInt16 value)
-{
-    mFR &= ~value;
 }
 
 UInt8 CPU::SetProgramCounter(const UInt16 value)
@@ -146,9 +131,18 @@ UInt8 CPU::SetStackPointer(const UInt16 value)
     }
 }
 
-void CPU::StepBack()
+UInt8 CPU::StepBack()
 {
-    mPC -= 4;
+    if ((mPC == 0) || ((mPC - 4) > STACK_START))
+    {
+        PrintHex("Not a valid value for the PC", mPC - 4);
+        return MEMORY_ERROR;
+    }
+    else
+    {
+        mPC -= 4;
+        return NO_ERROR;
+    }
 }
 
 void CPU::PrintHex(const std::string& message, UInt16 value) const

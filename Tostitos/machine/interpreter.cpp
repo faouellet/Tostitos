@@ -126,7 +126,7 @@ unsigned Interpreter::AcquireROM(const std::string & romName)
 
         // TODO: Should check for a valid header
 
-        mCPU.InitPC(romData[0x0A]);
+        mCPU.SetProgramCounter(romData[0x0A]);
 
         romData.erase(romData.begin(), romData.begin() + HEADER_SIZE);
 

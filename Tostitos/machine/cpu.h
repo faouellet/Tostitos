@@ -129,13 +129,6 @@ namespace MachineEngine
             unsigned InitMemory(std::vector<UInt8> && program);
 
             /**
-            * \fn InitPC
-            * \brief Set the program counter at the start of the program
-            * \param pcStart Starting address of the program counter
-            */
-            void InitPC(UInt8 pcStart);
-
-            /**
             * \fn Reset
             * \brief Restore the central processing unit at its pre-initialized state
             */
@@ -147,20 +140,6 @@ namespace MachineEngine
             * \param value The new value of the PC
             */
             void SetFlagRegister(const UInt16 value);
-
-            /**
-            * \fn SetFlag
-            * \brief Set a flag within the flag register
-            * \param value The flag to set
-            */
-            void SetFlag(const UInt16 value);
-
-            /**
-            * \fn UnsetFlag
-            * \brief Unset a flag within the flag register
-            * \param value The flag to unset
-            */
-            void UnsetFlag(const UInt16 value);
 
             /**
             * \fn SetProgramCounter
@@ -190,8 +169,9 @@ namespace MachineEngine
             /**
             * \fn StepBack
             * \brief Make the PC go back to the previous instruction
+            * \return ErrorCode
             */
-            void StepBack();
+            UInt8 StepBack();
 
 		private:
 			/*

@@ -31,6 +31,7 @@ if(Boost_FOUND)
         include(../cmake/BoostTestHelpers.cmake)
 
 		# Machine tests
+        add_boost_test(machine/cpu_tests.cpp machine)
 		add_boost_test(machine/instruction_tests.cpp machine)
         add_boost_test(machine/interpreter_tests.cpp machine)
         add_boost_test(machine/utils_tests.cpp machine)
