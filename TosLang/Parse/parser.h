@@ -20,7 +20,7 @@ namespace TosLang
         class Parser
         {
         public:
-            Parser(const std::shared_ptr<SymbolTable>& symTab) : mSymbolTable(symTab), mCurrentToken{ Lexer::Token::UNKNOWN } { }
+            explicit Parser(const std::shared_ptr<SymbolTable>& symTab) : mSymbolTable(symTab), mCurrentToken{ Lexer::Token::UNKNOWN } { }
             ~Parser() = default;
 
             /*

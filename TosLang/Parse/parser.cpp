@@ -128,19 +128,24 @@ std::unique_ptr<ASTNode> Parser::ParseVarDecl()
 std::unique_ptr<Expr> Parser::ParseExpr()
 {
     std::unique_ptr<Expr> node;
-    switch (mLexer.GetNextToken())
+    mCurrentToken = mLexer.GetNextToken();
+    switch (mCurrentToken)
     {
     case Lexer::Token::FALSE:
         node = std::make_unique<BooleanExpr>(false);
+        break;
     case Lexer::Token::TRUE:
         node = std::make_unique<BooleanExpr>(true);
+        break;
     case Lexer::Token::NUMBER:
-        mSymbolTable->AddSymbol(mLexer.GetCurrentNumber());
         node = std::make_unique<NumberExpr>(mLexer.GetCurrentNumber());
+        break;
     case Lexer::Token::IDENTIFIER:
         node = std::make_unique<IdentifierExpr>(mLexer.GetCurrentStr());
+        break;
     default:    // TODO: This should be logged
         node = nullptr;
+        break;
     }
 
     return ParseBinaryOpExpr(std::move(node));
@@ -148,19 +153,19 @@ std::unique_ptr<Expr> Parser::ParseExpr()
 
 std::unique_ptr<Expr> Parser::ParseBinaryOpExpr(std::unique_ptr<Expr>&& lhs)
 {
-    Lexer::Token tok = mLexer.GetNextToken();
-    if (tok == Lexer::Token::SEMI_COLON)
+    mCurrentToken = mLexer.GetNextToken();
+    if (mCurrentToken == Lexer::Token::SEMI_COLON)
     {
         return std::move(lhs);
     }
-    else if (tok < Lexer::Token::OP_START || Lexer::Token::OP_END < tok)
+    else if (mCurrentToken < Lexer::Token::OP_START || Lexer::Token::OP_END < mCurrentToken)
     {
         // TODO: This is an error that should be logged
         return nullptr;
     }
     else
     {
-        return std::make_unique<BinaryOpExpr>(TokenToOpcode(tok), std::move(lhs), ParseExpr());
+        return std::make_unique<BinaryOpExpr>(TokenToOpcode(mCurrentToken), std::move(lhs), ParseExpr());
     }
 }
 

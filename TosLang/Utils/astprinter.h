@@ -20,7 +20,7 @@ namespace TosLang
             friend class ASTVisitor<ASTPrinter<OS>>;
 
         public:
-            ASTPrinter(OS&& stream) : mStream(std::move(stream)) { }
+            explicit ASTPrinter(OS&& stream) : mStream(std::move(stream)) { }
             ~ASTPrinter() = default;
 
         public:
