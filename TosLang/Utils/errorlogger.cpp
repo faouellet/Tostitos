@@ -4,7 +4,7 @@
 
 using namespace TosLang::Utils;
 
-std::map<ErrorLogger::ErrorType, std::string> ErrorLogger::mErrorMessages =
+std::unordered_map<ErrorLogger::ErrorType, std::string> ErrorLogger::mErrorMessages =
 {
     // File
     { WRONG_FILE_TYPE,              "FILE ERROR: Wrong file type" },

@@ -4,7 +4,6 @@
 #include "../Utils/astvisitor.h"
 #include "../Parse/symboltable.h"
 
-#include <map>
 #include <string>
 
 namespace TosLang

@@ -1,8 +1,8 @@
 #ifndef ERROR_LOGGER_H__TOSTITOS
 #define ERROR_LOGGER_H__TOSTITOS
 
-#include <map>
 #include <string>
+#include <unordered_map>
 
 namespace TosLang
 {
@@ -49,7 +49,7 @@ namespace TosLang
             ErrorLogger() = default;
 
         private:
-            static std::map<ErrorType, std::string> mErrorMessages;
+            static std::unordered_map<ErrorType, std::string> mErrorMessages;
             static ErrorLogger mInstance;
         };
     }

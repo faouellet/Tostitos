@@ -5,8 +5,8 @@
 
 #include "ruletable.h"
 
-#include <map>
 #include <stack>
+#include <unordered_map>
 
 namespace TosLang
 {
@@ -37,7 +37,7 @@ namespace TosLang
 
             RuleTable mRuleTable;
 
-            std::map<const FrontEnd::ASTNode*, unsigned> mNodeLabels;
+            std::unordered_map<const FrontEnd::ASTNode*, unsigned> mNodeLabels;
             std::stack<const FrontEnd::ASTNode*> mNodesVisited;
         };
     }

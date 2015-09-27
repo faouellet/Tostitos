@@ -1,8 +1,8 @@
 #ifndef SYMBOLS_H__TOSTITOS
 #define SYMBOLS_H__TOSTITOS
 
-#include <map>
 #include <string>
+#include <unordered_map>
 
 namespace TosLang
 {
@@ -33,7 +33,7 @@ namespace TosLang
             bool GetSymbol(const std::string& varName, Symbol& sym);
 
         private:
-            std::map<std::string, Symbol> mSymTable;
+            std::unordered_map<std::string, Symbol> mSymTable;
         };
     }
 }

@@ -58,10 +58,10 @@ BOOST_AUTO_TEST_CASE( CpuRegistertTest )
 {
     CPU cpu;
     for (size_t i = 0; i < CPU::NB_REGISTERS; ++i)
-        BOOST_REQUIRE_EQUAL(cpu.SetRegister(i, i), NO_ERROR);
+        BOOST_REQUIRE_EQUAL(cpu.SetRegister(static_cast<UInt8>(i), static_cast<UInt16>(i)), NO_ERROR);
 
     BOOST_REQUIRE_EQUAL(cpu.SetRegister(CPU::NB_REGISTERS, 42), CPU::UNKNOWN_REGISTER);
     
     for (size_t i = 0; i < CPU::NB_REGISTERS; ++i)
-        BOOST_REQUIRE_EQUAL(cpu.DumpRegister(i), i);
+        BOOST_REQUIRE_EQUAL(cpu.DumpRegister(static_cast<UInt8>(i)), i);
 }
