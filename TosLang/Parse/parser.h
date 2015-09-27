@@ -11,7 +11,8 @@ namespace TosLang
     namespace FrontEnd
     {
         class ASTNode;
-
+        class Expr;
+        
         /*
         * \class Parser
         * \brief Part of the TosLang compiler used to generate an AST
@@ -19,7 +20,7 @@ namespace TosLang
         class Parser
         {
         public:
-            Parser(const std::shared_ptr<SymbolTable>& symTab) : mSymbolTable(symTab), mCurrentToken{ Lexer::UNKNOWN } { }
+            Parser(const std::shared_ptr<SymbolTable>& symTab) : mSymbolTable(symTab), mCurrentToken{ Lexer::Token::UNKNOWN } { }
             ~Parser() = default;
 
             /*
@@ -30,7 +31,7 @@ namespace TosLang
             */
             std::unique_ptr<ASTNode> ParseProgram(const std::string& filename);
 
-        private:
+        private:	// Declarations
             /*
             * \fn       ParseProgramDecl
             * \brief    programdecl
@@ -43,9 +44,29 @@ namespace TosLang
             /*
             * \fn       ParseVarDecl
             * \brief    vardecl ::= 'var' identifierexpr ':' typeexpr ( '=' expr ) ';'
-            * \return   A node representing a variable
+            * \return   A node representing a variable declaration with potentially an initializing expression
             */
             std::unique_ptr<ASTNode> ParseVarDecl();
+
+		private:	// Expressions
+			/*
+			* \fn       ParseExpr
+			* \brief    expr 
+			*               ::= binopexpr
+            *               ::= booleanexpr
+            *               ::= identifierexpr
+            *               ::= numberexpr
+			* \return   A node representing an expression
+			*/
+			std::unique_ptr<Expr> ParseExpr();
+
+			/*
+			* \fn           ParseBinaryOpExpr
+			* \brief        binopexpr ::= expr OP expr
+            * \param lhs    The left hand side expression of the binary expression
+			* \return       A node representing 
+            */
+			std::unique_ptr<Expr> ParseBinaryOpExpr(std::unique_ptr<Expr>&& lhs);
 
         private:
             Lexer mLexer;                               /*!< Lexer used by the parser to acquire tokens */

@@ -2,6 +2,7 @@
 #define EXPR_H__TOSTITOS
 
 #include "ast.h"
+#include "../Parse/opcodes.h"
 
 namespace TosLang
 {
@@ -25,7 +26,7 @@ namespace TosLang
 		class BinaryOpExpr : public Expr
 		{
 		public:
-			BinaryOpExpr(char op, std::unique_ptr<Expr>&& lhs, std::unique_ptr<Expr>&& rhs) : Expr(BINARY_EXPR), mOp{ op } 
+			BinaryOpExpr(Opcode op, std::unique_ptr<Expr>&& lhs, std::unique_ptr<Expr>&& rhs) : Expr(NodeKind::BINARY_EXPR), mOp{ op }
 			{
 				mChildren.push_back(std::move(lhs));
 				mChildren.push_back(std::move(rhs));
@@ -34,7 +35,7 @@ namespace TosLang
 			virtual ~BinaryOpExpr() { }
 			
 		private:
-			char mOp;
+			Opcode mOp;
 		};
 
         /*
@@ -44,7 +45,7 @@ namespace TosLang
         class BooleanExpr : public Expr
         {
         public:
-			explicit BooleanExpr(bool value) : Expr(BOOLEAN_EXPR), mValue{ value } { mName = mValue ? "True" : "False"; }
+			explicit BooleanExpr(bool value) : Expr(NodeKind::BOOLEAN_EXPR), mValue{ value } { mName = mValue ? "True" : "False"; }
             virtual ~BooleanExpr() { }
 
             const bool GetValue() const { return mValue; }
@@ -60,7 +61,7 @@ namespace TosLang
         class IdentifierExpr : public Expr
         {
         public:
-			explicit IdentifierExpr(std::string value) : Expr(IDENTIFIER_EXPR) { mName = value; }
+			explicit IdentifierExpr(std::string value) : Expr(NodeKind::IDENTIFIER_EXPR) { mName = value; }
             virtual ~IdentifierExpr() { }
         };
 
@@ -71,7 +72,7 @@ namespace TosLang
         class NumberExpr : public Expr
         {
         public:
-			explicit NumberExpr(int value) : Expr(NUMBER_EXPR), mValue{ value } { mName = std::to_string(value); }
+			explicit NumberExpr(int value) : Expr(NodeKind::NUMBER_EXPR), mValue{ value } { mName = std::to_string(value); }
             virtual ~NumberExpr() { }
 
             const int GetValue() const { return mValue; }

@@ -18,7 +18,7 @@ namespace TosLang
         class ProgramDecl : public ASTNode
         {
         public:
-            ProgramDecl() : ASTNode(PROGRAM_DECL) { }
+            ProgramDecl() : ASTNode(NodeKind::PROGRAM_DECL) { }
             virtual ~ProgramDecl() { }
         };
 
@@ -30,7 +30,7 @@ namespace TosLang
         class VarDecl : public ASTNode
         {
         public:
-            explicit VarDecl(const std::string& varName) : ASTNode(VAR_DECL) { mName = varName; }
+            explicit VarDecl(const std::string& varName) : ASTNode(NodeKind::VAR_DECL) { mName = varName; }
             virtual ~VarDecl() { }
 
 		public:

@@ -28,17 +28,17 @@ BOOST_FIXTURE_TEST_CASE( LexerBadStrLitTest, FrontEndErrorFixture )
     BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
 
     // var MyVar: String = "Hello;
-    BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::VAR);
-    BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::IDENTIFIER);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::VAR);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::IDENTIFIER);
     BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "MyVar");
-    BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::COLON);
-    BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TYPE);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::COLON);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::TYPE);
     BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "String");
-    BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::EQUAL);
-    BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::UNKNOWN);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::EQUAL);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::UNKNOWN);
 
     // End of file
-    BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TOK_EOF);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::TOK_EOF);
 
     std::vector<std::string> messages{ GetErrorMessages() };
 
@@ -55,11 +55,11 @@ BOOST_FIXTURE_TEST_CASE( LexerBadVarNameTest, FrontEndErrorFixture )
     BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
 
     // var 1Var: Int = 1;
-    BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::VAR);
-    BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::UNKNOWN);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::VAR);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::UNKNOWN);
 
     // End of file
-    BOOST_REQUIRE_EQUAL(lex.GetNextToken(), Lexer::Token::TOK_EOF);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::TOK_EOF);
 
     std::vector<std::string> messages{ GetErrorMessages() };
 

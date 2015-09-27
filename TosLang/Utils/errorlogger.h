@@ -2,6 +2,7 @@
 #define ERROR_LOGGER_H__TOSTITOS
 
 #include <string>
+#include <type_traits>
 #include <unordered_map>
 
 namespace TosLang
@@ -11,7 +12,7 @@ namespace TosLang
         class ErrorLogger
         {
         public:
-            enum ErrorType
+            enum class ErrorType : unsigned int
             {
                 // File
                 WRONG_FILE_TYPE,
@@ -36,6 +37,17 @@ namespace TosLang
                 MISSING_SEMI_COLON,
             };
 
+        private:
+            // TODO: This shouldn't be necessary with a fully compliant C++14 compiler
+            struct ErrorTypeHash
+            {
+                template <typename T>
+                std::size_t operator()(T t) const
+                {
+                    return static_cast<std::size_t>(t);
+                }
+            };
+
         public:
             ErrorLogger(const ErrorLogger&) = delete;
             ErrorLogger& operator=(const ErrorLogger&) = delete;
@@ -49,7 +61,7 @@ namespace TosLang
             ErrorLogger() = default;
 
         private:
-            static std::unordered_map<ErrorType, std::string> mErrorMessages;
+            static std::unordered_map<ErrorType, std::string, ErrorTypeHash> mErrorMessages;
             static ErrorLogger mInstance;
         };
     }

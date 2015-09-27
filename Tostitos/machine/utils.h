@@ -23,13 +23,13 @@ namespace MachineEngine
 			template <class If, class Else>
 			struct IfElse<true, If, Else>
 			{
-				typedef If type;
+				using type = If;
 			};
 
 			template <class If, class Else>
 			struct IfElse<false, If, Else>
 			{
-				typedef Else type;
+				using type = Else;
 			};
 
 			/**
@@ -90,11 +90,11 @@ namespace MachineEngine
 				>::type type;
 			};
 
-			typedef UInt_<1>::type UInt8;	/**< Unsigned 8 bits integer type */
-			typedef UInt_<2>::type UInt16;	/**< Unsigned 16 bits integer type */
-			typedef UInt_<4>::type UInt32;	/**< Unsigned 32 bits integer type */
+			using UInt8  = UInt_<1>::type;	/**< Unsigned 8 bits integer type */
+			using UInt16 = UInt_<2>::type;	/**< Unsigned 16 bits integer type */
+			using UInt32 = UInt_<4>::type;	/**< Unsigned 32 bits integer type */
 
-			typedef Int_<2>::type Int16;	/**< Signed 16 bits integer type */
+			using Int16  = Int_<2>::type;	/**< Signed 16 bits integer type */
 		};
 	}
 }

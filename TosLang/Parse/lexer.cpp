@@ -42,7 +42,7 @@ Lexer::Token Lexer::GetNextToken()
 
     // End of file, we're done
     if (mBufferIt == mBuffer.end())
-        return TOK_EOF;
+        return Token::TOK_EOF;
 
     // Caching the current char because we will use it a lot
     const char currentChar = *mBufferIt;
@@ -52,55 +52,55 @@ Lexer::Token Lexer::GetNextToken()
 		// TODO: Should the balance of " be checked here?
 	case ',':
 		++mBufferIt;
-		return COMMA;
+		return Token::COMMA;
 	case ':':
 		++mBufferIt;
-		return COLON;
+		return Token::COLON;
 	case ';':
 		++mBufferIt;
-		return SEMI_COLON;
+		return Token::SEMI_COLON;
 	case '{':
 		++mBufferIt;
-		return LEFT_BRACE;
+		return Token::LEFT_BRACE;
 	case '[':
 		++mBufferIt;
-		return LEFT_BRACKET;
+		return Token::LEFT_BRACKET;
 	case '(':
 		++mBufferIt;
-		return LEFT_PAREN;
+		return Token::LEFT_PAREN;
 	case '}':
 		++mBufferIt;
-		return RIGHT_BRACE;
+		return Token::RIGHT_BRACE;
 	case ']':
 		++mBufferIt;
-		return RIGHT_BRACKET;
+		return Token::RIGHT_BRACKET;
 	case ')':
 		++mBufferIt;
-		return RIGHT_PAREN;
+		return Token::RIGHT_PAREN;
 	case '=':
 		++mBufferIt;
-		return EQUAL;
+		return Token::EQUAL;
 	case '+':
 		++mBufferIt;
-		return PLUS;
+		return Token::PLUS;
 	case '*':
 		++mBufferIt;
-		return MULT;
+		return Token::MULT;
 	case '%':
 		++mBufferIt;
-		return MODULO;
+		return Token::MODULO;
 	case '!':
 		++mBufferIt;
-		return NOT;
+		return Token::NOT;
 	case '-':
 		if (*(++mBufferIt) == '>')
 		{
 			++mBufferIt;
-			return ARROW;
+			return Token::ARROW;
 		}
 		else
 		{
-			return MINUS;
+			return Token::MINUS;
 		}
 	case '/':
 		if (*(++mBufferIt) == '/')
@@ -108,51 +108,51 @@ Lexer::Token Lexer::GetNextToken()
 			// A comment covers a whole line
 			while (mBufferIt != mBuffer.end() && *mBufferIt != '\n')
 				++mBufferIt;
-			return COMMENT;
+			return Token::COMMENT;
 		}
 		else
 		{
-			return DIVIDE;
+			return Token::DIVIDE;
 		}
 	case '&':
 		if (*(++mBufferIt) == '&')
 		{
 			++mBufferIt;
-			return AND_BOOL;
+			return Token::AND_BOOL;
 		}
 		else
 		{
-			return AND_INT;
+			return Token::AND_INT;
 		}
 	case '|':
 		if (*(++mBufferIt) == '|')
 		{
 			++mBufferIt;
-			return OR_BOOL;
+			return Token::OR_BOOL;
 		}
 		else
 		{
-			return OR_INT;
+			return Token::OR_INT;
 		}
 	case '>':
 		if (*(++mBufferIt) == '>')
 		{
 			++mBufferIt;
-			return RIGHT_SHIFT;
+			return Token::RIGHT_SHIFT;
 		}
 		else
 		{
-			return GREATER_THAN;
+			return Token::GREATER_THAN;
 		}
 	case '<':
 		if (*(++mBufferIt) == '<')
 		{
 			++mBufferIt;
-			return LEFT_SHIFT;
+			return Token::LEFT_SHIFT;
 		}	
 		else
 		{
-			return LESS_THAN;
+			return Token::LESS_THAN;
 		}
 	case '\"':
 		mCurrentStr.clear();
@@ -161,13 +161,13 @@ Lexer::Token Lexer::GetNextToken()
 
 		if ((mBufferIt == mBuffer.end()) || (*mBufferIt == '\n'))
 		{
-            Utils::ErrorLogger::PrintErrorAtLocation(Utils::ErrorLogger::NEW_LINE_IN_LITERAL, mCurrentLine, mCurrentColumn);
-			return UNKNOWN;	
+            Utils::ErrorLogger::PrintErrorAtLocation(Utils::ErrorLogger::ErrorType::NEW_LINE_IN_LITERAL, mCurrentLine, mCurrentColumn);
+			return Token::UNKNOWN;
 		}
 		else
 		{
 			++mBufferIt;
-			return STRING_LITERAL;
+			return Token::STRING_LITERAL;
 		}
 	default:
 		// We have and identifier or a keyword
@@ -181,37 +181,37 @@ Lexer::Token Lexer::GetNextToken()
 			}
 
 			if (mCurrentStr == "fn")
-				return FUNCTION;
+				return Token::FUNCTION;
 			else if (mCurrentStr == "print")
-				return PRINT;
+				return Token::PRINT;
 			else if (mCurrentStr == "scan")
-				return SCAN;
+				return Token::SCAN;
 			else if (mCurrentStr == "String")
-				return TYPE;
+				return Token::TYPE;
 			else if (mCurrentStr == "var")
-				return VAR;
+				return Token::VAR;
 			else if (mCurrentStr == "Void")
-				return TYPE;
+				return Token::TYPE;
 			else if (mCurrentStr == "Int")
-				return TYPE;
+				return Token::TYPE;
 			else if (mCurrentStr == "Bool")
-				return TYPE;
+				return Token::TYPE;
 			else if (mCurrentStr == "True")
-				return TRUE;
+				return Token::TRUE;
 			else if (mCurrentStr == "False")
-				return FALSE;
+				return Token::FALSE;
 			else if (mCurrentStr == "if")
-				return IF;
+				return Token::IF;
 			else if (mCurrentStr == "while")
-				return WHILE;
+				return Token::WHILE;
 			else if (mCurrentStr == "spawn")
-				return SPAWN;
+				return Token::SPAWN;
 			else if (mCurrentStr == "sync")
-				return SYNC;
+				return Token::SYNC;
 			else if (mCurrentStr == "return")
-				return RETURN;
+				return Token::RETURN;
 			else
-				return IDENTIFIER;
+				return Token::IDENTIFIER;
 		}
 		// We have a numeric value
 		else if (isdigit(currentChar))
@@ -225,7 +225,7 @@ Lexer::Token Lexer::GetNextToken()
             if (isalpha(*mBufferIt))
             {
                 // Error: letter in a number
-                Utils::ErrorLogger::PrintErrorAtLocation(Utils::ErrorLogger::NUMBER_BAD_SUFFIX, mCurrentLine, mCurrentColumn);
+                Utils::ErrorLogger::PrintErrorAtLocation(Utils::ErrorLogger::ErrorType::NUMBER_BAD_SUFFIX, mCurrentLine, mCurrentColumn);
                 // Advance to the next statement
                 while ((mBufferIt != mBuffer.end()) && (*mBufferIt != ';'))
                     ++mBufferIt;
@@ -233,15 +233,15 @@ Lexer::Token Lexer::GetNextToken()
                 if (mBufferIt != mBuffer.end())
                     ++mBufferIt;
 
-                return UNKNOWN;
+                return Token::UNKNOWN;
             }
             else
             {
                 mCurrentNumber = std::stoi(numberStr);
-                return NUMBER;
+                return Token::NUMBER;
             }
 		}
 
-		return UNKNOWN;
+		return Token::UNKNOWN;
 	}
 }

@@ -12,17 +12,17 @@ namespace TosLang
 {
     namespace BackEnd
     {
-        enum class OperandType
+        enum class OperandType : unsigned int
         {
             IMMEDIATE, LABEL, REGISTER, UNKNOWN
         };
 
-        enum class OperatorType
+        enum class OperatorType : unsigned int
         {
             OP_ASSIGN, /*ADD, DIV, MOD, MUL, SUB*/ NO_OP
         };
 
-        enum class ResultType
+        enum class ResultType : unsigned int
         {
             RES_ASSIGN, RES_REGISTER, RES_UNKNOWN
         };

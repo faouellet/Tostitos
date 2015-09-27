@@ -108,16 +108,16 @@ namespace TosLang
             {
                 switch (node->GetKind())
                 {
-                case FrontEnd::ASTNode::PROGRAM_DECL:
+                case FrontEnd::ASTNode::NodeKind::PROGRAM_DECL:
                     GetDerived().HandleProgramDecl();
                     break;
-                case FrontEnd::ASTNode::VAR_DECL:
+                case FrontEnd::ASTNode::NodeKind::VAR_DECL:
                     GetDerived().HandleVarDecl();
                     break;
-                case FrontEnd::ASTNode::BOOLEAN_EXPR:
+                case FrontEnd::ASTNode::NodeKind::BOOLEAN_EXPR:
                     GetDerived().HandleBooleanExpr();
                     break;
-                case FrontEnd::ASTNode::NUMBER_EXPR:
+                case FrontEnd::ASTNode::NodeKind::NUMBER_EXPR:
                     GetDerived().HandleNumberExpr();
                     break;
                 default:

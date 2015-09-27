@@ -11,7 +11,7 @@ namespace TosLang
     {
         class ASTNode;
 
-        typedef std::vector<std::unique_ptr<ASTNode>> ChildrenNodes;
+        using ChildrenNodes = std::vector<std::unique_ptr<ASTNode>>;
 
         /*
         * \class ASTNode
@@ -20,7 +20,7 @@ namespace TosLang
         class ASTNode
         {
         public:
-            enum NodeKind
+            enum class NodeKind : unsigned int
             {
                 // Declarations
                 PROGRAM_DECL,
@@ -39,7 +39,7 @@ namespace TosLang
             };
 
         public:
-			explicit ASTNode(NodeKind kind = ERROR) : mKind(kind), mName("") { }
+			explicit ASTNode(NodeKind kind = NodeKind::ERROR) : mKind(kind), mName("") { }
             virtual ~ASTNode() { }
 
             NodeKind GetKind() const { return mKind; }

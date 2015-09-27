@@ -4,22 +4,25 @@
 #include "../AST/expressions.h"
 #include "../Utils/errorlogger.h"
 
+#include "opcodes.h"
 #include "symboltable.h"
 
 using namespace TosLang::FrontEnd;
 using namespace TosLang::Utils;
 
+static Opcode TokenToOpcode(Lexer::Token tok);
+
 std::unique_ptr<ASTNode> Parser::ParseProgram(const std::string& filename)
 {
     if (filename.substr(filename.size() - 4) != ".tos")
     {
-        ErrorLogger::PrintError(ErrorLogger::WRONG_FILE_TYPE);
+        ErrorLogger::PrintError(ErrorLogger::ErrorType::WRONG_FILE_TYPE);
         return nullptr;
     }
 
     if (!mLexer.Init(filename))
     {
-        ErrorLogger::PrintError(ErrorLogger::ERROR_OPENING_FILE);
+        ErrorLogger::PrintError(ErrorLogger::ErrorType::ERROR_OPENING_FILE);
         return nullptr;
     }
 
@@ -28,32 +31,44 @@ std::unique_ptr<ASTNode> Parser::ParseProgram(const std::string& filename)
 
 std::unique_ptr<ASTNode> Parser::ParseProgramDecl()
 {
-    std::unique_ptr<ProgramDecl> programNode = std::make_unique<ProgramDecl>();
+    auto programNode = std::make_unique<ProgramDecl>();
     mCurrentToken = mLexer.GetNextToken();
     
     // TODO: Error handling when encountering an unknown token
-    while (mCurrentToken != Lexer::TOK_EOF)
+    while (mCurrentToken != Lexer::Token::TOK_EOF)
     {
         switch (mCurrentToken)
         {
-        case Lexer::VAR:
+        case Lexer::Token::VAR:
             {
                 std::unique_ptr<ASTNode> node = ParseVarDecl();
 
                 // If there was an error in parsing the variable declaration, we skip everything until the next statement
-                if (node->GetKind() == ASTNode::ERROR)
-                    while (mCurrentToken != Lexer::SEMI_COLON && mCurrentToken != Lexer::TOK_EOF)
+                if (node->GetKind() == ASTNode::NodeKind::ERROR)
+                    while (mCurrentToken != Lexer::Token::SEMI_COLON && mCurrentToken != Lexer::Token::TOK_EOF)
                         mCurrentToken = mLexer.GetNextToken();
 
                 programNode->AddChildNode(std::move(node));
             }
             break;
-        case Lexer::SEMI_COLON:
+        case Lexer::Token::SEMI_COLON:
             {
                 mCurrentToken = mLexer.GetNextToken();
             }
             break;
+        case Lexer::Token::IDENTIFIER:
+            break; // TODO
         default:
+            {
+                std::unique_ptr<Expr> node = ParseExpr();
+
+                // If there was an error in parsing the variable declaration, we skip everything until the next statement
+                if (node->GetKind() == ASTNode::NodeKind::ERROR)
+                    while (mCurrentToken != Lexer::Token::SEMI_COLON && mCurrentToken != Lexer::Token::TOK_EOF)
+                        mCurrentToken = mLexer.GetNextToken();
+
+                programNode->AddChildNode(std::move(node));
+            }
             break;
         }
     }
@@ -63,70 +78,128 @@ std::unique_ptr<ASTNode> Parser::ParseProgramDecl()
 
 std::unique_ptr<ASTNode> Parser::ParseVarDecl()
 {
-    std::unique_ptr<ASTNode> node = std::make_unique<ASTNode>();
-    if ((mCurrentToken = mLexer.GetNextToken()) != Lexer::IDENTIFIER)
+    auto node = std::make_unique<ASTNode>();
+    if ((mCurrentToken = mLexer.GetNextToken()) != Lexer::Token::IDENTIFIER)
     {
-        ErrorLogger::PrintErrorAtLocation(ErrorLogger::VAR_MISSING_IDENTIFIER, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_MISSING_IDENTIFIER, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
         return std::move(node);
     }
 
     std::string varName = mLexer.GetCurrentStr();
     
-    if ((mCurrentToken = mLexer.GetNextToken()) != Lexer::COLON)
+    if ((mCurrentToken = mLexer.GetNextToken()) != Lexer::Token::COLON)
     {
-        ErrorLogger::PrintErrorAtLocation(ErrorLogger::VAR_MISSING_COLON, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_MISSING_COLON, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
         return std::move(node);
     }
 
-    if ((mCurrentToken = mLexer.GetNextToken()) != Lexer::TYPE)
+    if ((mCurrentToken = mLexer.GetNextToken()) != Lexer::Token::TYPE)
     {
-        ErrorLogger::PrintErrorAtLocation(ErrorLogger::VAR_MISSING_TYPE, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_MISSING_TYPE, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
         return std::move(node);
     }
      
     VarDecl* vDecl = new VarDecl(varName);
     if (!mSymbolTable->AddSymbol(varName, mLexer.GetCurrentStr() == "Int" ? Symbol(INT) : Symbol(BOOL)))
     {
-        ErrorLogger::PrintErrorAtLocation(ErrorLogger::VAR_REDEFINITION, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_REDEFINITION, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
 		delete vDecl;
         return std::move(node);
     }
 
     mCurrentToken = mLexer.GetNextToken();
 
-    if (mCurrentToken == Lexer::EQUAL)   // Variable declaration with initialization
-    {
-        switch (mLexer.GetNextToken())
-        {
-        case Lexer::FALSE:
-            vDecl->AddInitialization(std::make_unique<BooleanExpr>(false));
-            break;
-        case Lexer::TRUE:
-            vDecl->AddInitialization(std::make_unique<BooleanExpr>(true));
-            break;
-        case Lexer::NUMBER:
-            vDecl->AddInitialization(std::make_unique<NumberExpr>(mLexer.GetCurrentNumber()));
-            mSymbolTable->AddSymbol(mLexer.GetCurrentNumber());
-            break;
-        case Lexer::IDENTIFIER:
-            vDecl->AddInitialization(std::make_unique<IdentifierExpr>(mLexer.GetCurrentStr()));
-        default:
-            break;
-        }
+    if (mCurrentToken == Lexer::Token::EQUAL)   // Variable declaration with initialization
+        vDecl->AddInitialization(ParseExpr());    
 
-        mCurrentToken = mLexer.GetNextToken();
-    }
-    
-
-    if (mCurrentToken == Lexer::SEMI_COLON)
+    if (mCurrentToken == Lexer::Token::SEMI_COLON)
     {
         node.reset(vDecl);
         return std::move(node);
     }
     else
     {
-        ErrorLogger::PrintErrorAtLocation(ErrorLogger::MISSING_SEMI_COLON, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::MISSING_SEMI_COLON, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
         delete vDecl;
         return std::move(node);
+    }
+}
+
+std::unique_ptr<Expr> Parser::ParseExpr()
+{
+    std::unique_ptr<Expr> node;
+    switch (mLexer.GetNextToken())
+    {
+    case Lexer::Token::FALSE:
+        node = std::make_unique<BooleanExpr>(false);
+    case Lexer::Token::TRUE:
+        node = std::make_unique<BooleanExpr>(true);
+    case Lexer::Token::NUMBER:
+        mSymbolTable->AddSymbol(mLexer.GetCurrentNumber());
+        node = std::make_unique<NumberExpr>(mLexer.GetCurrentNumber());
+    case Lexer::Token::IDENTIFIER:
+        node = std::make_unique<IdentifierExpr>(mLexer.GetCurrentStr());
+    default:    // TODO: This should be logged
+        node = nullptr;
+    }
+
+    return ParseBinaryOpExpr(std::move(node));
+}
+
+std::unique_ptr<Expr> Parser::ParseBinaryOpExpr(std::unique_ptr<Expr>&& lhs)
+{
+    Lexer::Token tok = mLexer.GetNextToken();
+    if (tok == Lexer::Token::SEMI_COLON)
+    {
+        return std::move(lhs);
+    }
+    else if (tok < Lexer::Token::OP_START || Lexer::Token::OP_END < tok)
+    {
+        // TODO: This is an error that should be logged
+        return nullptr;
+    }
+    else
+    {
+        return std::make_unique<BinaryOpExpr>(TokenToOpcode(tok), std::move(lhs), ParseExpr());
+    }
+}
+
+//////////////////// Static functions ////////////////////
+static Opcode TokenToOpcode(Lexer::Token tok)
+{
+    switch (tok)
+    {
+    case TosLang::FrontEnd::Lexer::Token::AND_BOOL:
+        return Opcode::AND_BOOL;
+    case TosLang::FrontEnd::Lexer::Token::AND_INT:
+        return Opcode::AND_INT;
+    case TosLang::FrontEnd::Lexer::Token::DIVIDE:
+        return Opcode::DIVIDE;
+    case TosLang::FrontEnd::Lexer::Token::EQUAL:
+        return Opcode::EQUAL;
+    case TosLang::FrontEnd::Lexer::Token::GREATER_THAN:
+        return Opcode::GREATER_THAN;
+    case TosLang::FrontEnd::Lexer::Token::LEFT_SHIFT:
+        return Opcode::LEFT_SHIFT;
+    case TosLang::FrontEnd::Lexer::Token::LESS_THAN:
+        return Opcode::LESS_THAN;
+    case TosLang::FrontEnd::Lexer::Token::MINUS:
+        return Opcode::MINUS;
+    case TosLang::FrontEnd::Lexer::Token::MODULO:
+        return Opcode::MODULO;
+    case TosLang::FrontEnd::Lexer::Token::MULT:
+        return Opcode::MULT;
+    case TosLang::FrontEnd::Lexer::Token::NOT:
+        return Opcode::NOT;
+    case TosLang::FrontEnd::Lexer::Token::OR_BOOL:
+        return Opcode::OR_BOOL;
+    case TosLang::FrontEnd::Lexer::Token::OR_INT:
+        return Opcode::OR_INT;
+    case TosLang::FrontEnd::Lexer::Token::PLUS:
+        return Opcode::PLUS;
+    case TosLang::FrontEnd::Lexer::Token::RIGHT_SHIFT:
+        return Opcode::RIGHT_SHIFT;
+    default:
+        return Opcode::UNKNOWN_OP;
     }
 }

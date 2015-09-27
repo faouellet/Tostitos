@@ -14,7 +14,7 @@ namespace TosLang
         class Lexer
         {
         public:
-            enum Token
+            enum class Token : unsigned int
             {
                 // Keywords
 				FUNCTION,
@@ -48,6 +48,8 @@ namespace TosLang
 				OR_INT,
 				PLUS,
 				RIGHT_SHIFT,
+                OP_START = AND_BOOL,
+                OP_END = RIGHT_SHIFT,
 
                 // Misc
 				ARROW,

@@ -33,13 +33,13 @@ void TypeChecker::HandleVarDecl()
             || !mSymbolTable->GetSymbol(initExpr->GetName(), initSymbol))
         {
             // TODO: Should this be in another semantic analysis pass?
-            ErrorLogger::PrintError(ErrorLogger::VAR_UNDECLARED_IDENTIFIER);
+            ErrorLogger::PrintError(ErrorLogger::ErrorType::VAR_UNDECLARED_IDENTIFIER);
             ++mErrorCount;
         }
-        else if ((initExpr->GetKind() == ASTNode::BOOLEAN_EXPR || initExpr->GetKind() == ASTNode::NUMBER_EXPR) 
+        else if ((initExpr->GetKind() == ASTNode::NodeKind::BOOLEAN_EXPR || initExpr->GetKind() == ASTNode::NodeKind::NUMBER_EXPR)
             && varSymbol.mType != initSymbol.mType) 
         {
-            ErrorLogger::PrintError(ErrorLogger::WRONG_LITERAL_TYPE);
+            ErrorLogger::PrintError(ErrorLogger::ErrorType::WRONG_LITERAL_TYPE);
             ++mErrorCount;
         }
         else
@@ -49,7 +49,7 @@ void TypeChecker::HandleVarDecl()
             mSymbolTable->GetSymbol(initExpr->GetName(), initSymbol);
             if (varSymbol.mType != initSymbol.mType)
             {
-                ErrorLogger::PrintError(ErrorLogger::WRONG_VARIABLE_TYPE);
+                ErrorLogger::PrintError(ErrorLogger::ErrorType::WRONG_VARIABLE_TYPE);
                 ++mErrorCount;
             }
         }

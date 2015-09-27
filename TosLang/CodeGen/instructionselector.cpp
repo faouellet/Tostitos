@@ -60,14 +60,14 @@ Instruction InstructionSelector::GenerateInstruction(const ASTNode* node, Instru
 
     if (inst.UseImmediateValue())
     {
-        if (node->GetKind() == ASTNode::BOOLEAN_EXPR)
+        if (node->GetKind() == ASTNode::NodeKind::BOOLEAN_EXPR)
         {
             const BooleanExpr* bExpr = dynamic_cast<const BooleanExpr*>(node);
             assert(bExpr != nullptr);
             inst.SetImmediateValue(bExpr->GetValue());
 
         }
-        else if (node->GetKind() == ASTNode::NUMBER_EXPR)
+        else if (node->GetKind() == ASTNode::NodeKind::NUMBER_EXPR)
         {
             const NumberExpr* nExpr = dynamic_cast<const NumberExpr*>(node);
             assert(nExpr != nullptr);
