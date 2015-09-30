@@ -110,6 +110,27 @@ Lexer::Token Lexer::GetNextToken()
 				++mBufferIt;
 			return Token::COMMENT;
 		}
+        else if (*mBufferIt == '*')
+        {
+            // A multiline comment stops only at the multiline closing symbol '*/'
+            bool lastCharWasStar = false;
+            while (mBufferIt != mBuffer.end())
+            {
+                if (lastCharWasStar && (*mBufferIt == '/'))
+                {
+                    ++mBufferIt;
+                    return Token::ML_COMMENT;
+                }
+                else
+                {
+                    lastCharWasStar = (*mBufferIt == '*');
+                    ++mBufferIt;
+                }
+            }
+
+            Utils::ErrorLogger::PrintErrorAtLocation(Utils::ErrorLogger::ErrorType::UNCLOSED_ML_COMMENT, mCurrentLine, mCurrentColumn);
+            return Token::UNKNOWN;
+        }
 		else
 		{
 			return Token::DIVIDE;

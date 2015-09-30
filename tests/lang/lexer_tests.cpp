@@ -617,3 +617,17 @@ BOOST_AUTO_TEST_CASE( LexerCommentTest )
 	// End of file
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::TOK_EOF);
 }
+
+BOOST_AUTO_TEST_CASE( LexerMLCommentTest )
+{
+    Lexer lex;
+    BOOST_REQUIRE(lex.Init("../inputs/ml_comment.tos"));
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
+
+    // /* This is an unclosed multiline comment
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::ML_COMMENT);
+
+    // End of file
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::TOK_EOF);
+}

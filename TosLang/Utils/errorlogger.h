@@ -9,9 +9,17 @@ namespace TosLang
 {
     namespace Utils
     {
+        /*
+        * \class ErrorLogger
+        * \brief Singleton class providing error logging services for the whole TosLang compiler
+        */
         class ErrorLogger
         {
         public:
+            /*
+            * \enum     ErrorType
+            * \brief    Every type of error that can be logged by the ErrorLogger
+            */
             enum class ErrorType : unsigned int
             {
                 // File
@@ -35,10 +43,15 @@ namespace TosLang
 
                 // Misc
                 MISSING_SEMI_COLON,
+                UNCLOSED_ML_COMMENT,
             };
 
         private:
             // TODO: This shouldn't be necessary with a fully compliant C++14 compiler
+            /*
+            * \struct   ErrorTypeHash
+            * \brief    Functor providing a hash for the ErrorType enum
+            */
             struct ErrorTypeHash
             {
                 template <typename T>
@@ -54,15 +67,28 @@ namespace TosLang
             ~ErrorLogger() = default;
 
         public:
+            /*
+            * \fn           PrintError
+            * \param eType  Type of error to log
+            * \brief        Logs the error of the type eType to the stderr
+            */
             static void PrintError(ErrorType eType);
+            
+            /*
+            * \fn           PrintErrorAtLocation
+            * \param eType  Type of error to log
+            * \param line   Line where the error happened in the source code
+            * \param column Column where the error happened in the source code
+            * \brief        Logs the error of the type eType with source location information to the stderr
+            */
             static void PrintErrorAtLocation(ErrorType eType, unsigned line, unsigned column);
 
         private:
             ErrorLogger() = default;
 
         private:
-            static std::unordered_map<ErrorType, std::string, ErrorTypeHash> mErrorMessages;
-            static ErrorLogger mInstance;
+            static std::unordered_map<ErrorType, std::string, ErrorTypeHash> mErrorMessages;    /*!< Maps the error types to the error messages */
+            static ErrorLogger mInstance;                                                       /*!< Single instance of the error logger */
         };
     }
 }

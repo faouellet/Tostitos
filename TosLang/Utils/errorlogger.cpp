@@ -11,11 +11,12 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
     { ErrorType::ERROR_OPENING_FILE,           "FILE ERROR: Problem opening the specified file" },
 
     // Literal
-    { ErrorType::NEW_LINE_IN_LITERAL,          "ERROR: Newline in string literal" },
-    { ErrorType::NUMBER_BAD_SUFFIX,            "ERROR: Bad suffix on number" },
+    { ErrorType::NEW_LINE_IN_LITERAL,          "LITERAL ERROR: Newline in string literal" },
+    { ErrorType::NUMBER_BAD_SUFFIX,            "LITERAL ERROR: Bad suffix on number" },
 
     // Misc
     { ErrorType::MISSING_SEMI_COLON,           "ERROR: Expected a ;" },
+    { ErrorType::UNCLOSED_ML_COMMENT,          "ERROR: Unclosed multiline comment" },
 
     // Var
     { ErrorType::VAR_MISSING_TYPE,             "VAR ERROR: Missing type from variable declaration" },

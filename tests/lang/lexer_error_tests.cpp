@@ -44,7 +44,7 @@ BOOST_FIXTURE_TEST_CASE( LexerBadStrLitTest, FrontEndErrorFixture )
 
     // Check if the correct error messages got printed
     BOOST_REQUIRE_EQUAL(messages.size(), 1);
-    BOOST_REQUIRE_EQUAL(messages[0], "ERROR: Newline in string literal at line 1, column 16");
+    BOOST_REQUIRE_EQUAL(messages[0], "LITERAL ERROR: Newline in string literal at line 1, column 16");
 }
 
 BOOST_FIXTURE_TEST_CASE( LexerBadVarNameTest, FrontEndErrorFixture )
@@ -65,5 +65,25 @@ BOOST_FIXTURE_TEST_CASE( LexerBadVarNameTest, FrontEndErrorFixture )
 
     // Check if the correct error messages got printed
     BOOST_REQUIRE_EQUAL(messages.size(), 1);
-    BOOST_REQUIRE_EQUAL(messages[0], "ERROR: Bad suffix on number at line 1, column 4");
+    BOOST_REQUIRE_EQUAL(messages[0], "LITERAL ERROR: Bad suffix on number at line 1, column 4");
+}
+
+BOOST_FIXTURE_TEST_CASE( LexerBadMLCommentTest, FrontEndErrorFixture )
+{
+    Lexer lex;
+    BOOST_REQUIRE(lex.Init("../inputs/bad_ml_comment.tos"));
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
+
+    // /* This is an unclosed multiline comment
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::UNKNOWN);
+
+    // End of file
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::TOK_EOF);
+
+    std::vector<std::string> messages{ GetErrorMessages() };
+
+    // Check if the correct error messages got printed
+    BOOST_REQUIRE_EQUAL(messages.size(), 1);
+    BOOST_REQUIRE_EQUAL(messages[0], "ERROR: Unclosed multiline comment at line 1, column 1");
 }
