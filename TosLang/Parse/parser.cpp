@@ -48,7 +48,7 @@ std::unique_ptr<ASTNode> Parser::ParseProgramDecl()
                     while (mCurrentToken != Lexer::Token::SEMI_COLON && mCurrentToken != Lexer::Token::TOK_EOF)
                         mCurrentToken = mLexer.GetNextToken();
 
-                programNode->AddChildNode(std::move(node));
+                programNode->AddProgramStmt(std::move(node));
             }
             break;
         case Lexer::Token::SEMI_COLON:
@@ -67,7 +67,7 @@ std::unique_ptr<ASTNode> Parser::ParseProgramDecl()
                     while (mCurrentToken != Lexer::Token::SEMI_COLON && mCurrentToken != Lexer::Token::TOK_EOF)
                         mCurrentToken = mLexer.GetNextToken();
 
-                programNode->AddChildNode(std::move(node));
+                programNode->AddProgramStmt(std::move(node));
             }
             break;
         }

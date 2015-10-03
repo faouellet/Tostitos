@@ -16,7 +16,7 @@
 BOOST_FIXTURE_TEST_CASE( VarInitTypeError, FrontEndErrorFixture )
 {
     Parser parser(symTab);
-    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/typeerror.tos");
+    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/type_error.tos");
     BOOST_REQUIRE(rootNode != nullptr);
 
     TypeChecker tChecker(symTab);

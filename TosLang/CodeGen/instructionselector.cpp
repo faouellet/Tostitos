@@ -22,7 +22,7 @@ void InstructionSelector::HandleVarDecl()
     assert(vDecl != nullptr);
 
     // An instruction that is not written to will not generate any assembly
-    const Expr* initExpr = dynamic_cast<const Expr*>(vDecl->GetInitExpr().get());
+    const Expr* initExpr = dynamic_cast<const Expr*>(vDecl->GetInitExpr());
     if (initExpr != nullptr)
     {
         // TODO: Use ResultType of child nodes

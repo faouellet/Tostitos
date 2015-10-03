@@ -38,11 +38,12 @@ if(Boost_FOUND)
 		
 		# TosLang tests
 		add_boost_test(lang/ast_printer_tests.cpp lang)
-		#add_boost_test(lang/instruction_selector_tests.cpp lang)
 		add_boost_test(lang/lexer_tests.cpp lang)
+        add_boost_test(lang/parser_tests.cpp lang)
+		add_boost_test(lang/type_checker_tests.cpp lang)
+		
+        # TosLang tests
         add_boost_test(lang/lexer_error_tests.cpp lang)
 		add_boost_test(lang/parser_error_tests.cpp lang)
-		add_boost_test(lang/parser_tests.cpp lang)
-		add_boost_test(lang/type_checker_tests.cpp lang)
     endif()
 endif()

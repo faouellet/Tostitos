@@ -23,33 +23,31 @@ void TypeChecker::HandleVarDecl()
     assert(vDecl != nullptr);
         
     // We only perform a type check when a variable is declared AND initialized at the same time
-    const Expr* initExpr = dynamic_cast<const Expr*>(vDecl->GetInitExpr().get());
+    const Expr* initExpr = dynamic_cast<const Expr*>(vDecl->GetInitExpr());
     if (initExpr != nullptr)
     {
-        Symbol initSymbol;
         Symbol varSymbol;
-
-        if (!mSymbolTable->GetSymbol(vDecl->GetName(), varSymbol) 
-            || !mSymbolTable->GetSymbol(initExpr->GetName(), initSymbol))
+        if (!mSymbolTable->GetSymbol(vDecl->GetName(), varSymbol))
         {
-            // TODO: Should this be in another semantic analysis pass?
             ErrorLogger::PrintError(ErrorLogger::ErrorType::VAR_UNDECLARED_IDENTIFIER);
             ++mErrorCount;
+            return;
         }
-        else if ((initExpr->GetKind() == ASTNode::NodeKind::BOOLEAN_EXPR || initExpr->GetKind() == ASTNode::NodeKind::NUMBER_EXPR)
-            && varSymbol.mType != initSymbol.mType) 
+
+        if ((initExpr->GetKind() == ASTNode::NodeKind::BOOLEAN_EXPR && varSymbol.mType != Type::BOOL)
+            || (initExpr->GetKind() == ASTNode::NodeKind::NUMBER_EXPR && varSymbol.mType != Type::INT))
         {
             ErrorLogger::PrintError(ErrorLogger::ErrorType::WRONG_LITERAL_TYPE);
             ++mErrorCount;
         }
         else
         {
-            Symbol varSymbol;
-            // TODO: Generalize to include the case when we try to assign to an undeclared variable
-            mSymbolTable->GetSymbol(initExpr->GetName(), initSymbol);
-            if (varSymbol.mType != initSymbol.mType)
+            Symbol initSymbol;
+
+            if (!mSymbolTable->GetSymbol(initExpr->GetName(), initSymbol))
             {
-                ErrorLogger::PrintError(ErrorLogger::ErrorType::WRONG_VARIABLE_TYPE);
+                // TODO: Should this be in another semantic analysis pass?
+                ErrorLogger::PrintError(ErrorLogger::ErrorType::VAR_UNDECLARED_IDENTIFIER);
                 ++mErrorCount;
             }
         }

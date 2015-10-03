@@ -4,7 +4,6 @@
 #include "ast.h"
 #include "expressions.h"
 
-#include <cassert>
 #include <string>
 
 namespace TosLang
@@ -20,6 +19,21 @@ namespace TosLang
         public:
             ProgramDecl() : ASTNode(NodeKind::PROGRAM_DECL) { }
             virtual ~ProgramDecl() { }
+
+        public:
+            /*
+            * \fn           AddProgramStmt
+            * \brief        Adds a statement to the program
+            * \param stmt   Statement to add to the program
+            */
+            void AddProgramStmt(std::unique_ptr<ASTNode>&& stmt) { AddChildNode(std::move(stmt)); }
+
+            /*
+            * \fn       GetInitExpr
+            * \brief    Gets the initialization expression linked to the variable declaration
+            * \return   Pointer to the initialization expression
+            */
+            const ChildrenNodes& GetProgramStmts() const { return mChildren; }
         };
 
         /*
@@ -34,21 +48,25 @@ namespace TosLang
             virtual ~VarDecl() { }
 
 		public:
-            void AddInitialization(std::unique_ptr<Expr>&& value) { mChildren.push_back(std::move(value)); }
+            /*
+            * \fn           AddInitialization
+            * \brief        Links an initialization expression to a variable declaration
+            * \param value  Initialization expression for the variable
+            */
+            void AddInitialization(std::unique_ptr<Expr>&& value) { AddChildNode(std::move(value)); }
 
-            const std::unique_ptr<ASTNode>& GetInitExpr() const 
-			{ 
-				if (mChildren.empty())
-				{
-					return nullptr;
-				}
-				else
-				{
-					assert(mChildren.size() == 1);
-					return mChildren[0];
-				}
-			}
+            /*
+            * \fn       GetInitExpr
+            * \brief    Gets the initialization expression linked to the variable declaration
+            * \return   Pointer to the initialization expression
+            */
+            const Expr* GetInitExpr() const { return mChildren.size() > 0 ? dynamic_cast<Expr*>(mChildren[0].get()) : nullptr; }
 
+            /*
+            * \fn       GetVarName
+            * \brief    Gets the name of the variable
+            * \return   Name of the variable
+            */
             const std::string& GetVarName() const { return mName; }
         };
     }

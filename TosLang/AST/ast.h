@@ -42,16 +42,39 @@ namespace TosLang
 			explicit ASTNode(NodeKind kind = NodeKind::ERROR) : mKind(kind), mName("") { }
             virtual ~ASTNode() { }
 
-            NodeKind GetKind() const { return mKind; }
-            const std::string& GetName() const { return mName; }
-
+        protected:
+            /*
+            * \fn       AddChildNode
+            * \brief    Adds a child node to this AST node
+            */
             void AddChildNode(std::unique_ptr<ASTNode>&& node) { mChildren.push_back(std::move(node)); }
+
+        public:
+            /*
+            * \fn       GetChildrenNodes
+            * \brief    Gets the children nodes of the AST node
+            * \return   Children nodes of the AST node
+            */
             const ChildrenNodes& GetChildrenNodes() const { return mChildren; }
 
+            /*
+            * \fn       GetKind
+            * \brief    Gets the kind of the AST node
+            * \return   Kind of the AST node
+            */
+            NodeKind GetKind() const { return mKind; }
+
+            /*
+            * \fn       GetName
+            * \brief    Gets the name of the AST node
+            * \return   Name of the AST node
+            */
+            const std::string& GetName() const { return mName; }
+
         protected:
-            NodeKind mKind;
-            std::string mName;
-            ChildrenNodes mChildren;
+            NodeKind mKind;             /*!< Kind of the AST node */
+            std::string mName;          /*!< Name of the AST node. In the case of the IdentifierExpr node, it is also the name of the identifier. */
+            ChildrenNodes mChildren;    /*!< List of children nodes linked to this AST node */
         };
     }
 }

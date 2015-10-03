@@ -37,7 +37,7 @@ BOOST_FIXTURE_TEST_CASE( ParseBadVarDeclTest, FrontEndErrorFixture )
     const ProgramDecl* pDecl = dynamic_cast<const ProgramDecl*>(rootNode.get());
     BOOST_REQUIRE(pDecl != nullptr);
 
-    const ChildrenNodes& cNodes = pDecl->GetChildrenNodes();
+    auto& cNodes = pDecl->GetProgramStmts();
     BOOST_REQUIRE_EQUAL(cNodes.size(), 8);
 
 	// Check that we have no nullptr. There should only be error nodes with one non-error node
