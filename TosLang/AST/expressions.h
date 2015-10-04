@@ -31,6 +31,9 @@ namespace TosLang
             BinaryOpExpr(Opcode op, std::unique_ptr<Expr>&& lhs, std::unique_ptr<Expr>&& rhs) : 
                 Expr(NodeKind::BINARY_EXPR),  mOp{ op } 
             {
+                assert(lhs != nullptr);
+                assert(rhs != nullptr);
+
                 AddChildNode(std::move(lhs));
                 AddChildNode(std::move(rhs));
             }

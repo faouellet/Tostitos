@@ -22,6 +22,10 @@ namespace TosLang
             */
             enum class ErrorType : unsigned int
             {
+                // Binary Expr
+                MISSING_RHS,
+                WRONG_OPERATION,
+
                 // File
                 WRONG_FILE_TYPE,
                 ERROR_OPENING_FILE,

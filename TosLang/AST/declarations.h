@@ -52,8 +52,20 @@ namespace TosLang
             * \fn           AddInitialization
             * \brief        Links an initialization expression to a variable declaration
             * \param value  Initialization expression for the variable
+            * \return       true if the initialization expression could be added, false otherwise
             */
-            void AddInitialization(std::unique_ptr<Expr>&& value) { AddChildNode(std::move(value)); }
+            bool AddInitialization(std::unique_ptr<Expr>&& value) 
+            {
+                if (value == nullptr)
+                {
+                    return false;
+                }
+                else
+                {
+                    AddChildNode(std::move(value));
+                    return true;
+                }
+            }
 
             /*
             * \fn       GetInitExpr

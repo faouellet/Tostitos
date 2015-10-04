@@ -58,3 +58,30 @@ BOOST_FIXTURE_TEST_CASE( ParseBadVarDeclTest, FrontEndErrorFixture )
     BOOST_REQUIRE_EQUAL(messages[5], "ERROR: Expected a ; at line 7, column 3");
     BOOST_REQUIRE_EQUAL(messages[6], "VAR ERROR: Trying to redefine already define variable at line 9, column 14");
 }
+
+BOOST_FIXTURE_TEST_CASE( ParseBadVarInitBinOpTest, FrontEndErrorFixture)
+{
+    Parser parser(symTab);
+    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/bad_binary_op.tos");
+    BOOST_REQUIRE(rootNode != nullptr);
+
+    const ProgramDecl* pDecl = dynamic_cast<const ProgramDecl*>(rootNode.get());
+    BOOST_REQUIRE(pDecl != nullptr);
+
+    auto& cNodes = pDecl->GetProgramStmts();
+    BOOST_REQUIRE_EQUAL(cNodes.size(), 3);
+
+    // Check that we have no nullptr.
+    BOOST_REQUIRE(std::all_of(cNodes.begin(), cNodes.end(), [](const std::unique_ptr<ASTNode>& node) { return node != nullptr; }));
+
+    // Check that we have only error nodes.
+    BOOST_REQUIRE(std::all_of(cNodes.begin(), cNodes.end(), [](const std::unique_ptr<ASTNode>& node) { return node->GetKind() == ASTNode::NodeKind::ERROR; }));
+
+    std::vector<std::string> messages{ GetErrorMessages() };
+
+    // Check if the correct error messages got printed
+    BOOST_REQUIRE_EQUAL(messages.size(), 3);
+    BOOST_REQUIRE_EQUAL(messages[0], "ERROR: Missing right hand side in binary expression at line 1, column 14");
+    BOOST_REQUIRE_EQUAL(messages[1], "ERROR: Missing right hand side in binary expression at line 2, column 15");
+    BOOST_REQUIRE_EQUAL(messages[2], "ERROR: Not an acceptable binary operation at line 3, column 18");
+}

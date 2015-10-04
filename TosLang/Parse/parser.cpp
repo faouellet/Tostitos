@@ -29,6 +29,12 @@ std::unique_ptr<ASTNode> Parser::ParseProgram(const std::string& filename)
     return ParseProgramDecl();
 }
 
+void Parser::GoToNextStmt()
+{
+    while (mCurrentToken != Lexer::Token::SEMI_COLON && mCurrentToken != Lexer::Token::TOK_EOF)
+        mCurrentToken = mLexer.GetNextToken();
+}
+
 std::unique_ptr<ASTNode> Parser::ParseProgramDecl()
 {
     auto programNode = std::make_unique<ProgramDecl>();
@@ -43,10 +49,9 @@ std::unique_ptr<ASTNode> Parser::ParseProgramDecl()
             {
                 std::unique_ptr<ASTNode> node = ParseVarDecl();
 
-                // If there was an error in parsing the variable declaration, we skip everything until the next statement
+                // If there was an error in parsing the variable declaration, we go to the next statement
                 if (node->GetKind() == ASTNode::NodeKind::ERROR)
-                    while (mCurrentToken != Lexer::Token::SEMI_COLON && mCurrentToken != Lexer::Token::TOK_EOF)
-                        mCurrentToken = mLexer.GetNextToken();
+                    GoToNextStmt();
 
                 programNode->AddProgramStmt(std::move(node));
             }
@@ -79,26 +84,29 @@ std::unique_ptr<ASTNode> Parser::ParseProgramDecl()
 std::unique_ptr<ASTNode> Parser::ParseVarDecl()
 {
     auto node = std::make_unique<ASTNode>();
+    // Get the variable name
     if ((mCurrentToken = mLexer.GetNextToken()) != Lexer::Token::IDENTIFIER)
     {
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_MISSING_IDENTIFIER, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
         return std::move(node);
     }
-
     std::string varName = mLexer.GetCurrentStr();
     
+    // Make sure the variable name is followed by a colon
     if ((mCurrentToken = mLexer.GetNextToken()) != Lexer::Token::COLON)
     {
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_MISSING_COLON, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
         return std::move(node);
     }
 
+    // Get the type of the variable
     if ((mCurrentToken = mLexer.GetNextToken()) != Lexer::Token::TYPE)
     {
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_MISSING_TYPE, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
         return std::move(node);
     }
      
+    // Add the variable to the symbol table
     VarDecl* vDecl = new VarDecl(varName);
     if (!mSymbolTable->AddSymbol(varName, mLexer.GetCurrentStr() == "Int" ? Symbol(INT) : Symbol(BOOL)))
     {
@@ -109,9 +117,17 @@ std::unique_ptr<ASTNode> Parser::ParseVarDecl()
 
     mCurrentToken = mLexer.GetNextToken();
 
-    if (mCurrentToken == Lexer::Token::EQUAL)   // Variable declaration with initialization
-        vDecl->AddInitialization(ParseExpr());    
+    // Variable declaration with initialization
+    if (mCurrentToken == Lexer::Token::EQUAL)
+    {
+        if (!vDecl->AddInitialization(ParseExpr()))
+        {
+            delete vDecl;
+            return std::move(node);
+        }
+    }
 
+    // Make sure the statement is finished with a semi-colon
     if (mCurrentToken == Lexer::Token::SEMI_COLON)
     {
         node.reset(vDecl);
@@ -143,9 +159,10 @@ std::unique_ptr<Expr> Parser::ParseExpr()
     case Lexer::Token::IDENTIFIER:
         node = std::make_unique<IdentifierExpr>(mLexer.GetCurrentStr());
         break;
-    default:    // TODO: This should be logged
-        node = nullptr;
-        break;
+    default: // Log the error and keep the parsing going
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::MISSING_RHS, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
+        GoToNextStmt();
+        return nullptr;
     }
 
     return ParseBinaryOpExpr(std::move(node));
@@ -160,12 +177,16 @@ std::unique_ptr<Expr> Parser::ParseBinaryOpExpr(std::unique_ptr<Expr>&& lhs)
     }
     else if (mCurrentToken < Lexer::Token::OP_START || Lexer::Token::OP_END < mCurrentToken)
     {
-        // TODO: This is an error that should be logged
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_OPERATION, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
         return nullptr;
     }
     else
     {
-        return std::make_unique<BinaryOpExpr>(TokenToOpcode(mCurrentToken), std::move(lhs), ParseExpr());
+        std::unique_ptr<Expr> rhs = ParseExpr();
+        if (rhs == nullptr)
+            return nullptr;
+        else
+            return std::make_unique<BinaryOpExpr>(TokenToOpcode(mCurrentToken), std::move(lhs), std::move(rhs));
     }
 }
 

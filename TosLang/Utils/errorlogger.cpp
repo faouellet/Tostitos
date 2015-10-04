@@ -6,6 +6,10 @@ using namespace TosLang::Utils;
 
 std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHash> ErrorLogger::mErrorMessages =
 {
+    // Binary Expr
+    { ErrorType::MISSING_RHS,                  "ERROR: Missing right hand side in binary expression" },
+    { ErrorType::WRONG_OPERATION,              "ERROR: Not an acceptable binary operation" },
+
     // File
     { ErrorType::WRONG_FILE_TYPE,              "FILE ERROR: Wrong file type" },
     { ErrorType::ERROR_OPENING_FILE,           "FILE ERROR: Problem opening the specified file" },

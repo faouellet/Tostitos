@@ -31,6 +31,13 @@ namespace TosLang
             */
             std::unique_ptr<ASTNode> ParseProgram(const std::string& filename);
 
+        private:
+            /*
+            * \fn       GoToNextStmt
+            * \brief    Go to the next statement in the program. This is used as part of the error recovery mechanism of the parser.
+            */
+            void GoToNextStmt();
+
         private:	// Declarations
             /*
             * \fn       ParseProgramDecl
