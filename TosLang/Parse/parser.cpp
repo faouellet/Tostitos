@@ -182,11 +182,12 @@ std::unique_ptr<Expr> Parser::ParseBinaryOpExpr(std::unique_ptr<Expr>&& lhs)
     }
     else
     {
+        Lexer::Token operationToken = mCurrentToken;
         std::unique_ptr<Expr> rhs = ParseExpr();
         if (rhs == nullptr)
             return nullptr;
         else
-            return std::make_unique<BinaryOpExpr>(TokenToOpcode(mCurrentToken), std::move(lhs), std::move(rhs));
+            return std::make_unique<BinaryOpExpr>(TokenToOpcode(operationToken), std::move(lhs), std::move(rhs));
     }
 }
 
