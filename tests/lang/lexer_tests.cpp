@@ -16,16 +16,16 @@ BOOST_AUTO_TEST_CASE( LexerInitTest )
 {
     Lexer lex;
 	BOOST_REQUIRE(lex.Init("../inputs/var_init_bool.tos"));
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
+	BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
 }
 
 BOOST_AUTO_TEST_CASE( LexerVarDeclTest )
 {
     Lexer lex;
     BOOST_REQUIRE(lex.Init("../inputs/var_decl.tos"));
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
 
     // var MyIntVar: Int;
     BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::VAR);
@@ -75,8 +75,8 @@ BOOST_AUTO_TEST_CASE( LexerVarInitBoolTest )
 {
     Lexer lex;
     BOOST_REQUIRE(lex.Init("../inputs/var_init_bool.tos"));
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
 
     //var MyTrueVar : Bool = True;    
     BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::VAR);
@@ -106,8 +106,8 @@ BOOST_AUTO_TEST_CASE( LexerVarInitIntTest )
 {
 	Lexer lex;
 	BOOST_REQUIRE(lex.Init("../inputs/var_init_int.tos"));
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
 
 	// var MyIntVar : Int = 42;
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::VAR);
@@ -128,8 +128,8 @@ BOOST_AUTO_TEST_CASE( LexerVarInitIdentifierTest )
 {
 	Lexer lex;
 	BOOST_REQUIRE(lex.Init("../inputs/var_init_identifier.tos"));
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
 
 	// var MyIntVar : Int = 42;
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::VAR);
@@ -161,8 +161,8 @@ BOOST_AUTO_TEST_CASE( LexerVarInitStringTest )
 {
 	Lexer lex;
 	BOOST_REQUIRE(lex.Init("../inputs/var_init_string.tos"));
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
 
 	// var MyStringVar: String = "Hello World";
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::VAR);
@@ -184,8 +184,8 @@ BOOST_AUTO_TEST_CASE( LexerVarInitBinOpIntTest )
 {
 	Lexer lex;
 	BOOST_REQUIRE(lex.Init("../inputs/binary_op_int.tos"));
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
 
 	// var V1 : Int = 1 + 1;
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::VAR);
@@ -321,8 +321,8 @@ BOOST_AUTO_TEST_CASE( LexerVarInitBinOpBoolTest )
 {
 	Lexer lex;
 	BOOST_REQUIRE(lex.Init("../inputs/binary_op_bool.tos"));
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
 
 	// var V1 : Bool = True && False;
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::VAR);
@@ -380,8 +380,8 @@ BOOST_AUTO_TEST_CASE( LexerVarInitUnaryOpTest )
 {
 	Lexer lex;
 	BOOST_REQUIRE(lex.Init("../inputs/unary_op.tos"));
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
 
 	// var MyBool: Bool = !True
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::VAR);
@@ -398,8 +398,8 @@ BOOST_AUTO_TEST_CASE( LexerFunctionDefinitionTest )
 {
 	Lexer lex;
 	BOOST_REQUIRE(lex.Init("../inputs/fn_def.tos"));
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
 
 	// fn MyFunc(arg1: Int, arg2 : Int) -> Int {
 	//     return arg1 + arg2;
@@ -441,8 +441,8 @@ BOOST_AUTO_TEST_CASE( LexerIfTest )
 {
 	Lexer lex;
 	BOOST_REQUIRE(lex.Init("../inputs/simple_if.tos"));
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
 
 	// var MyBool: Bool = True
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::VAR);
@@ -475,8 +475,8 @@ BOOST_AUTO_TEST_CASE( LexerWhileTest )
 {
 	Lexer lex;
 	BOOST_REQUIRE(lex.Init("../inputs/simple_while.tos"));
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
 
 	// var IntVar: Int = 0;
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::VAR);
@@ -517,8 +517,8 @@ BOOST_AUTO_TEST_CASE( LexerIOTest )
 {
 	Lexer lex;
 	BOOST_REQUIRE(lex.Init("../inputs/console.tos"));
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
 
 	// var Message: String;
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::VAR);
@@ -549,8 +549,8 @@ BOOST_AUTO_TEST_CASE( LexerThreadTest )
 {
 	Lexer lex;
 	BOOST_REQUIRE(lex.Init("../inputs/thread.tos"));
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
 
 	// fn MyFunc(arg1: Int, arg2 : Int) -> Int {
 	//     return arg1 + arg2;
@@ -609,8 +609,8 @@ BOOST_AUTO_TEST_CASE( LexerCommentTest )
 {
 	Lexer lex;
 	BOOST_REQUIRE(lex.Init("../inputs/comment.tos"));
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
 
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::COMMENT);
 
@@ -622,8 +622,8 @@ BOOST_AUTO_TEST_CASE( LexerMLCommentTest )
 {
     Lexer lex;
     BOOST_REQUIRE(lex.Init("../inputs/ml_comment.tos"));
-    BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
-    BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
 
     // /* This is an unclosed multiline comment
     BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::ML_COMMENT);

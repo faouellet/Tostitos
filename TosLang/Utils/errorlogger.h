@@ -9,6 +9,8 @@ namespace TosLang
 {
     namespace Utils
     {
+        class SourceLocation;
+
         /*
         * \class ErrorLogger
         * \brief Singleton class providing error logging services for the whole TosLang compiler
@@ -81,11 +83,10 @@ namespace TosLang
             /*
             * \fn           PrintErrorAtLocation
             * \param eType  Type of error to log
-            * \param line   Line where the error happened in the source code
-            * \param column Column where the error happened in the source code
+            * \param srcLoc Location in the source code where the error happened
             * \brief        Logs the error of the type eType with source location information to the stderr
             */
-            static void PrintErrorAtLocation(ErrorType eType, unsigned line, unsigned column);
+            static void PrintErrorAtLocation(ErrorType eType, const SourceLocation& srcLoc);
 
         private:
             ErrorLogger() = default;

@@ -1,5 +1,7 @@
 #include "errorlogger.h"
 
+#include "sourceloc.h"
+
 #include <iostream>
 
 using namespace TosLang::Utils;
@@ -39,7 +41,7 @@ void ErrorLogger::PrintError(ErrorType eType)
     std::cerr << mErrorMessages[eType] << std::endl;
 }
 
-void ErrorLogger::PrintErrorAtLocation(ErrorType eType, unsigned line, unsigned column)
+void ErrorLogger::PrintErrorAtLocation(ErrorType eType, const SourceLocation& srcLoc)
 {
-    std::cerr << mErrorMessages[eType] << " at line " << line << ", column " << column << std::endl;
+    std::cerr << mErrorMessages[eType] << " at line " << srcLoc.GetCurrentLine() << ", column " << srcLoc.GetCurrentColumn() << std::endl;
 }

@@ -87,7 +87,7 @@ std::unique_ptr<ASTNode> Parser::ParseVarDecl()
     // Get the variable name
     if ((mCurrentToken = mLexer.GetNextToken()) != Lexer::Token::IDENTIFIER)
     {
-        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_MISSING_IDENTIFIER, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_MISSING_IDENTIFIER, mLexer.GetCurrentLocation());
         return std::move(node);
     }
     std::string varName = mLexer.GetCurrentStr();
@@ -95,14 +95,14 @@ std::unique_ptr<ASTNode> Parser::ParseVarDecl()
     // Make sure the variable name is followed by a colon
     if ((mCurrentToken = mLexer.GetNextToken()) != Lexer::Token::COLON)
     {
-        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_MISSING_COLON, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_MISSING_COLON, mLexer.GetCurrentLocation());
         return std::move(node);
     }
 
     // Get the type of the variable
     if ((mCurrentToken = mLexer.GetNextToken()) != Lexer::Token::TYPE)
     {
-        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_MISSING_TYPE, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_MISSING_TYPE, mLexer.GetCurrentLocation());
         return std::move(node);
     }
      
@@ -110,7 +110,7 @@ std::unique_ptr<ASTNode> Parser::ParseVarDecl()
     VarDecl* vDecl = new VarDecl(varName);
     if (!mSymbolTable->AddSymbol(varName, mLexer.GetCurrentStr() == "Int" ? Symbol(INT) : Symbol(BOOL)))
     {
-        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_REDEFINITION, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_REDEFINITION, mLexer.GetCurrentLocation());
 		delete vDecl;
         return std::move(node);
     }
@@ -135,7 +135,7 @@ std::unique_ptr<ASTNode> Parser::ParseVarDecl()
     }
     else
     {
-        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::MISSING_SEMI_COLON, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::MISSING_SEMI_COLON, mLexer.GetCurrentLocation());
         delete vDecl;
         return std::move(node);
     }
@@ -160,7 +160,7 @@ std::unique_ptr<Expr> Parser::ParseExpr()
         node = std::make_unique<IdentifierExpr>(mLexer.GetCurrentStr());
         break;
     default: // Log the error and keep the parsing going
-        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::MISSING_RHS, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::MISSING_RHS, mLexer.GetCurrentLocation());
         GoToNextStmt();
         return nullptr;
     }
@@ -177,7 +177,7 @@ std::unique_ptr<Expr> Parser::ParseBinaryOpExpr(std::unique_ptr<Expr>&& lhs)
     }
     else if (mCurrentToken < Lexer::Token::OP_START || Lexer::Token::OP_END < mCurrentToken)
     {
-        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_OPERATION, mLexer.GetCurrentLine(), mLexer.GetCurrentColumn());
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_OPERATION, mLexer.GetCurrentLocation());
         return nullptr;
     }
     else

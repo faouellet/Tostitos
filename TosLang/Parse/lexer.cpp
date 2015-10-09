@@ -15,8 +15,7 @@ bool Lexer::Init(const std::string& filename)
     {
         mBuffer.assign(std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>());
         mBufferIt = mBuffer.begin();
-        mCurrentColumn = 1;
-        mCurrentLine = 1;
+        mSrcLoc.Init();
         return true;
     }
     return false;
@@ -27,16 +26,7 @@ Lexer::Token Lexer::GetNextToken()
     // Skipping any whitespaces
     while (mBufferIt != mBuffer.end() && isspace(*mBufferIt))
     {
-        if (*mBufferIt == '\n')
-        {
-            ++mCurrentLine;
-            mCurrentColumn = 1;
-        }
-        else
-        {
-            ++mCurrentColumn;
-        }
-
+        mSrcLoc.Advance(*mBufferIt == '\n');
         ++mBufferIt;
     }
 
@@ -128,7 +118,7 @@ Lexer::Token Lexer::GetNextToken()
                 }
             }
 
-            Utils::ErrorLogger::PrintErrorAtLocation(Utils::ErrorLogger::ErrorType::UNCLOSED_ML_COMMENT, mCurrentLine, mCurrentColumn);
+            Utils::ErrorLogger::PrintErrorAtLocation(Utils::ErrorLogger::ErrorType::UNCLOSED_ML_COMMENT, mSrcLoc);
             return Token::UNKNOWN;
         }
 		else
@@ -182,7 +172,7 @@ Lexer::Token Lexer::GetNextToken()
 
 		if ((mBufferIt == mBuffer.end()) || (*mBufferIt == '\n'))
 		{
-            Utils::ErrorLogger::PrintErrorAtLocation(Utils::ErrorLogger::ErrorType::NEW_LINE_IN_LITERAL, mCurrentLine, mCurrentColumn);
+            Utils::ErrorLogger::PrintErrorAtLocation(Utils::ErrorLogger::ErrorType::NEW_LINE_IN_LITERAL, mSrcLoc);
 			return Token::UNKNOWN;
 		}
 		else
@@ -198,7 +188,7 @@ Lexer::Token Lexer::GetNextToken()
 			while (++mBufferIt != mBuffer.end() && isalnum(*mBufferIt))
 			{
 				mCurrentStr += *mBufferIt;
-				++mCurrentColumn;
+                mSrcLoc.Advance();
 			}
 
 			if (mCurrentStr == "fn")
@@ -246,7 +236,7 @@ Lexer::Token Lexer::GetNextToken()
             if (isalpha(*mBufferIt))
             {
                 // Error: letter in a number
-                Utils::ErrorLogger::PrintErrorAtLocation(Utils::ErrorLogger::ErrorType::NUMBER_BAD_SUFFIX, mCurrentLine, mCurrentColumn);
+                Utils::ErrorLogger::PrintErrorAtLocation(Utils::ErrorLogger::ErrorType::NUMBER_BAD_SUFFIX, mSrcLoc);
                 // Advance to the next statement
                 while ((mBufferIt != mBuffer.end()) && (*mBufferIt != ';'))
                     ++mBufferIt;

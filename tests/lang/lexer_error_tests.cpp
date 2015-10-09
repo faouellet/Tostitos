@@ -16,16 +16,16 @@ BOOST_FIXTURE_TEST_CASE( LexerBadInitTest, FrontEndErrorFixture )
 {
     Lexer lex;
     BOOST_REQUIRE(!lex.Init("BadFile.tos"));
-    BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 0);
-    BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 0);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 0);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 0);
 }
 
 BOOST_FIXTURE_TEST_CASE( LexerBadStrLitTest, FrontEndErrorFixture )
 {
     Lexer lex;
     BOOST_REQUIRE(lex.Init("../inputs/bad_string_literal.tos"));
-    BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
-    BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
 
     // var MyVar: String = "Hello;
     BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::VAR);
@@ -51,8 +51,8 @@ BOOST_FIXTURE_TEST_CASE( LexerBadVarNameTest, FrontEndErrorFixture )
 {
     Lexer lex;
     BOOST_REQUIRE(lex.Init("../inputs/bad_var_name.tos"));
-    BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
-    BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
 
     // var 1Var: Int = 1;
     BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::VAR);
@@ -72,8 +72,8 @@ BOOST_FIXTURE_TEST_CASE( LexerBadMLCommentTest, FrontEndErrorFixture )
 {
     Lexer lex;
     BOOST_REQUIRE(lex.Init("../inputs/bad_ml_comment.tos"));
-    BOOST_REQUIRE_EQUAL(lex.GetCurrentLine(), 1);
-    BOOST_REQUIRE_EQUAL(lex.GetCurrentColumn(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
 
     // /* This is an unclosed multiline comment
     BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::UNKNOWN);

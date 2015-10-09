@@ -1,6 +1,8 @@
 #ifndef LEXER_H__TOSTITOS
 #define LEXER_H__TOSTITOS
 
+#include "../Utils/sourceloc.h"
+
 #include <string>
 
 namespace TosLang
@@ -76,7 +78,7 @@ namespace TosLang
             };
 
         public:
-            Lexer() : mCurrentColumn{ 0 }, mCurrentLine{ 0 }, mCurrentNumber{ 0 } { };
+            Lexer() : mCurrentNumber{ 0 } { };
             ~Lexer() = default;
 
         public:
@@ -94,20 +96,13 @@ namespace TosLang
             * \return   A TosLang token
             */
             Token GetNextToken();
-
+            
             /*
-            * \fn       GetCurrentColumn
-            * \brief    Give the current number
-            * \return   The current column
+            * \fn       GetCurrentLocation
+            * \brief    Give the current source location
+            * \return   The current source location
             */
-            const int GetCurrentColumn() const { return mCurrentColumn; }
-
-            /*
-            * \fn       GetCurrentLine
-            * \brief    Give the current number
-            * \return   The current line
-            */
-            const int GetCurrentLine() const { return mCurrentLine; }
+            const Utils::SourceLocation GetCurrentLocation() const { return mSrcLoc; }
 
             /*
             * \fn       GetCurrentNumber
@@ -124,8 +119,7 @@ namespace TosLang
             const std::string& GetCurrentStr() const { return mCurrentStr; }
 
         private:
-            unsigned mCurrentLine;              /*!< Current line in the file the lexer is at */
-            unsigned mCurrentColumn;            /*!< Current column in the file the lexer is at */
+            Utils::SourceLocation mSrcLoc;      /*!< Information about the current location of the lexer in the file */
 
             int mCurrentNumber;                 /*!< Current number in the lexer buffer */
             std::string mCurrentStr;            /*!< Current string in the lexer buffer */
