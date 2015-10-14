@@ -1,6 +1,7 @@
 #ifndef AST_H__TOSTITOS
 #define AST_H__TOSTITOS
 
+#include <cassert>
 #include <memory>
 #include <string>
 #include <vector>
@@ -23,31 +24,31 @@ namespace TosLang
             enum class NodeKind : unsigned int
             {
                 // Declarations
+                FUNCTION_DECL,
                 PROGRAM_DECL,
                 VAR_DECL,
 
                 // Statements
 
                 // Expressions
-				BINARY_EXPR,
+                BINARY_EXPR,
                 BOOLEAN_EXPR,
+                CALL_EXPR,
                 IDENTIFIER_EXPR,
                 NUMBER_EXPR,
 
                 // Misc
                 ERROR,
+
+                // Statements
+                IF_STMT,
+                PRINT_STMT,
+                WHILE_STMT,
             };
 
         public:
-			explicit ASTNode(NodeKind kind = NodeKind::ERROR) : mKind(kind), mName("") { }
+            explicit ASTNode(NodeKind kind = NodeKind::ERROR) : mKind{ kind }, mName{ "" } { }
             virtual ~ASTNode() { }
-
-        protected:
-            /*
-            * \fn       AddChildNode
-            * \brief    Adds a child node to this AST node
-            */
-            void AddChildNode(std::unique_ptr<ASTNode>&& node) { mChildren.push_back(std::move(node)); }
 
         public:
             /*
@@ -70,6 +71,26 @@ namespace TosLang
             * \return   Name of the AST node
             */
             const std::string& GetName() const { return mName; }
+
+        protected:
+            /*
+            * \fn       AddChildNode
+            * \brief    Adds a child node to this AST node
+            */
+            void AddChildNode(std::unique_ptr<ASTNode>&& node) { mChildren.push_back(std::move(node)); }
+
+            /*
+            * \fn               GetChildNodeAs
+            * \brief            Gets pointer of the specified type to a child node 
+            * \param childIdx   Index of the child node
+            * \return           Pointer of the given type to the child node
+            */
+            template <class T> 
+            T* GetChildNodeAs(int childIdx) const
+            {
+                assert(childIdx < mChildren.size()); 
+                return dynamic_cast<T*>(mChildren[childIdx].get()); 
+            }
 
         protected:
             NodeKind mKind;             /*!< Kind of the AST node */

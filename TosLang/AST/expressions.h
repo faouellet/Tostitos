@@ -4,8 +4,6 @@
 #include "ast.h"
 #include "../Parse/opcodes.h"
 
-#include <cassert>
-
 namespace TosLang
 {
     namespace FrontEnd
@@ -17,7 +15,7 @@ namespace TosLang
         class Expr : public ASTNode
         {
         public:
-			explicit Expr(NodeKind kind) : ASTNode(kind) { }
+            explicit Expr(NodeKind kind) : ASTNode{ kind } { }
             virtual ~Expr() { }
         };
 
@@ -29,7 +27,7 @@ namespace TosLang
 		{
 		public:
             BinaryOpExpr(Opcode op, std::unique_ptr<Expr>&& lhs, std::unique_ptr<Expr>&& rhs) : 
-                Expr(NodeKind::BINARY_EXPR),  mOp{ op } 
+                Expr{ NodeKind::BINARY_EXPR }, mOp{ op }
             {
                 assert(lhs != nullptr);
                 assert(rhs != nullptr);
@@ -46,7 +44,7 @@ namespace TosLang
             * \brief    Gets the left hand side of the binary expression
             * \return   Expression on the left side of the operation
             */
-            const Expr* GetLHS() const { assert(mChildren.size() == 2); return dynamic_cast<Expr*>(mChildren[0].get()); }
+            const Expr* GetLHS() const { assert(mChildren.size() == 2); return GetChildNodeAs<Expr>(0); }
 
             /*
             * \fn       GetOperation
@@ -56,14 +54,14 @@ namespace TosLang
             const Opcode GetOperation() const { return mOp; }
 
             /*
-            * \fn       GetValue
+            * \fn       GetRHS
             * \brief    Gets the right hand side of the binary expression
             * \return   Expression on the right side of the operation
             */
-            const Expr* GetRHS() const { assert(mChildren.size() == 2); return dynamic_cast<Expr*>(mChildren[1].get()); }
+            const Expr* GetRHS() const { assert(mChildren.size() == 2); return GetChildNodeAs<Expr>(1); }
 
 		private:
-			Opcode mOp;                     /*!< Operation applied in the binary expression */
+			Opcode mOp;     /*!< Operation applied in the binary expression */
 		};
 
         /*
@@ -73,7 +71,7 @@ namespace TosLang
         class BooleanExpr : public Expr
         {
         public:
-			explicit BooleanExpr(bool value) : Expr(NodeKind::BOOLEAN_EXPR), mValue{ value } { mName = mValue ? "True" : "False"; }
+            explicit BooleanExpr(bool value) : Expr{ NodeKind::BOOLEAN_EXPR }, mValue{ value } { mName = mValue ? "True" : "False"; }
             virtual ~BooleanExpr() { }
 
         public:
@@ -89,13 +87,44 @@ namespace TosLang
         };
 
         /*
+        * \class CallExpr
+        * \brief Node of the AST representing a function call
+        */
+        class CallExpr : public Expr
+        {
+        public:
+            CallExpr(const std::string& fnName, std::vector<std::unique_ptr<Expr>>&& args) : Expr{ NodeKind::CALL_EXPR }
+            { 
+                mName = fnName; 
+                mChildren.insert(mChildren.end(), std::make_move_iterator(args.begin()), std::make_move_iterator(args.end()));
+            }
+            
+            virtual ~CallExpr() { }
+
+        public:
+            /*
+            * \fn       GetCalleeName
+            * \brief    Gets the name of the function being called
+            * \return   Name of the callee
+            */
+            const std::string& GetCalleeName() const { return mName; }
+
+            /*
+            * \fn       GetArgs
+            * \brief    Gets the value associated with the BooleanExpr AST node
+            * \return   Boolean value of the AST node
+            */
+            //const std::vector<std::unique_ptr<Expr>>& GetArgs() const { return mChildren; }
+        };
+
+        /*
         * \class IdentifierExpr 
         * \brief Node of the AST representing a string literal
         */
         class IdentifierExpr : public Expr
         {
         public:
-			explicit IdentifierExpr(std::string value) : Expr(NodeKind::IDENTIFIER_EXPR) { mName = value; }
+            explicit IdentifierExpr(std::string value) : Expr{ NodeKind::IDENTIFIER_EXPR } { mName = value; }
             virtual ~IdentifierExpr() { }
         };
 
@@ -106,7 +135,7 @@ namespace TosLang
         class NumberExpr : public Expr
         {
         public:
-			explicit NumberExpr(int value) : Expr(NodeKind::NUMBER_EXPR), mValue{ value } { mName = std::to_string(value); }
+            explicit NumberExpr(int value) : Expr{ NodeKind::NUMBER_EXPR }, mValue{ value } { mName = std::to_string(value); }
             virtual ~NumberExpr() { }
 
         public:

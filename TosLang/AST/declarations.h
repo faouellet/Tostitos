@@ -3,6 +3,7 @@
 
 #include "ast.h"
 #include "expressions.h"
+#include "statements.h"
 
 #include <string>
 
@@ -11,13 +12,24 @@ namespace TosLang
     namespace FrontEnd
     {
         /*
+        * \class Decl
+        * \brief Node of the AST representing a declaration
+        */
+        class Decl : public ASTNode
+        {
+        public:
+            explicit Decl(NodeKind kind) : ASTNode{ kind } { }
+            virtual ~Decl() { }
+        };
+
+        /*
         * \class ProgramDecl
         * \brief Node of the AST representing a whole program
         */
-        class ProgramDecl : public ASTNode
+        class ProgramDecl : public Decl
         {
         public:
-            ProgramDecl() : ASTNode(NodeKind::PROGRAM_DECL) { }
+            ProgramDecl() : Decl{ NodeKind::PROGRAM_DECL } { }
             virtual ~ProgramDecl() { }
 
         public:
@@ -38,13 +50,38 @@ namespace TosLang
 
         /*
         * \class VarDecl
+        * \brief Node of the AST representing a function declaration with or without a definition.
+        *        For example: fn MyFunc(): Int
+        */
+        class FunctionDecl : public Decl
+        {
+        public:
+            FunctionDecl(const std::string& fnName, std::vector<std::unique_ptr<Expr>>&& args) : Decl{ NodeKind::FUNCTION_DECL }
+            {
+                mName = fnName;
+                mChildren.insert(mChildren.end(), std::make_move_iterator(args.begin()), std::make_move_iterator(args.end()));
+            }
+            
+            virtual ~FunctionDecl() { }
+
+        public:
+            /*
+            * \fn       GetFunctionName
+            * \brief    Gets the name of the function
+            * \return   Name of the function
+            */
+            const std::string& GetFunctionName() const { return mName; }
+        };
+
+        /*
+        * \class VarDecl
         * \brief Node of the AST representing a variable declaration.
         *        For example: var MyIntVar: Int
         */
-        class VarDecl : public ASTNode
+        class VarDecl : public Decl
         {
         public:
-            explicit VarDecl(const std::string& varName) : ASTNode(NodeKind::VAR_DECL) { mName = varName; }
+            explicit VarDecl(const std::string& varName) : Decl{ NodeKind::VAR_DECL } { mName = varName; }
             virtual ~VarDecl() { }
 
 		public:
@@ -72,7 +109,7 @@ namespace TosLang
             * \brief    Gets the initialization expression linked to the variable declaration
             * \return   Pointer to the initialization expression
             */
-            const Expr* GetInitExpr() const { return mChildren.size() > 0 ? dynamic_cast<Expr*>(mChildren[0].get()) : nullptr; }
+            const Expr* GetInitExpr() const { return mChildren.size() > 0 ? GetChildNodeAs<Expr>(0) : nullptr; }
 
             /*
             * \fn       GetVarName
