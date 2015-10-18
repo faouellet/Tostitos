@@ -20,9 +20,20 @@ function(add_boost_test SOURCE_FILE_NAME DEPENDENCY_LIB)
    endif()
 
     string(REGEX MATCHALL "BOOST_AUTO_TEST_CASE\\( *([A-Za-z_0-9]+) *\\)" 
-           FOUND_TESTS ${SOURCE_FILE_CONTENTS})
+        FOUND_AUTO_TESTS ${SOURCE_FILE_CONTENTS})
 
-    foreach(HIT ${FOUND_TESTS})
+    foreach(HIT ${FOUND_AUTO_TESTS})
+        string(REGEX REPLACE ".*\\( *([A-Za-z_0-9]+) *\\).*" "\\1" TEST_NAME ${HIT})
+
+        add_test(NAME "${TEST_EXECUTABLE_NAME}.${TEST_NAME}" 
+                 COMMAND ${TEST_EXECUTABLE_NAME}
+                 --run_test=${SUITE_NAME}/${TEST_NAME} --catch_system_error=yes)
+    endforeach()
+
+    string(REGEX MATCHALL "BOOST_FIXTURE_TEST_CASE\\( *([A-Za-z_0-9]+) *\\)" 
+        FOUND_FIXTURE_TESTS ${SOURCE_FILE_CONTENTS})
+
+    foreach(HIT ${FOUND_FIXTURE_TESTS})
         string(REGEX REPLACE ".*\\( *([A-Za-z_0-9]+) *\\).*" "\\1" TEST_NAME ${HIT})
 
         add_test(NAME "${TEST_EXECUTABLE_NAME}.${TEST_NAME}" 
