@@ -44,25 +44,23 @@ struct FrontEndErrorFixture
         return errorMessages;
     }
 
-    const ChildrenNodes GetProgramAST(const std::string& filename)
+    const ChildrenNodes& GetProgramAST(const std::string& filename)
     {
         Parser parser(std::make_shared<SymbolTable>());
-        std::unique_ptr<ASTNode> rootNode = parser.ParseProgram(filename);
-        BOOST_REQUIRE(rootNode != nullptr);
+        programAST.reset(parser.ParseProgram(filename).release());
+        BOOST_REQUIRE(programAST != nullptr);
 
-        BOOST_REQUIRE(rootNode->GetKind() == ASTNode::NodeKind::PROGRAM_DECL);
-        ProgramDecl* pDecl = dynamic_cast<ProgramDecl*>(rootNode.get());
+        BOOST_REQUIRE(programAST->GetKind() == ASTNode::NodeKind::PROGRAM_DECL);
+        ProgramDecl* pDecl = dynamic_cast<ProgramDecl*>(programAST.get());
         BOOST_REQUIRE(pDecl != nullptr);
 
-        ChildrenNodes cNodes;
-        for (auto& stmt : pDecl->GetProgramStmts())
-            cNodes.push_back(std::unique_ptr<ASTNode>(stmt.release()));
-        //ChildrenNodes cNodes{ std::make_move_iterator(stmts.begin()), std::make_move_iterator(stmts.end()) };
+        auto& cNodes = pDecl->GetProgramStmts();
         BOOST_REQUIRE(std::all_of(cNodes.begin(), cNodes.end(), [](const std::unique_ptr<ASTNode>& node) { return node != nullptr; }));
 
         return cNodes;
     }
 
+    std::unique_ptr<ASTNode> programAST;
     std::shared_ptr<SymbolTable> symTab;
     std::stringstream buffer;
     std::streambuf* oldBuffer;
