@@ -38,7 +38,7 @@ namespace TosLang
             * \brief        Adds a statement to the program
             * \param stmt   Statement to add to the program
             */
-            void AddProgramStmt(std::unique_ptr<ASTNode>&& stmt) { AddChildNode(std::move(stmt)); }
+            void AddProgramStmt(std::unique_ptr<Decl>&& stmt) { AddChildNode(std::move(stmt)); }
 
             /*
             * \fn       GetInitExpr
@@ -46,31 +46,6 @@ namespace TosLang
             * \return   Pointer to the initialization expression
             */
             const ChildrenNodes& GetProgramStmts() const { return mChildren; }
-        };
-
-        /*
-        * \class VarDecl
-        * \brief Node of the AST representing a function declaration with or without a definition.
-        *        For example: fn MyFunc(): Int
-        */
-        class FunctionDecl : public Decl
-        {
-        public:
-            FunctionDecl(const std::string& fnName, std::vector<std::unique_ptr<Expr>>&& args) : Decl{ NodeKind::FUNCTION_DECL }
-            {
-                mName = fnName;
-                mChildren.insert(mChildren.end(), std::make_move_iterator(args.begin()), std::make_move_iterator(args.end()));
-            }
-            
-            virtual ~FunctionDecl() { }
-
-        public:
-            /*
-            * \fn       GetFunctionName
-            * \brief    Gets the name of the function
-            * \return   Name of the function
-            */
-            const std::string& GetFunctionName() const { return mName; }
         };
 
         /*
@@ -117,6 +92,46 @@ namespace TosLang
             * \return   Name of the variable
             */
             const std::string& GetVarName() const { return mName; }
+        };
+
+        /*
+        * \class ParamVarDecl
+        * \brief Node of the AST representing parameters to a function
+        */
+        class ParamVarDecl : public Decl
+        {
+        public:
+            ParamVarDecl() : Decl{ NodeKind::PARAM_VAR_DECL } { }
+
+        public:
+            void AddParameter(std::unique_ptr<VarDecl>&& param) { AddChildNode(std::move(param)); }
+
+            virtual ~ParamVarDecl() { }
+        };
+
+        /*
+        * \class FunctionDecl
+        * \brief Node of the AST representing a function declaration with or without a definition.
+        *        For example: fn MyFunc(): Int
+        */
+        class FunctionDecl : public Decl
+        {
+        public:
+            FunctionDecl(const std::string& fnName, std::unique_ptr<ParamVarDecl>&& params) : Decl{ NodeKind::FUNCTION_DECL }
+            {
+                mName = fnName;
+                AddChildNode(std::move(params));
+            }
+
+            virtual ~FunctionDecl() { }
+
+        public:
+            /*
+            * \fn       GetFunctionName
+            * \brief    Gets the name of the function
+            * \return   Name of the function
+            */
+            const std::string& GetFunctionName() const { return mName; }
         };
     }
 }

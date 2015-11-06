@@ -32,6 +32,12 @@ namespace TosLang
                 WRONG_FILE_TYPE,
                 ERROR_OPENING_FILE,
 
+                // Function
+                FN_MISSING_TYPE,
+                FN_MISSING_IDENTIFIER,
+                FN_MISSING_PAREN,
+                FN_REDEFINITION,
+
                 // Literal
                 NEW_LINE_IN_LITERAL,
                 NUMBER_BAD_SUFFIX,

@@ -12,6 +12,8 @@ namespace TosLang
     {
         class ASTNode;
         class Expr;
+        class FunctionDecl;
+        class VarDecl;
         
         /*
         * \class Parser
@@ -49,11 +51,18 @@ namespace TosLang
             std::unique_ptr<ASTNode> ParseProgramDecl();
 
             /*
+            * \fn       ParseFunctionDecl
+            * \brief    functiondecl ::= 'fn' identifierexpr '(' ( vardecl, )* ')' '->' typeexpr
+            * \return   A node representing a function declaration or definition
+            */
+            std::unique_ptr<FunctionDecl> ParseFunctionDecl();
+
+            /*
             * \fn       ParseVarDecl
             * \brief    vardecl ::= 'var' identifierexpr ':' typeexpr ( '=' expr ) ';'
             * \return   A node representing a variable declaration with potentially an initializing expression
             */
-            std::unique_ptr<ASTNode> ParseVarDecl();
+            std::unique_ptr<VarDecl> ParseVarDecl();
 
 		private:	// Expressions
 			/*

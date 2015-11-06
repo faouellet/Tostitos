@@ -20,6 +20,21 @@ namespace TosLang
         };
 
         /*
+        * \class CompoundStmt
+        * \brief Node of the AST representing a block of statement. 
+        *        In more practical terms, it corresponds to a list of statements within a given scope.
+        */
+        class CompoundStmt : public Stmt
+        {
+        public:
+            CompoundStmt() : Stmt{ NodeKind::COMPOUND_STMT } {}
+            virtual ~CompoundStmt() { }
+
+        public:
+            void AddStatement(std::unique_ptr<Stmt>&& stmt) { AddChildNode(std::move(stmt)); }
+        };
+
+        /*
         * \class IfStmt
         * \brief Node of the AST representing a IF
         */

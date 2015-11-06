@@ -26,6 +26,7 @@ namespace TosLang
                 // Declarations
                 FUNCTION_DECL,
                 PROGRAM_DECL,
+                PARAM_VAR_DECL,
                 VAR_DECL,
 
                 // Statements
@@ -41,6 +42,7 @@ namespace TosLang
                 ERROR,
 
                 // Statements
+                COMPOUND_STMT,
                 IF_STMT,
                 PRINT_STMT,
                 WHILE_STMT,

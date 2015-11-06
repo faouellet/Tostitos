@@ -56,7 +56,7 @@ BOOST_FIXTURE_TEST_CASE( ParseBadVarDeclTest, FrontEndErrorFixture )
     BOOST_REQUIRE_EQUAL(messages[3], "VAR ERROR: Missing : between a variable and its type at line 4, column 8");
     BOOST_REQUIRE_EQUAL(messages[4], "VAR ERROR: Missing type from variable declaration at line 5, column 8");
     BOOST_REQUIRE_EQUAL(messages[5], "ERROR: Expected a ; at line 7, column 3");
-    BOOST_REQUIRE_EQUAL(messages[6], "VAR ERROR: Trying to redefine already define variable at line 9, column 14");
+    BOOST_REQUIRE_EQUAL(messages[6], "VAR ERROR: Trying to redefine an already defined variable at line 9, column 14");
 }
 
 BOOST_FIXTURE_TEST_CASE( ParseBadVarInitBinOpTest, FrontEndErrorFixture)

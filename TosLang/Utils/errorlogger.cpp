@@ -16,6 +16,12 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
     { ErrorType::WRONG_FILE_TYPE,              "FILE ERROR: Wrong file type" },
     { ErrorType::ERROR_OPENING_FILE,           "FILE ERROR: Problem opening the specified file" },
 
+    // Function
+    { ErrorType::FN_MISSING_TYPE,             "FUNCTION ERROR: Missing type from function declaration" },
+    { ErrorType::FN_MISSING_IDENTIFIER,       "FUNCTION ERROR: The fn keyword should be followed by an identifier" },
+    { ErrorType::FN_MISSING_PAREN,            "FUNCTION ERROR: Missing parenthesis in the function declaration" },
+    { ErrorType::FN_REDEFINITION,             "FUNCTION ERROR: Trying to redefine an already defined function" },
+
     // Literal
     { ErrorType::NEW_LINE_IN_LITERAL,          "LITERAL ERROR: Newline in string literal" },
     { ErrorType::NUMBER_BAD_SUFFIX,            "LITERAL ERROR: Bad suffix on number" },
@@ -28,7 +34,7 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
     { ErrorType::VAR_MISSING_TYPE,             "VAR ERROR: Missing type from variable declaration" },
     { ErrorType::VAR_MISSING_COLON,            "VAR ERROR: Missing : between a variable and its type" },
     { ErrorType::VAR_MISSING_IDENTIFIER,       "VAR ERROR: The var keyword should be followed by an identifier" },
-    { ErrorType::VAR_REDEFINITION,             "VAR ERROR: Trying to redefine already define variable" },
+    { ErrorType::VAR_REDEFINITION,             "VAR ERROR: Trying to redefine already an defined variable" },
     { ErrorType::VAR_UNDECLARED_IDENTIFIER,    "VAR ERROR: Trying to assign an undeclared variable" },
 
     // Type
