@@ -31,7 +31,8 @@ namespace TosLang
             virtual ~CompoundStmt() { }
 
         public:
-            void AddStatement(std::unique_ptr<Stmt>&& stmt) { AddChildNode(std::move(stmt)); }
+            void AddStatement(std::unique_ptr<ASTNode>&& stmt) { AddChildNode(std::move(stmt)); }
+            const ChildrenNodes& GetStatements() const { return mChildren; }
         };
 
         /*
@@ -41,14 +42,14 @@ namespace TosLang
         class IfStmt : public Stmt
         {
         public:
-            IfStmt(std::unique_ptr<Expr>&& condExpr, std::unique_ptr<Expr>&& thenExpr) :
+            IfStmt(std::unique_ptr<Expr>&& condExpr, std::unique_ptr<CompoundStmt>&& thenStmt) :
                 Stmt{ NodeKind::IF_STMT }
             {
                 assert(condExpr != nullptr);
-                assert(thenExpr != nullptr);
+                assert(thenStmt != nullptr);
 
                 AddChildNode(std::move(condExpr));
-                AddChildNode(std::move(thenExpr));
+                AddChildNode(std::move(thenStmt));
             }
 
             virtual ~IfStmt() { }
@@ -62,11 +63,11 @@ namespace TosLang
             const Expr* GetCondExpr() const { assert(mChildren.size() == 2); return GetChildNodeAs<Expr>(0); }
 
             /*
-            * \fn       GetThenExpr
-            * \brief    Gets the action performed by the if node when its condition evaluates to true
-            * \return   Expression of the action to be performed by the if node
+            * \fn       GetThenStmt
+            * \brief    Gets the actions performed by the if node when its condition evaluates to true
+            * \return   Statements representing the actions to be performed by the if node when it takes the then branch
             */
-            const Expr* GetThenExpr() const { assert(mChildren.size() == 2); return GetChildNodeAs<Expr>(1); }
+            const CompoundStmt* GetThenExpr() const { assert(mChildren.size() == 2); return GetChildNodeAs<CompoundStmt>(1); }
         };
 
         /*
@@ -95,14 +96,14 @@ namespace TosLang
         class WhileStmt : public Stmt
         {
         public:
-            WhileStmt(std::unique_ptr<Expr>&& condExpr, std::unique_ptr<Expr>&& bodyExpr) :
+            WhileStmt(std::unique_ptr<Expr>&& condExpr, std::unique_ptr<CompoundStmt>&& body) :
                 Stmt{ NodeKind::WHILE_STMT }
             {
                 assert(condExpr != nullptr);
-                assert(bodyExpr != nullptr);
+                assert(body     != nullptr);
 
                 AddChildNode(std::move(condExpr));
-                AddChildNode(std::move(bodyExpr));
+                AddChildNode(std::move(body));
             }
 
             virtual ~WhileStmt() { }
@@ -116,11 +117,11 @@ namespace TosLang
             const Expr* GetCondExpr() const { assert(mChildren.size() == 2); return GetChildNodeAs<Expr>(0); }
 
             /*
-            * \fn       GetBodyExpr
-            * \brief    Gets the action performed by the while node when its condition evaluates to true
+            * \fn       GetBody
+            * \brief    Gets the actions performed by the while node when its condition evaluates to true
             * \return   Expression of the action to be performed by the while node
             */
-            const Expr* GetBodyExpr() const { assert(mChildren.size() == 2); return GetChildNodeAs<Expr>(1); }
+            const Expr* GetBody() const { assert(mChildren.size() == 2); return GetChildNodeAs<Expr>(1); }
         };
     }
 }

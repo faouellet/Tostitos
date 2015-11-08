@@ -11,9 +11,12 @@ namespace TosLang
     namespace FrontEnd
     {
         class ASTNode;
+        class CompoundStmt;
         class Expr;
         class FunctionDecl;
+        class IfStmt;
         class VarDecl;
+        class WhileStmt;
         
         /*
         * \class Parser
@@ -33,7 +36,7 @@ namespace TosLang
             */
             std::unique_ptr<ASTNode> ParseProgram(const std::string& filename);
 
-        private:
+        private:    // Helpers
             /*
             * \fn       GoToNextStmt
             * \brief    Go to the next statement in the program. This is used as part of the error recovery mechanism of the parser.
@@ -52,7 +55,7 @@ namespace TosLang
 
             /*
             * \fn       ParseFunctionDecl
-            * \brief    functiondecl ::= 'fn' identifierexpr '(' ( vardecl, )* ')' '->' typeexpr
+            * \brief    functiondecl ::= 'fn' identifierexpr '(' ( vardecl, )* ')' '->' typeexpr compoundstmt
             * \return   A node representing a function declaration or definition
             */
             std::unique_ptr<FunctionDecl> ParseFunctionDecl();
@@ -80,9 +83,40 @@ namespace TosLang
 			* \fn           ParseBinaryOpExpr
 			* \brief        binopexpr ::= expr OP expr
             * \param lhs    The left hand side expression of the binary expression
-			* \return       A node representing 
+			* \return       A node representing a binary expression 
             */
 			std::unique_ptr<Expr> ParseBinaryOpExpr(std::unique_ptr<Expr>&& lhs);
+
+            /*
+            * \fn           ParseIdentifierExpr
+            * \brief        identifierexpr 
+            *                           ::= identifier
+            *                           ::= identifier '(' expr* ')'
+            * \return       A node representing an identifier expression or a call expression
+            */
+            std::unique_ptr<Expr> ParseIdentifierExpr();
+
+        private:    // Statements
+            /*
+            * \fn           ParseCompoundStmt
+            * \brief        '{' stmt* '}'
+            * \return       A node representing a compound statement i.e. an aggregation of statements
+            */
+            std::unique_ptr<CompoundStmt> ParseCompoundStmt();
+
+            /*
+            * \fn           ParseIfStmt
+            * \brief        'if' expr '{' compoundstmt '}' 'else' '{' compoundstmt '}'
+            * \return       A node representing an if statement
+            */
+            std::unique_ptr<IfStmt> ParseIfStmt();
+
+            /*
+            * \fn           ParseIdentifierExpr
+            * \brief        'while' expr '{' compoundstmt '}'
+            * \return       A node representing a while statement
+            */
+            std::unique_ptr<WhileStmt> ParseWhileStmt();
 
         private:
             Lexer mLexer;                               /*!< Lexer used by the parser to acquire tokens */

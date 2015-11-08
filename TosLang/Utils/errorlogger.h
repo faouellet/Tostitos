@@ -42,6 +42,10 @@ namespace TosLang
                 NEW_LINE_IN_LITERAL,
                 NUMBER_BAD_SUFFIX,
 
+                // Syntax
+                SYNTAX_MISSING_LBRACE,
+                SYNTAX_MISSING_RBRACE,
+
                 // Type
                 WRONG_LITERAL_TYPE,
                 WRONG_VARIABLE_TYPE,
@@ -59,7 +63,7 @@ namespace TosLang
             };
 
         private:
-            // TODO: This shouldn't be necessary with a fully compliant C++14 compiler
+            // NOTE: This shouldn't be necessary with a fully compliant C++14 compiler
             /*
             * \struct   ErrorTypeHash
             * \brief    Functor providing a hash for the ErrorType enum

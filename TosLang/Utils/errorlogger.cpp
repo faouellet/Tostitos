@@ -30,16 +30,20 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
     { ErrorType::MISSING_SEMI_COLON,           "ERROR: Expected a ;" },
     { ErrorType::UNCLOSED_ML_COMMENT,          "ERROR: Unclosed multiline comment" },
 
+    // Syntax
+    { ErrorType::SYNTAX_MISSING_LBRACE,        "SYNTAX ERROR: Expected '{'" },
+    { ErrorType::SYNTAX_MISSING_RBRACE,        "SYNTAX ERROR: Expected '}'" },
+
+    // Type
+    { ErrorType::WRONG_LITERAL_TYPE,           "TYPE ERROR: Trying to instantiate variable with a literal of the wrong type" },
+    { ErrorType::WRONG_VARIABLE_TYPE,          "TYPE ERROR: Type mismatch between variables" },
+
     // Var
     { ErrorType::VAR_MISSING_TYPE,             "VAR ERROR: Missing type from variable declaration" },
     { ErrorType::VAR_MISSING_COLON,            "VAR ERROR: Missing : between a variable and its type" },
     { ErrorType::VAR_MISSING_IDENTIFIER,       "VAR ERROR: The var keyword should be followed by an identifier" },
     { ErrorType::VAR_REDEFINITION,             "VAR ERROR: Trying to redefine already an defined variable" },
     { ErrorType::VAR_UNDECLARED_IDENTIFIER,    "VAR ERROR: Trying to assign an undeclared variable" },
-
-    // Type
-    { ErrorType::WRONG_LITERAL_TYPE,           "TYPE ERROR: Trying to instantiate variable with a literal of the wrong type" },
-    { ErrorType::WRONG_VARIABLE_TYPE,          "TYPE ERROR: Type mismatch between variables" }
 };
 
 void ErrorLogger::PrintError(ErrorType eType)

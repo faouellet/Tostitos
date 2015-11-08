@@ -98,15 +98,15 @@ namespace TosLang
         * \class ParamVarDecl
         * \brief Node of the AST representing parameters to a function
         */
-        class ParamVarDecl : public Decl
+        class ParamVarDecls : public Decl
         {
         public:
-            ParamVarDecl() : Decl{ NodeKind::PARAM_VAR_DECL } { }
+            ParamVarDecls() : Decl{ NodeKind::PARAM_VAR_DECL } { }
 
         public:
             void AddParameter(std::unique_ptr<VarDecl>&& param) { AddChildNode(std::move(param)); }
 
-            virtual ~ParamVarDecl() { }
+            virtual ~ParamVarDecls() { }
         };
 
         /*
@@ -117,10 +117,11 @@ namespace TosLang
         class FunctionDecl : public Decl
         {
         public:
-            FunctionDecl(const std::string& fnName, std::unique_ptr<ParamVarDecl>&& params) : Decl{ NodeKind::FUNCTION_DECL }
+            FunctionDecl(const std::string& fnName, std::unique_ptr<ParamVarDecls>&& params, std::unique_ptr<CompoundStmt>&& body) : Decl{ NodeKind::FUNCTION_DECL }
             {
                 mName = fnName;
                 AddChildNode(std::move(params));
+                AddChildNode(std::move(body));
             }
 
             virtual ~FunctionDecl() { }
