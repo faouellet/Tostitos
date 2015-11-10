@@ -44,9 +44,6 @@ std::unique_ptr<ASTNode> Parser::ParseProgramDecl()
     std::unique_ptr<Decl> node;
     while (mCurrentToken != Lexer::Token::TOK_EOF)
     {
-        if (mCurrentToken == Lexer::Token::SEMI_COLON)
-            mCurrentToken = mLexer.GetNextToken();
-
         switch (mCurrentToken)
         {
         case Lexer::Token::VAR:
@@ -64,6 +61,10 @@ std::unique_ptr<ASTNode> Parser::ParseProgramDecl()
         if (node->GetKind() == ASTNode::NodeKind::ERROR)
             GoToNextStmt();
 
+        // Go to the start of the next statement
+        if (mCurrentToken == Lexer::Token::SEMI_COLON)
+            mCurrentToken = mLexer.GetNextToken();
+
         programNode->AddProgramStmt(std::move(node));
     }
 
@@ -72,7 +73,7 @@ std::unique_ptr<ASTNode> Parser::ParseProgramDecl()
 
 std::unique_ptr<FunctionDecl> Parser::ParseFunctionDecl()
 {
-    std::unique_ptr<FunctionDecl> fnNode;
+    std::unique_ptr<FunctionDecl> fnNode = std::make_unique<FunctionDecl>();
     // Get the function name
     if ((mCurrentToken = mLexer.GetNextToken()) != Lexer::Token::IDENTIFIER)
     {
@@ -117,7 +118,7 @@ std::unique_ptr<FunctionDecl> Parser::ParseFunctionDecl()
 
 std::unique_ptr<VarDecl> Parser::ParseVarDecl()
 {
-    std::unique_ptr<VarDecl> node;
+    std::unique_ptr<VarDecl> node = std::make_unique<VarDecl>();
     // Get the variable name
     if ((mCurrentToken = mLexer.GetNextToken()) != Lexer::Token::IDENTIFIER)
     {

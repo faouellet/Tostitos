@@ -42,7 +42,7 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
     { ErrorType::VAR_MISSING_TYPE,             "VAR ERROR: Missing type from variable declaration" },
     { ErrorType::VAR_MISSING_COLON,            "VAR ERROR: Missing : between a variable and its type" },
     { ErrorType::VAR_MISSING_IDENTIFIER,       "VAR ERROR: The var keyword should be followed by an identifier" },
-    { ErrorType::VAR_REDEFINITION,             "VAR ERROR: Trying to redefine already an defined variable" },
+    { ErrorType::VAR_REDEFINITION,             "VAR ERROR: Trying to redefine an already defined variable" },
     { ErrorType::VAR_UNDECLARED_IDENTIFIER,    "VAR ERROR: Trying to assign an undeclared variable" },
 };
 

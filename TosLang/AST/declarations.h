@@ -56,6 +56,7 @@ namespace TosLang
         class VarDecl : public Decl
         {
         public:
+            VarDecl() : Decl{ NodeKind::ERROR } { }
             explicit VarDecl(const std::string& varName) : Decl{ NodeKind::VAR_DECL } { mName = varName; }
             virtual ~VarDecl() { }
 
@@ -117,6 +118,7 @@ namespace TosLang
         class FunctionDecl : public Decl
         {
         public:
+            FunctionDecl() : Decl{ NodeKind::ERROR } { }
             FunctionDecl(const std::string& fnName, std::unique_ptr<ParamVarDecls>&& params, std::unique_ptr<CompoundStmt>&& body) : Decl{ NodeKind::FUNCTION_DECL }
             {
                 mName = fnName;
