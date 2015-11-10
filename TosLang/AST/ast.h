@@ -50,7 +50,12 @@ namespace TosLang
 
         public:
             explicit ASTNode(NodeKind kind = NodeKind::ERROR) : mKind{ kind }, mName{ "" } { }
-            virtual ~ASTNode() { }
+            virtual ~ASTNode() = default;
+
+            ASTNode(const ASTNode&) = default;
+            ASTNode(ASTNode&&) = default;
+            ASTNode& operator=(const ASTNode&) = default;
+            ASTNode& operator=(ASTNode&&) = default;
 
         public:
             /*
