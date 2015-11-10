@@ -200,6 +200,10 @@ std::unique_ptr<Expr> Parser::ParseExpr()
         return nullptr;
     }
 
+    // We're at a semi-colon, we're done
+    if (mCurrentToken == Lexer::Token::SEMI_COLON)
+        return std::move(node);
+
     return ParseBinaryOpExpr(std::move(node));
 }
 
