@@ -397,28 +397,37 @@ BOOST_AUTO_TEST_CASE( LexerVarInitUnaryOpTest )
 BOOST_AUTO_TEST_CASE( LexerFunctionDefinitionTest )
 {
 	Lexer lex;
-	BOOST_REQUIRE(lex.Init("../inputs/fn_def.tos"));
+	BOOST_REQUIRE(lex.Init("../inputs/fn_def_multi_args.tos"));
     BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
     BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
 
-	// fn MyFunc(arg1: Int, arg2 : Int) -> Int {
-	//     return arg1 + arg2;
+	// fn MyFunc(arg1: Int, arg2 : Int, arg3 : Int) -> Int {
+	//     return arg1 + arg2 + arg3;
 	// }
 
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::FUNCTION);
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::IDENTIFIER);
 	BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "MyFunc");
-	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::LEFT_PAREN);
+	
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::LEFT_PAREN);
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::IDENTIFIER);
 	BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "arg1");
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::COLON);
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::TYPE);
+
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::COMMA);
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::IDENTIFIER);
 	BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "arg2");
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::COLON);
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::TYPE);
+
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::COMMA);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::IDENTIFIER);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "arg3");
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::COLON);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::TYPE);
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::RIGHT_PAREN);
+
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::ARROW);
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::TYPE);
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::LEFT_BRACE);
@@ -426,9 +435,14 @@ BOOST_AUTO_TEST_CASE( LexerFunctionDefinitionTest )
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::RETURN);
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::IDENTIFIER);
 	BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "arg1");
+
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::PLUS);
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::IDENTIFIER);
 	BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "arg2");
+
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::PLUS);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::IDENTIFIER);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "arg3");
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::SEMI_COLON);
 
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::RIGHT_BRACE);

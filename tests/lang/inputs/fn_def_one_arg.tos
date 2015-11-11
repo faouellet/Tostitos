@@ -1,0 +1,3 @@
+fn MyFunc(arg: Int) -> Int {
+    return arg;
+}
