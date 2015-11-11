@@ -42,10 +42,10 @@ if(Boost_FOUND)
         add_boost_test(lang/lexer_tests.cpp lang)
         add_boost_test(lang/lexer_error_tests.cpp lang)
 
-        add_boost_test(lang/parser_fn_tests.cpp lang)
-        add_boost_test(lang/parser_if_tests.cpp lang)
+        #add_boost_test(lang/parser_fn_tests.cpp lang)
+        #add_boost_test(lang/parser_if_tests.cpp lang)
         add_boost_test(lang/parser_var_tests.cpp lang)
-        add_boost_test(lang/parser_while_tests.cpp lang)
+        #add_boost_test(lang/parser_while_tests.cpp lang)
 		
         add_boost_test(lang/type_checker_tests.cpp lang)
     endif()
