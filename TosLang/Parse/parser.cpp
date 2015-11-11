@@ -109,7 +109,21 @@ std::unique_ptr<FunctionDecl> Parser::ParseFunctionDecl()
         params->AddParameter(std::move(param));
     }
 
+    // Parse the return type
+    if ((mCurrentToken = mLexer.GetNextToken()) != Lexer::Token::ARROW)
+    {
+        // TODO: Log an error
+        return std::move(fnNode);
+    }
+
+    if ((mCurrentToken = mLexer.GetNextToken()) != Lexer::Token::TYPE)
+    {
+        // TODO: Log an error
+        return std::move(fnNode);
+    }
+
     // Parse the function body
+    mCurrentToken = mLexer.GetNextToken();
     std::unique_ptr<CompoundStmt> body = ParseCompoundStmt();
     // TODO: Check if the body is not null. If it is, we need to log an error
     fnNode.reset(new FunctionDecl(fnName, std::move(params), std::move(body)));
@@ -289,6 +303,9 @@ std::unique_ptr<CompoundStmt> Parser::ParseCompoundStmt()
         case Lexer::Token::IF:
             node.reset(ParseIfStmt().release());
             break;
+        case Lexer::Token::RETURN:
+            node.reset(ParseReturnStmt().release());
+            break;
         case Lexer::Token::WHILE:
             node.reset(ParseWhileStmt().release());
             break;
@@ -316,6 +333,15 @@ std::unique_ptr<IfStmt> Parser::ParseIfStmt()
         
     ifStmt.reset(new IfStmt(std::move(condExpr), std::move(thenStmt)));
     return ifStmt;
+}
+
+std::unique_ptr<ReturnStmt> Parser::ParseReturnStmt()
+{
+    std::unique_ptr<ReturnStmt> rStmt;
+
+    rStmt->AddReturnValue(std::move(ParseExpr()));
+
+    return rStmt;
 }
 
 std::unique_ptr<WhileStmt> Parser::ParseWhileStmt()

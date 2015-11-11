@@ -90,6 +90,44 @@ namespace TosLang
         };
 
         /*
+        * \class ReturnStmt
+        * \brief Node of the AST representing a RETURN
+        */
+        class ReturnStmt : public Stmt
+        {
+        public:
+            ReturnStmt() : Stmt{ NodeKind::RETURN_STMT } { }
+            virtual ~ReturnStmt() { }
+
+        public:
+            /*
+            * \fn                   AddReturnValue
+            * \brief                Sets the value to be returned by the statement
+            * \param returnValue    Expression representing the returned value
+            * \return               true if the initialization expression could be added, false otherwise
+            */
+            bool AddReturnValue(std::unique_ptr<Expr>&& returnValue) 
+            {
+                if (returnValue == nullptr)
+                {
+                    return false;
+                }
+                else
+                {
+                    AddChildNode(std::move(returnValue));
+                    return true;
+                }
+            }
+
+            /*
+            * \fn       GetReturnExpr
+            * \brief    Gets the returned value expression linked to the return statement
+            * \return   Pointer to the returned value expression
+            */
+            const Expr* GetReturnExpr() const { return mChildren.size() > 0 ? GetChildNodeAs<Expr>(0) : nullptr; }
+        };
+
+        /*
         * \class WhileStmt
         * \brief Node of the AST representing a WHILE
         */

@@ -15,6 +15,7 @@ namespace TosLang
         class Expr;
         class FunctionDecl;
         class IfStmt;
+        class ReturnStmt;
         class VarDecl;
         class WhileStmt;
         
@@ -62,7 +63,7 @@ namespace TosLang
 
             /*
             * \fn       ParseVarDecl
-            * \brief    vardecl ::= 'var' identifierexpr ':' typeexpr ( '=' expr ) ';'
+            * \brief    vardecl ::= 'var' identifierexpr ':' typeexpr ( '=' expr )? ';'
             * \return   A node representing a variable declaration with potentially an initializing expression
             */
             std::unique_ptr<VarDecl> ParseVarDecl();
@@ -110,6 +111,13 @@ namespace TosLang
             * \return       A node representing an if statement
             */
             std::unique_ptr<IfStmt> ParseIfStmt();
+
+            /*
+            * \fn           ParseReturnStmt
+            * \brief        'return' expr? ';'
+            * \return       A node representing a return statement
+            */
+            std::unique_ptr<ReturnStmt> ParseReturnStmt();
 
             /*
             * \fn           ParseIdentifierExpr
