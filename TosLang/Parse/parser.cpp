@@ -33,6 +33,9 @@ void Parser::GoToNextStmt()
 {
     while (mCurrentToken != Lexer::Token::SEMI_COLON && mCurrentToken != Lexer::Token::TOK_EOF)
         mCurrentToken = mLexer.GetNextToken();
+
+    if (mCurrentToken == Lexer::Token::SEMI_COLON)
+        mCurrentToken = mLexer.GetNextToken();
 }
 
 std::unique_ptr<ASTNode> Parser::ParseProgramDecl()
@@ -56,15 +59,9 @@ std::unique_ptr<ASTNode> Parser::ParseProgramDecl()
             // TODO: Log an error
             break;
         }
-
-        // If there was an error in parsing the variable declaration, we go to the next statement
-        if (node->GetKind() == ASTNode::NodeKind::ERROR)
-            GoToNextStmt();
-
-        // Go to the start of the next statement
-        if (mCurrentToken == Lexer::Token::SEMI_COLON)
-            mCurrentToken = mLexer.GetNextToken();
-
+            
+        GoToNextStmt();
+        
         programNode->AddProgramStmt(std::move(node));
     }
 
@@ -283,7 +280,7 @@ std::unique_ptr<Expr> Parser::ParseIdentifierExpr()
 
 std::unique_ptr<CompoundStmt> Parser::ParseCompoundStmt()
 {
-    std::unique_ptr<CompoundStmt> cStmt;
+    auto cStmt = std::make_unique<CompoundStmt>();
 
     if (mCurrentToken != Lexer::Token::LEFT_BRACE)
     {
@@ -312,6 +309,8 @@ std::unique_ptr<CompoundStmt> Parser::ParseCompoundStmt()
         default:
             break;
         }
+
+        cStmt->AddStatement(std::move(node));
     }
 
     if (mCurrentToken != Lexer::Token::RIGHT_BRACE)
@@ -337,9 +336,15 @@ std::unique_ptr<IfStmt> Parser::ParseIfStmt()
 
 std::unique_ptr<ReturnStmt> Parser::ParseReturnStmt()
 {
-    std::unique_ptr<ReturnStmt> rStmt;
+    auto rStmt = std::make_unique<ReturnStmt>();
 
     rStmt->AddReturnValue(std::move(ParseExpr()));
+
+    // The return statement must be terminated by a semi-colon
+    if (mCurrentToken != Lexer::Token::SEMI_COLON)
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::MISSING_SEMI_COLON, mLexer.GetCurrentLocation());
+
+    GoToNextStmt();
 
     return rStmt;
 }

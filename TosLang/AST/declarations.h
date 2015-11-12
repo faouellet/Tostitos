@@ -106,6 +106,7 @@ namespace TosLang
 
         public:
             void AddParameter(std::unique_ptr<VarDecl>&& param) { AddChildNode(std::move(param)); }
+            size_t GetParamNb() const { return mChildren.size(); }
 
             virtual ~ParamVarDecls() { }
         };
@@ -135,6 +136,20 @@ namespace TosLang
             * \return   Name of the function
             */
             const std::string& GetFunctionName() const { return mName; }
+
+            /*
+            * \fn       GetArguments
+            * \brief    Gets the arguments of the function
+            * \return   Arguments of the function
+            */
+            const ParamVarDecls* GetArguments() const { assert(mChildren.size() == 2); return GetChildNodeAs<ParamVarDecls>(0); }
+
+            /*
+            * \fn       GetBody
+            * \brief    Gets the body of the function
+            * \return   Body of the function
+            */
+            const CompoundStmt* GetBody() const { assert(mChildren.size() == 2); return GetChildNodeAs<CompoundStmt>(1);; }
         };
     }
 }
