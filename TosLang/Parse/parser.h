@@ -84,18 +84,18 @@ namespace TosLang
 			* \fn           ParseBinaryOpExpr
 			* \brief        binopexpr ::= expr OP expr
             * \param lhs    The left hand side expression of the binary expression
+            * \param op     The operation in the binary expression
 			* \return       A node representing a binary expression 
             */
-			std::unique_ptr<Expr> ParseBinaryOpExpr(std::unique_ptr<Expr>&& lhs);
+			std::unique_ptr<Expr> ParseBinaryOpExpr(Lexer::Token operationToken, std::unique_ptr<Expr>&& lhs);
 
             /*
-            * \fn           ParseIdentifierExpr
-            * \brief        identifierexpr 
-            *                           ::= identifier
-            *                           ::= identifier '(' expr* ')'
-            * \return       A node representing an identifier expression or a call expression
+            * \fn           ParseCallExpr
+            * \brief        callexpr ::= identifier '(' expr* ')'
+            * \param fn     The function to be called
+            * \return       A node representing function call expression
             */
-            std::unique_ptr<Expr> ParseIdentifierExpr();
+            std::unique_ptr<Expr> ParseCallExpr(std::unique_ptr<Expr>&& fn);
 
         private:    // Statements
             /*
