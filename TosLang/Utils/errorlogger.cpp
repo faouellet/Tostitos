@@ -11,6 +11,7 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
     // Binary Expr
     { ErrorType::MISSING_RHS,                  "ERROR: Missing right hand side in binary expression" },
     { ErrorType::WRONG_OPERATION,              "ERROR: Not an acceptable binary operation" },
+    { ErrorType::WRONG_USE_OPERATION,          "ERROR: Not an acceptable use of a binary operation" },
 
     // File
     { ErrorType::WRONG_FILE_TYPE,              "FILE ERROR: Wrong file type" },

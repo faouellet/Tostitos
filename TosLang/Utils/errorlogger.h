@@ -27,6 +27,7 @@ namespace TosLang
                 // Binary Expr
                 MISSING_RHS,
                 WRONG_OPERATION,
+                WRONG_USE_OPERATION,
 
                 // File
                 WRONG_FILE_TYPE,

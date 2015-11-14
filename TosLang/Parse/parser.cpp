@@ -224,8 +224,10 @@ std::unique_ptr<Expr> Parser::ParseExpr()
     case Lexer::Token::IDENTIFIER:
         node = std::make_unique<IdentifierExpr>(mLexer.GetCurrentStr());
         break;
+    case Lexer::Token::SEMI_COLON:
+        return nullptr;
     default: // Log the error and keep the parsing going
-        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::MISSING_RHS, mLexer.GetCurrentLocation());
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_USE_OPERATION, mLexer.GetCurrentLocation());
         return nullptr;
     }
 
@@ -246,9 +248,14 @@ std::unique_ptr<Expr> Parser::ParseBinaryOpExpr(Lexer::Token op, std::unique_ptr
 {
     std::unique_ptr<Expr> rhs = ParseExpr();
     if (rhs == nullptr)
+    {
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::MISSING_RHS, mLexer.GetCurrentLocation());
         return nullptr;
+    }
     else
+    {
         return std::make_unique<BinaryOpExpr>(TokenToOpcode(op), std::move(lhs), std::move(rhs));
+    }
 }
 
 std::unique_ptr<Expr> Parser::ParseCallExpr(std::unique_ptr<Expr>&& fn)

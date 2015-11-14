@@ -17,7 +17,7 @@
 
 //////////////////// CORRECT USE CASES ////////////////////
 
-/*BOOST_AUTO_TEST_CASE( ParseFuncVoidTest )
+BOOST_AUTO_TEST_CASE( ParseFuncVoidTest )
 {
     Parser parser(std::make_shared<SymbolTable>());
 
@@ -30,8 +30,27 @@
 
     auto& cNodes = pDecl->GetProgramStmts();
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
-    BOOST_REQUIRE_NE(cNodes[0], nullptr);
-}*/
+    BOOST_REQUIRE(cNodes[0] != nullptr);
+
+    BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
+    const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(cNodes[0].get());
+    BOOST_REQUIRE(fDecl != nullptr);
+    BOOST_REQUIRE_EQUAL(fDecl->GetFunctionName(), "MyFunc");
+
+    const ParamVarDecls* params = fDecl->GetArguments();
+    BOOST_REQUIRE(params != nullptr);
+    BOOST_REQUIRE_EQUAL(params->GetParameters().size(), 0);
+
+    const CompoundStmt* body = fDecl->GetBody();
+    BOOST_REQUIRE(body != nullptr);
+    auto& stmts = body->GetStatements();
+    BOOST_REQUIRE_EQUAL(stmts.size(), 1);
+
+    const ReturnStmt* rStmt = dynamic_cast<const ReturnStmt*>(stmts[0].get());
+    BOOST_REQUIRE(rStmt != nullptr);
+    const Expr* rValue = rStmt->GetReturnExpr();
+    BOOST_REQUIRE(rValue == nullptr);
+}
 
 BOOST_AUTO_TEST_CASE( ParseFuncZeroArgTest )
 {

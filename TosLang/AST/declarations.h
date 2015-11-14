@@ -106,7 +106,7 @@ namespace TosLang
 
         public:
             void AddParameter(std::unique_ptr<VarDecl>&& param) { AddChildNode(std::move(param)); }
-            size_t GetParamNb() const { return mChildren.size(); }
+            const ChildrenNodes& GetParameters() const { return mChildren; }
 
             virtual ~ParamVarDecls() { }
         };
