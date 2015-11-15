@@ -1,7 +1,14 @@
 #ifndef CONSOLE_ERROR_FIXTURE_H__TOSTITOS
 #define CONSOLE_ERROR_FIXTURE_H__TOSTITOS
 
+#include "Parse/parser.h"
 #include "Parse/symboltable.h"
+#include "AST/ast.h"
+#include "AST/declarations.h"
+#include "AST/expressions.h"
+#include "AST/statements.h"
+
+#include <boost/test/unit_test.hpp>
 
 #include <iostream>
 #include <memory>
@@ -35,6 +42,25 @@ struct FrontEndErrorFixture
         }
 
         return errorMessages;
+    }
+
+    const ChildrenNodes GetProgramAST(const std::string& filename)
+    {
+        Parser parser(std::make_shared<SymbolTable>());
+        std::unique_ptr<ASTNode> rootNode = parser.ParseProgram(filename);
+        BOOST_REQUIRE(rootNode != nullptr);
+
+        BOOST_REQUIRE(rootNode->GetKind() == ASTNode::NodeKind::PROGRAM_DECL);
+        ProgramDecl* pDecl = dynamic_cast<ProgramDecl*>(rootNode.get());
+        BOOST_REQUIRE(pDecl != nullptr);
+
+        ChildrenNodes cNodes;
+        for (auto& stmt : pDecl->GetProgramStmts())
+            cNodes.push_back(std::unique_ptr<ASTNode>(stmt.release()));
+        //ChildrenNodes cNodes{ std::make_move_iterator(stmts.begin()), std::make_move_iterator(stmts.end()) };
+        BOOST_REQUIRE(std::all_of(cNodes.begin(), cNodes.end(), [](const std::unique_ptr<ASTNode>& node) { return node != nullptr; }));
+
+        return cNodes;
     }
 
     std::shared_ptr<SymbolTable> symTab;

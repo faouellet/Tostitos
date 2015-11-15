@@ -6,29 +6,16 @@
 #endif
 #endif
 
-#include <boost/test/unit_test.hpp>
-
 #include "frontend_error_fixture.h"
 
-#include "Parse/parser.h"
-#include "AST/declarations.h"
-#include "AST/expressions.h"
+BOOST_FIXTURE_TEST_SUITE( FrontEndTestSuite, FrontEndErrorFixture )
 
 //////////////////// CORRECT USE CASES ////////////////////
 
 BOOST_AUTO_TEST_CASE( ParseVarDeclTest )
 {
-    Parser parser(std::make_shared<SymbolTable>());
-    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/var_decl.tos");
-    BOOST_REQUIRE(rootNode != nullptr);
-    
-    BOOST_REQUIRE(rootNode->GetKind() == ASTNode::NodeKind::PROGRAM_DECL);
-    const ProgramDecl* pDecl = dynamic_cast<const ProgramDecl*>(rootNode.get());
-    BOOST_REQUIRE(pDecl != nullptr);
-    
-    auto& cNodes = pDecl->GetProgramStmts();
+    auto cNodes = GetProgramAST("../inputs/var_decl.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 3);
-	BOOST_REQUIRE(std::all_of(cNodes.begin(), cNodes.end(), [](const std::unique_ptr<ASTNode>& node) { return node != nullptr; }));
 
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::VAR_DECL);
     const VarDecl* vDecl = dynamic_cast<const VarDecl*>(cNodes[0].get());
@@ -48,15 +35,7 @@ BOOST_AUTO_TEST_CASE( ParseVarDeclTest )
 
 BOOST_AUTO_TEST_CASE( ParseVarInitBoolTest )
 {
-    Parser parser(std::make_shared<SymbolTable>());
-    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/var_init_bool.tos");
-    BOOST_REQUIRE(rootNode != nullptr);
-
-    BOOST_REQUIRE(rootNode->GetKind() == ASTNode::NodeKind::PROGRAM_DECL);
-    const ProgramDecl* pDecl = dynamic_cast<const ProgramDecl*>(rootNode.get());
-    BOOST_REQUIRE(pDecl != nullptr);
-
-    auto& cNodes = pDecl->GetProgramStmts();
+    auto cNodes = GetProgramAST("../inputs/var_init_bool.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 2);
 	
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::VAR_DECL);
@@ -80,15 +59,7 @@ BOOST_AUTO_TEST_CASE( ParseVarInitBoolTest )
 
 BOOST_AUTO_TEST_CASE( ParseVarInitIntTest )
 {
-	Parser parser(std::make_shared<SymbolTable>());
-	std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/var_init_int.tos");
-	BOOST_REQUIRE(rootNode != nullptr);
-
-	BOOST_REQUIRE(rootNode->GetKind() == ASTNode::NodeKind::PROGRAM_DECL);
-	const ProgramDecl* pDecl = dynamic_cast<const ProgramDecl*>(rootNode.get());
-	BOOST_REQUIRE(pDecl != nullptr);
-
-	auto& cNodes = pDecl->GetProgramStmts();
+    auto cNodes = GetProgramAST("../inputs/var_init_int.tos");
 	BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
 	BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::VAR_DECL);
@@ -103,15 +74,7 @@ BOOST_AUTO_TEST_CASE( ParseVarInitIntTest )
 
 BOOST_AUTO_TEST_CASE( ParseVarInitIdentifierTest )
 {
-	Parser parser(std::make_shared<SymbolTable>());
-	std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/var_init_identifier.tos");
-	BOOST_REQUIRE(rootNode != nullptr);
-
-	BOOST_REQUIRE(rootNode->GetKind() == ASTNode::NodeKind::PROGRAM_DECL);
-	const ProgramDecl* pDecl = dynamic_cast<const ProgramDecl*>(rootNode.get());
-	BOOST_REQUIRE(pDecl != nullptr);
-
-	auto& cNodes = pDecl->GetProgramStmts();
+    auto cNodes = GetProgramAST("../inputs/var_init_identifier.tos");
 	BOOST_REQUIRE_EQUAL(cNodes.size(), 2);
 
 	BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::VAR_DECL);
@@ -135,15 +98,7 @@ BOOST_AUTO_TEST_CASE( ParseVarInitIdentifierTest )
 
 BOOST_AUTO_TEST_CASE( ParseVarInitIntBinOpTest )
 {
-    Parser parser(std::make_shared<SymbolTable>());
-    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/binary_op_int.tos");
-    BOOST_REQUIRE(rootNode != nullptr);
-
-    BOOST_REQUIRE(rootNode->GetKind() == ASTNode::NodeKind::PROGRAM_DECL);
-    const ProgramDecl* pDecl = dynamic_cast<const ProgramDecl*>(rootNode.get());
-    BOOST_REQUIRE(pDecl != nullptr);
-
-    auto& cNodes = pDecl->GetProgramStmts();
+    auto cNodes = GetProgramAST("../inputs/binary_op_int.tos");
     const size_t childExpectedSize = 9;
     BOOST_REQUIRE_EQUAL(cNodes.size(), childExpectedSize);
 
@@ -184,7 +139,7 @@ BOOST_AUTO_TEST_CASE( ParseVarInitIntBinOpTest )
 
 //////////////////// ERROR USE CASES ////////////////////
 
-BOOST_FIXTURE_TEST_CASE( ParserBadInitTest, FrontEndErrorFixture )
+BOOST_AUTO_TEST_CASE( ParserBadInitTest )
 {
     Parser parser(symTab);
     BOOST_REQUIRE(parser.ParseProgram("../inputs/var_decl.cpp") == nullptr);
@@ -200,18 +155,8 @@ BOOST_FIXTURE_TEST_CASE( ParserBadInitTest, FrontEndErrorFixture )
 
 BOOST_FIXTURE_TEST_CASE( ParseBadVarDeclTest, FrontEndErrorFixture )
 {
-    Parser parser(symTab);
-    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/bad_var_decl.tos");
-    BOOST_REQUIRE(rootNode != nullptr);
-
-    const ProgramDecl* pDecl = dynamic_cast<const ProgramDecl*>(rootNode.get());
-    BOOST_REQUIRE(pDecl != nullptr);
-
-    auto& cNodes = pDecl->GetProgramStmts();
+    auto cNodes = GetProgramAST("../inputs/bad_var_decl.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 8);
-
-	// Check that we have no nullptr. There should only be error nodes with one non-error node
-	BOOST_REQUIRE(std::all_of(cNodes.begin(), cNodes.end(), [](const std::unique_ptr<ASTNode>& node) { return node != nullptr; }));
 
     // Check that we only have one non-error node
     BOOST_REQUIRE_EQUAL(std::count_if(cNodes.begin(), cNodes.end(), [](const std::unique_ptr<ASTNode>& node){ return node->GetKind() != ASTNode::NodeKind::ERROR; }), 1);
@@ -229,20 +174,10 @@ BOOST_FIXTURE_TEST_CASE( ParseBadVarDeclTest, FrontEndErrorFixture )
     BOOST_REQUIRE_EQUAL(messages[6], "VAR ERROR: Trying to redefine an already defined variable at line 9, column 14");
 }
 
-BOOST_FIXTURE_TEST_CASE( ParseBadVarInitBinOpTest, FrontEndErrorFixture)
+BOOST_AUTO_TEST_CASE( ParseBadVarInitBinOpTest )
 {
-    Parser parser(symTab);
-    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/bad_binary_op.tos");
-    BOOST_REQUIRE(rootNode != nullptr);
-
-    const ProgramDecl* pDecl = dynamic_cast<const ProgramDecl*>(rootNode.get());
-    BOOST_REQUIRE(pDecl != nullptr);
-
-    auto& cNodes = pDecl->GetProgramStmts();
+    auto cNodes = GetProgramAST("../inputs/bad_binary_op.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 3);
-
-    // Check that we have no nullptr.
-    BOOST_REQUIRE(std::all_of(cNodes.begin(), cNodes.end(), [](const std::unique_ptr<ASTNode>& node) { return node != nullptr; }));
 
     // Check that we have only error nodes.
     BOOST_REQUIRE(std::all_of(cNodes.begin(), cNodes.end(), [](const std::unique_ptr<ASTNode>& node) { return node->GetKind() == ASTNode::NodeKind::ERROR; }));
@@ -255,3 +190,5 @@ BOOST_FIXTURE_TEST_CASE( ParseBadVarInitBinOpTest, FrontEndErrorFixture)
     BOOST_REQUIRE_EQUAL(messages[1], "ERROR: Missing right hand side in binary expression at line 2, column 15");
     BOOST_REQUIRE_EQUAL(messages[2], "ERROR: Not an acceptable binary operation at line 3, column 18");
 }
+
+BOOST_AUTO_TEST_SUITE_END()

@@ -45,7 +45,7 @@ namespace TosLang
             * \brief    Gets the initialization expression linked to the variable declaration
             * \return   Pointer to the initialization expression
             */
-            const ChildrenNodes& GetProgramStmts() const { return mChildren; }
+            ChildrenNodes& GetProgramStmts() { return mChildren; }
         };
 
         /*

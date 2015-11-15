@@ -10,25 +10,13 @@
 
 #include "frontend_error_fixture.h"
 
-#include "Parse/parser.h"
-#include "AST/declarations.h"
-#include "AST/expressions.h"
-#include "AST/statements.h"
+BOOST_FIXTURE_TEST_SUITE( FrontEndTestSuite, FrontEndErrorFixture )
 
 //////////////////// CORRECT USE CASES ////////////////////
 
 BOOST_AUTO_TEST_CASE( ParseFuncVoidTest )
 {
-    Parser parser(std::make_shared<SymbolTable>());
-
-    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/fn_def_void.tos");
-    BOOST_REQUIRE(rootNode != nullptr);
-    BOOST_REQUIRE(rootNode->GetKind() == ASTNode::NodeKind::PROGRAM_DECL);
-
-    const ProgramDecl* pDecl = dynamic_cast<const ProgramDecl*>(rootNode.get());
-    BOOST_REQUIRE(pDecl != nullptr);
-
-    auto& cNodes = pDecl->GetProgramStmts();
+    auto cNodes = GetProgramAST("../inputs/fn_def_void.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
     BOOST_REQUIRE(cNodes[0] != nullptr);
 
@@ -54,16 +42,7 @@ BOOST_AUTO_TEST_CASE( ParseFuncVoidTest )
 
 BOOST_AUTO_TEST_CASE( ParseFuncZeroArgTest )
 {
-    Parser parser(std::make_shared<SymbolTable>());
-    
-    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/fn_def_zero_arg.tos");
-    BOOST_REQUIRE(rootNode != nullptr);
-    BOOST_REQUIRE(rootNode->GetKind() == ASTNode::NodeKind::PROGRAM_DECL);
-    
-    const ProgramDecl* pDecl = dynamic_cast<const ProgramDecl*>(rootNode.get());
-    BOOST_REQUIRE(pDecl != nullptr);
-
-    auto& cNodes = pDecl->GetProgramStmts();
+    auto cNodes = GetProgramAST("../inputs/fn_def_zero_arg.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
     BOOST_REQUIRE(cNodes[0] != nullptr);
 
@@ -92,16 +71,7 @@ BOOST_AUTO_TEST_CASE( ParseFuncZeroArgTest )
 
 BOOST_AUTO_TEST_CASE( ParseFuncOneArgTest )
 {
-    Parser parser(std::make_shared<SymbolTable>());
-    
-    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/fn_def_one_arg.tos");
-    BOOST_REQUIRE(rootNode != nullptr);
-    BOOST_REQUIRE(rootNode->GetKind() == ASTNode::NodeKind::PROGRAM_DECL);
-    
-    const ProgramDecl* pDecl = dynamic_cast<const ProgramDecl*>(rootNode.get());
-    BOOST_REQUIRE(pDecl != nullptr);
-
-    auto& cNodes = pDecl->GetProgramStmts();
+    auto cNodes = GetProgramAST("../inputs/fn_def_one_arg.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
     BOOST_REQUIRE(cNodes[0] != nullptr);
 
@@ -134,16 +104,7 @@ BOOST_AUTO_TEST_CASE( ParseFuncOneArgTest )
 
 BOOST_AUTO_TEST_CASE( ParseFuncMultiArgsTest )
 {
-    Parser parser(std::make_shared<SymbolTable>());
-
-    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/fn_def_multi_args.tos");
-    BOOST_REQUIRE(rootNode != nullptr);
-    BOOST_REQUIRE(rootNode->GetKind() == ASTNode::NodeKind::PROGRAM_DECL);
-    
-    const ProgramDecl* pDecl = dynamic_cast<const ProgramDecl*>(rootNode.get());
-    BOOST_REQUIRE(pDecl != nullptr);
-
-    auto& cNodes = pDecl->GetProgramStmts();
+    auto cNodes = GetProgramAST("../inputs/fn_def_multi_args.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
     BOOST_REQUIRE(cNodes[0] != nullptr);
 
@@ -183,3 +144,5 @@ BOOST_AUTO_TEST_CASE( ParseFuncMultiArgsTest )
 }
 
 //////////////////// ERROR USE CASES ////////////////////
+
+BOOST_AUTO_TEST_SUITE_END()
