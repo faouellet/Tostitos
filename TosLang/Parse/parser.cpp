@@ -55,6 +55,7 @@ std::unique_ptr<ASTNode> Parser::ParseProgramDecl()
         case Lexer::Token::FUNCTION:
              node.reset(ParseFunctionDecl().release());
             break;
+
         default:
             // TODO: Log an error
             break;
@@ -237,7 +238,7 @@ std::unique_ptr<Expr> Parser::ParseExpr()
         return ParseBinaryOpExpr(mCurrentToken, std::move(node));
     else if(mCurrentToken == Lexer::Token::LEFT_PAREN)
         return ParseCallExpr(std::move(node));
-    else if (mCurrentToken == Lexer::Token::SEMI_COLON)
+    else if (mCurrentToken == Lexer::Token::SEMI_COLON || mCurrentToken == Lexer::Token::LEFT_BRACE)
         return std::move(node);
 
     ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_OPERATION, mLexer.GetCurrentLocation());
@@ -315,6 +316,8 @@ std::unique_ptr<CompoundStmt> Parser::ParseCompoundStmt()
         }
 
         cStmt->AddStatement(std::move(node));
+
+        GoToNextStmt();
     }
 
     if (mCurrentToken != Lexer::Token::RIGHT_BRACE)

@@ -63,11 +63,11 @@ namespace TosLang
             const Expr* GetCondExpr() const { assert(mChildren.size() == 2); return GetChildNodeAs<Expr>(0); }
 
             /*
-            * \fn       GetThenStmt
+            * \fn       GetBody
             * \brief    Gets the actions performed by the if node when its condition evaluates to true
             * \return   Statements representing the actions to be performed by the if node when it takes the then branch
             */
-            const CompoundStmt* GetThenExpr() const { assert(mChildren.size() == 2); return GetChildNodeAs<CompoundStmt>(1); }
+            const CompoundStmt* GetBody() const { assert(mChildren.size() == 2); return GetChildNodeAs<CompoundStmt>(1); }
         };
 
         /*
