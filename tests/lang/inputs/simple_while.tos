@@ -1,5 +1,0 @@
-var IntVar: Int = 0;
-
-while IntVar < 5 {
-    IntVar = IntVar + 1;
-}

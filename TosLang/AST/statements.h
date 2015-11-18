@@ -159,7 +159,7 @@ namespace TosLang
             * \brief    Gets the actions performed by the while node when its condition evaluates to true
             * \return   Expression of the action to be performed by the while node
             */
-            const Expr* GetBody() const { assert(mChildren.size() == 2); return GetChildNodeAs<Expr>(1); }
+            const CompoundStmt* GetBody() const { assert(mChildren.size() == 2); return GetChildNodeAs<CompoundStmt>(1); }
         };
     }
 }

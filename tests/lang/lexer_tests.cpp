@@ -500,44 +500,49 @@ BOOST_AUTO_TEST_CASE( LexerIfTest )
 
 BOOST_AUTO_TEST_CASE( LexerWhileTest )
 {
-	/*Lexer lex;
-	BOOST_REQUIRE(lex.Init("../inputs/simple_while.tos"));
+    Lexer lex;
+    BOOST_REQUIRE(lex.Init("../inputs/while_simple_cond.tos"));
     BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
     BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
 
-	// var IntVar: Int = 0;
-	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::VAR);
-	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::IDENTIFIER);
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "IntVar");
-	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::COLON);
-	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::TYPE);
-	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::EQUAL);
-	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::NUMBER);
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentNumber(), 0);
-	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::SEMI_COLON);
+    // fn main() -> Void {
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::FUNCTION);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::IDENTIFIER);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "main");
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::LEFT_PAREN);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::RIGHT_PAREN);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::ARROW);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::TYPE);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::LEFT_BRACE);
 
-	// while IntVar < 5 {
-	//     IntVar = IntVar + 1;
-	// }
-	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::WHILE);
-	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::IDENTIFIER);
-	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::LESS_THAN);
-	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::NUMBER);
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentNumber(), 5);
-	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::LEFT_BRACE);
-	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::IDENTIFIER);
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "IntVar");
-	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::EQUAL);
-	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::IDENTIFIER);
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "IntVar");
-	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::PLUS);
-	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::NUMBER);
-	BOOST_REQUIRE_EQUAL(lex.GetCurrentNumber(), 1);
-	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::SEMI_COLON);
-	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::RIGHT_BRACE);
+    // var MyBool: Bool = True
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::VAR);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::IDENTIFIER);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "BoolVar");
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::COLON);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::TYPE);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::EQUAL);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::TRUE);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::SEMI_COLON);
 
-	// End of file
-	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::TOK_EOF);*/
+    // while BoolVar {
+    //     BoolVar = False;
+    // }
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::WHILE);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::IDENTIFIER);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::LEFT_BRACE);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::IDENTIFIER);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "BoolVar");
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::EQUAL);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::FALSE);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::SEMI_COLON);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::RIGHT_BRACE);
+
+    // End of function
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::RIGHT_BRACE);
+
+    // End of file
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::TOK_EOF);
 }
 
 BOOST_AUTO_TEST_CASE( LexerIOTest )
