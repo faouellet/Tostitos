@@ -161,9 +161,8 @@ BOOST_FIXTURE_TEST_CASE( ParseBadVarDeclTest, FrontEndErrorFixture )
     // Check that we only have one non-error node
     BOOST_REQUIRE_EQUAL(std::count_if(cNodes.begin(), cNodes.end(), [](const std::unique_ptr<ASTNode>& node){ return node->GetKind() != ASTNode::NodeKind::ERROR; }), 1);
     
-    std::vector<std::string> messages{ GetErrorMessages() };
-
     // Check if the correct error messages got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
     BOOST_REQUIRE_EQUAL(messages.size(), 7);
     BOOST_REQUIRE_EQUAL(messages[0], "VAR ERROR: The var keyword should be followed by an identifier at line 1, column 3");
     BOOST_REQUIRE_EQUAL(messages[1], "VAR ERROR: The var keyword should be followed by an identifier at line 2, column 7");
@@ -182,9 +181,8 @@ BOOST_AUTO_TEST_CASE( ParseBadVarInitBinOpTest )
     // Check that we have only error nodes.
     BOOST_REQUIRE(std::all_of(cNodes.begin(), cNodes.end(), [](const std::unique_ptr<ASTNode>& node) { return node->GetKind() == ASTNode::NodeKind::ERROR; }));
 
-    std::vector<std::string> messages{ GetErrorMessages() };
-
     // Check if the correct error messages got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
     BOOST_REQUIRE_EQUAL(messages.size(), 3);
     BOOST_REQUIRE_EQUAL(messages[0], "ERROR: Not an acceptable use of a binary operation at line 1, column 14");
     BOOST_REQUIRE_EQUAL(messages[1], "ERROR: Missing right hand side in binary expression at line 2, column 15");

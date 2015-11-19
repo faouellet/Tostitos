@@ -39,6 +39,10 @@ namespace TosLang
                 FN_MISSING_PAREN,
                 FN_REDEFINITION,
 
+                // If
+                IF_MISSING_BODY,
+                IF_MISSING_COND,
+
                 // Literal
                 NEW_LINE_IN_LITERAL,
                 NUMBER_BAD_SUFFIX,
@@ -57,6 +61,10 @@ namespace TosLang
                 VAR_MISSING_IDENTIFIER,
                 VAR_REDEFINITION,
                 VAR_UNDECLARED_IDENTIFIER,
+
+                // While
+                WHILE_MISSING_BODY,
+                WHILE_MISSING_COND,
 
                 // Misc
                 MISSING_SEMI_COLON,

@@ -23,6 +23,10 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
     { ErrorType::FN_MISSING_PAREN,            "FUNCTION ERROR: Missing parenthesis in the function declaration" },
     { ErrorType::FN_REDEFINITION,             "FUNCTION ERROR: Trying to redefine an already defined function" },
 
+    // If
+    { ErrorType::IF_MISSING_BODY,             "IF ERROR: Missing if body" },
+    { ErrorType::IF_MISSING_COND,             "IF ERROR: Missing if condition" },
+
     // Literal
     { ErrorType::NEW_LINE_IN_LITERAL,          "LITERAL ERROR: Newline in string literal" },
     { ErrorType::NUMBER_BAD_SUFFIX,            "LITERAL ERROR: Bad suffix on number" },
@@ -45,6 +49,10 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
     { ErrorType::VAR_MISSING_IDENTIFIER,       "VAR ERROR: The var keyword should be followed by an identifier" },
     { ErrorType::VAR_REDEFINITION,             "VAR ERROR: Trying to redefine an already defined variable" },
     { ErrorType::VAR_UNDECLARED_IDENTIFIER,    "VAR ERROR: Trying to assign an undeclared variable" },
+
+    // While
+    { ErrorType::WHILE_MISSING_BODY,           "WHILE ERROR: Missing while body" },
+    { ErrorType::WHILE_MISSING_COND,           "WHILE ERROR: Missing while condition" },
 };
 
 void ErrorLogger::PrintError(ErrorType eType)

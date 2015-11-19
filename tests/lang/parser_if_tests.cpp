@@ -120,12 +120,50 @@ BOOST_AUTO_TEST_CASE( ParseIfMultiCondTest )
 
 BOOST_AUTO_TEST_CASE( ParseBadIfNoCondTest )
 {
-    BOOST_REQUIRE(true);
+    auto& cNodes = GetProgramAST("../inputs/if_no_cond.tos");
+    BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
+
+    BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
+    const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(cNodes[0].get());
+    BOOST_REQUIRE(fDecl != nullptr);
+
+    const CompoundStmt* body = fDecl->GetBody();
+    BOOST_REQUIRE(body != nullptr);
+    auto& bStmts = body->GetStatements();
+    BOOST_REQUIRE_EQUAL(bStmts.size(), 3);
+
+    // Check that we only have one error statement
+    BOOST_REQUIRE_EQUAL(std::count_if(bStmts.begin(), bStmts.end(), [](const std::unique_ptr<ASTNode>& node) { return node->GetKind() == ASTNode::NodeKind::ERROR; }), 1);
+
+    // Check if the correct error messages got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
+    BOOST_REQUIRE_EQUAL(messages.size(), 1);
+    BOOST_REQUIRE_EQUAL(messages[0], "IF ERROR: Missing if condition at line 4, column 4");
 }
 
 BOOST_AUTO_TEST_CASE( ParseBadIfNoBodyTest )
 {
-    BOOST_REQUIRE(true);
+    auto& cNodes = GetProgramAST("../inputs/if_no_body.tos");
+    BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
+
+    BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
+    const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(cNodes[0].get());
+    BOOST_REQUIRE(fDecl != nullptr);
+
+    const CompoundStmt* body = fDecl->GetBody();
+    BOOST_REQUIRE(body != nullptr);
+    auto& bStmts = body->GetStatements();
+    BOOST_REQUIRE_EQUAL(bStmts.size(), 2);
+
+    // Check that we only have one error statement
+    BOOST_REQUIRE_EQUAL(std::count_if(bStmts.begin(), bStmts.end(), [](const std::unique_ptr<ASTNode>& node) { return node->GetKind() == ASTNode::NodeKind::ERROR; }), 1);
+
+    // Check if the correct error messages got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
+    BOOST_REQUIRE_EQUAL(messages.size(), 3);
+    BOOST_REQUIRE_EQUAL(messages[0], "SYNTAX ERROR: Expected '{' at line 5, column 1");
+    BOOST_REQUIRE_EQUAL(messages[1], "IF ERROR: Missing if body at line 5, column 1");
+    BOOST_REQUIRE_EQUAL(messages[2], "SYNTAX ERROR: Expected '}' at line 5, column 1");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

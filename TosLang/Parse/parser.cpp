@@ -31,10 +31,10 @@ std::unique_ptr<ASTNode> Parser::ParseProgram(const std::string& filename)
 
 void Parser::GoToNextStmt()
 {
-    while (mCurrentToken != Lexer::Token::SEMI_COLON && mCurrentToken != Lexer::Token::TOK_EOF)
+    while ((mCurrentToken != Lexer::Token::SEMI_COLON) && (mCurrentToken != Lexer::Token::TOK_EOF))
         mCurrentToken = mLexer.GetNextToken();
 
-    if (mCurrentToken == Lexer::Token::SEMI_COLON)
+    if ((mCurrentToken == Lexer::Token::SEMI_COLON) || (mCurrentToken == Lexer::Token::LEFT_BRACE))
         mCurrentToken = mLexer.GetNextToken();
 }
 
@@ -92,8 +92,7 @@ std::unique_ptr<FunctionDecl> Parser::ParseFunctionDecl()
     std::unique_ptr<VarDecl> param;
     std::string varName;
     while ((mCurrentToken = mLexer.GetNextToken()) != Lexer::Token::RIGHT_PAREN)
-    {
-        
+    {        
         if (mCurrentToken != Lexer::Token::IDENTIFIER)
         {
             // TODO: Log an error
@@ -186,6 +185,7 @@ std::unique_ptr<VarDecl> Parser::ParseVarDecl()
     // Variable declaration with initialization
     if (mCurrentToken == Lexer::Token::EQUAL)
     {
+        mCurrentToken = mLexer.GetNextToken();
         if (!vDecl->AddInitialization(ParseExpr()))
         {
             delete vDecl;
@@ -210,7 +210,7 @@ std::unique_ptr<VarDecl> Parser::ParseVarDecl()
 std::unique_ptr<Expr> Parser::ParseExpr()
 {
     std::unique_ptr<Expr> node;
-    mCurrentToken = mLexer.GetNextToken();
+
     switch (mCurrentToken)
     {
     case Lexer::Token::FALSE:
@@ -227,18 +227,19 @@ std::unique_ptr<Expr> Parser::ParseExpr()
         break;
     case Lexer::Token::SEMI_COLON:
         return nullptr;
-    default: // Log the error and keep the parsing going
-        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_USE_OPERATION, mLexer.GetCurrentLocation());
+    default:
+        if ((Lexer::Token::OP_START <= mCurrentToken) && (mCurrentToken <= Lexer::Token::OP_END))
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_USE_OPERATION, mLexer.GetCurrentLocation());
         return nullptr;
     }
 
     mCurrentToken = mLexer.GetNextToken();
     
-    if (Lexer::Token::OP_START <= mCurrentToken && mCurrentToken <= Lexer::Token::OP_END)
+    if ((Lexer::Token::OP_START <= mCurrentToken) && (mCurrentToken <= Lexer::Token::OP_END))
         return ParseBinaryOpExpr(mCurrentToken, std::move(node));
     else if(mCurrentToken == Lexer::Token::LEFT_PAREN)
         return ParseCallExpr(std::move(node));
-    else if (mCurrentToken == Lexer::Token::SEMI_COLON || mCurrentToken == Lexer::Token::LEFT_BRACE)
+    else if ((mCurrentToken == Lexer::Token::SEMI_COLON) || (mCurrentToken == Lexer::Token::LEFT_BRACE) || (mCurrentToken == Lexer::Token::RIGHT_BRACE))
         return std::move(node);
 
     ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_OPERATION, mLexer.GetCurrentLocation());
@@ -247,6 +248,7 @@ std::unique_ptr<Expr> Parser::ParseExpr()
 
 std::unique_ptr<Expr> Parser::ParseBinaryOpExpr(Lexer::Token op, std::unique_ptr<Expr>&& lhs)
 {
+    mCurrentToken = mLexer.GetNextToken();
     std::unique_ptr<Expr> rhs = ParseExpr();
     if (rhs == nullptr)
     {
@@ -285,13 +287,13 @@ std::unique_ptr<Expr> Parser::ParseCallExpr(std::unique_ptr<Expr>&& fn)
 
 std::unique_ptr<CompoundStmt> Parser::ParseCompoundStmt()
 {
-    auto cStmt = std::make_unique<CompoundStmt>();
-
     if (mCurrentToken != Lexer::Token::LEFT_BRACE)
     {
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::SYNTAX_MISSING_LBRACE, mLexer.GetCurrentLocation());
-        return std::move(cStmt);
+        return nullptr;
     }
+
+    auto cStmt = std::make_unique<CompoundStmt>();
 
     mCurrentToken = mLexer.GetNextToken();
     std::unique_ptr<ASTNode> node;
@@ -301,6 +303,9 @@ std::unique_ptr<CompoundStmt> Parser::ParseCompoundStmt()
         {
         case Lexer::Token::VAR:
             node.reset(ParseVarDecl().release());
+            break;
+        case Lexer::Token::IDENTIFIER:
+            node.reset(ParseExpr().release());
             break;
         case Lexer::Token::IF:
             node.reset(ParseIfStmt().release());
@@ -317,7 +322,7 @@ std::unique_ptr<CompoundStmt> Parser::ParseCompoundStmt()
 
         cStmt->AddStatement(std::move(node));
 
-        GoToNextStmt();
+        mCurrentToken = mLexer.GetNextToken();
     }
 
     if (mCurrentToken != Lexer::Token::RIGHT_BRACE)
@@ -331,13 +336,20 @@ std::unique_ptr<CompoundStmt> Parser::ParseCompoundStmt()
 
 std::unique_ptr<IfStmt> Parser::ParseIfStmt()
 {
-    std::unique_ptr<IfStmt> ifStmt;
+    std::unique_ptr<IfStmt> ifStmt = std::make_unique<IfStmt>();
     
-    // TODO: Check if they're not null. If one of them is, we need to log an error
+    mCurrentToken = mLexer.GetNextToken();
     std::unique_ptr<Expr> condExpr = ParseExpr();
+    if (condExpr == nullptr)
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::IF_MISSING_COND, mLexer.GetCurrentLocation());
+
     std::unique_ptr<CompoundStmt> thenStmt = ParseCompoundStmt();
+    if (thenStmt == nullptr)
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::IF_MISSING_BODY, mLexer.GetCurrentLocation());
         
-    ifStmt.reset(new IfStmt(std::move(condExpr), std::move(thenStmt)));
+    if ((condExpr != nullptr) && (thenStmt != nullptr))
+        ifStmt.reset(new IfStmt(std::move(condExpr), std::move(thenStmt)));
+
     return ifStmt;
 }
 
@@ -345,14 +357,13 @@ std::unique_ptr<ReturnStmt> Parser::ParseReturnStmt()
 {
     auto rStmt = std::make_unique<ReturnStmt>();
 
+    mCurrentToken = mLexer.GetNextToken();
     rStmt->AddReturnValue(std::move(ParseExpr()));
 
     // The return statement must be terminated by a semi-colon
     if (mCurrentToken != Lexer::Token::SEMI_COLON)
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::MISSING_SEMI_COLON, mLexer.GetCurrentLocation());
-
-    GoToNextStmt();
-
+    
     return rStmt;
 }
 
@@ -360,11 +371,17 @@ std::unique_ptr<WhileStmt> Parser::ParseWhileStmt()
 {
     std::unique_ptr<WhileStmt> whileStmt;
 
-    // TODO: Check if they're not null. If one of them is, we need to log an error
+    mCurrentToken = mLexer.GetNextToken();
     std::unique_ptr<Expr> condExpr = ParseExpr();
-    std::unique_ptr<CompoundStmt> body = ParseCompoundStmt();
+    if (condExpr == nullptr)
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WHILE_MISSING_COND, mLexer.GetCurrentLocation());
 
-    whileStmt.reset(new WhileStmt(std::move(condExpr), std::move(body)));
+    std::unique_ptr<CompoundStmt> body = ParseCompoundStmt();
+    if (body == nullptr)
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WHILE_MISSING_BODY, mLexer.GetCurrentLocation());
+
+    if ((condExpr != nullptr) && (body != nullptr))
+        whileStmt.reset(new WhileStmt(std::move(condExpr), std::move(body)));
     return whileStmt;
 }
 

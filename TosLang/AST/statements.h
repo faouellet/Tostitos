@@ -42,6 +42,7 @@ namespace TosLang
         class IfStmt : public Stmt
         {
         public:
+            IfStmt() : Stmt{ NodeKind::ERROR } { }
             IfStmt(std::unique_ptr<Expr>&& condExpr, std::unique_ptr<CompoundStmt>&& thenStmt) :
                 Stmt{ NodeKind::IF_STMT }
             {
