@@ -135,6 +135,7 @@ namespace TosLang
         class WhileStmt : public Stmt
         {
         public:
+            WhileStmt() : Stmt{ NodeKind::ERROR } { }
             WhileStmt(std::unique_ptr<Expr>&& condExpr, std::unique_ptr<CompoundStmt>&& body) :
                 Stmt{ NodeKind::WHILE_STMT }
             {

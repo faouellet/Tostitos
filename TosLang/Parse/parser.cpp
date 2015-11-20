@@ -369,7 +369,7 @@ std::unique_ptr<ReturnStmt> Parser::ParseReturnStmt()
 
 std::unique_ptr<WhileStmt> Parser::ParseWhileStmt()
 {
-    std::unique_ptr<WhileStmt> whileStmt;
+    std::unique_ptr<WhileStmt> whileStmt = std::make_unique<WhileStmt>();
 
     mCurrentToken = mLexer.GetNextToken();
     std::unique_ptr<Expr> condExpr = ParseExpr();
