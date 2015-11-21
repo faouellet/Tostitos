@@ -27,6 +27,11 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
     { ErrorType::IF_MISSING_BODY,             "IF ERROR: Missing if body" },
     { ErrorType::IF_MISSING_COND,             "IF ERROR: Missing if condition" },
 
+    // IO
+    { ErrorType::PRINT_WRONG_MSG,             "PRINT ERROR: Wrong message for printing" },
+    { ErrorType::SCAN_MISSING_INPUT_VAR,      "SCAN ERROR: Missing input variable" },
+    { ErrorType::SCAN_WRONG_INPUT_VAR,        "SCAN ERROR: Incorrect input variable" },
+
     // Literal
     { ErrorType::NEW_LINE_IN_LITERAL,          "LITERAL ERROR: Newline in string literal" },
     { ErrorType::NUMBER_BAD_SUFFIX,            "LITERAL ERROR: Bad suffix on number" },

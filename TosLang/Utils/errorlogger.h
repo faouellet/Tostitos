@@ -43,6 +43,11 @@ namespace TosLang
                 IF_MISSING_BODY,
                 IF_MISSING_COND,
 
+                // IO
+                PRINT_WRONG_MSG,
+                SCAN_MISSING_INPUT_VAR,
+                SCAN_WRONG_INPUT_VAR,
+
                 // Literal
                 NEW_LINE_IN_LITERAL,
                 NUMBER_BAD_SUFFIX,

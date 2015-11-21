@@ -229,7 +229,10 @@ std::unique_ptr<Expr> Parser::ParseExpr()
         return nullptr;
     default:
         if ((Lexer::Token::OP_START <= mCurrentToken) && (mCurrentToken <= Lexer::Token::OP_END))
+        {
             ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_USE_OPERATION, mLexer.GetCurrentLocation());
+            mCurrentToken = mLexer.GetNextToken();
+        }
         return nullptr;
     }
 
@@ -316,6 +319,12 @@ std::unique_ptr<CompoundStmt> Parser::ParseCompoundStmt()
         case Lexer::Token::WHILE:
             node.reset(ParseWhileStmt().release());
             break;
+        case Lexer::Token::PRINT:
+            node.reset(ParsePrintStmt().release());
+            break;
+        case Lexer::Token::SCAN:
+            node.reset(ParseScanStmt().release());
+            break;
         default:
             break;
         }
@@ -353,6 +362,35 @@ std::unique_ptr<IfStmt> Parser::ParseIfStmt()
     return ifStmt;
 }
 
+std::unique_ptr<PrintStmt> Parser::ParsePrintStmt()
+{
+    std::unique_ptr<PrintStmt> pStmt = std::make_unique<PrintStmt>();
+
+    mCurrentToken = mLexer.GetNextToken();
+
+    switch (mCurrentToken)
+    {
+    case Lexer::Token::IDENTIFIER:
+        pStmt->AddMessage(std::make_unique<IdentifierExpr>(mLexer.GetCurrentStr()));
+        break;
+    case Lexer::Token::NUMBER:
+        pStmt->AddMessage(std::make_unique<NumberExpr>(mLexer.GetCurrentNumber()));
+        break;
+    case Lexer::Token::STRING_LITERAL:
+        pStmt->AddMessage(std::make_unique<IdentifierExpr>(mLexer.GetCurrentStr()));
+        break;
+    case Lexer::Token::SEMI_COLON:
+        break;
+    default:
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::PRINT_WRONG_MSG, mLexer.GetCurrentLocation());
+        break;
+    }
+
+    mCurrentToken = mLexer.GetNextToken();
+
+    return pStmt;
+}
+
 std::unique_ptr<ReturnStmt> Parser::ParseReturnStmt()
 {
     auto rStmt = std::make_unique<ReturnStmt>();
@@ -365,6 +403,23 @@ std::unique_ptr<ReturnStmt> Parser::ParseReturnStmt()
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::MISSING_SEMI_COLON, mLexer.GetCurrentLocation());
     
     return rStmt;
+}
+
+std::unique_ptr<ScanStmt> Parser::ParseScanStmt()
+{
+    std::unique_ptr<ScanStmt> sStmt = std::make_unique<ScanStmt>();
+
+    mCurrentToken = mLexer.GetNextToken();
+    std::unique_ptr<Expr> inputExpr = ParseExpr();
+
+    if (inputExpr == nullptr)
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::SCAN_MISSING_INPUT_VAR, mLexer.GetCurrentLocation());
+    else if (inputExpr->GetKind() != ASTNode::NodeKind::IDENTIFIER_EXPR)
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::SCAN_WRONG_INPUT_VAR, mLexer.GetCurrentLocation());
+    else
+        sStmt.reset(new ScanStmt(std::make_unique<IdentifierExpr>(inputExpr->GetName())));
+        
+    return sStmt;
 }
 
 std::unique_ptr<WhileStmt> Parser::ParseWhileStmt()

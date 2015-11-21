@@ -31,7 +31,18 @@ namespace TosLang
             virtual ~CompoundStmt() { }
 
         public:
+            /*
+            * \fn           AddStatement
+            * \brief        Add a statement to the compound statement
+            * \param stmt   Statement to be added
+            */
             void AddStatement(std::unique_ptr<ASTNode>&& stmt) { AddChildNode(std::move(stmt)); }
+
+            /*
+            * \fn       GetStatements
+            * \brief    Gets the list of statements inside a compound statement
+            * \return   The statements contained within a compound statement i.e. a scope
+            */
             const ChildrenNodes& GetStatements() const { return mChildren; }
         };
 
@@ -73,15 +84,26 @@ namespace TosLang
 
         /*
         * \class PrintStmt
-        * \brief Node of the AST representing a PRINTLN
+        * \brief Node of the AST representing a PRINT
         */
         class PrintStmt : public Stmt
         {
         public:
-            PrintStmt(std::unique_ptr<Expr>&& message) : Stmt{ NodeKind::PRINT_STMT } { AddChildNode(std::move(message)); }
+            PrintStmt() : Stmt{ NodeKind::PRINT_STMT } { }
             virtual ~PrintStmt() { }
 
         public:
+            /*
+            * \fn           AddMessage
+            * \brief        Adds a message to be ouputted by the print statement
+            * \param msg    Message to be printed
+            */
+            void AddMessage(std::unique_ptr<Expr>&& msg) 
+            {
+                assert(msg->GetKind() == ASTNode::NodeKind::NUMBER_EXPR || msg->GetKind() == ASTNode::NodeKind::IDENTIFIER_EXPR);
+                AddChildNode(std::move(msg));
+            }
+
             /*
             * \fn       GetMessage
             * \brief    Gets the message to be printed on the standard output
@@ -126,6 +148,26 @@ namespace TosLang
             * \return   Pointer to the returned value expression
             */
             const Expr* GetReturnExpr() const { return mChildren.size() > 0 ? GetChildNodeAs<Expr>(0) : nullptr; }
+        };
+
+        /*
+        * \class ScanStmt
+        * \brief Node of the AST representing a SCAN
+        */
+        class ScanStmt : public Stmt
+        {
+        public:
+            ScanStmt() : Stmt{ NodeKind::ERROR } { }
+            ScanStmt(std::unique_ptr<IdentifierExpr>&& message) : Stmt{ NodeKind::SCAN_STMT } { AddChildNode(std::move(message)); }
+            virtual ~ScanStmt() { }
+
+        public:
+            /*
+            * \fn       GetInput
+            * \brief    Gets the input to be scanned from the standard output
+            * \return   Input (String or Int)
+            */
+            const IdentifierExpr* GetInput() const { assert(mChildren.size() == 1); return GetChildNodeAs<IdentifierExpr>(0); }
         };
 
         /*

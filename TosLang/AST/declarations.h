@@ -103,12 +103,22 @@ namespace TosLang
         {
         public:
             ParamVarDecls() : Decl{ NodeKind::PARAM_VAR_DECL } { }
+            virtual ~ParamVarDecls() { }
 
         public:
+            /*
+            * \fn           AddParameter
+            * \brief        Add a parameter to the parameter list
+            * \param param  Parameter to be added
+            */
             void AddParameter(std::unique_ptr<VarDecl>&& param) { AddChildNode(std::move(param)); }
-            const ChildrenNodes& GetParameters() const { return mChildren; }
 
-            virtual ~ParamVarDecls() { }
+            /*
+            * \fn           GetParameters
+            * \brief        Gets the list of parameters
+            * \return       List of parameters to a function
+            */
+            const ChildrenNodes& GetParameters() const { return mChildren; }
         };
 
         /*

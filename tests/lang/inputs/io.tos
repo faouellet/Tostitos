@@ -1,0 +1,6 @@
+fn main() -> Void {
+	var Message: String;
+	
+	scan Message;
+	print Message;
+}

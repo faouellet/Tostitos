@@ -1,4 +1,0 @@
-var Message: String;
-
-scan Message;
-print Message;

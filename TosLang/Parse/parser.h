@@ -15,7 +15,9 @@ namespace TosLang
         class Expr;
         class FunctionDecl;
         class IfStmt;
+        class PrintStmt;
         class ReturnStmt;
+        class ScanStmt;
         class VarDecl;
         class WhileStmt;
         
@@ -113,11 +115,25 @@ namespace TosLang
             std::unique_ptr<IfStmt> ParseIfStmt();
 
             /*
+            * \fn           ParsePrintStmt
+            * \brief        'print' expr
+            * \return       A node representing a print statement
+            */
+            std::unique_ptr<PrintStmt> ParsePrintStmt();
+
+            /*
             * \fn           ParseReturnStmt
             * \brief        'return' expr? ';'
             * \return       A node representing a return statement
             */
             std::unique_ptr<ReturnStmt> ParseReturnStmt();
+
+            /*
+            * \fn           ParseScanStmt
+            * \brief        'scan' identifierexpr
+            * \return       A node representing an if statement
+            */
+            std::unique_ptr<ScanStmt> ParseScanStmt();
 
             /*
             * \fn           ParseIdentifierExpr

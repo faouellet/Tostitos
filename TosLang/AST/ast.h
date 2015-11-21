@@ -46,6 +46,7 @@ namespace TosLang
                 IF_STMT,
                 PRINT_STMT,
                 RETURN_STMT,
+                SCAN_STMT,
                 WHILE_STMT,
             };
 

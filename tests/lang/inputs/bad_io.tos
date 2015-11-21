@@ -1,0 +1,6 @@
+fn main() -> Void {
+	scan;
+	scan +;
+	scan 9;
+	print +;
+}
