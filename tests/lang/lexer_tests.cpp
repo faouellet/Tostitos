@@ -548,9 +548,19 @@ BOOST_AUTO_TEST_CASE( LexerWhileTest )
 BOOST_AUTO_TEST_CASE( LexerIOTest )
 {
 	Lexer lex;
-	BOOST_REQUIRE(lex.Init("../inputs/console.tos"));
+	BOOST_REQUIRE(lex.Init("../inputs/io.tos"));
     BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
     BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
+
+    // fn main() -> Void {
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::FUNCTION);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::IDENTIFIER);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "main");
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::LEFT_PAREN);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::RIGHT_PAREN);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::ARROW);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::TYPE);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::LEFT_BRACE);
 
 	// var Message: String;
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::VAR);
@@ -567,11 +577,14 @@ BOOST_AUTO_TEST_CASE( LexerIOTest )
 	BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "Message");
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::SEMI_COLON);
 
-	// scan Message;
+	// print Message;
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::PRINT);
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::IDENTIFIER);
 	BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "Message");
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::SEMI_COLON);
+
+    // }
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::RIGHT_BRACE);
 
 	// End of file
 	BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::TOK_EOF);
