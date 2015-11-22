@@ -1,1 +1,3 @@
-var MyVar: String = "Hello;
+var MyVar1: String = "Hel
+lo";
+var MyVar2: String = "Hello;

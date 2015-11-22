@@ -27,10 +27,22 @@ BOOST_FIXTURE_TEST_CASE( LexerBadStrLitTest, FrontEndErrorFixture )
     BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
     BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
 
-    // var MyVar: String = "Hello;
+    // var MyVar1: String = "Hel
+    // lo";
     BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::VAR);
     BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::IDENTIFIER);
-    BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "MyVar");
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "MyVar1");
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::COLON);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::TYPE);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "String");
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::EQUAL);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::UNKNOWN);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::SEMI_COLON);
+
+    // var MyVar2: String = "Hello;
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::VAR);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::IDENTIFIER);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "MyVar2");
     BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::COLON);
     BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::TYPE);
     BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "String");
@@ -43,8 +55,9 @@ BOOST_FIXTURE_TEST_CASE( LexerBadStrLitTest, FrontEndErrorFixture )
     std::vector<std::string> messages{ GetErrorMessages() };
 
     // Check if the correct error messages got printed
-    BOOST_REQUIRE_EQUAL(messages.size(), 1);
-    BOOST_REQUIRE_EQUAL(messages[0], "LITERAL ERROR: Newline in string literal at line 1, column 16");
+    BOOST_REQUIRE_EQUAL(messages.size(), 2);
+    BOOST_REQUIRE_EQUAL(messages[0], "LITERAL ERROR: Newline in string literal at line 1, column 17");
+    BOOST_REQUIRE_EQUAL(messages[1], "LITERAL ERROR: Missing closing quote at line 2, column 17");
 }
 
 BOOST_FIXTURE_TEST_CASE( LexerBadVarNameTest, FrontEndErrorFixture )

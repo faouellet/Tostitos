@@ -170,11 +170,22 @@ Lexer::Token Lexer::GetNextToken()
         while ((++mBufferIt != mBuffer.end()) && (*mBufferIt != '\n') && (*mBufferIt != '\"'))
             mCurrentStr += *mBufferIt;
 
-		if ((mBufferIt == mBuffer.end()) || (*mBufferIt == '\n'))
+		if (mBufferIt == mBuffer.end())
 		{
-            Utils::ErrorLogger::PrintErrorAtLocation(Utils::ErrorLogger::ErrorType::NEW_LINE_IN_LITERAL, mSrcLoc);
+            Utils::ErrorLogger::PrintErrorAtLocation(Utils::ErrorLogger::ErrorType::MISSING_CLOSING_QUOTE, mSrcLoc);
 			return Token::UNKNOWN;
 		}
+        else if (*mBufferIt == '\n')
+        {
+            Utils::ErrorLogger::PrintErrorAtLocation(Utils::ErrorLogger::ErrorType::NEW_LINE_IN_LITERAL, mSrcLoc);
+
+            while ((mBufferIt != mBuffer.end()) && (*mBufferIt != '\"'))
+                ++mBufferIt;
+
+            ++mBufferIt;
+
+            return Token::UNKNOWN;
+        }
 		else
 		{
 			++mBufferIt;

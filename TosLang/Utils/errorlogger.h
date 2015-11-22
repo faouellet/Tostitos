@@ -51,6 +51,7 @@ namespace TosLang
 
                 // Literal
                 NEW_LINE_IN_LITERAL,
+                MISSING_CLOSING_QUOTE,
                 NUMBER_BAD_SUFFIX,
 
                 // Syntax

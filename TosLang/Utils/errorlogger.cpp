@@ -35,6 +35,7 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
 
     // Literal
     { ErrorType::NEW_LINE_IN_LITERAL,          "LITERAL ERROR: Newline in string literal" },
+    { ErrorType::MISSING_CLOSING_QUOTE,        "LITERAL ERROR: Missing closing quote" },
     { ErrorType::NUMBER_BAD_SUFFIX,            "LITERAL ERROR: Bad suffix on number" },
 
     // Misc
