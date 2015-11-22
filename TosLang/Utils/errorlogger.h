@@ -37,6 +37,7 @@ namespace TosLang
                 FN_MISSING_TYPE,
                 FN_MISSING_IDENTIFIER,
                 FN_MISSING_PAREN,
+                FN_MISSING_RETURN,
                 FN_REDEFINITION,
 
                 // If

@@ -2,7 +2,7 @@
 #   define BOOST_TEST_MODULE Main
 #else
 #ifndef _WIN32
-#   define BOOST_TEST_MODULE ParserVarTests
+#   define BOOST_TEST_MODULE ParserFnTests
 #endif
 #endif
 

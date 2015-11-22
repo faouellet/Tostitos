@@ -42,6 +42,7 @@ if(Boost_FOUND)
         add_boost_test(lang/lexer_tests.cpp lang)
         add_boost_test(lang/lexer_error_tests.cpp lang)
 
+        add_boost_test(lang/parser_call_tests.cpp lang)
         add_boost_test(lang/parser_fn_tests.cpp lang)
         add_boost_test(lang/parser_if_tests.cpp lang)
         add_boost_test(lang/parser_io_tests.cpp lang)

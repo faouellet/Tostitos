@@ -1,0 +1,8 @@
+fn nothing() -> Void {
+	return;
+}
+
+fn main() -> Void {
+	nothing();
+	return;
+}

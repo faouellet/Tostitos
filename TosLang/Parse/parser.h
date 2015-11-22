@@ -38,14 +38,7 @@ namespace TosLang
             * \return           Root node of the AST
             */
             std::unique_ptr<ASTNode> ParseProgram(const std::string& filename);
-
-        private:    // Helpers
-            /*
-            * \fn       GoToNextStmt
-            * \brief    Go to the next statement in the program. This is used as part of the error recovery mechanism of the parser.
-            */
-            void GoToNextStmt();
-
+            
         private:	// Declarations
             /*
             * \fn       ParseProgramDecl

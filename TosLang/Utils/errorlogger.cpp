@@ -21,6 +21,7 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
     { ErrorType::FN_MISSING_TYPE,             "FUNCTION ERROR: Missing type from function declaration" },
     { ErrorType::FN_MISSING_IDENTIFIER,       "FUNCTION ERROR: The fn keyword should be followed by an identifier" },
     { ErrorType::FN_MISSING_PAREN,            "FUNCTION ERROR: Missing parenthesis in the function declaration" },
+    { ErrorType::FN_MISSING_RETURN,           "FUNCTION ERROR: Missing return statement" },
     { ErrorType::FN_REDEFINITION,             "FUNCTION ERROR: Trying to redefine an already defined function" },
 
     // If

@@ -111,10 +111,10 @@ namespace TosLang
 
             /*
             * \fn       GetArgs
-            * \brief    Gets the value associated with the BooleanExpr AST node
-            * \return   Boolean value of the AST node
+            * \brief    Gets the arguments used to call a function
+            * \return   List of argument expressions
             */
-            //const std::vector<std::unique_ptr<Expr>>& GetArgs() const { return mChildren; }
+            const std::vector<std::unique_ptr<ASTNode>>& GetArgs() const { return mChildren; }
         };
 
         /*

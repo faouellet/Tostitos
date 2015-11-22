@@ -153,24 +153,25 @@ BOOST_AUTO_TEST_CASE( ParserBadInitTest )
     BOOST_REQUIRE_EQUAL(messages[1], "FILE ERROR: Problem opening the specified file");
 }
 
-BOOST_FIXTURE_TEST_CASE( ParseBadVarDeclTest, FrontEndErrorFixture )
+BOOST_AUTO_TEST_CASE( ParseBadVarDeclTest )
 {
     auto& cNodes = GetProgramAST("../inputs/bad_var_decl.tos");
-    BOOST_REQUIRE_EQUAL(cNodes.size(), 8);
+    BOOST_REQUIRE_EQUAL(cNodes.size(), 9);
 
-    // Check that we only have one non-error node
+    // Check that there is all but one non error node
     BOOST_REQUIRE_EQUAL(std::count_if(cNodes.begin(), cNodes.end(), [](const std::unique_ptr<ASTNode>& node){ return node->GetKind() != ASTNode::NodeKind::ERROR; }), 1);
     
     // Check if the correct error messages got printed
     std::vector<std::string> messages{ GetErrorMessages() };
-    BOOST_REQUIRE_EQUAL(messages.size(), 7);
+    BOOST_REQUIRE_EQUAL(messages.size(), 8);
     BOOST_REQUIRE_EQUAL(messages[0], "VAR ERROR: The var keyword should be followed by an identifier at line 1, column 3");
     BOOST_REQUIRE_EQUAL(messages[1], "VAR ERROR: The var keyword should be followed by an identifier at line 2, column 7");
     BOOST_REQUIRE_EQUAL(messages[2], "VAR ERROR: Missing : between a variable and its type at line 3, column 12");
     BOOST_REQUIRE_EQUAL(messages[3], "VAR ERROR: Missing : between a variable and its type at line 4, column 8");
     BOOST_REQUIRE_EQUAL(messages[4], "VAR ERROR: Missing type from variable declaration at line 5, column 8");
     BOOST_REQUIRE_EQUAL(messages[5], "ERROR: Expected a ; at line 7, column 3");
-    BOOST_REQUIRE_EQUAL(messages[6], "VAR ERROR: Trying to redefine an already defined variable at line 9, column 14");
+    BOOST_REQUIRE_EQUAL(messages[6], "VAR ERROR: The var keyword should be followed by an identifier at line 7, column 3");
+    BOOST_REQUIRE_EQUAL(messages[7], "VAR ERROR: Trying to redefine an already defined variable at line 9, column 14");
 }
 
 BOOST_AUTO_TEST_CASE( ParseBadVarInitBinOpTest )

@@ -29,15 +29,6 @@ std::unique_ptr<ASTNode> Parser::ParseProgram(const std::string& filename)
     return ParseProgramDecl();
 }
 
-void Parser::GoToNextStmt()
-{
-    while ((mCurrentToken != Lexer::Token::SEMI_COLON) && (mCurrentToken != Lexer::Token::TOK_EOF))
-        mCurrentToken = mLexer.GetNextToken();
-
-    if ((mCurrentToken == Lexer::Token::SEMI_COLON) || (mCurrentToken == Lexer::Token::LEFT_BRACE))
-        mCurrentToken = mLexer.GetNextToken();
-}
-
 std::unique_ptr<ASTNode> Parser::ParseProgramDecl()
 {
     auto programNode = std::make_unique<ProgramDecl>();
@@ -60,10 +51,15 @@ std::unique_ptr<ASTNode> Parser::ParseProgramDecl()
             // TODO: Log an error
             break;
         }
-            
-        GoToNextStmt();
         
         programNode->AddProgramStmt(std::move(node));
+
+        // Go to next declaration.
+        // In case an error happens, this will skip straight to the next declaration
+        while ((mCurrentToken != Lexer::Token::VAR) 
+            && (mCurrentToken != Lexer::Token::FUNCTION) 
+            && (mCurrentToken != Lexer::Token::TOK_EOF))
+            mCurrentToken = mLexer.GetNextToken();
     }
 
     return std::move(programNode);
@@ -242,7 +238,11 @@ std::unique_ptr<Expr> Parser::ParseExpr()
         return ParseBinaryOpExpr(mCurrentToken, std::move(node));
     else if(mCurrentToken == Lexer::Token::LEFT_PAREN)
         return ParseCallExpr(std::move(node));
-    else if ((mCurrentToken == Lexer::Token::SEMI_COLON) || (mCurrentToken == Lexer::Token::LEFT_BRACE) || (mCurrentToken == Lexer::Token::RIGHT_BRACE))
+    else if ((mCurrentToken == Lexer::Token::SEMI_COLON) 
+        || (mCurrentToken == Lexer::Token::LEFT_BRACE)
+        || (mCurrentToken == Lexer::Token::RIGHT_BRACE)
+        || (mCurrentToken == Lexer::Token::RIGHT_PAREN)
+        || (mCurrentToken == Lexer::Token::COMMA))
         return std::move(node);
 
     ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_OPERATION, mLexer.GetCurrentLocation());
@@ -270,18 +270,30 @@ std::unique_ptr<Expr> Parser::ParseCallExpr(std::unique_ptr<Expr>&& fn)
     std::vector<std::unique_ptr<Expr>> args;
     std::unique_ptr<Expr> arg;
 
-    while ((mCurrentToken = mLexer.GetNextToken()) != Lexer::Token::RIGHT_PAREN)
+    mCurrentToken = mLexer.GetNextToken();
+
+    while (mCurrentToken != Lexer::Token::RIGHT_PAREN)
     {
         // TODO: Check if the argument is null. If it is, log an error
         arg.reset(ParseExpr().release());
+        args.push_back(std::move(arg));
 
-        mCurrentToken = mLexer.GetNextToken();
-        if ((mCurrentToken != Lexer::Token::RIGHT_PAREN) || (mCurrentToken != Lexer::Token::COMMA))
+        if (mCurrentToken == Lexer::Token::RIGHT_PAREN)
         {
+            break;
+        }
+        else if (mCurrentToken == Lexer::Token::COMMA)
+        {
+            mCurrentToken = mLexer.GetNextToken();
+        }
+        else
+        { 
             cExpr.reset();
             return std::move(cExpr);
         }
     }
+
+    mCurrentToken = mLexer.GetNextToken();
 
     cExpr.reset(new CallExpr(fn->GetName(), std::move(args)));
 

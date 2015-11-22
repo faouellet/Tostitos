@@ -2,7 +2,7 @@
 #   define BOOST_TEST_MODULE Main
 #else
 #ifndef _WIN32
-#   define BOOST_TEST_MODULE ASTVisitor
+#   define BOOST_TEST_MODULE ASTVisitorTests
 #endif
 #endif
 
