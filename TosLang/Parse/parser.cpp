@@ -34,8 +34,7 @@ std::unique_ptr<ASTNode> Parser::ParseProgramDecl()
     auto programNode = std::make_unique<ProgramDecl>();
     mCurrentToken = mLexer.GetNextToken();
     
-    // TODO: Error handling when encountering an unknown token
-    std::unique_ptr<Decl> node;
+    std::unique_ptr<Decl> node = std::make_unique<Decl>();
     while (mCurrentToken != Lexer::Token::TOK_EOF)
     {
         switch (mCurrentToken)
@@ -48,7 +47,7 @@ std::unique_ptr<ASTNode> Parser::ParseProgramDecl()
             break;
 
         default:
-            // TODO: Log an error
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::EXPECTED_DECL, mLexer.GetCurrentLocation());
             break;
         }
         

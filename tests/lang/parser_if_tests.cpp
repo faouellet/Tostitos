@@ -166,4 +166,17 @@ BOOST_AUTO_TEST_CASE( ParseBadIfNoBodyTest )
     BOOST_REQUIRE_EQUAL(messages[2], "SYNTAX ERROR: Expected '}' at line 5, column 1");
 }
 
+BOOST_AUTO_TEST_CASE( ParseBadIfGlobalScopeTest )
+{
+    auto& cNodes = GetProgramAST("../inputs/if_global_scope.tos");
+    BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
+
+    BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::ERROR);
+    
+    // Check if the correct error message got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
+    BOOST_REQUIRE_EQUAL(messages.size(), 1);
+    BOOST_REQUIRE_EQUAL(messages[0], "ERROR: Expected a declaration at line 1, column 2");
+}
+
 BOOST_AUTO_TEST_SUITE_END()

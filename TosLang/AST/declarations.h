@@ -18,6 +18,7 @@ namespace TosLang
         class Decl : public ASTNode
         {
         public:
+            explicit Decl() : ASTNode{ NodeKind::ERROR } { }
             explicit Decl(NodeKind kind) : ASTNode{ kind } { }
             virtual ~Decl() { }
         };

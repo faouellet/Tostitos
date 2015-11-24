@@ -74,6 +74,7 @@ namespace TosLang
                 WHILE_MISSING_COND,
 
                 // Misc
+                EXPECTED_DECL,
                 MISSING_SEMI_COLON,
                 UNCLOSED_ML_COMMENT,
             };

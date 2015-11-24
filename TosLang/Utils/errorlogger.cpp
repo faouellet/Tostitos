@@ -39,6 +39,7 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
     { ErrorType::NUMBER_BAD_SUFFIX,            "LITERAL ERROR: Bad suffix on number" },
 
     // Misc
+    { ErrorType::EXPECTED_DECL,                "ERROR: Expected a declaration" },
     { ErrorType::MISSING_SEMI_COLON,           "ERROR: Expected a ;" },
     { ErrorType::UNCLOSED_ML_COMMENT,          "ERROR: Unclosed multiline comment" },
 
