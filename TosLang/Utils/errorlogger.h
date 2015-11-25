@@ -29,6 +29,10 @@ namespace TosLang
                 WRONG_OPERATION,
                 WRONG_USE_OPERATION,
 
+                // Call
+                CALL_ARG_ERROR,
+                CALL_MISSING_PAREN,
+
                 // File
                 WRONG_FILE_TYPE,
                 ERROR_OPENING_FILE,

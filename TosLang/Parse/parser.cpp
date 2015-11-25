@@ -285,8 +285,15 @@ std::unique_ptr<Expr> Parser::ParseCallExpr(std::unique_ptr<Expr>&& fn)
         {
             mCurrentToken = mLexer.GetNextToken();
         }
+        else if (mCurrentToken == Lexer::Token::SEMI_COLON)
+        {
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::CALL_MISSING_PAREN, mLexer.GetCurrentLocation());
+            cExpr.reset();
+            return std::move(cExpr);
+        }
         else
-        { 
+        {
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::CALL_ARG_ERROR, mLexer.GetCurrentLocation());
             cExpr.reset();
             return std::move(cExpr);
         }

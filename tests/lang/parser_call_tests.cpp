@@ -225,4 +225,40 @@ BOOST_AUTO_TEST_CASE( ParseCallMultiArgsTest )
 
 //////////////////// ERROR USE CASES ////////////////////
 
+BOOST_AUTO_TEST_CASE( ParseBadCallMissingCommaTest )
+{
+    auto& cNodes = GetProgramAST("../inputs/call_missing_comma.tos");
+    BOOST_REQUIRE_EQUAL(cNodes.size(), 2);
+    
+    // Check if the correct error message got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
+    BOOST_REQUIRE_EQUAL(messages.size(), 2);
+    BOOST_REQUIRE_EQUAL(messages[0], "ERROR: Not an acceptable binary operation at line 9, column 15");
+    BOOST_REQUIRE_EQUAL(messages[1], "CALL ERROR: Incorrect function call arguments at line 9, column 15");
+}
+
+BOOST_AUTO_TEST_CASE( ParseBadCallMissingParenTest )
+{
+    auto& cNodes = GetProgramAST("../inputs/call_missing_paren.tos");
+    BOOST_REQUIRE_EQUAL(cNodes.size(), 2);
+
+    // Check if the correct error message got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
+    BOOST_REQUIRE_EQUAL(messages.size(), 1);
+    BOOST_REQUIRE_EQUAL(messages[0], "CALL ERROR: Function call is missing a closing parenthesis at line 9, column 15");
+}
+
+BOOST_AUTO_TEST_CASE( ParseBadCallGlobalScopeTest )
+{
+    auto& cNodes = GetProgramAST("../inputs/call_global_scope.tos");
+    BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
+
+    BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::ERROR);
+
+    // Check if the correct error message got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
+    BOOST_REQUIRE_EQUAL(messages.size(), 1);
+    BOOST_REQUIRE_EQUAL(messages[0], "ERROR: Expected a declaration at line 1, column 3");
+}
+
 BOOST_AUTO_TEST_SUITE_END()
