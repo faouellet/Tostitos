@@ -14,7 +14,7 @@ BOOST_FIXTURE_TEST_SUITE( FrontEndTestSuite, FrontEndErrorFixture )
 
 BOOST_AUTO_TEST_CASE( ParseHelloWorldTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/hello_world.tos");
+    auto& cNodes = GetProgramAST("../inputs/io/hello_world.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE( ParseHelloWorldTest )
 
 BOOST_AUTO_TEST_CASE( ParseBasicIOTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/io.tos");
+    auto& cNodes = GetProgramAST("../inputs/io/io.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE( ParseBasicIOTest )
 
 BOOST_AUTO_TEST_CASE( ParseBadIOTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/bad_io.tos");
+    auto& cNodes = GetProgramAST("../inputs/io/bad_io.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE( ParseBadIOTest )
 
 BOOST_AUTO_TEST_CASE( ParseBadIOGlobalScopeTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/io_global_scope.tos");
+    auto& cNodes = GetProgramAST("../inputs/io/io_global_scope.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::ERROR);

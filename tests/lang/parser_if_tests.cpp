@@ -14,7 +14,7 @@ BOOST_FIXTURE_TEST_SUITE( FrontEndTestSuite, FrontEndErrorFixture )
 
 BOOST_AUTO_TEST_CASE( ParseIfLiteralCondTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/if_literal_cond.tos");
+    auto& cNodes = GetProgramAST("../inputs/if/if_literal_cond.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE( ParseIfLiteralCondTest )
 
 BOOST_AUTO_TEST_CASE( ParseIfSimpleCondTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/if_simple_cond.tos");
+    auto& cNodes = GetProgramAST("../inputs/if/if_simple_cond.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE( ParseIfSimpleCondTest )
 
 BOOST_AUTO_TEST_CASE( ParseIfMultiCondTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/if_multi_cond.tos");
+    auto& cNodes = GetProgramAST("../inputs/if/if_multi_cond.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_CASE( ParseIfMultiCondTest )
 
 BOOST_AUTO_TEST_CASE( ParseBadIfNoCondTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/if_no_cond.tos");
+    auto& cNodes = GetProgramAST("../inputs/if/if_no_cond.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
@@ -143,7 +143,7 @@ BOOST_AUTO_TEST_CASE( ParseBadIfNoCondTest )
 
 BOOST_AUTO_TEST_CASE( ParseBadIfNoBodyTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/if_no_body.tos");
+    auto& cNodes = GetProgramAST("../inputs/if/if_no_body.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
@@ -168,7 +168,7 @@ BOOST_AUTO_TEST_CASE( ParseBadIfNoBodyTest )
 
 BOOST_AUTO_TEST_CASE( ParseBadIfGlobalScopeTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/if_global_scope.tos");
+    auto& cNodes = GetProgramAST("../inputs/if/if_global_scope.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::ERROR);

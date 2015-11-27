@@ -23,7 +23,7 @@ BOOST_FIXTURE_TEST_CASE( LexerBadInitTest, FrontEndErrorFixture )
 BOOST_FIXTURE_TEST_CASE( LexerBadStrLitTest, FrontEndErrorFixture )
 {
     Lexer lex;
-    BOOST_REQUIRE(lex.Init("../inputs/bad_string_literal.tos"));
+    BOOST_REQUIRE(lex.Init("../inputs/var/bad_string_literal.tos"));
     BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
     BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
 
@@ -63,7 +63,7 @@ BOOST_FIXTURE_TEST_CASE( LexerBadStrLitTest, FrontEndErrorFixture )
 BOOST_FIXTURE_TEST_CASE( LexerBadVarNameTest, FrontEndErrorFixture )
 {
     Lexer lex;
-    BOOST_REQUIRE(lex.Init("../inputs/bad_var_name.tos"));
+    BOOST_REQUIRE(lex.Init("../inputs/var/bad_var_name.tos"));
     BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
     BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
 
@@ -84,7 +84,7 @@ BOOST_FIXTURE_TEST_CASE( LexerBadVarNameTest, FrontEndErrorFixture )
 BOOST_FIXTURE_TEST_CASE( LexerBadMLCommentTest, FrontEndErrorFixture )
 {
     Lexer lex;
-    BOOST_REQUIRE(lex.Init("../inputs/bad_ml_comment.tos"));
+    BOOST_REQUIRE(lex.Init("../inputs/comment/bad_ml_comment.tos"));
     BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
     BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
 

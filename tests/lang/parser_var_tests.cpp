@@ -14,7 +14,7 @@ BOOST_FIXTURE_TEST_SUITE( FrontEndTestSuite, FrontEndErrorFixture )
 
 BOOST_AUTO_TEST_CASE( ParseVarDeclTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/var_decl.tos");
+    auto& cNodes = GetProgramAST("../inputs/var/var_decl.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 3);
 
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::VAR_DECL);
@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE( ParseVarDeclTest )
 
 BOOST_AUTO_TEST_CASE( ParseVarInitBoolTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/var_init_bool.tos");
+    auto& cNodes = GetProgramAST("../inputs/var/var_init_bool.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 2);
 	
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::VAR_DECL);
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE( ParseVarInitBoolTest )
 
 BOOST_AUTO_TEST_CASE( ParseVarInitIntTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/var_init_int.tos");
+    auto& cNodes = GetProgramAST("../inputs/var/var_init_int.tos");
 	BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
 	BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::VAR_DECL);
@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE( ParseVarInitIntTest )
 
 BOOST_AUTO_TEST_CASE( ParseVarInitIdentifierTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/var_init_identifier.tos");
+    auto& cNodes = GetProgramAST("../inputs/var/var_init_identifier.tos");
 	BOOST_REQUIRE_EQUAL(cNodes.size(), 2);
 
 	BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::VAR_DECL);
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE( ParseVarInitIdentifierTest )
 
 BOOST_AUTO_TEST_CASE( ParseVarInitIntBinOpTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/binary_op_int.tos");
+    auto& cNodes = GetProgramAST("../inputs/var/binary_op_int.tos");
     const size_t childExpectedSize = 9;
     BOOST_REQUIRE_EQUAL(cNodes.size(), childExpectedSize);
 
@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE( ParseVarInitIntBinOpTest )
 BOOST_AUTO_TEST_CASE( ParserBadInitTest )
 {
     Parser parser(symTab);
-    BOOST_REQUIRE(parser.ParseProgram("../inputs/var_decl.cpp") == nullptr);
+    BOOST_REQUIRE(parser.ParseProgram("../inputs/var/var_decl.cpp") == nullptr);
     BOOST_REQUIRE(parser.ParseProgram("BadFile.tos") == nullptr);
 
     std::vector<std::string> messages{ GetErrorMessages() };
@@ -155,7 +155,7 @@ BOOST_AUTO_TEST_CASE( ParserBadInitTest )
 
 BOOST_AUTO_TEST_CASE( ParseBadVarDeclTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/bad_var_decl.tos");
+    auto& cNodes = GetProgramAST("../inputs/var/bad_var_decl.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 9);
 
     // Check that there is all but one non error node
@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE( ParseBadVarDeclTest )
 
 BOOST_AUTO_TEST_CASE( ParseBadVarInitBinOpTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/bad_binary_op.tos");
+    auto& cNodes = GetProgramAST("../inputs/var/bad_binary_op.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 3);
 
     // Check that we have only error nodes.

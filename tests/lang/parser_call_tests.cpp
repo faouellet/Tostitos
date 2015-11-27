@@ -18,7 +18,7 @@ BOOST_FIXTURE_TEST_SUITE( FrontEndTestSuite, FrontEndErrorFixture )
 
 BOOST_AUTO_TEST_CASE( ParseCallZeroArgTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/call_zero_arg.tos");
+    auto& cNodes = GetProgramAST("../inputs/call/call_zero_arg.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 2);
     BOOST_REQUIRE(cNodes[0] != nullptr);
 
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE( ParseCallZeroArgTest )
 
 BOOST_AUTO_TEST_CASE( ParseCallOneArgTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/call_one_arg.tos");
+    auto& cNodes = GetProgramAST("../inputs/call/call_one_arg.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 2);
     BOOST_REQUIRE(cNodes[0] != nullptr);
 
@@ -138,7 +138,7 @@ BOOST_AUTO_TEST_CASE( ParseCallOneArgTest )
 
 BOOST_AUTO_TEST_CASE( ParseCallMultiArgsTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/call_multi_args.tos");
+    auto& cNodes = GetProgramAST("../inputs/call/call_multi_args.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 2);
     BOOST_REQUIRE(cNodes[0] != nullptr);
 
@@ -227,7 +227,7 @@ BOOST_AUTO_TEST_CASE( ParseCallMultiArgsTest )
 
 BOOST_AUTO_TEST_CASE( ParseBadCallMissingCommaTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/call_missing_comma.tos");
+    auto& cNodes = GetProgramAST("../inputs/call/call_missing_comma.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 2);
     
     // Check if the correct error message got printed
@@ -239,7 +239,7 @@ BOOST_AUTO_TEST_CASE( ParseBadCallMissingCommaTest )
 
 BOOST_AUTO_TEST_CASE( ParseBadCallMissingParenTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/call_missing_paren.tos");
+    auto& cNodes = GetProgramAST("../inputs/call/call_missing_paren.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 2);
 
     // Check if the correct error message got printed
@@ -250,7 +250,7 @@ BOOST_AUTO_TEST_CASE( ParseBadCallMissingParenTest )
 
 BOOST_AUTO_TEST_CASE( ParseBadCallGlobalScopeTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/call_global_scope.tos");
+    auto& cNodes = GetProgramAST("../inputs/call/call_global_scope.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::ERROR);

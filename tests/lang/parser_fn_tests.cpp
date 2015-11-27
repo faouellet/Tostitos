@@ -16,7 +16,7 @@ BOOST_FIXTURE_TEST_SUITE( FrontEndTestSuite, FrontEndErrorFixture )
 
 BOOST_AUTO_TEST_CASE( ParseFuncVoidTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/fn_def_void.tos");
+    auto& cNodes = GetProgramAST("../inputs/function/fn_def_void.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
     BOOST_REQUIRE(cNodes[0] != nullptr);
 
@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE( ParseFuncVoidTest )
 
 BOOST_AUTO_TEST_CASE( ParseFuncZeroArgTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/fn_def_zero_arg.tos");
+    auto& cNodes = GetProgramAST("../inputs/function/fn_def_zero_arg.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
     BOOST_REQUIRE(cNodes[0] != nullptr);
 
@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE( ParseFuncZeroArgTest )
 
 BOOST_AUTO_TEST_CASE( ParseFuncOneArgTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/fn_def_one_arg.tos");
+    auto& cNodes = GetProgramAST("../inputs/function/fn_def_one_arg.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
     BOOST_REQUIRE(cNodes[0] != nullptr);
 
@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE( ParseFuncOneArgTest )
 
 BOOST_AUTO_TEST_CASE( ParseFuncMultiArgsTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/fn_def_multi_args.tos");
+    auto& cNodes = GetProgramAST("../inputs/function/fn_def_multi_args.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
     BOOST_REQUIRE(cNodes[0] != nullptr);
 
