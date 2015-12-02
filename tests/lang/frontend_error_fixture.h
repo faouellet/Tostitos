@@ -1,13 +1,12 @@
 #ifndef CONSOLE_ERROR_FIXTURE_H__TOSTITOS
 #define CONSOLE_ERROR_FIXTURE_H__TOSTITOS
 
-#include "Parse/parser.h"
-#include "Parse/symboltable.h"
 #include "AST/ast.h"
 #include "AST/declarations.h"
 #include "AST/expressions.h"
 #include "AST/statements.h"
-
+#include "Parse/parser.h"
+#include "Sema/symboltable.h"
 #include <boost/test/unit_test.hpp>
 
 #include <iostream>
@@ -23,7 +22,6 @@ struct FrontEndErrorFixture
     {
         oldBuffer = std::cerr.rdbuf();
         std::cerr.rdbuf(buffer.rdbuf());
-        symTab = std::make_shared<SymbolTable>();
     }
 
     ~FrontEndErrorFixture()
@@ -46,7 +44,7 @@ struct FrontEndErrorFixture
 
     const ChildrenNodes& GetProgramAST(const std::string& filename)
     {
-        Parser parser(std::make_shared<SymbolTable>());
+        Parser parser;
         programAST.reset(parser.ParseProgram(filename).release());
         BOOST_REQUIRE(programAST != nullptr);
 

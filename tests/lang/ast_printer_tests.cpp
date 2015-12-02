@@ -19,7 +19,7 @@ using namespace TosLang::Utils;
 
 BOOST_AUTO_TEST_CASE( ASTPrinterTest )
 {
-    Parser parser(std::make_shared<SymbolTable>());
+    Parser parser;
     std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/var/var_init_bool.tos");
     BOOST_REQUIRE(rootNode != nullptr);
 

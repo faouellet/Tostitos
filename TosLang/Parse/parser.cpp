@@ -5,7 +5,6 @@
 #include "../Utils/errorlogger.h"
 
 #include "opcodes.h"
-#include "symboltable.h"
 
 using namespace TosLang::FrontEnd;
 using namespace TosLang::Utils;
@@ -166,15 +165,8 @@ std::unique_ptr<VarDecl> Parser::ParseVarDecl()
         return std::move(node);
     }
      
-    // Add the variable to the symbol table
     VarDecl* vDecl = new VarDecl(varName);
-    if (!mSymbolTable->AddSymbol(varName, mLexer.GetCurrentStr() == "Int" ? Symbol(INT) : Symbol(BOOL)))
-    {
-        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_REDEFINITION, mLexer.GetCurrentLocation());
-		delete vDecl;
-        return std::move(node);
-    }
-
+    
     mCurrentToken = mLexer.GetNextToken();
 
     // Variable declaration with initialization

@@ -141,7 +141,7 @@ BOOST_AUTO_TEST_CASE( ParseVarInitIntBinOpTest )
 
 BOOST_AUTO_TEST_CASE( ParserBadInitTest )
 {
-    Parser parser(symTab);
+    Parser parser;
     BOOST_REQUIRE(parser.ParseProgram("../inputs/var/var_decl.cpp") == nullptr);
     BOOST_REQUIRE(parser.ParseProgram("BadFile.tos") == nullptr);
 

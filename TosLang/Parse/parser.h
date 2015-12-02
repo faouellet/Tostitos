@@ -2,7 +2,6 @@
 #define PARSER_H__TOSTITOS
 
 #include "lexer.h"
-#include "symboltable.h"
 
 #include <memory>
 
@@ -28,7 +27,7 @@ namespace TosLang
         class Parser
         {
         public:
-            explicit Parser(const std::shared_ptr<SymbolTable>& symTab) : mSymbolTable(symTab), mCurrentToken{ Lexer::Token::UNKNOWN } { }
+            explicit Parser() : mCurrentToken{ Lexer::Token::UNKNOWN } { }
             ~Parser() = default;
 
             /*
@@ -138,7 +137,6 @@ namespace TosLang
         private:
             Lexer mLexer;                               /*!< Lexer used by the parser to acquire tokens */
             Lexer::Token mCurrentToken;                 /*!< Current token being treated by the parser */
-            std::shared_ptr<SymbolTable> mSymbolTable;  /*!< Symbol table to be filled by the parser */
         };
     }
 }

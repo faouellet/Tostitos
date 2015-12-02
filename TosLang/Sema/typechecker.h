@@ -2,7 +2,7 @@
 #define TYPE_CHECKER_H__TOSTITOS
 
 #include "../Utils/astvisitor.h"
-#include "../Parse/symboltable.h"
+#include "../Sema/symboltable.h"
 
 #include <string>
 
