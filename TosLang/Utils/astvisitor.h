@@ -3,6 +3,8 @@
 
 #include "../AST/ast.h"
 
+#include <functional>
+
 namespace TosLang
 {
     namespace Utils
@@ -16,7 +18,7 @@ namespace TosLang
         class ASTVisitor
         {
         public:
-            ASTVisitor() : mCurrentLevel(0), mCurrentNode(nullptr) { }
+            ASTVisitor() : mCurrentNode(nullptr) { }
             ~ASTVisitor() = default;
 
         protected:
@@ -29,15 +31,15 @@ namespace TosLang
             {
                 if (root != nullptr)
                 {
-                    ++mCurrentLevel;
+                    mPrologueFtr();
 
                     for (auto& childNode : root->GetChildrenNodes())
                         VisitPostOrder(childNode);
 
-                    --mCurrentLevel;
                     mCurrentNode = root.get();
-
                     DispatchNode(root.get());
+                 
+                    mEpilogueFtr();
                 }
             }
 
@@ -50,15 +52,15 @@ namespace TosLang
             {
                 if (root != nullptr)
                 {
+                    mPrologueFtr();
+                    
                     mCurrentNode = root.get();
                     DispatchNode(root.get());
-
-                    ++mCurrentLevel;
 
                     for (auto& childNode : root->GetChildrenNodes())
                         VisitPreOrder(childNode);
 
-                    --mCurrentLevel;
+                    mEpilogueFtr();
                 }
             }
 
@@ -229,8 +231,9 @@ namespace TosLang
             }
 
         protected:
-            unsigned int mCurrentLevel; /*!< Current tree level of the traversal */
-            FrontEnd::ASTNode* mCurrentNode;      /*!< Current node being handled in the traversal */
+            FrontEnd::ASTNode* mCurrentNode;        /*!< Current node being handled in the traversal */
+            std::function<void()> mPrologueFtr;     /*!< Functor to be called when entering a node */
+            std::function<void()> mEpilogueFtr;     /*!< Functor to be called when leaving a node */
         };
     }
 }

@@ -2,9 +2,7 @@
 #define TYPE_CHECKER_H__TOSTITOS
 
 #include "../Utils/astvisitor.h"
-#include "../Sema/symboltable.h"
-
-#include <string>
+#include "symboltable.h"
 
 namespace TosLang
 {
@@ -16,7 +14,6 @@ namespace TosLang
 
         public:
 			TypeChecker(const std::shared_ptr<SymbolTable>& symTab) : mSymbolTable(symTab), mErrorCount{ 0 } { }
-            ~TypeChecker() = default;
 
         public:
             unsigned TypeCheck(const std::unique_ptr<ASTNode>& root);

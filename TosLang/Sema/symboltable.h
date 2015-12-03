@@ -8,32 +8,32 @@ namespace TosLang
 {
     namespace FrontEnd
     {
-        enum Type
+        enum class Type
         {
-            BOOL, INT, UNKNOWN
+            BOOL, FUNCTION, INT, UNKNOWN
         };
 
         struct Symbol
         {
             Type mType;
-            // TODO: Scope
-			Symbol() : mType{ Type::UNKNOWN } { };
-			explicit Symbol(Type t) : mType{ t } { }
+            size_t mScopeLevel;
+
+            Symbol() : mType{ Type::UNKNOWN }, mScopeLevel{ 0 } { };
+            Symbol(Type t, size_t scopeLevel) : mType{ t }, mScopeLevel{ scopeLevel } { }
         };
 
         class SymbolTable
         {
         public:
             SymbolTable();
-            ~SymbolTable() = default;
 
         public:
-            bool AddSymbol(const std::string& varName, const Symbol& sym);
-            void AddSymbol(int value);
+            void AddSymbol(const std::string& varName, const Symbol& sym);
+            void ExitScope(size_t scopeLevel);
             bool GetSymbol(const std::string& varName, Symbol& sym);
 
         private:
-            std::unordered_map<std::string, Symbol> mSymTable;
+            std::unordered_multimap<std::string, Symbol> mSymTable;
         };
     }
 }
