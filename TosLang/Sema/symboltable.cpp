@@ -6,8 +6,8 @@ using namespace TosLang::FrontEnd;
 
 SymbolTable::SymbolTable()
 {
-    mSymTable.insert({ "False", Symbol(BOOL) });
-    mSymTable.insert({ "True", Symbol(BOOL) });
+    mSymTable.insert({ "False", Symbol(Type::BOOL, 0) });
+    mSymTable.insert({ "True", Symbol(Type::BOOL, 0) });
 }
 
 void SymbolTable::AddSymbol(const std::string& varName, const Symbol& sym)
