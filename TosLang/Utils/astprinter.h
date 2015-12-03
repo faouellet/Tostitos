@@ -22,8 +22,8 @@ namespace TosLang
         public:
             explicit ASTPrinter(OS&& stream) : mCurrentLevel{ 0 }, mStream(std::move(stream))
             {
-                mPrologueFtr = [this]() { ++mCurrentLevel; };
-                mEpilogueFtr = [this]() { --mCurrentLevel; };
+                this->mPrologueFtr = [this]() { ++mCurrentLevel; };
+                this->mEpilogueFtr = [this]() { --mCurrentLevel; };
             }
             
             ~ASTPrinter() = default;
