@@ -3,6 +3,7 @@
 #include <algorithm>
 
 using namespace TosLang::FrontEnd;
+using namespace TosLang::Common;
 
 SymbolTable::SymbolTable()
 {

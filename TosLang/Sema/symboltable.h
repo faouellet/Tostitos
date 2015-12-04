@@ -4,22 +4,19 @@
 #include <string>
 #include <unordered_map>
 
+#include "../Common/type.h"
+
 namespace TosLang
 {
     namespace FrontEnd
     {
-        enum class Type
-        {
-            BOOL, FUNCTION, INT, UNKNOWN
-        };
-
         struct Symbol
         {
-            Type mType;
+            Common::Type mType;
             size_t mScopeLevel;
 
-            Symbol() : mType{ Type::UNKNOWN }, mScopeLevel{ 0 } { };
-            Symbol(Type t, size_t scopeLevel) : mType{ t }, mScopeLevel{ scopeLevel } { }
+            Symbol() : mType{ Common::Type::UNKNOWN }, mScopeLevel{ 0 } { };
+            Symbol(Common::Type t, size_t scopeLevel) : mType{ t }, mScopeLevel{ scopeLevel } { }
         };
 
         class SymbolTable

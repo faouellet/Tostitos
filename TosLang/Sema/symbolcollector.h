@@ -1,16 +1,16 @@
 #ifndef SYMBOL_COLLECTOR_H__TOSTITOS
 #define SYMBOL_COLLECTOR_H__TOSTITOS
 
-#include "../Utils/astvisitor.h"
+#include "../Common/astvisitor.h"
 #include "symboltable.h"
 
 namespace TosLang
 {
     namespace FrontEnd
     {
-        class SymbolCollector : public Utils::ASTVisitor<SymbolCollector>
+        class SymbolCollector : public Common::ASTVisitor<SymbolCollector>
         {
-            friend class Utils::ASTVisitor<SymbolCollector>;
+            friend class Common::ASTVisitor<SymbolCollector>;
 
         public:
             explicit SymbolCollector(const std::shared_ptr<SymbolTable>& symTab);

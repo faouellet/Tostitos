@@ -6,6 +6,7 @@
 #include <cassert>
 
 using namespace TosLang::FrontEnd;
+using namespace TosLang::Common;
 using namespace TosLang::Utils;
 
 // Declarations

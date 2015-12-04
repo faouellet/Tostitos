@@ -3,6 +3,7 @@
 #include "../AST/declarations.h"
 
 using namespace TosLang::FrontEnd;
+using namespace TosLang::Common;
 
 SymbolCollector::SymbolCollector(const std::shared_ptr<SymbolTable>& symTab) : mCurrentScopeLevel{ 0 }, mSymbolTable{ symTab } 
 {
@@ -33,7 +34,7 @@ void SymbolCollector::HandleFunctionDecl()
     const FunctionDecl* fnDecl = dynamic_cast<const FunctionDecl*>(mCurrentNode);
     assert(fnDecl != nullptr);
 
-    Symbol fnSymbol{ Type::FUNCTION, mCurrentScopeLevel };
+    Symbol fnSymbol{ Type::VOID_FUNCTION, mCurrentScopeLevel };
 
 
     mSymbolTable->AddSymbol(fnDecl->GetName(), fnSymbol);
@@ -41,6 +42,7 @@ void SymbolCollector::HandleFunctionDecl()
 
 void SymbolCollector::HandleParamVarDecl() 
 {
+
 }
 
 void SymbolCollector::HandleVarDecl() 
@@ -48,8 +50,29 @@ void SymbolCollector::HandleVarDecl()
     const VarDecl* varDecl = dynamic_cast<const VarDecl*>(mCurrentNode);
     assert(varDecl != nullptr);
 
-    Symbol varSymbol{ Type::FUNCTION, mCurrentScopeLevel };
+    Type varType = Type::UNKNOWN;
 
+    const Expr* initExpr = varDecl->GetInitExpr();
+    if ( initExpr != nullptr )
+    {
+        switch (initExpr->GetKind())
+        {
+        case ASTNode::NodeKind::BOOLEAN_EXPR:
+            varType = Type::BOOL;
+            break;
+        case ASTNode::NodeKind::IDENTIFIER_EXPR:
+            varType = Type::BOOL;
+            break;
+        case ASTNode::NodeKind::NUMBER_EXPR:
+            varType = Type::INT;
+            break;
+        default:
+            // TODO: Log an error
+            break;
+        }
+    }
+
+    Symbol varSymbol{ varType, mCurrentScopeLevel };
 
     mSymbolTable->AddSymbol(varDecl->GetName(), varSymbol);
 }

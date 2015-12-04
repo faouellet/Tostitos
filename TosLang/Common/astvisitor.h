@@ -7,7 +7,7 @@
 
 namespace TosLang
 {
-    namespace Utils
+    namespace Common
     {
         /*
         * \class ASTVisitor

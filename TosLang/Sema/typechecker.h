@@ -1,16 +1,16 @@
 #ifndef TYPE_CHECKER_H__TOSTITOS
 #define TYPE_CHECKER_H__TOSTITOS
 
-#include "../Utils/astvisitor.h"
+#include "../Common/astvisitor.h"
 #include "symboltable.h"
 
 namespace TosLang
 {
     namespace FrontEnd
     {
-        class TypeChecker : public Utils::ASTVisitor<TypeChecker>
+        class TypeChecker : public Common::ASTVisitor<TypeChecker>
         {
-            friend class Utils::ASTVisitor<TypeChecker>;
+            friend class Common::ASTVisitor<TypeChecker>;
 
         public:
 			TypeChecker(const std::shared_ptr<SymbolTable>& symTab) : mSymbolTable(symTab), mErrorCount{ 0 } { }

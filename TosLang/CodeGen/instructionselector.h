@@ -1,7 +1,7 @@
 #ifndef INSTRUCTION_SELECTOR_H__TOSTITOS
 #define INSTRUCTION_SELECTOR_H__TOSTITOS
 
-#include "../Utils/astvisitor.h"
+#include "../Common/astvisitor.h"
 
 #include "ruletable.h"
 
@@ -12,9 +12,9 @@ namespace TosLang
 {
     namespace BackEnd
     {
-        class InstructionSelector : Utils::ASTVisitor<InstructionSelector>
+        class InstructionSelector : Common::ASTVisitor<InstructionSelector>
         {
-            friend class Utils::ASTVisitor<InstructionSelector>;
+            friend class Common::ASTVisitor<InstructionSelector>;
 
         public:
             InstructionSelector() : mNextRegister{ 0 } { };

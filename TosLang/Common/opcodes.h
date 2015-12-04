@@ -1,10 +1,9 @@
 #ifndef OPCODE_H__TOSTITOS
 #define OPCODE_H__TOSTITOS
 
-
 namespace TosLang
 {
-    namespace FrontEnd
+    namespace Common
     {
         enum class Opcode
         {

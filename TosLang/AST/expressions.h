@@ -2,7 +2,7 @@
 #define EXPR_H__TOSTITOS
 
 #include "ast.h"
-#include "../Parse/opcodes.h"
+#include "../Common/opcodes.h"
 
 namespace TosLang
 {
@@ -26,7 +26,7 @@ namespace TosLang
 		class BinaryOpExpr : public Expr
 		{
 		public:
-            BinaryOpExpr(Opcode op, std::unique_ptr<Expr>&& lhs, std::unique_ptr<Expr>&& rhs) : 
+            BinaryOpExpr(Common::Opcode op, std::unique_ptr<Expr>&& lhs, std::unique_ptr<Expr>&& rhs) : 
                 Expr{ NodeKind::BINARY_EXPR }, mOp{ op }
             {
                 assert(lhs != nullptr);
@@ -51,7 +51,7 @@ namespace TosLang
             * \brief    Gets the operation applied in the binary expression
             * \return   Operation to be applied in the binary expression
             */
-            const Opcode GetOperation() const { return mOp; }
+            const Common::Opcode GetOperation() const { return mOp; }
 
             /*
             * \fn       GetRHS
@@ -61,7 +61,7 @@ namespace TosLang
             const Expr* GetRHS() const { assert(mChildren.size() == 2); return GetChildNodeAs<Expr>(1); }
 
 		private:
-			Opcode mOp;     /*!< Operation applied in the binary expression */
+			Common::Opcode mOp;     /*!< Operation applied in the binary expression */
 		};
 
         /*

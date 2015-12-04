@@ -1,7 +1,7 @@
 #ifndef AST_PRINTER_H__TOSTITOS
 #define AST_PRINTER_H__TOSTITOS
 
-#include "astvisitor.h"
+#include "../Common/astvisitor.h"
 
 #include "../AST/declarations.h"
 #include "../AST/expressions.h"
@@ -15,9 +15,9 @@ namespace TosLang
         * \brief Prints the AST the output stream specified as the template parameter
         */
         template <typename OS>
-        class ASTPrinter : public ASTVisitor<ASTPrinter<OS>>
+        class ASTPrinter : public Common::ASTVisitor<ASTPrinter<OS>>
         {
-            friend class ASTVisitor<ASTPrinter<OS>>;
+            friend class Common::ASTVisitor<ASTPrinter<OS>>;
 
         public:
             explicit ASTPrinter(OS&& stream) : mCurrentLevel{ 0 }, mStream(std::move(stream))

@@ -2,11 +2,14 @@
 
 #include "../AST/declarations.h"
 #include "../AST/expressions.h"
+
+#include "../Common/opcodes.h"
+#include "../Common/type.h"
+
 #include "../Utils/errorlogger.h"
 
-#include "opcodes.h"
-
 using namespace TosLang::FrontEnd;
+using namespace TosLang::Common;
 using namespace TosLang::Utils;
 
 static Opcode TokenToOpcode(Lexer::Token tok);

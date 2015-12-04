@@ -8,6 +8,8 @@
 
 #include "frontend_error_fixture.h"
 
+#include "Common/opcodes.h"
+
 BOOST_FIXTURE_TEST_SUITE( FrontEndTestSuite, FrontEndErrorFixture )
 
 //////////////////// CORRECT USE CASES ////////////////////
@@ -102,17 +104,17 @@ BOOST_AUTO_TEST_CASE( ParseVarInitIntBinOpTest )
     const size_t childExpectedSize = 9;
     BOOST_REQUIRE_EQUAL(cNodes.size(), childExpectedSize);
 
-    Opcode operations[] =
+    TosLang::Common::Opcode operations[] =
     { 
-        Opcode::PLUS,
-        Opcode::MINUS,
-        Opcode::MULT,
-        Opcode::DIVIDE,
-        Opcode::MODULO,
-        Opcode::AND_INT,
-        Opcode::OR_INT,
-        Opcode::RIGHT_SHIFT,
-        Opcode::LEFT_SHIFT,
+        TosLang::Common::Opcode::PLUS,
+        TosLang::Common::Opcode::MINUS,
+        TosLang::Common::Opcode::MULT,
+        TosLang::Common::Opcode::DIVIDE,
+        TosLang::Common::Opcode::MODULO,
+        TosLang::Common::Opcode::AND_INT,
+        TosLang::Common::Opcode::OR_INT,
+        TosLang::Common::Opcode::RIGHT_SHIFT,
+        TosLang::Common::Opcode::LEFT_SHIFT,
     };
 
     for (size_t i = 0; i < childExpectedSize; i++)
