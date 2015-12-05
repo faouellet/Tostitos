@@ -1,6 +1,7 @@
 #ifndef LEXER_H__TOSTITOS
 #define LEXER_H__TOSTITOS
 
+#include "../Common/type.h"
 #include "../Utils/sourceloc.h"
 
 #include <string>
@@ -98,27 +99,35 @@ namespace TosLang
             Token GetNextToken();
             
             /*
+            * \fn       GetCurrentType
+            * \brief    Gives the current type
+            * \return   The current type
+            */
+            const Common::Type GetCurrentType() const { return mCurrentType; }
+
+            /*
             * \fn       GetCurrentLocation
-            * \brief    Give the current source location
+            * \brief    Gives the current source location
             * \return   The current source location
             */
             const Utils::SourceLocation GetCurrentLocation() const { return mSrcLoc; }
 
             /*
             * \fn       GetCurrentNumber
-            * \brief    Give the current number
+            * \brief    Gives the current number
             * \return   The current number
             */
             const int GetCurrentNumber() const { return mCurrentNumber; }
 
             /*
             * \fn       GetCurrentStr
-            * \brief    Give the current string
+            * \brief    Gives the current string
             * \return   The current string
             */
             const std::string& GetCurrentStr() const { return mCurrentStr; }
 
         private:
+            Common::Type mCurrentType;          /*!< Current type recognized by the lexer */
             Utils::SourceLocation mSrcLoc;      /*!< Information about the current location of the lexer in the file */
 
             int mCurrentNumber;                 /*!< Current number in the lexer buffer */

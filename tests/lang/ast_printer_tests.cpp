@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE( ASTPrinterTest )
         BOOST_REQUIRE(printStream.is_open());
 
         ASTPrinter<std::ofstream> printer{ std::move(printStream) };
-        printer.Print(rootNode);
+        printer.Run(rootNode);
         printStream.flush();
         printStream.close();
     }

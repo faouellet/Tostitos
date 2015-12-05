@@ -5,6 +5,8 @@
 #include "expressions.h"
 #include "statements.h"
 
+#include "../Common/type.h"
+
 #include <string>
 
 namespace TosLang
@@ -58,7 +60,7 @@ namespace TosLang
         {
         public:
             VarDecl() : Decl{ NodeKind::ERROR } { }
-            explicit VarDecl(const std::string& varName) : Decl{ NodeKind::VAR_DECL } { mName = varName; }
+            explicit VarDecl(const std::string& varName, Common::Type type) : Decl{ NodeKind::VAR_DECL }, mType{ type } { mName = varName; }
             virtual ~VarDecl() { }
 
 		public:
@@ -94,6 +96,16 @@ namespace TosLang
             * \return   Name of the variable
             */
             const std::string& GetVarName() const { return mName; }
+
+            /*
+            * \fn       GetVarType
+            * \brief    Gets the type of the variable
+            * \return   Type of the variable
+            */
+            const Common::Type GetVarType() const { return mType; }
+
+        private:
+            Common::Type mType; /*!< Variable type */
         };
 
         /*
@@ -131,11 +143,28 @@ namespace TosLang
         {
         public:
             FunctionDecl() : Decl{ NodeKind::ERROR } { }
-            FunctionDecl(const std::string& fnName, std::unique_ptr<ParamVarDecls>&& params, std::unique_ptr<CompoundStmt>&& body) : Decl{ NodeKind::FUNCTION_DECL }
+            FunctionDecl(const std::string& fnName, Common::Type type, std::unique_ptr<ParamVarDecls>&& params, std::unique_ptr<CompoundStmt>&& body) 
+                : Decl{ NodeKind::FUNCTION_DECL }
             {
                 mName = fnName;
                 AddChildNode(std::move(params));
                 AddChildNode(std::move(body));
+
+                switch (type)
+                {
+                case Common::Type::BOOL:
+                    mType = Common::Type::BOOL_FUNCTION;
+                    break;
+                case Common::Type::INT:
+                    mType = Common::Type::INT_FUNCTION;
+                    break;
+                case Common::Type::STRING:
+                    mType = Common::Type::STRING_FUNCTION;
+                    break;
+                case Common::Type::VOID:
+                    mType = Common::Type::VOID_FUNCTION;
+                    break;
+                }
             }
 
             virtual ~FunctionDecl() { }
@@ -147,6 +176,13 @@ namespace TosLang
             * \return   Name of the function
             */
             const std::string& GetFunctionName() const { return mName; }
+
+            /*
+            * \fn       GetFunctionType
+            * \brief    Gets the type of the function
+            * \return   Type of the function
+            */
+            const Common::Type GetFunctionType() const { return mType; }
 
             /*
             * \fn       GetArguments
@@ -161,6 +197,9 @@ namespace TosLang
             * \return   Body of the function
             */
             const CompoundStmt* GetBody() const { assert(mChildren.size() == 2); return GetChildNodeAs<CompoundStmt>(1);; }
+
+        private:
+            Common::Type mType; /*!< Function return type */
         };
     }
 }

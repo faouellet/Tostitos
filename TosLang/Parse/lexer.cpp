@@ -209,15 +209,27 @@ Lexer::Token Lexer::GetNextToken()
 			else if (mCurrentStr == "scan")
 				return Token::SCAN;
 			else if (mCurrentStr == "String")
-				return Token::TYPE;
+            {
+                mCurrentType = Common::Type::STRING;
+                return Token::TYPE;
+            }
 			else if (mCurrentStr == "var")
 				return Token::VAR;
 			else if (mCurrentStr == "Void")
-				return Token::TYPE;
-			else if (mCurrentStr == "Int")
-				return Token::TYPE;
+            {
+                mCurrentType = Common::Type::VOID;
+                return Token::TYPE;
+            }
+            else if (mCurrentStr == "Int")
+            {
+                mCurrentType = Common::Type::INT;
+                return Token::TYPE;
+            }
 			else if (mCurrentStr == "Bool")
-				return Token::TYPE;
+            {
+                mCurrentType = Common::Type::BOOL;
+                return Token::TYPE;
+            }
 			else if (mCurrentStr == "True")
 				return Token::TRUE;
 			else if (mCurrentStr == "False")

@@ -8,6 +8,10 @@ namespace TosLang
 {
     namespace FrontEnd
     {
+        /*
+        * \class TypeChecker
+        * \brief AST pass that verifies if no type error occurs when a variable or a function is used
+        */
         class TypeChecker : public Common::ASTVisitor<TypeChecker>
         {
             friend class Common::ASTVisitor<TypeChecker>;
@@ -16,7 +20,12 @@ namespace TosLang
 			TypeChecker(const std::shared_ptr<SymbolTable>& symTab) : mSymbolTable(symTab), mErrorCount{ 0 } { }
 
         public:
-            unsigned TypeCheck(const std::unique_ptr<ASTNode>& root);
+            /*
+            * \fn           Run
+            * \param root   Root of the tree to print
+            * \brief        Recursively walk the tree rooted at root to check for type errors
+            */
+            unsigned Run(const std::unique_ptr<ASTNode>& root);
             unsigned GetErrorCount() const { return mErrorCount; }
 
         protected:  // Declarations

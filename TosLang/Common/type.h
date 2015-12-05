@@ -11,6 +11,7 @@ namespace TosLang
             BOOL,
             INT,
             STRING,
+            VOID,
 
             // Functions
             BOOL_FUNCTION,

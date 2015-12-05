@@ -11,7 +11,7 @@ using namespace TosLang::Utils;
 
 // Declarations
 
-unsigned TypeChecker::TypeCheck(const std::unique_ptr<ASTNode>& root)
+unsigned TypeChecker::Run(const std::unique_ptr<ASTNode>& root)
 {
     mErrorCount = 0;
     this->VisitPostOrder(root);

@@ -32,9 +32,9 @@ namespace TosLang
             /*
             * \fn           Print
             * \param root   Root of the tree to print
-            * \brief        Print the tree rooted at root.
+            * \brief        Recursively prints the tree rooted at root.
             */
-            void Print(const std::unique_ptr<FrontEnd::ASTNode>& root)
+            void Run(const std::unique_ptr<FrontEnd::ASTNode>& root)
             {
                 this->VisitPreOrder(root);
             }

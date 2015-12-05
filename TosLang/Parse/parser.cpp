@@ -4,7 +4,6 @@
 #include "../AST/expressions.h"
 
 #include "../Common/opcodes.h"
-#include "../Common/type.h"
 
 #include "../Utils/errorlogger.h"
 
@@ -108,7 +107,7 @@ std::unique_ptr<FunctionDecl> Parser::ParseFunctionDecl()
             // TODO: Log an error
             return std::move(fnNode);
         }
-        param.reset(std::make_unique<VarDecl>(varName).release());
+        param.reset(std::make_unique<VarDecl>(varName, mLexer.GetCurrentType()).release());
 
         mCurrentToken = mLexer.GetNextToken();
         if ((mCurrentToken != Lexer::Token::RIGHT_PAREN) && (mCurrentToken != Lexer::Token::COMMA))
@@ -134,12 +133,13 @@ std::unique_ptr<FunctionDecl> Parser::ParseFunctionDecl()
         // TODO: Log an error
         return std::move(fnNode);
     }
+    Common::Type fnType = mLexer.GetCurrentType();
 
     // Parse the function body
     mCurrentToken = mLexer.GetNextToken();
     std::unique_ptr<CompoundStmt> body = ParseCompoundStmt();
     // TODO: Check if the body is not null. If it is, we need to log an error
-    fnNode.reset(new FunctionDecl(fnName, std::move(params), std::move(body)));
+    fnNode.reset(new FunctionDecl(fnName, fnType, std::move(params), std::move(body)));
     return fnNode;
 }
 
@@ -168,7 +168,7 @@ std::unique_ptr<VarDecl> Parser::ParseVarDecl()
         return std::move(node);
     }
      
-    VarDecl* vDecl = new VarDecl(varName);
+    VarDecl* vDecl = new VarDecl(varName, mLexer.GetCurrentType());
     
     mCurrentToken = mLexer.GetNextToken();
 
