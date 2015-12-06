@@ -38,6 +38,7 @@ std::unique_ptr<ASTNode> Parser::ParseProgramDecl()
     std::unique_ptr<Decl> node = std::make_unique<Decl>();
     while (mCurrentToken != Lexer::Token::TOK_EOF)
     {
+        // Only function and variable are allowed at the program top level
         switch (mCurrentToken)
         {
         case Lexer::Token::VAR:
@@ -46,7 +47,6 @@ std::unique_ptr<ASTNode> Parser::ParseProgramDecl()
         case Lexer::Token::FUNCTION:
              node.reset(ParseFunctionDecl().release());
             break;
-
         default:
             ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::EXPECTED_DECL, mLexer.GetCurrentLocation());
             break;
@@ -201,6 +201,7 @@ std::unique_ptr<Expr> Parser::ParseExpr()
 {
     std::unique_ptr<Expr> node;
 
+    // Parse the beginning of the expression
     switch (mCurrentToken)
     {
     case Lexer::Token::FALSE:
@@ -226,8 +227,13 @@ std::unique_ptr<Expr> Parser::ParseExpr()
         return nullptr;
     }
 
+    // Look what comes next
     mCurrentToken = mLexer.GetNextToken();
     
+    // Here, what could happen is one of the following cases:
+    //      1- The expression could be part of a binary expression
+    //      2- The expression could be a function call
+    //      3- The expression is done being parsed
     if ((Lexer::Token::OP_START <= mCurrentToken) && (mCurrentToken <= Lexer::Token::OP_END))
         return ParseBinaryOpExpr(mCurrentToken, std::move(node));
     else if(mCurrentToken == Lexer::Token::LEFT_PAREN)
@@ -239,13 +245,17 @@ std::unique_ptr<Expr> Parser::ParseExpr()
         || (mCurrentToken == Lexer::Token::COMMA))
         return std::move(node);
 
+    // The expression has a second part and isn't well-formed, log an error
     ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_OPERATION, mLexer.GetCurrentLocation());
     return nullptr;
 }
 
 std::unique_ptr<Expr> Parser::ParseBinaryOpExpr(Lexer::Token op, std::unique_ptr<Expr>&& lhs)
 {
+    // Parse the right-hand side of the expression. It is assumed that the left-hand side of the expression has been parsed.
+
     mCurrentToken = mLexer.GetNextToken();
+
     std::unique_ptr<Expr> rhs = ParseExpr();
     if (rhs == nullptr)
     {
@@ -266,27 +276,28 @@ std::unique_ptr<Expr> Parser::ParseCallExpr(std::unique_ptr<Expr>&& fn)
 
     mCurrentToken = mLexer.GetNextToken();
 
+    // Parse the expression the function is being called with
     while (mCurrentToken != Lexer::Token::RIGHT_PAREN)
     {
         // TODO: Check if the argument is null. If it is, log an error
         arg.reset(ParseExpr().release());
         args.push_back(std::move(arg));
 
-        if (mCurrentToken == Lexer::Token::RIGHT_PAREN)
+        if (mCurrentToken == Lexer::Token::RIGHT_PAREN) // We're done
         {
             break;
         }
-        else if (mCurrentToken == Lexer::Token::COMMA)
+        else if (mCurrentToken == Lexer::Token::COMMA)  // We have another parameter still
         {
             mCurrentToken = mLexer.GetNextToken();
         }
-        else if (mCurrentToken == Lexer::Token::SEMI_COLON)
+        else if (mCurrentToken == Lexer::Token::SEMI_COLON) // The closing parenthesis is missing
         {
             ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::CALL_MISSING_PAREN, mLexer.GetCurrentLocation());
             cExpr.reset();
             return std::move(cExpr);
         }
-        else
+        else // An argument isn't well formed
         {
             ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::CALL_ARG_ERROR, mLexer.GetCurrentLocation());
             cExpr.reset();
@@ -303,6 +314,7 @@ std::unique_ptr<Expr> Parser::ParseCallExpr(std::unique_ptr<Expr>&& fn)
 
 std::unique_ptr<CompoundStmt> Parser::ParseCompoundStmt()
 {
+    // The compound statement should begin with a left brace
     if (mCurrentToken != Lexer::Token::LEFT_BRACE)
     {
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::SYNTAX_MISSING_LBRACE, mLexer.GetCurrentLocation());
@@ -313,6 +325,7 @@ std::unique_ptr<CompoundStmt> Parser::ParseCompoundStmt()
 
     mCurrentToken = mLexer.GetNextToken();
     std::unique_ptr<ASTNode> node;
+
     while ((mCurrentToken != Lexer::Token::RIGHT_BRACE) && (mCurrentToken != Lexer::Token::TOK_EOF))
     {
         switch (mCurrentToken)
@@ -338,6 +351,8 @@ std::unique_ptr<CompoundStmt> Parser::ParseCompoundStmt()
         case Lexer::Token::SCAN:
             node.reset(ParseScanStmt().release());
             break;
+            // TODO: No internal compound statement
+            // TODO: No internal function
         default:
             break;
         }
@@ -347,6 +362,7 @@ std::unique_ptr<CompoundStmt> Parser::ParseCompoundStmt()
         mCurrentToken = mLexer.GetNextToken();
     }
 
+    // Check that the compound statement is closed correctly
     if (mCurrentToken != Lexer::Token::RIGHT_BRACE)
     {
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::SYNTAX_MISSING_RBRACE, mLexer.GetCurrentLocation());
