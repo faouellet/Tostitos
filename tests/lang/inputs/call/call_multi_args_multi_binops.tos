@@ -1,0 +1,13 @@
+fn sum(i1 : Int, i2 : Int, i3 : Int) -> Int {
+	return i1 + i2 + i3;
+}
+
+fn main() -> Void {
+	var MyInt1 : Int = 1;
+	var MyInt2 : Int = 2;
+	var MyInt3 : Int = 3;
+	
+	sum(MyInt1 + MyInt1, MyInt2 + MyInt2, MyInt3 + MyInt3);
+	
+	return;
+}
