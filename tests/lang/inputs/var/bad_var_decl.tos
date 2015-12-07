@@ -7,3 +7,4 @@ var MyBoolVar: Bool
 var;
 var MyIntVar: Int;
 var MyIntVar: Int;
+var MyVoidVar : Void;

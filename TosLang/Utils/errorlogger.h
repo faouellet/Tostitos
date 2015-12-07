@@ -72,6 +72,7 @@ namespace TosLang
                 VAR_MISSING_IDENTIFIER,
                 VAR_REDEFINITION,
                 VAR_UNDECLARED_IDENTIFIER,
+                VAR_VOID_TYPE,
 
                 // While
                 WHILE_MISSING_BODY,

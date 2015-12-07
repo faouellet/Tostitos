@@ -61,6 +61,7 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
     { ErrorType::VAR_MISSING_IDENTIFIER,       "VAR ERROR: The var keyword should be followed by an identifier" },
     { ErrorType::VAR_REDEFINITION,             "VAR ERROR: Trying to redefine an already defined variable" },
     { ErrorType::VAR_UNDECLARED_IDENTIFIER,    "VAR ERROR: Trying to assign an undeclared variable" },
+    { ErrorType::VAR_VOID_TYPE,                "VAR ERROR: Trying to create a variable with void type" },
 
     // While
     { ErrorType::WHILE_MISSING_BODY,           "WHILE ERROR: Missing while body" },

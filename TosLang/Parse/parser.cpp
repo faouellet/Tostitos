@@ -167,8 +167,14 @@ std::unique_ptr<VarDecl> Parser::ParseVarDecl()
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_MISSING_TYPE, mLexer.GetCurrentLocation());
         return std::move(node);
     }
+    Common::Type vType = mLexer.GetCurrentType();
+    if (vType == Common::Type::VOID)
+    {
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_VOID_TYPE, mLexer.GetCurrentLocation());
+        return std::move(node);
+    }
      
-    VarDecl* vDecl = new VarDecl(varName, mLexer.GetCurrentType());
+    VarDecl* vDecl = new VarDecl(varName, vType);
     
     mCurrentToken = mLexer.GetNextToken();
 
