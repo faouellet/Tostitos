@@ -62,7 +62,7 @@ namespace TosLang
             * \param sym                Symbol to be added to the symbol table
             * \return                   True if the symbol was found.
             */
-            bool SymbolTable::GetSymbol(const std::string& fnName, const std::string& symName, const std::stack<int>& scopesToSearch, Symbol& sym);
+            bool GetSymbol(const std::string& fnName, const std::string& symName, const std::stack<int>& scopesToSearch, Symbol& sym);
 
         private:
             using SymTable = std::unordered_map<std::string, Symbol>;
