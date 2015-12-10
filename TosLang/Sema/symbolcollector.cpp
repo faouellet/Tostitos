@@ -1,18 +1,24 @@
 #include "symbolcollector.h"
 
-#include "../AST/declarations.h"
-
 using namespace TosLang::FrontEnd;
 using namespace TosLang::Common;
 
-SymbolCollector::SymbolCollector(const std::shared_ptr<SymbolTable>& symTab) : mCurrentScopeLevel{ 0 }, mSymbolTable{ symTab } 
+SymbolCollector::SymbolCollector(const std::shared_ptr<SymbolTable>& symTab) 
+    : mCurrentScopeLevel{ 0 }, mCurrentScopeID{ 0 }, mCurrentFunc{ nullptr }, mSymbolTable{ symTab }
 {
+    // TODO: This probably needs some refactoring since the same code is also present in the type checker
     this->mPrologueFtr = [this]()
     { 
         if (mCurrentNode->GetKind() == ASTNode::NodeKind::COMPOUND_STMT)
         {
+            ++mCurrentScopeID;
             ++mCurrentScopeLevel;
-        } 
+        }
+        else if (mCurrentNode->GetKind() == ASTNode::NodeKind::FUNCTION_DECL)
+        {
+            mCurrentFunc = dynamic_cast<FunctionDecl*>(mCurrentNode);
+            assert(mCurrentFunc != nullptr);
+        }
     };
 
     this->mEpilogueFtr = [this]()
@@ -21,10 +27,15 @@ SymbolCollector::SymbolCollector(const std::shared_ptr<SymbolTable>& symTab) : m
         {
             --mCurrentScopeLevel;
         }
+        else if (mCurrentNode->GetKind() == ASTNode::NodeKind::FUNCTION_DECL)
+        {
+            assert(mCurrentFunc != nullptr);
+            mCurrentFunc = nullptr;
+        }
     };
 }
 
-void SymbolCollector::Collect(const std::unique_ptr<ASTNode>& root)
+void SymbolCollector::Run(const std::unique_ptr<ASTNode>& root)
 {
     this->VisitPreOrder(root);
 }
@@ -34,15 +45,26 @@ void SymbolCollector::HandleFunctionDecl()
     const FunctionDecl* fnDecl = dynamic_cast<const FunctionDecl*>(mCurrentNode);
     assert(fnDecl != nullptr);
 
-    Symbol fnSymbol{ Type::VOID_FUNCTION, mCurrentScopeLevel };
-
-
-    mSymbolTable->AddSymbol(fnDecl->GetName(), fnSymbol);
+    mSymbolTable->AddGlobalSymbol(fnDecl->GetName(), { fnDecl->GetFunctionType(), 0 });
 }
 
 void SymbolCollector::HandleParamVarDecl() 
 {
+    const ParamVarDecls* paramDecl = dynamic_cast<const ParamVarDecls*>(mCurrentNode);
+    assert(paramDecl != nullptr);
 
+    std::vector< Common::Type> paramTypes;
+    for (auto& param : paramDecl->GetParameters())
+    {
+        // Add the parameter type to the list of the function's parameters' types
+        const VarDecl* paramVar = dynamic_cast<const VarDecl*>(mCurrentNode);
+        paramTypes.push_back(paramVar->GetVarType());
+
+        // Add the parameter to the symbols defined in the current function
+        mSymbolTable->AddLocalSymbol(mCurrentFunc->GetName(), paramVar->GetVarName(), { paramVar->GetVarType(), mCurrentScopeID + 1 });
+    }
+
+    // TODO: Add parameters as function sub-symbols
 }
 
 void SymbolCollector::HandleVarDecl() 
@@ -50,29 +72,8 @@ void SymbolCollector::HandleVarDecl()
     const VarDecl* varDecl = dynamic_cast<const VarDecl*>(mCurrentNode);
     assert(varDecl != nullptr);
 
-    Type varType = Type::UNKNOWN;
-
-    const Expr* initExpr = varDecl->GetInitExpr();
-    if ( initExpr != nullptr )
-    {
-        switch (initExpr->GetKind())
-        {
-        case ASTNode::NodeKind::BOOLEAN_EXPR:
-            varType = Type::BOOL;
-            break;
-        case ASTNode::NodeKind::IDENTIFIER_EXPR:
-            varType = Type::BOOL;
-            break;
-        case ASTNode::NodeKind::NUMBER_EXPR:
-            varType = Type::INT;
-            break;
-        default:
-            // TODO: Log an error
-            break;
-        }
-    }
-
-    Symbol varSymbol{ varType, mCurrentScopeLevel };
-
-    mSymbolTable->AddSymbol(varDecl->GetName(), varSymbol);
+    if (mCurrentScopeLevel == M_GLOBAL_SCOPE_LEVEL)
+        mSymbolTable->AddGlobalSymbol(varDecl->GetName(), { varDecl->GetVarType(), 0 });
+    else
+        mSymbolTable->AddLocalSymbol(mCurrentFunc->GetName(), varDecl->GetName(), { varDecl->GetVarType(), mCurrentScopeID });
 }

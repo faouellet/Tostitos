@@ -9,7 +9,37 @@ using namespace TosLang::FrontEnd;
 using namespace TosLang::Common;
 using namespace TosLang::Utils;
 
-// Declarations
+TypeChecker::TypeChecker(const std::shared_ptr<SymbolTable>& symTab) 
+    : mErrorCount{ 0 }, mCurrentScopeID{ 0 }, mCurrentFunc{ nullptr }, mSymbolTable{ symTab }
+{
+    mCurrentScopesTraversed.push(mCurrentScopeID);
+
+    this->mPrologueFtr = [this]()
+    {
+        if (mCurrentNode->GetKind() == ASTNode::NodeKind::COMPOUND_STMT)
+        {   
+            mCurrentScopesTraversed.push(++mCurrentScopeID);
+        }
+        else if (mCurrentNode->GetKind() == ASTNode::NodeKind::FUNCTION_DECL)
+        {
+            mCurrentFunc = dynamic_cast<FunctionDecl*>(mCurrentNode);
+            assert(mCurrentFunc != nullptr);
+        }
+    };
+
+    this->mEpilogueFtr = [this]()
+    {
+        if (mCurrentNode->GetKind() == ASTNode::NodeKind::COMPOUND_STMT)
+        {
+            mCurrentScopesTraversed.pop();
+        }
+        else if (mCurrentNode->GetKind() == ASTNode::NodeKind::FUNCTION_DECL)
+        {
+            assert(mCurrentFunc != nullptr);
+            mCurrentFunc = nullptr;
+        }
+    };
+}
 
 unsigned TypeChecker::Run(const std::unique_ptr<ASTNode>& root)
 {
@@ -28,8 +58,10 @@ void TypeChecker::HandleVarDecl()
     if (initExpr != nullptr)
     {
         Symbol varSymbol;
-        if (!mSymbolTable->GetSymbol(vDecl->GetName(), varSymbol))
+        std::string fnName = mCurrentFunc == nullptr ? "" : mCurrentFunc->GetName();
+        if (!mSymbolTable->GetSymbol(fnName, vDecl->GetName(), mCurrentScopesTraversed, varSymbol))
         {
+            // Variable wasn't declared
             ErrorLogger::PrintError(ErrorLogger::ErrorType::VAR_UNDECLARED_IDENTIFIER);
             ++mErrorCount;
             return;
@@ -45,12 +77,54 @@ void TypeChecker::HandleVarDecl()
         {
             Symbol initSymbol;
 
-            if (!mSymbolTable->GetSymbol(initExpr->GetName(), initSymbol))
+            if (!mSymbolTable->GetSymbol(fnName, initExpr->GetName(), mCurrentScopesTraversed, initSymbol))
             {
-                // TODO: Should this be in another semantic analysis pass?
+                // TODO: More precise error message to dishtinguish the var and the init expr maybe?
                 ErrorLogger::PrintError(ErrorLogger::ErrorType::VAR_UNDECLARED_IDENTIFIER);
                 ++mErrorCount;
             }
         }
     }
+}
+
+void TosLang::FrontEnd::TypeChecker::HandleFunctionDecl()
+{
+    const FunctionDecl* fnDecl = dynamic_cast<const FunctionDecl*>(this->mCurrentNode);
+    assert(fnDecl != nullptr);
+}
+
+void TosLang::FrontEnd::TypeChecker::HandleBinaryExpr()
+{
+    const BinaryOpExpr* bExpr = dynamic_cast<const BinaryOpExpr*>(this->mCurrentNode);
+    assert(bExpr != nullptr);
+}
+
+void TosLang::FrontEnd::TypeChecker::HandleCallExpr()
+{
+    const CallExpr* cExpr = dynamic_cast<const CallExpr*>(this->mCurrentNode);
+    assert(cExpr != nullptr);
+}
+
+void TosLang::FrontEnd::TypeChecker::HandleIfStmt()
+{
+    const IfStmt* ifStmt = dynamic_cast<const IfStmt*>(this->mCurrentNode);
+    assert(ifStmt != nullptr);
+}
+
+void TosLang::FrontEnd::TypeChecker::HandlePrintStmt()
+{
+    const PrintStmt* pStmt = dynamic_cast<const PrintStmt*>(this->mCurrentNode);
+    assert(pStmt != nullptr);
+}
+
+void TosLang::FrontEnd::TypeChecker::HandleScanStmt()
+{
+    const ScanStmt* sStmt = dynamic_cast<const ScanStmt*>(this->mCurrentNode);
+    assert(sStmt != nullptr);
+}
+
+void TosLang::FrontEnd::TypeChecker::HandleWhileStmt()
+{
+    const WhileStmt* wStmt = dynamic_cast<const WhileStmt*>(this->mCurrentNode);
+    assert(wStmt != nullptr);
 }

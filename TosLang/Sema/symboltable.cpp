@@ -1,46 +1,110 @@
 #include "symboltable.h"
 
 #include <algorithm>
+#include <sstream>
 
 using namespace TosLang::FrontEnd;
 using namespace TosLang::Common;
 
 SymbolTable::SymbolTable()
 {
-    mSymTable.insert({ "False", Symbol(Type::BOOL, 0) });
-    mSymTable.insert({ "True", Symbol(Type::BOOL, 0) });
+    AddGlobalSymbol("False", { Type::BOOL, 0 });
+    AddGlobalSymbol("True", { Type::BOOL, 0 });
 }
 
-void SymbolTable::AddSymbol(const std::string& varName, const Symbol& sym)
+bool TosLang::FrontEnd::SymbolTable::AddLocalSymbol(const std::string& fnName, const std::string& varName, Symbol&& sym)
 {
-    mSymTable.insert({ varName, sym });
-}
+    // We suffix the symbol name with the scope level to allow for multiple definitions of the same variable in 
+    // different scopes inside the function
+    std::stringstream sStream;
+    sStream << varName << sym.mScopeID;
+    std::string realSymName = sStream.str();
 
-void SymbolTable::ExitScope(size_t scopeLevel)
-{
-    // TODO: This will not scale well. Should we make our own hash table since the bucket
-    //       interface of std::unordered_multimap is lacking for our purposes?
-
-    for (auto it = mSymTable.begin(), end = mSymTable.end(); it != end; )
-        if (it->second.mScopeLevel == scopeLevel)
-            it = mSymTable.erase(it);
+    auto fnIt = mLocalTables.find(fnName);
+    if (fnIt == mLocalTables.end()) // First time we encounter this function name
+    {
+        mLocalTables[fnName][realSymName] = sym;
+        return true;
+    }
+    else
+    {
+        auto symIt = fnIt->second.find(realSymName);
+        
+        if (symIt == fnIt->second.end()) // First time we encounter this variable name
+        {
+            mLocalTables[fnName][realSymName] = sym;
+            return true;
+        }
         else
-            ++it;
+        {
+            // Exact same symbol already present in the local table, can't insert it again
+            return false;
+        }
+    }
 }
 
-bool SymbolTable::GetSymbol(const std::string& varName, Symbol& sym)
+bool SymbolTable::AddGlobalSymbol(const std::string& symName, Symbol&& sym)
 {
-    auto range = mSymTable.equal_range(varName);
+    // We suffix the symbol name with the scope level (0) to be coherent with the local symbols
+    std::stringstream sStream;
+    sStream << symName << 0;
+    std::string realSymName = sStream.str();
 
-    // No matching symbol found
-    if (range.first == range.second)
+    auto it = mGlobalTable.find(realSymName);
+    if (it == mGlobalTable.end()) // First time we encounter this symbol name
+    {
+        mGlobalTable[realSymName] = sym;
+        return true;
+    }
+    else
+    {
+        // Exact same symbol already present in the global table, can't insert it again
         return false;
+    }
+}
 
-    // Sort in descending order since the scope level is incremented each time we enter a new scope.
-    //std::sort(range.first, range.second, [](const Symbol& sym1, const Symbol& sym2) { return sym1.mScopeLevel > sym2.mScopeLevel; });
+bool SymbolTable::GetSymbol(const std::string& fnName, const std::string& symName, const std::stack<int>& scopesToSearch, Symbol& sym)
+{
+    if (fnName.empty()) // We were asked for a global symbol
+    {
+        auto symIt = mGlobalTable.find(symName);
+        
+        // Symbol name is not in the global table
+        if (symIt == mGlobalTable.end())
+            return false;
 
-    // Get the correspoing symbol in the scope closest to the current one
-    sym = range.first->second;
+        sym = symIt->second;
+        return true;
+    }
+    else // We were asked for a local symbol
+    {
+        auto fnIt = mLocalTables.find(fnName);
 
-    return true;
+        // Function name is not in the global table
+        if (fnIt == mLocalTables.end())
+            return false;
+
+        // Starting at the most nested scope, we search outward for the symbol
+        // associated with symName
+        std::stack<int> scopes{ scopesToSearch };
+        while (!scopes.empty())
+        {
+            int scopeID = scopes.top();
+            scopes.pop();
+
+            std::stringstream sStream;
+            sStream << symName << scopeID;
+
+            auto it = fnIt->second.find(sStream.str());
+            if (it != fnIt->second.end())
+            {
+                // We got it
+                sym = it->second;
+                return true;
+            }
+        }
+
+        // No corresponding symbol found
+        return false;
+    }
 }
