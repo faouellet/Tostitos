@@ -5,7 +5,7 @@ namespace TosLang
 {
     namespace Common
     {
-        enum class Type
+        enum class Type : int
         {
             // Builtins
             BOOL,
@@ -13,6 +13,7 @@ namespace TosLang
             STRING,
             VOID,
 
+            // TODO: Is this really useful?
             // Functions
             BOOL_FUNCTION,
             INT_FUNCTION,

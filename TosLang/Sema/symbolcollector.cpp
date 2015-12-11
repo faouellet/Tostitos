@@ -1,5 +1,8 @@
 #include "symbolcollector.h"
 
+#include <sstream>
+#include <type_traits>
+
 using namespace TosLang::FrontEnd;
 using namespace TosLang::Common;
 
@@ -45,7 +48,21 @@ void SymbolCollector::HandleFunctionDecl()
     const FunctionDecl* fnDecl = dynamic_cast<const FunctionDecl*>(mCurrentNode);
     assert(fnDecl != nullptr);
 
-    mSymbolTable->AddGlobalSymbol(fnDecl->GetName(), { fnDecl->GetFunctionType(), 0 });
+    // The symbol name for a function is a concatenation of its name, its type and the type of its arguments
+    std::stringstream sStream;
+    sStream << fnDecl->GetName();
+
+    const ParamVarDecls* paramDecl = dynamic_cast<const ParamVarDecls*>(fnDecl->GetArguments());
+    assert(paramDecl != nullptr);
+
+    for (auto& param : paramDecl->GetParameters())
+    {
+        const VarDecl* paramVar = dynamic_cast<const VarDecl*>(param.get());
+        // Since Common::Type is an enum class, we need to do a cast to its underlying type
+        sStream << static_cast<std::underlying_type<Common::Type>::type>(paramVar->GetVarType());
+    }
+
+    mSymbolTable->AddGlobalSymbol(sStream.str(), { fnDecl->GetFunctionType(), 0 });
 }
 
 void SymbolCollector::HandleParamVarDecl() 
@@ -53,18 +70,16 @@ void SymbolCollector::HandleParamVarDecl()
     const ParamVarDecls* paramDecl = dynamic_cast<const ParamVarDecls*>(mCurrentNode);
     assert(paramDecl != nullptr);
 
-    std::vector< Common::Type> paramTypes;
+    std::vector<Common::Type> paramTypes;
     for (auto& param : paramDecl->GetParameters())
     {
         // Add the parameter type to the list of the function's parameters' types
-        const VarDecl* paramVar = dynamic_cast<const VarDecl*>(mCurrentNode);
+        const VarDecl* paramVar = dynamic_cast<const VarDecl*>(param.get());
         paramTypes.push_back(paramVar->GetVarType());
 
-        // Add the parameter to the symbols defined in the current function
+        // Add the parameter to the symbols defined in the scope of the current function
         mSymbolTable->AddLocalSymbol(mCurrentFunc->GetName(), paramVar->GetVarName(), { paramVar->GetVarType(), mCurrentScopeID + 1 });
     }
-
-    // TODO: Add parameters as function sub-symbols
 }
 
 void SymbolCollector::HandleVarDecl() 

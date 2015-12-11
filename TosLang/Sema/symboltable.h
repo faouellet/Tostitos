@@ -31,9 +31,6 @@ namespace TosLang
         class SymbolTable
         {
         public:
-            SymbolTable();
-
-        public:
             /*
             * \fn               AddLocalSymbol
             * \brief            Add symbol local to a function to the symbol table
