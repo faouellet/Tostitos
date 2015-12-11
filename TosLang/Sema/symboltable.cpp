@@ -22,7 +22,7 @@ bool TosLang::FrontEnd::SymbolTable::AddLocalSymbol(const std::string& fnName, c
     }
     else
     {
-        auto& symIt = fnIt->second.find(realSymName);
+        auto symIt = fnIt->second.find(realSymName);
         
         if (symIt == fnIt->second.end()) // First time we encounter this variable name
         {

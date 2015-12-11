@@ -4,9 +4,23 @@ project (Tostitos)
 enable_testing()
 
 if(MSVC)
+	# Set flags for exception handling
 	SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc /EHa")
+	
+	# Force to always compile with W4
+	if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
+		string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+	else()
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+	endif()
 else()
+	# Set flag for C++14
 	set (CMAKE_CXX_FLAGS "-std=c++14" CACHE STRING "" FORCE)
+	
+	# Set flags for warnings
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic")
+	
+	# Set flags for code coverage or sanitizers
     if(($ENV{COVERAGE}) AND (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU"))
         message("Adding flags for code coverage")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0")
