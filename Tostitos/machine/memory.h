@@ -29,7 +29,7 @@ namespace MachineEngine
                 return mBytes[page];
             }
 
-            void FreeMemory(int page)
+            void FreeMemory(int /*page*/)
             {
                 // nothing to do...or maybe it can be usefull to trace...
             }

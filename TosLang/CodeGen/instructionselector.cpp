@@ -56,7 +56,9 @@ std::vector<Instruction> InstructionSelector::GenerateProgram()
 Instruction InstructionSelector::GenerateInstruction(const ASTNode* node, Instruction::InstructionType iType)
 {
     Instruction inst(iType);
-    inst.SetFirstOperand(mNextRegister++);
+    // TODO: Rethink about the basic register allocation done here. Instead of using a real Chip16 instruction,
+    //       could a virtual instruction be used instead so as not to go beyond 256 allocated registers?
+    //inst.SetFirstOperand(mNextRegister++);
 
     if (inst.UseImmediateValue())
     {
@@ -71,14 +73,15 @@ Instruction InstructionSelector::GenerateInstruction(const ASTNode* node, Instru
         {
             const NumberExpr* nExpr = dynamic_cast<const NumberExpr*>(node);
             assert(nExpr != nullptr);
-            inst.SetImmediateValue(nExpr->GetValue());
+            // TODO: A decision should be made about the maximum size of an integer (16 or 32 bits?)
+            //inst.SetImmediateValue(nExpr->GetValue());
         }
     }
     else
     {
-        inst.SetSecondOperand(mNextRegister++);
+        /*inst.SetSecondOperand(mNextRegister++);
         if (!inst.IsInplace())
-            inst.SetThirdOperand(mNextRegister++);
+            inst.SetThirdOperand(mNextRegister++);*/
     }
 
     return inst;

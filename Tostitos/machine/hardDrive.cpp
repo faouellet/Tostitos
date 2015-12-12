@@ -49,7 +49,7 @@ int Disk::Rotate(int sectorNumber)
 
     unsigned int requiredTime = nbSectorToTravel * ROTATE_TIME_PER_SECTOR;
 
-    auto & currentSector = mCurrentSector;
+    // auto & currentSector = mCurrentSector;
 
     // TODO does not work
     MachineEngine::InternalFunctions::internalTimer(std::chrono::milliseconds(requiredTime),

@@ -48,8 +48,8 @@ namespace TosLang
             */
             Rule(ResultType result = ResultType::RES_UNKNOWN, OperatorType op = OperatorType::NO_OP,
                 std::vector<OperandType> operands = std::vector<OperandType>{},
-                Instruction::InstructionType inst = Instruction::UNKNOWN) :
-                mResult{ result }, mOperator{ op }, mInstType{ Instruction::UNKNOWN }
+                Instruction::InstructionType instType = Instruction::UNKNOWN) :
+                mResult{ result }, mOperator{ op }, mInstType{ instType }
             {
                 mOperands = operands;   // Is not in the initialization list because VS2013 won't accept it
                 static unsigned ID = 0;

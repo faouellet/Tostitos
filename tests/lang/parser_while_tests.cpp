@@ -109,6 +109,7 @@ BOOST_AUTO_TEST_CASE( ParseWhileMultiCondTest )
     BOOST_REQUIRE(cExpr != nullptr);
     BOOST_REQUIRE(cExpr->GetKind() == ASTNode::NodeKind::BINARY_EXPR);
     const BinaryOpExpr* bExpr = dynamic_cast<const BinaryOpExpr*>(cExpr);
+    BOOST_REQUIRE(bExpr != nullptr);
 
     const CompoundStmt* wBody = wStmt->GetBody();
     BOOST_REQUIRE(wBody != nullptr);

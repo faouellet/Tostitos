@@ -5,7 +5,7 @@ enable_testing()
 
 if(MSVC)
 	# Set flags for exception handling
-	SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc /EHa")
+	SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
 	
 	# Force to always compile with W4
 	if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
@@ -13,6 +13,11 @@ if(MSVC)
 	else()
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
 	endif()
+	
+	# Disabling exception handling warning
+	add_definitions(
+		-wd4530 # Suppress 'warning C4530: C++ exception handler used, but unwind semantics are not enabled.'
+	)
 else()
 	# Set flag for C++14
 	set (CMAKE_CXX_FLAGS "-std=c++14" CACHE STRING "" FORCE)

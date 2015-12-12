@@ -5,7 +5,7 @@
 using namespace Threads;
 using MachineEngine::ProcessorSpace::ThreadContext;
 
-Thread::Thread(const std::string & Filename) : mFinished{false}, mWaitForChildren{false}, mTimeToWakeup{0}
+Thread::Thread(const std::string&) : mFinished{ false }, mWaitForChildren{ false }, mTimeToWakeup{ 0 }
 {
 	mContext = std::make_unique<ThreadContext>();
 	// TODO: Should check if the ROM was correctly acquired
@@ -30,16 +30,16 @@ bool Thread::IsSleeping()
 	return true;
 }
 
-Thread * Thread::Fork(const std::string & Filename)
+Thread * Thread::Fork(const std::string & filename)
 {
-    Thread * Child = new Thread(Filename);
+    Thread * Child = new Thread(filename);
     mChildren.push_back(Child);
     return Child;
 }
 
-void Thread::Sleep(const unsigned int Time)
+void Thread::Sleep(const unsigned int time)
 {
-	mTimeToWakeup = Time;
+	mTimeToWakeup = time;
 	mTimePoint = std::chrono::high_resolution_clock::now();
 }
 

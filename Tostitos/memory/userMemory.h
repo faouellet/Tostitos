@@ -14,7 +14,7 @@ namespace UserMemory
     {
     private:
         DataStructure::MemoryPage * mCurrentPage;
-        int mOffset;
+        size_t mOffset;
 
         // this is a default value to be plateform agnostic
         const int INT_SIZE = 4;

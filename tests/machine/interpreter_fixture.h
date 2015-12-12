@@ -318,7 +318,7 @@ private:
     */
     void SetupShiftData()
     {
-        for(int i = 0; i < NB_REGISTERS/2; ++i)
+        for(UInt8 i = 0; i < NB_REGISTERS/2; ++i)
             InsertInstruction(ShiftTestData, 0x50, i, 0xFF, 0xFF);	// ADDI : Ri += 65535
 
         InsertInstruction(ShiftTestData, 0xC0, 0x00, 0x0D, 0x00);	// SHL : R0 << 13 (Logical)
@@ -338,20 +338,20 @@ private:
     */
     void SetupStackData()
     {
-        for(int i = 0; i < NB_REGISTERS; ++i)
+        for(UInt8 i = 0; i < NB_REGISTERS; ++i)
             InsertInstruction(StackTestData, 0x20, i, i*2, 0x00);	// LDI : Ri = i * 2
 
         InsertInstruction(StackTestData, 0x42, 0x00, 0x00, 0x00);	// PUSHALL
 
-        for(int i = 0; i < NB_REGISTERS; ++i)
+        for(UInt8 i = 0; i < NB_REGISTERS; ++i)
             InsertInstruction(StackTestData, 0x20, i, 0x00, 0x00);	// LDI : Ri = 0
 
         InsertInstruction(StackTestData, 0x43, 0x00, 0x00, 0x00);	// POPALL
 
-        for(int i = 0; i < NB_REGISTERS; ++i)
+        for(UInt8 i = 0; i < NB_REGISTERS; ++i)
             InsertInstruction(StackTestData, 0x40, i, 0x00, 0x00);	// PUSH Ri
 
-        for(int i = 0; i < NB_REGISTERS; ++i)
+        for(UInt8 i = 0; i < NB_REGISTERS; ++i)
             InsertInstruction(StackTestData, 0x41, i, 0x00, 0x00);	// POP Ri
     }
     
@@ -361,7 +361,7 @@ private:
     */
     void SetupRandomData()
     {
-        for (int i = 0; i < NB_REGISTERS; ++i)
+        for (UInt8 i = 0; i < NB_REGISTERS; ++i)
             InsertInstruction(RndTestData, 0x07, i, 0x00, 0xFF);	// Ri = Random
     }
 

@@ -375,7 +375,7 @@ void Interpreter::DirectCALL(const Instruction & instruction)
     mErrorCode |= mCPU.SetProgramCounter(instruction.GetImmediateValue());
 }
 
-void Interpreter::RET(const Instruction & instruction)
+void Interpreter::RET(const Instruction &)
 {
     UInt16 val;
     mErrorCode = mCPU.Pop(val);
@@ -482,7 +482,7 @@ void Interpreter::MOV(const Instruction & instruction)
 
 /////////////// Misc ///////////////
 
-void Interpreter::NOP(const Instruction & instruction) {  }
+void Interpreter::NOP(const Instruction &) {  }
 
 void Interpreter::RND(const Instruction & instruction)
 {
@@ -508,28 +508,28 @@ void Interpreter::POP(const Instruction & instruction)
     mErrorCode |= mCPU.SetRegister(instruction.GetFirstOperand(), val);
 }
 
-void Interpreter::PUSHALL(const Instruction & instruction)
+void Interpreter::PUSHALL(const Instruction &)
 {
     for(UInt8 i = 0; i < CPU::NB_REGISTERS; ++i)
         mErrorCode |= mCPU.Push(mCPU.DumpRegister(i));
 }
 
-void Interpreter::POPALL(const Instruction & instruction)
+void Interpreter::POPALL(const Instruction &)
 {
     UInt16 val;
-    for(int i = 15; i > -1; --i)
+    for(UInt8 i = 15; i > -1; --i)
     {
         mErrorCode |= mCPU.Pop(val);
         mErrorCode |= mCPU.SetRegister(i, val);
     }
 }
 
-void Interpreter::PUSHF(const Instruction & instruction)
+void Interpreter::PUSHF(const Instruction &)
 {
     mErrorCode = mCPU.Push(mCPU.DumpFlagRegister());
 }
 
-void Interpreter::POPF(const Instruction & instruction)
+void Interpreter::POPF(const Instruction &)
 {
     UInt16 val;
     mErrorCode = mCPU.Pop(val);

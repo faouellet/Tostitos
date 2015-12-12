@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE( ResetTest )
 	BOOST_REQUIRE_EQUAL(Cpu.DumpFlagRegister(), 0);
 	BOOST_REQUIRE_EQUAL(Cpu.DumpStackPointer(), 0);
 
-	for (int i = 0; i < 16; i++)
+	for (UInt8 i = 0; i < 16; i++)
 		BOOST_REQUIRE_EQUAL(Cpu.DumpRegister(i), 0);
 }
 
@@ -165,7 +165,7 @@ BOOST_AUTO_TEST_CASE( ModTest )
     BOOST_REQUIRE(Cpu.DumpFlagRegister() & 0x4);				    // Zero flag set
     BOOST_REQUIRE_EQUAL(Cpu.DumpRegister(5), 0);
 
-    for (int i = 5; i < NB_REGISTERS; ++i)
+    for (UInt8 i = 5; i < NB_REGISTERS; ++i)
         BOOST_REQUIRE_EQUAL(Cpu.DumpRegister(i), 0);
 }
 
