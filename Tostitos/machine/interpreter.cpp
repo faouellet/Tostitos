@@ -517,7 +517,7 @@ void Interpreter::PUSHALL(const Instruction &)
 void Interpreter::POPALL(const Instruction &)
 {
     UInt16 val;
-    for(UInt8 i = 15; i > -1; --i)
+    for(int i = 15; i > -1; --i)
     {
         mErrorCode |= mCPU.Pop(val);
         mErrorCode |= mCPU.SetRegister(i, val);
