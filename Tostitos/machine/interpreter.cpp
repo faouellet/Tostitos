@@ -7,7 +7,7 @@
 
 using namespace MachineEngine::ProcessorSpace;
 
-Interpreter::Interpreter() : mDist{ 0, std::numeric_limits<UInt16>::max() }, mErrorCode{ NO_ERROR }
+Interpreter::Interpreter() : mErrorCode{ NO_ERROR }, mDist{ 0, std::numeric_limits<UInt16>::max() }
 {
     mOps[0x00] = &Interpreter::NOP; 
     mOps[0x07] = &Interpreter::RND;

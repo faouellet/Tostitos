@@ -34,7 +34,7 @@ namespace MachineEngine
                 // nothing to do...or maybe it can be usefull to trace...
             }
         };
-    };
-};
+    }
+}
 
 #endif

@@ -95,7 +95,7 @@ namespace TosLang
             * \return           Pointer of the given type to the child node
             */
             template <class T> 
-            T* GetChildNodeAs(int childIdx) const
+            T* GetChildNodeAs(size_t childIdx) const
             {
                 assert(childIdx < mChildren.size()); 
                 return dynamic_cast<T*>(mChildren[childIdx].get()); 

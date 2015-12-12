@@ -48,9 +48,10 @@ void SymbolCollector::HandleFunctionDecl()
     const FunctionDecl* fnDecl = dynamic_cast<const FunctionDecl*>(mCurrentNode);
     assert(fnDecl != nullptr);
 
-    // The symbol name for a function is a concatenation of its name, its type and the type of its arguments
+    // The symbol name for a function is a concatenation of its name, its return type and the type of its arguments
     std::stringstream sStream;
     sStream << fnDecl->GetName();
+    sStream << static_cast<std::underlying_type<Common::Type>::type>(fnDecl->GetReturnType());
 
     const ParamVarDecls* paramDecl = dynamic_cast<const ParamVarDecls*>(fnDecl->GetArguments());
     assert(paramDecl != nullptr);
@@ -62,7 +63,7 @@ void SymbolCollector::HandleFunctionDecl()
         sStream << static_cast<std::underlying_type<Common::Type>::type>(paramVar->GetVarType());
     }
 
-    mSymbolTable->AddGlobalSymbol(sStream.str(), { fnDecl->GetFunctionType(), 0 });
+    mSymbolTable->AddGlobalSymbol(sStream.str(), { Common::Type::FUNCTION, 0 });
 }
 
 void SymbolCollector::HandleParamVarDecl() 

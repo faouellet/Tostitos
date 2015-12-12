@@ -144,27 +144,11 @@ namespace TosLang
         public:
             FunctionDecl() : Decl{ NodeKind::ERROR } { }
             FunctionDecl(const std::string& fnName, Common::Type type, std::unique_ptr<ParamVarDecls>&& params, std::unique_ptr<CompoundStmt>&& body) 
-                : Decl{ NodeKind::FUNCTION_DECL }
+                : Decl{ NodeKind::FUNCTION_DECL }, mReturnType{ type }
             {
                 mName = fnName;
                 AddChildNode(std::move(params));
                 AddChildNode(std::move(body));
-
-                switch (type)
-                {
-                case Common::Type::BOOL:
-                    mType = Common::Type::BOOL_FUNCTION;
-                    break;
-                case Common::Type::INT:
-                    mType = Common::Type::INT_FUNCTION;
-                    break;
-                case Common::Type::STRING:
-                    mType = Common::Type::STRING_FUNCTION;
-                    break;
-                case Common::Type::VOID:
-                    mType = Common::Type::VOID_FUNCTION;
-                    break;
-                }
             }
 
             virtual ~FunctionDecl() { }
@@ -178,11 +162,11 @@ namespace TosLang
             const std::string& GetFunctionName() const { return mName; }
 
             /*
-            * \fn       GetFunctionType
-            * \brief    Gets the type of the function
-            * \return   Type of the function
+            * \fn       GetReturnType
+            * \brief    Gets the type of the value returned by the function
+            * \return   Type of the value returned by the function
             */
-            const Common::Type GetFunctionType() const { return mType; }
+            const Common::Type GetReturnType() const { return mReturnType; }
 
             /*
             * \fn       GetArguments
@@ -199,7 +183,7 @@ namespace TosLang
             const CompoundStmt* GetBody() const { assert(mChildren.size() == 2); return GetChildNodeAs<CompoundStmt>(1);; }
 
         private:
-            Common::Type mType; /*!< Function return type */
+            Common::Type mReturnType; /*!< Function return type */
         };
     }
 }

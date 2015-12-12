@@ -95,7 +95,7 @@ namespace MachineEngine
 			using UInt32 = UInt_<4>::type;	/**< Unsigned 32 bits integer type */
 
 			using Int16  = Int_<2>::type;	/**< Signed 16 bits integer type */
-		};
+		}
 	}
 }
 

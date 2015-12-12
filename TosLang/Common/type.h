@@ -13,12 +13,7 @@ namespace TosLang
             STRING,
             VOID,
 
-            // TODO: Is this really useful?
-            // Functions
-            BOOL_FUNCTION,
-            INT_FUNCTION,
-            STRING_FUNCTION,
-            VOID_FUNCTION,
+            FUNCTION,
 
             // Arrays
 

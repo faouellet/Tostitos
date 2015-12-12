@@ -13,6 +13,6 @@ namespace CommunicationWithHost
 
     // write to host from virtual disk
     void WtiteToHost(std::string path, Common::ByteArray data);
-};
+}
 
 #endif

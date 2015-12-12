@@ -17,7 +17,7 @@ namespace MachineEngine
                 func();
             }).detach();
         }
-    };
-};
+    }
+}
 
 #endif

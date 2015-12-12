@@ -196,7 +196,9 @@ UInt8 CPU::Pop(UInt16 & value)
     }
     else
     {
-        value = UInt16((mMemory[--mSP] << 8) | (mMemory[--mSP]));
+        const UInt8 valueLowNibble = mMemory[--mSP];
+        const UInt8 valueHighNibble = mMemory[--mSP];
+        value = UInt16((valueLowNibble << 8) | valueHighNibble);
         return NO_ERROR;
     }
 }
