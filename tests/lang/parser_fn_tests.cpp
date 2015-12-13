@@ -253,7 +253,7 @@ BOOST_AUTO_TEST_CASE( ParseBadParamMissingType )
     // Check if the correct error message got printed
     std::vector<std::string> messages{ GetErrorMessages() };
     BOOST_REQUIRE_EQUAL(messages.size(), 1);
-    BOOST_REQUIRE_EQUAL(messages[0], "PARAM ERROR: Expected parameter type at line 1, column 9");
+    BOOST_REQUIRE_EQUAL(messages[0], "PARAM ERROR: Expected parameter type at line 1, column 10");
 }
 
 BOOST_AUTO_TEST_CASE( ParseBadParamMissingColon )
