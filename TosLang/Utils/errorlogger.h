@@ -38,10 +38,14 @@ namespace TosLang
                 ERROR_OPENING_FILE,
 
                 // Function
+                FN_INTERNAL,
+                FN_MISSING_ARROW,
                 FN_MISSING_TYPE,
                 FN_MISSING_IDENTIFIER,
-                FN_MISSING_PAREN,
+                FN_MISSING_LEFT_PAREN,
+                FN_MISSING_RIGHT_PAREN,
                 FN_MISSING_RETURN,
+                FN_MISSING_RETURN_TYPE,
                 FN_REDEFINITION,
 
                 // If
@@ -57,6 +61,11 @@ namespace TosLang
                 NEW_LINE_IN_LITERAL,
                 MISSING_CLOSING_QUOTE,
                 NUMBER_BAD_SUFFIX,
+
+                // Param
+                PARAM_MISSING_NAME,
+                PARAM_MISSING_COLON,
+                PARAM_MISSING_TYPE,
 
                 // Syntax
                 SYNTAX_MISSING_LBRACE,

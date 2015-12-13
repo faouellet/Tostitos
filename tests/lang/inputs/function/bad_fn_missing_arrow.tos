@@ -1,0 +1,3 @@
+fn MyFunc() Int {
+    return 42;
+}

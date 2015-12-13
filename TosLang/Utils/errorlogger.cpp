@@ -22,10 +22,14 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
     { ErrorType::ERROR_OPENING_FILE,           "FILE ERROR: Problem opening the specified file" },
 
     // Function
+    { ErrorType::FN_INTERNAL,                 "FUNCTION ERROR: Internal functions are not allowed" },
+    { ErrorType::FN_MISSING_ARROW,            "FUNCTION ERROR: Missing arrow to return type" },
     { ErrorType::FN_MISSING_TYPE,             "FUNCTION ERROR: Missing type from function declaration" },
     { ErrorType::FN_MISSING_IDENTIFIER,       "FUNCTION ERROR: The fn keyword should be followed by an identifier" },
-    { ErrorType::FN_MISSING_PAREN,            "FUNCTION ERROR: Missing parenthesis in the function declaration" },
+    { ErrorType::FN_MISSING_LEFT_PAREN,       "FUNCTION ERROR: Missing left parenthesis in the function declaration" },
+    { ErrorType::FN_MISSING_RIGHT_PAREN,      "FUNCTION ERROR: Missing right parenthesis in the function declaration" },
     { ErrorType::FN_MISSING_RETURN,           "FUNCTION ERROR: Missing return statement" },
+    { ErrorType::FN_MISSING_RETURN_TYPE,      "FUNCTION ERROR: Missing return type" },
     { ErrorType::FN_REDEFINITION,             "FUNCTION ERROR: Trying to redefine an already defined function" },
 
     // If
@@ -46,6 +50,11 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
     { ErrorType::EXPECTED_DECL,                "ERROR: Expected a declaration" },
     { ErrorType::MISSING_SEMI_COLON,           "ERROR: Expected a ;" },
     { ErrorType::UNCLOSED_ML_COMMENT,          "ERROR: Unclosed multiline comment" },
+
+    // Param
+    { ErrorType::PARAM_MISSING_COLON,          "PARAM ERROR: Missing colon between a parameter and its type" },
+    { ErrorType::PARAM_MISSING_NAME,           "PARAM ERROR: Expected parameter name" },
+    { ErrorType::PARAM_MISSING_TYPE,           "PARAM ERROR: Expected parameter type" },
 
     // Syntax
     { ErrorType::SYNTAX_MISSING_LBRACE,        "SYNTAX ERROR: Expected '{'" },

@@ -79,7 +79,7 @@ std::unique_ptr<FunctionDecl> Parser::ParseFunctionDecl()
     // Make sure the function name is followed by an opening parenthesis
     if ((mCurrentToken = mLexer.GetNextToken()) != Lexer::Token::LEFT_PAREN)
     {
-        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::FN_MISSING_PAREN, mLexer.GetCurrentLocation());
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::FN_MISSING_LEFT_PAREN, mLexer.GetCurrentLocation());
         return std::move(fnNode);
     }
 
@@ -91,20 +91,20 @@ std::unique_ptr<FunctionDecl> Parser::ParseFunctionDecl()
     {        
         if (mCurrentToken != Lexer::Token::IDENTIFIER)
         {
-            // TODO: Log an error
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::PARAM_MISSING_NAME, mLexer.GetCurrentLocation());
             return std::move(fnNode);
         }
         varName = mLexer.GetCurrentStr();
 
         if ((mCurrentToken = mLexer.GetNextToken()) != Lexer::Token::COLON)
         {
-            // TODO: Log an error
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::PARAM_MISSING_COLON, mLexer.GetCurrentLocation());
             return std::move(fnNode);
         }
 
         if ((mCurrentToken = mLexer.GetNextToken()) != Lexer::Token::TYPE)
         {
-            // TODO: Log an error
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::PARAM_MISSING_TYPE, mLexer.GetCurrentLocation());
             return std::move(fnNode);
         }
         param.reset(std::make_unique<VarDecl>(varName, mLexer.GetCurrentType()).release());
@@ -112,6 +112,7 @@ std::unique_ptr<FunctionDecl> Parser::ParseFunctionDecl()
         mCurrentToken = mLexer.GetNextToken();
         if ((mCurrentToken != Lexer::Token::RIGHT_PAREN) && (mCurrentToken != Lexer::Token::COMMA))
         {
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::FN_MISSING_RIGHT_PAREN, mLexer.GetCurrentLocation());
             return std::move(fnNode);
         }
 
@@ -124,13 +125,13 @@ std::unique_ptr<FunctionDecl> Parser::ParseFunctionDecl()
     // Parse the return type
     if ((mCurrentToken = mLexer.GetNextToken()) != Lexer::Token::ARROW)
     {
-        // TODO: Log an error
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::FN_MISSING_ARROW, mLexer.GetCurrentLocation());
         return std::move(fnNode);
     }
 
     if ((mCurrentToken = mLexer.GetNextToken()) != Lexer::Token::TYPE)
     {
-        // TODO: Log an error
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::FN_MISSING_RETURN_TYPE, mLexer.GetCurrentLocation());
         return std::move(fnNode);
     }
     Common::Type fnType = mLexer.GetCurrentType();
@@ -357,8 +358,14 @@ std::unique_ptr<CompoundStmt> Parser::ParseCompoundStmt()
         case Lexer::Token::SCAN:
             node.reset(ParseScanStmt().release());
             break;
+        case Lexer::Token::FUNCTION:
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::FN_INTERNAL, mLexer.GetCurrentLocation());
+            // We skip everything until either the end of the internal function, the end of the function currently
+            // being parsed or the end of the program file
+            while ((mCurrentToken != Lexer::Token::RIGHT_BRACE) && (mCurrentToken != Lexer::Token::TOK_EOF))
+                mCurrentToken = mLexer.GetNextToken();
+            break;
             // TODO: No internal compound statement
-            // TODO: No internal function
         default:
             break;
         }

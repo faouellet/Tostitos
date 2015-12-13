@@ -1,0 +1,9 @@
+fn main() -> Void {
+	fn identity(i : Int) -> Int {
+		return i;
+	}
+
+	var MyInt : Int = 42;
+	identity(MyInt);
+	return;
+}

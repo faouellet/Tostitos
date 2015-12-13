@@ -145,4 +145,129 @@ BOOST_AUTO_TEST_CASE( ParseFuncMultiArgsTest )
 
 //////////////////// ERROR USE CASES ////////////////////
 
+BOOST_AUTO_TEST_CASE( ParseBadFunctionMissingArrow )
+{
+    auto& cNodes = GetProgramAST("../inputs/function/bad_fn_missing_arrow.tos");
+    BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
+    auto& node = cNodes.front();
+    BOOST_REQUIRE(node != nullptr);
+    BOOST_REQUIRE(node->GetKind() == ASTNode::NodeKind::ERROR);
+    
+    // Check if the correct error message got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
+    BOOST_REQUIRE_EQUAL(messages.size(), 1);
+    BOOST_REQUIRE_EQUAL(messages[0], "FUNCTION ERROR: Missing arrow to return type at line 1, column 11");
+}
+
+BOOST_AUTO_TEST_CASE( ParseBadFunctionMissingName )
+{
+    auto& cNodes = GetProgramAST("../inputs/function/bad_fn_no_name.tos");
+    BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
+    auto& node = cNodes.front();
+    BOOST_REQUIRE(node != nullptr);
+    BOOST_REQUIRE(node->GetKind() == ASTNode::NodeKind::ERROR);
+
+    // Check if the correct error message got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
+    BOOST_REQUIRE_EQUAL(messages.size(), 1);
+    BOOST_REQUIRE_EQUAL(messages[0], "FUNCTION ERROR: The fn keyword should be followed by an identifier at line 1, column 3");
+}
+
+BOOST_AUTO_TEST_CASE( ParseBadFunctionMissingLeftParen )
+{
+    auto& cNodes = GetProgramAST("../inputs/function/bad_fn_missing_left_paren.tos");
+    BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
+    auto& node = cNodes.front();
+    BOOST_REQUIRE(node != nullptr);
+    BOOST_REQUIRE(node->GetKind() == ASTNode::NodeKind::ERROR);
+
+    // Check if the correct error message got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
+    BOOST_REQUIRE_EQUAL(messages.size(), 1);
+    BOOST_REQUIRE_EQUAL(messages[0], "FUNCTION ERROR: Missing left parenthesis in the function declaration at line 1, column 8");
+}
+
+BOOST_AUTO_TEST_CASE( ParseBadFunctionMissingRightParen )
+{
+    auto& cNodes = GetProgramAST("../inputs/function/bad_fn_missing_right_paren.tos");
+    BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
+    auto& node = cNodes.front();
+    BOOST_REQUIRE(node != nullptr);
+    BOOST_REQUIRE(node->GetKind() == ASTNode::NodeKind::ERROR);
+
+    // Check if the correct error message got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
+    BOOST_REQUIRE_EQUAL(messages.size(), 1);
+    BOOST_REQUIRE_EQUAL(messages[0], "FUNCTION ERROR: Missing right parenthesis in the function declaration at line 1, column 13");
+}
+
+BOOST_AUTO_TEST_CASE( ParseBadFunctionMissingReturnType )
+{
+    auto& cNodes = GetProgramAST("../inputs/function/bad_fn_missing_return_type.tos");
+    BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
+    auto& node = cNodes.front();
+    BOOST_REQUIRE(node != nullptr);
+    BOOST_REQUIRE(node->GetKind() == ASTNode::NodeKind::ERROR);
+
+    // Check if the correct error message got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
+    BOOST_REQUIRE_EQUAL(messages.size(), 1);
+    BOOST_REQUIRE_EQUAL(messages[0], "FUNCTION ERROR: Missing return type at line 1, column 10");
+}
+
+BOOST_AUTO_TEST_CASE( ParseBadFunctionMissingInternalFunction )
+{
+    auto& cNodes = GetProgramAST("../inputs/function/bad_fn_internal_fn.tos");
+    BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
+    BOOST_REQUIRE(cNodes[0] != nullptr);
+    BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
+
+    // Check if the correct error message got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
+    BOOST_REQUIRE_EQUAL(messages.size(), 1);
+    BOOST_REQUIRE_EQUAL(messages[0], "FUNCTION ERROR: Internal functions are not allowed at line 2, column 3");
+}
+
+BOOST_AUTO_TEST_CASE( ParseBadParamMissingName )
+{
+    auto& cNodes = GetProgramAST("../inputs/function/bad_fn_missing_param_name.tos");
+    BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
+    auto& node = cNodes.front();
+    BOOST_REQUIRE(node != nullptr);
+    BOOST_REQUIRE(node->GetKind() == ASTNode::NodeKind::ERROR);
+
+    // Check if the correct error message got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
+    BOOST_REQUIRE_EQUAL(messages.size(), 1);
+    BOOST_REQUIRE_EQUAL(messages[0], "PARAM ERROR: Expected parameter name at line 1, column 8");
+}
+
+BOOST_AUTO_TEST_CASE( ParseBadParamMissingType )
+{
+    auto& cNodes = GetProgramAST("../inputs/function/bad_fn_missing_param_type.tos");
+    BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
+    auto& node = cNodes.front();
+    BOOST_REQUIRE(node != nullptr);
+    BOOST_REQUIRE(node->GetKind() == ASTNode::NodeKind::ERROR);
+
+    // Check if the correct error message got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
+    BOOST_REQUIRE_EQUAL(messages.size(), 1);
+    BOOST_REQUIRE_EQUAL(messages[0], "PARAM ERROR: Expected parameter type at line 1, column 9");
+}
+
+BOOST_AUTO_TEST_CASE( ParseBadParamMissingColon )
+{
+    auto& cNodes = GetProgramAST("../inputs/function/bad_fn_missing_param_colon.tos");
+    BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
+    auto& node = cNodes.front();
+    BOOST_REQUIRE(node != nullptr);
+    BOOST_REQUIRE(node->GetKind() == ASTNode::NodeKind::ERROR);
+
+    // Check if the correct error message got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
+    BOOST_REQUIRE_EQUAL(messages.size(), 1);
+    BOOST_REQUIRE_EQUAL(messages[0], "PARAM ERROR: Missing colon between a parameter and its type at line 1, column 11");
+}
+
 BOOST_AUTO_TEST_SUITE_END()
