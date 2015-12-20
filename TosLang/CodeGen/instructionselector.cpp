@@ -7,6 +7,7 @@
 
 using namespace TosLang::FrontEnd;
 using namespace TosLang::BackEnd;
+using namespace MachineEngine::ProcessorSpace;
 
 std::vector<Instruction> InstructionSelector::Execute(const std::unique_ptr<ASTNode>& root)
 {
@@ -16,40 +17,26 @@ std::vector<Instruction> InstructionSelector::Execute(const std::unique_ptr<ASTN
 
 // Declarations
 
-void InstructionSelector::HandleVarDecl()
-{
-    const VarDecl* vDecl = dynamic_cast<const VarDecl*>(this->mCurrentNode);
-    assert(vDecl != nullptr);
-
-    // An instruction that is not written to will not generate any assembly
-    const Expr* initExpr = dynamic_cast<const Expr*>(vDecl->GetInitExpr());
-    if (initExpr != nullptr)
-    {
-        // TODO: Use ResultType of child nodes
-        std::vector<Rule> rules{ mRuleTable.MatchPattern(std::make_pair(OperatorType::OP_ASSIGN, 
-            std::vector<OperandType>{ OperandType::REGISTER, OperandType::IMMEDIATE })) };
-        assert(rules.size() == 1);
- 
-        mNodeLabels[this->mCurrentNode] = rules[0].mID;
-        mNodesVisited.push(this->mCurrentNode);
-    }
-}
+void InstructionSelector::HandleVarDecl(){ }
 
 // Expressions
+
+void HandleBinaryExpr() { }
+
+void HandleBooleanExpr() { }
+
+void HandleCallExpr() { }
+
+void HandleIdentifierExpr() { }
+
+void HandleNumberExpr() { }
 
 // Code Generation
 
 std::vector<Instruction> InstructionSelector::GenerateProgram() 
 {
     std::vector<Instruction> program;
-
-    while (!mNodesVisited.empty())
-    {
-        const ASTNode* node = mNodesVisited.top();
-        program.push_back(GenerateInstruction(node, mRuleTable.GetRule(mNodeLabels[node]).mInstType));
-        mNodesVisited.pop();
-    }
-
+    
     return program;
 }
 

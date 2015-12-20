@@ -3,7 +3,7 @@
 
 #include "../Common/astvisitor.h"
 
-#include "ruletable.h"
+#include "../../Tostitos/machine/instruction.h"
 
 #include <stack>
 #include <unordered_map>
@@ -21,24 +21,29 @@ namespace TosLang
             ~InstructionSelector() = default;
 
         public:
-            std::vector<Instruction> Execute(const std::unique_ptr<FrontEnd::ASTNode>& root);
+            std::vector<MachineEngine::ProcessorSpace::Instruction> Execute(const std::unique_ptr<FrontEnd::ASTNode>& root);
 
         protected:  // Declarations
             void HandleVarDecl();
 
         protected:  // Expressions
+            void HandleBinaryExpr();
+
+            void HandleBooleanExpr();
+
+            void HandleCallExpr();
+
+            void HandleIdentifierExpr();
+
+            void HandleNumberExpr();
 
         private:
-            std::vector<Instruction> GenerateProgram();
-            Instruction GenerateInstruction(const FrontEnd::ASTNode* node, Instruction::InstructionType iType);
+            std::vector<MachineEngine::ProcessorSpace::Instruction> GenerateProgram();
+            MachineEngine::ProcessorSpace::Instruction GenerateInstruction(const FrontEnd::ASTNode* node, 
+                                                                           MachineEngine::ProcessorSpace::Instruction::InstructionType iType);
 
         private:
             unsigned mNextRegister;
-
-            RuleTable mRuleTable;
-
-            std::unordered_map<const FrontEnd::ASTNode*, unsigned> mNodeLabels;
-            std::stack<const FrontEnd::ASTNode*> mNodesVisited;
         };
     }
 }
