@@ -1,51 +1,55 @@
 #ifndef INSTRUCTION_SELECTOR_H__TOSTITOS
 #define INSTRUCTION_SELECTOR_H__TOSTITOS
 
+#include "controlflowgraph.h"
 #include "../Common/astvisitor.h"
-
-#include "../../Tostitos/machine/instruction.h"
-
-#include <stack>
-#include <unordered_map>
 
 namespace TosLang
 {
     namespace BackEnd
     {
+        /*
+         * \class InstructionSelector
+         * \brief: TODO
+         */
         class InstructionSelector : Common::ASTVisitor<InstructionSelector>
         {
             friend class Common::ASTVisitor<InstructionSelector>;
+
+        public:
+            using Program = std::vector<ControlFlowGraph>;
 
         public:
             InstructionSelector() : mNextRegister{ 0 } { };
             ~InstructionSelector() = default;
 
         public:
-            std::vector<MachineEngine::ProcessorSpace::Instruction> Execute(const std::unique_ptr<FrontEnd::ASTNode>& root);
+            Program Execute(const std::unique_ptr<FrontEnd::ASTNode>& root);
 
         protected:  // Declarations
+            void HandleFunctionDecl();
             void HandleVarDecl();
 
         protected:  // Expressions
             void HandleBinaryExpr();
-
             void HandleBooleanExpr();
-
             void HandleCallExpr();
-
             void HandleIdentifierExpr();
-
             void HandleNumberExpr();
 
-        private:
-            std::vector<MachineEngine::ProcessorSpace::Instruction> GenerateProgram();
-            MachineEngine::ProcessorSpace::Instruction GenerateInstruction(const FrontEnd::ASTNode* node, 
-                                                                           MachineEngine::ProcessorSpace::Instruction::InstructionType iType);
+        protected:  // Statements
+            void HandleIfStmt();
+            void HandlePrintStmt();
+            void HandleReturnStmt();
+            void HandleScanStmt();
+            void HandleWhileStmt();
 
         private:
             unsigned mNextRegister;
+            Program mProgram;
         };
     }
 }
 
 #endif // INSTRUCTION_SELECTOR_H__TOSTITOS
+

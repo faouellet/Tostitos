@@ -7,69 +7,37 @@
 
 using namespace TosLang::FrontEnd;
 using namespace TosLang::BackEnd;
-using namespace MachineEngine::ProcessorSpace;
 
-std::vector<Instruction> InstructionSelector::Execute(const std::unique_ptr<ASTNode>& root)
+InstructionSelector::Program InstructionSelector::Execute(const std::unique_ptr<ASTNode>& root)
 {
     this->VisitPostOrder(root);
-    return GenerateProgram();
+    return mProgram;
 }
 
 // Declarations
+void InstructionSelector::HandleFunctionDecl() { }
 
-void InstructionSelector::HandleVarDecl(){ }
+void InstructionSelector::HandleVarDecl() { }
 
 // Expressions
+void InstructionSelector::HandleBinaryExpr() { }
 
-void HandleBinaryExpr() { }
+void InstructionSelector::HandleBooleanExpr() { }
 
-void HandleBooleanExpr() { }
+void InstructionSelector::HandleCallExpr() { }
 
-void HandleCallExpr() { }
+void InstructionSelector::HandleIdentifierExpr() { }
 
-void HandleIdentifierExpr() { }
+void InstructionSelector::HandleNumberExpr() { }
 
-void HandleNumberExpr() { }
+// Statements
+void InstructionSelector::HandleIfStmt() { }
 
-// Code Generation
+void InstructionSelector::HandlePrintStmt() { }
 
-std::vector<Instruction> InstructionSelector::GenerateProgram() 
-{
-    std::vector<Instruction> program;
-    
-    return program;
-}
+void InstructionSelector::HandleReturnStmt() { }
 
-Instruction InstructionSelector::GenerateInstruction(const ASTNode* node, Instruction::InstructionType iType)
-{
-    Instruction inst(iType);
-    // TODO: Rethink about the basic register allocation done here. Instead of using a real Chip16 instruction,
-    //       could a virtual instruction be used instead so as not to go beyond 256 allocated registers?
-    //inst.SetFirstOperand(mNextRegister++);
+void InstructionSelector::HandleScanStmt() { }
 
-    if (inst.UseImmediateValue())
-    {
-        if (node->GetKind() == ASTNode::NodeKind::BOOLEAN_EXPR)
-        {
-            const BooleanExpr* bExpr = dynamic_cast<const BooleanExpr*>(node);
-            assert(bExpr != nullptr);
-            inst.SetImmediateValue(bExpr->GetValue());
+void InstructionSelector::HandleWhileStmt() { }
 
-        }
-        else if (node->GetKind() == ASTNode::NodeKind::NUMBER_EXPR)
-        {
-            const NumberExpr* nExpr = dynamic_cast<const NumberExpr*>(node);
-            assert(nExpr != nullptr);
-            // TODO: A decision should be made about the maximum size of an integer (16 or 32 bits?)
-            //inst.SetImmediateValue(nExpr->GetValue());
-        }
-    }
-    else
-    {
-        /*inst.SetSecondOperand(mNextRegister++);
-        if (!inst.IsInplace())
-            inst.SetThirdOperand(mNextRegister++);*/
-    }
-
-    return inst;
-}
