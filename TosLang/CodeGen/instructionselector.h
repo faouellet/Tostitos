@@ -3,6 +3,7 @@
 
 #include "controlflowgraph.h"
 #include "../Common/astvisitor.h"
+#include "../Sema/symboltable.h"
 
 namespace TosLang
 {
@@ -20,7 +21,7 @@ namespace TosLang
             using Program = std::vector<ControlFlowGraph>;
 
         public:
-            InstructionSelector() : mNextRegister{ 0 } { };
+            InstructionSelector(const std::shared_ptr<FrontEnd::SymbolTable>& symTab) : mNextRegister{ 0 }, mSymTable{ symTab } { };
             ~InstructionSelector() = default;
 
         public:
@@ -46,6 +47,7 @@ namespace TosLang
 
         private:
             unsigned mNextRegister;
+            std::shared_ptr<FrontEnd::SymbolTable> mSymTable;
             Program mProgram;
         };
     }
