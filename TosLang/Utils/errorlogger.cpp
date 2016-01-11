@@ -31,6 +31,7 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
     { ErrorType::FN_MISSING_RETURN,           "FUNCTION ERROR: Missing return statement" },
     { ErrorType::FN_MISSING_RETURN_TYPE,      "FUNCTION ERROR: Missing return type" },
     { ErrorType::FN_REDEFINITION,             "FUNCTION ERROR: Trying to redefine an already defined function" },
+    { ErrorType::FN_UNDEFINED,                "FUNCTION ERROR: Trying to call an undefined function" },
 
     // If
     { ErrorType::IF_MISSING_BODY,             "IF ERROR: Missing if body" },
@@ -39,7 +40,7 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
     // IO
     { ErrorType::PRINT_WRONG_MSG,             "PRINT ERROR: Wrong message for printing" },
     { ErrorType::SCAN_MISSING_INPUT_VAR,      "SCAN ERROR: Missing input variable" },
-    { ErrorType::SCAN_WRONG_INPUT_VAR,        "SCAN ERROR: Incorrect input variable" },
+    { ErrorType::SCAN_WRONG_INPUT_TYPE,       "SCAN ERROR: Input variable is not an identfier" },
 
     // Literal
     { ErrorType::NEW_LINE_IN_LITERAL,          "LITERAL ERROR: Newline in string literal" },
@@ -55,14 +56,17 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
     { ErrorType::PARAM_MISSING_COLON,          "PARAM ERROR: Missing colon between a parameter and its type" },
     { ErrorType::PARAM_MISSING_NAME,           "PARAM ERROR: Expected parameter name" },
     { ErrorType::PARAM_MISSING_TYPE,           "PARAM ERROR: Expected parameter type" },
-
+    
     // Syntax
     { ErrorType::SYNTAX_MISSING_LBRACE,        "SYNTAX ERROR: Expected '{'" },
     { ErrorType::SYNTAX_MISSING_RBRACE,        "SYNTAX ERROR: Expected '}'" },
 
     // Type
+    { ErrorType::WRONG_BIN_EXPR_TYPE,          "TYPE ERROR: Mismatch between binary expression operands type" },
+    { ErrorType::WRONG_COND_EXPR_TYPE,         "TYPE ERROR: Conditional expression must evaluate to a boolean value" },
+    { ErrorType::WRONG_EXPR_TYPE,              "TYPE ERROR: Trying to instantiate variable with an expression of the wrong type" },
     { ErrorType::WRONG_LITERAL_TYPE,           "TYPE ERROR: Trying to instantiate variable with a literal of the wrong type" },
-    { ErrorType::WRONG_VARIABLE_TYPE,          "TYPE ERROR: Type mismatch between variables" },
+    { ErrorType::WRONG_VARIABLE_TYPE,          "TYPE ERROR: Type mismatch between a variable and its intializer" },
 
     // Var
     { ErrorType::VAR_MISSING_TYPE,             "VAR ERROR: Missing type from variable declaration" },

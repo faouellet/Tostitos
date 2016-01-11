@@ -7,9 +7,12 @@ namespace TosLang
     {
         enum class Type : int
         {
+            // Default
+            ERROR,
+
             // Builtins
             BOOL,
-            INT,
+            NUMBER,
             STRING,
             VOID,
 
@@ -17,7 +20,6 @@ namespace TosLang
 
             // Arrays
 
-            // Default
             UNKNOWN,
         };
     }

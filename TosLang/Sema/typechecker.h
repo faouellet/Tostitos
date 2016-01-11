@@ -6,6 +6,7 @@
 #include "symboltable.h"
 
 #include <stack>
+#include <map>
 
 namespace TosLang
 {
@@ -38,26 +39,38 @@ namespace TosLang
             */
             unsigned GetErrorCount() const { return mErrorCount; }
 
+        private:
+            /*
+            * \fn                       TryGetSymbol
+            * \brief                    Tries to get the symbol associated with a variable. If this fails, logs an error.
+            * \param fnName             Name of the function in which the symbol is defined. Will be empty in case of a global symbol.
+            * \param symName            Name of the symbol (either a function or variable)
+            * \param scopesToSearch     Scopes in which the symbol might be defined
+            * \param sym                Symbol to be found (output)
+            * \return                   True if the symbol is found, else false
+            */
+            bool TryGetSymbol(const std::string& fnName, const std::string& symName, const std::stack<int>& scopesToSearch, Symbol& sym);
+
         protected:  // Declarations
             void HandleVarDecl();
-            void HandleFunctionDecl();
 
         protected:  // Expressions
             void HandleBinaryExpr();
             void HandleCallExpr();
 
-        protected:
+        protected:  // Statements
             void HandleIfStmt();
             void HandlePrintStmt();
             void HandleScanStmt();
             void HandleWhileStmt();
 
         private:
-            unsigned mErrorCount;                       /*!< Number of errors found by the type checker */
-            int mCurrentScopeID;                        /*!< Current scope identifier */
-            FunctionDecl* mCurrentFunc;                 /*!< Current traversed function */
-            std::stack<int> mCurrentScopesTraversed;    /*!< Path from the current scope to the global scopes */
-            std::shared_ptr<SymbolTable> mSymbolTable;  /*!< Symbol table to be used by the type checker */
+            unsigned mErrorCount;                                       /*!< Number of errors found by the type checker */
+            int mCurrentScopeID;                                        /*!< Current scope identifier */
+            FunctionDecl* mCurrentFunc;                                 /*!< Current traversed function */
+            std::stack<int> mCurrentScopesTraversed;                    /*!< Path from the current scope to the global scopes */
+            std::shared_ptr<SymbolTable> mSymbolTable;                  /*!< Symbol table to be used by the type checker */
+            std::map<const BinaryOpExpr*, Common::Type> mBinOpTypes;    /*!< Type of the value produced by a binary expression */
         };
     }
 }

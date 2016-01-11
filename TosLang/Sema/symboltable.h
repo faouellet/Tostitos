@@ -61,6 +61,8 @@ namespace TosLang
             */
             bool GetSymbol(const std::string& fnName, const std::string& symName, const std::stack<int>& scopesToSearch, Symbol& sym);
 
+            bool IsGlobalVariable(const std::string& varName) const;
+
         private:
             using SymTable = std::unordered_map<std::string, Symbol>;
             using LocalSymTables = std::unordered_map<std::string, SymTable>;

@@ -16,7 +16,7 @@ using namespace MachineEngine::ProcessorSpace;
 
 BOOST_AUTO_TEST_CASE( InstructionTypeTest )
 {
-    std::vector<Instruction::InstructionType> types = {
+    std::vector<Instruction::InstructionOpCode> types = {
         Instruction::MISC, Instruction::JUMP, Instruction::LOAD_IMM, Instruction::MOV,
         Instruction::STORE, Instruction::ADD_IMM, Instruction::ADD, Instruction::SUB_IMM,
         Instruction::SUB, Instruction::AND_IMM, Instruction::AND, Instruction::OR_IMM,

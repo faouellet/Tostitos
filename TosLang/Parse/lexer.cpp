@@ -222,7 +222,7 @@ Lexer::Token Lexer::GetNextToken()
             }
             else if (mCurrentStr == "Int")
             {
-                mCurrentType = Common::Type::INT;
+                mCurrentType = Common::Type::NUMBER;
                 return Token::TYPE;
             }
 			else if (mCurrentStr == "Bool")

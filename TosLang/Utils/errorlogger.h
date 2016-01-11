@@ -47,15 +47,17 @@ namespace TosLang
                 FN_MISSING_RETURN,
                 FN_MISSING_RETURN_TYPE,
                 FN_REDEFINITION,
+                FN_UNDEFINED,
 
                 // If
                 IF_MISSING_BODY,
                 IF_MISSING_COND,
 
                 // IO
+                PRINT_WRONG_INPUT_TYPE,
                 PRINT_WRONG_MSG,
                 SCAN_MISSING_INPUT_VAR,
-                SCAN_WRONG_INPUT_VAR,
+                SCAN_WRONG_INPUT_TYPE,
 
                 // Literal
                 NEW_LINE_IN_LITERAL,
@@ -72,6 +74,9 @@ namespace TosLang
                 SYNTAX_MISSING_RBRACE,
 
                 // Type
+                WRONG_BIN_EXPR_TYPE,
+                WRONG_COND_EXPR_TYPE,
+                WRONG_EXPR_TYPE,
                 WRONG_LITERAL_TYPE,
                 WRONG_VARIABLE_TYPE,
 

@@ -22,7 +22,7 @@ namespace MachineEngine
             * \enum     InstructionType
             * \brief    Leading byte for the different types of instruction
             */
-            enum InstructionType
+            enum InstructionOpCode
             {
                 MISC        = 0x00,
                 JUMP        = 0x10,
@@ -67,7 +67,7 @@ namespace MachineEngine
             * \brief        Constructor
             * \param value  Value of the instruction. 0 by default.
             */
-			explicit Instruction(InstructionType iType);
+			explicit Instruction(InstructionOpCode iType);
 
             /**
             * \fn       Instruction

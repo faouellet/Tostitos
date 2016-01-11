@@ -5,10 +5,14 @@
 #include "../Common/astvisitor.h"
 #include "../Sema/symboltable.h"
 
+#include <map>
+
 namespace TosLang
 {
     namespace BackEnd
     {
+        class FunctionDecl;
+
         /*
          * \class InstructionSelector
          * \brief: TODO
@@ -18,10 +22,10 @@ namespace TosLang
             friend class Common::ASTVisitor<InstructionSelector>;
 
         public:
-            using Program = std::vector<ControlFlowGraph>;
+            using Program = std::map<FunctionDecl*, ControlFlowGraph>;
 
         public:
-            InstructionSelector(const std::shared_ptr<FrontEnd::SymbolTable>& symTab) : mNextRegister{ 0 }, mSymTable{ symTab } { };
+            InstructionSelector(const std::shared_ptr<FrontEnd::SymbolTable>& symTab);
             ~InstructionSelector() = default;
 
         public:
@@ -48,7 +52,11 @@ namespace TosLang
         private:
             unsigned mNextRegister;
             std::shared_ptr<FrontEnd::SymbolTable> mSymTable;
+            std::map<FrontEnd::ASTNode*, unsigned> mNodeRegister;
             Program mProgram;
+            FunctionDecl* mCurrentFunc;                 /*!< Current traversed function */
+            ControlFlowGraph mCurrentCFG;
+            BasicBlock mCurrentBlock;
         };
     }
 }
