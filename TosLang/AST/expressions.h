@@ -26,11 +26,14 @@ namespace TosLang
 		class BinaryOpExpr : public Expr
 		{
 		public:
-            BinaryOpExpr(Common::Opcode op, std::unique_ptr<Expr>&& lhs, std::unique_ptr<Expr>&& rhs) : 
+            BinaryOpExpr(Common::Opcode op, std::unique_ptr<Expr>&& lhs, std::unique_ptr<Expr>&& rhs,
+                         const Utils::SourceLocation& srcLoc) : 
                 Expr{ NodeKind::BINARY_EXPR }, mOp{ op }
             {
                 assert(lhs != nullptr);
                 assert(rhs != nullptr);
+
+                mSrcLoc = srcLoc;
 
                 AddChildNode(std::move(lhs));
                 AddChildNode(std::move(rhs));
@@ -71,7 +74,11 @@ namespace TosLang
         class BooleanExpr : public Expr
         {
         public:
-            explicit BooleanExpr(bool value) : Expr{ NodeKind::BOOLEAN_EXPR }, mValue{ value } { mName = mValue ? "True" : "False"; }
+            explicit BooleanExpr(bool value, const Utils::SourceLocation& srcLoc) : Expr{ NodeKind::BOOLEAN_EXPR }, mValue{ value } 
+            { 
+                mName = mValue ? "True" : "False"; 
+                mSrcLoc = srcLoc;
+            }
             virtual ~BooleanExpr() { }
 
         public:
@@ -93,9 +100,11 @@ namespace TosLang
         class CallExpr : public Expr
         {
         public:
-            CallExpr(const std::string& fnName, std::vector<std::unique_ptr<Expr>>&& args) : Expr{ NodeKind::CALL_EXPR }
+            CallExpr(const std::string& fnName, std::vector<std::unique_ptr<Expr>>&& args, const Utils::SourceLocation srcLoc) 
+                : Expr{ NodeKind::CALL_EXPR }
             { 
                 mName = fnName; 
+                mSrcLoc = srcLoc;
                 mChildren.insert(mChildren.end(), std::make_move_iterator(args.begin()), std::make_move_iterator(args.end()));
             }
             
@@ -124,7 +133,12 @@ namespace TosLang
         class IdentifierExpr : public Expr
         {
         public:
-            explicit IdentifierExpr(std::string value) : Expr{ NodeKind::IDENTIFIER_EXPR } { mName = value; }
+            explicit IdentifierExpr(const std::string& value, const Utils::SourceLocation& srcLoc) 
+                : Expr{ NodeKind::IDENTIFIER_EXPR } 
+            {
+                mName = value; 
+                mSrcLoc = srcLoc;
+            }
             virtual ~IdentifierExpr() { }
         };
 
@@ -135,7 +149,14 @@ namespace TosLang
         class NumberExpr : public Expr
         {
         public:
-            explicit NumberExpr(int value) : Expr{ NodeKind::NUMBER_EXPR }, mValue{ value } { mName = std::to_string(value); }
+            explicit NumberExpr(int value, const Utils::SourceLocation& srcLoc) 
+                : Expr{ NodeKind::NUMBER_EXPR }, mValue{ value } 
+            { 
+                // TODO: This most likely won't guarantee a unique name for every number expression in a program.
+                //       This will cause problem during the symbol collection
+                mName = std::to_string(value); 
+                mSrcLoc = srcLoc;
+            }
             virtual ~NumberExpr() { }
 
         public:

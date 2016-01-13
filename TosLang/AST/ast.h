@@ -1,6 +1,8 @@
 #ifndef AST_H__TOSTITOS
 #define AST_H__TOSTITOS
 
+#include "../Utils/sourceloc.h"
+
 #include <cassert>
 #include <memory>
 #include <string>
@@ -102,9 +104,10 @@ namespace TosLang
             }
 
         protected:
-            NodeKind mKind;             /*!< Kind of the AST node */
-            std::string mName;          /*!< Name of the AST node. In the case of the IdentifierExpr node, it is also the name of the identifier. */
-            ChildrenNodes mChildren;    /*!< List of children nodes linked to this AST node */
+            NodeKind mKind;                 /*!< Kind of the AST node */
+            std::string mName;              /*!< Name of the AST node. In the case of the IdentifierExpr node, it is also the name of the identifier. */
+            ChildrenNodes mChildren;        /*!< List of children nodes linked to this AST node */
+            Utils::SourceLocation mSrcLoc;  /*!< Location in the source code from which the node was created */
         };
     }
 }

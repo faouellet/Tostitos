@@ -74,7 +74,8 @@ std::unique_ptr<FunctionDecl> Parser::ParseFunctionDecl()
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::FN_MISSING_IDENTIFIER, mLexer.GetCurrentLocation());
         return std::move(fnNode);
     }
-    std::string fnName = mLexer.GetCurrentStr();
+    const std::string fnName = mLexer.GetCurrentStr();
+    SourceLocation srcLoc = mLexer.GetCurrentLocation();
 
     // Make sure the function name is followed by an opening parenthesis
     if ((mCurrentToken = mLexer.GetNextToken()) != Lexer::Token::LEFT_PAREN)
@@ -89,6 +90,7 @@ std::unique_ptr<FunctionDecl> Parser::ParseFunctionDecl()
     std::string varName;
     while ((mCurrentToken = mLexer.GetNextToken()) != Lexer::Token::RIGHT_PAREN)
     {        
+        srcLoc = mLexer.GetCurrentLocation();
         if (mCurrentToken != Lexer::Token::IDENTIFIER)
         {
             ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::PARAM_MISSING_NAME, mLexer.GetCurrentLocation());
@@ -107,7 +109,7 @@ std::unique_ptr<FunctionDecl> Parser::ParseFunctionDecl()
             ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::PARAM_MISSING_TYPE, mLexer.GetCurrentLocation());
             return std::move(fnNode);
         }
-        param.reset(std::make_unique<VarDecl>(varName, mLexer.GetCurrentType()).release());
+        param.reset(std::make_unique<VarDecl>(varName, mLexer.GetCurrentType(), srcLoc).release());
 
         mCurrentToken = mLexer.GetNextToken();
         if ((mCurrentToken != Lexer::Token::RIGHT_PAREN) && (mCurrentToken != Lexer::Token::COMMA))
@@ -140,7 +142,7 @@ std::unique_ptr<FunctionDecl> Parser::ParseFunctionDecl()
     mCurrentToken = mLexer.GetNextToken();
     std::unique_ptr<CompoundStmt> body = ParseCompoundStmt();
     // TODO: Check if the body is not null. If it is, we need to log an error
-    fnNode.reset(new FunctionDecl(fnName, fnType, std::move(params), std::move(body)));
+    fnNode.reset(new FunctionDecl(fnName, fnType, std::move(params), std::move(body), srcLoc));
     return fnNode;
 }
 
@@ -153,7 +155,8 @@ std::unique_ptr<VarDecl> Parser::ParseVarDecl()
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_MISSING_IDENTIFIER, mLexer.GetCurrentLocation());
         return std::move(node);
     }
-    std::string varName = mLexer.GetCurrentStr();
+    const std::string varName = mLexer.GetCurrentStr();
+    const SourceLocation srcLoc = mLexer.GetCurrentLocation();
     
     // Make sure the variable name is followed by a colon
     if ((mCurrentToken = mLexer.GetNextToken()) != Lexer::Token::COLON)
@@ -175,7 +178,7 @@ std::unique_ptr<VarDecl> Parser::ParseVarDecl()
         return std::move(node);
     }
      
-    VarDecl* vDecl = new VarDecl(varName, vType);
+    VarDecl* vDecl = new VarDecl(varName, vType, srcLoc);
     
     mCurrentToken = mLexer.GetNextToken();
 
@@ -212,16 +215,16 @@ std::unique_ptr<Expr> Parser::ParseExpr()
     switch (mCurrentToken)
     {
     case Lexer::Token::FALSE:
-        node = std::make_unique<BooleanExpr>(false);
+        node = std::make_unique<BooleanExpr>(false, mLexer.GetCurrentLocation());
         break;
     case Lexer::Token::TRUE:
-        node = std::make_unique<BooleanExpr>(true);
+        node = std::make_unique<BooleanExpr>(true, mLexer.GetCurrentLocation());
         break;
     case Lexer::Token::NUMBER:
-        node = std::make_unique<NumberExpr>(mLexer.GetCurrentNumber());
+        node = std::make_unique<NumberExpr>(mLexer.GetCurrentNumber(), mLexer.GetCurrentLocation());
         break;
     case Lexer::Token::IDENTIFIER:
-        node = std::make_unique<IdentifierExpr>(mLexer.GetCurrentStr());
+        node = std::make_unique<IdentifierExpr>(mLexer.GetCurrentStr(), mLexer.GetCurrentLocation());
         break;
     case Lexer::Token::SEMI_COLON:
         return nullptr;
@@ -262,6 +265,7 @@ std::unique_ptr<Expr> Parser::ParseBinaryOpExpr(Lexer::Token op, std::unique_ptr
     // Parse the right-hand side of the expression. It is assumed that the left-hand side of the expression has been parsed.
 
     mCurrentToken = mLexer.GetNextToken();
+    const SourceLocation srcLoc = mLexer.GetCurrentLocation();
 
     std::unique_ptr<Expr> rhs = ParseExpr();
     if (rhs == nullptr)
@@ -271,7 +275,7 @@ std::unique_ptr<Expr> Parser::ParseBinaryOpExpr(Lexer::Token op, std::unique_ptr
     }
     else
     {
-        return std::make_unique<BinaryOpExpr>(TokenToOpcode(op), std::move(lhs), std::move(rhs));
+        return std::make_unique<BinaryOpExpr>(TokenToOpcode(op), std::move(lhs), std::move(rhs), srcLoc);
     }
 }
 
@@ -282,6 +286,7 @@ std::unique_ptr<Expr> Parser::ParseCallExpr(std::unique_ptr<Expr>&& fn)
     std::unique_ptr<Expr> arg;
 
     mCurrentToken = mLexer.GetNextToken();
+    const SourceLocation srcLoc = mLexer.GetCurrentLocation();
 
     // Parse the expression the function is being called with
     while (mCurrentToken != Lexer::Token::RIGHT_PAREN)
@@ -314,7 +319,7 @@ std::unique_ptr<Expr> Parser::ParseCallExpr(std::unique_ptr<Expr>&& fn)
 
     mCurrentToken = mLexer.GetNextToken();
 
-    cExpr.reset(new CallExpr(fn->GetName(), std::move(args)));
+    cExpr.reset(new CallExpr(fn->GetName(), std::move(args), srcLoc));
 
     return cExpr;
 }
@@ -390,6 +395,8 @@ std::unique_ptr<IfStmt> Parser::ParseIfStmt()
     std::unique_ptr<IfStmt> ifStmt = std::make_unique<IfStmt>();
     
     mCurrentToken = mLexer.GetNextToken();
+    const SourceLocation srcLoc = mLexer.GetCurrentLocation();
+
     std::unique_ptr<Expr> condExpr = ParseExpr();
     if (condExpr == nullptr)
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::IF_MISSING_COND, mLexer.GetCurrentLocation());
@@ -399,27 +406,25 @@ std::unique_ptr<IfStmt> Parser::ParseIfStmt()
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::IF_MISSING_BODY, mLexer.GetCurrentLocation());
         
     if ((condExpr != nullptr) && (thenStmt != nullptr))
-        ifStmt.reset(new IfStmt(std::move(condExpr), std::move(thenStmt)));
+        ifStmt.reset(new IfStmt(std::move(condExpr), std::move(thenStmt), srcLoc));
 
     return ifStmt;
 }
 
 std::unique_ptr<PrintStmt> Parser::ParsePrintStmt()
 {
-    std::unique_ptr<PrintStmt> pStmt = std::make_unique<PrintStmt>();
+    std::unique_ptr<PrintStmt> pStmt = std::make_unique<PrintStmt>(mLexer.GetCurrentLocation());
 
     mCurrentToken = mLexer.GetNextToken();
 
     switch (mCurrentToken)
     {
+    case Lexer::Token::STRING_LITERAL:
     case Lexer::Token::IDENTIFIER:
-        pStmt->AddMessage(std::make_unique<IdentifierExpr>(mLexer.GetCurrentStr()));
+        pStmt->AddMessage(std::make_unique<IdentifierExpr>(mLexer.GetCurrentStr(), mLexer.GetCurrentLocation()));
         break;
     case Lexer::Token::NUMBER:
-        pStmt->AddMessage(std::make_unique<NumberExpr>(mLexer.GetCurrentNumber()));
-        break;
-    case Lexer::Token::STRING_LITERAL:
-        pStmt->AddMessage(std::make_unique<IdentifierExpr>(mLexer.GetCurrentStr()));
+        pStmt->AddMessage(std::make_unique<NumberExpr>(mLexer.GetCurrentNumber(), mLexer.GetCurrentLocation()));
         break;
     case Lexer::Token::SEMI_COLON:
         break;
@@ -436,7 +441,7 @@ std::unique_ptr<PrintStmt> Parser::ParsePrintStmt()
 
 std::unique_ptr<ReturnStmt> Parser::ParseReturnStmt()
 {
-    auto rStmt = std::make_unique<ReturnStmt>();
+    auto rStmt = std::make_unique<ReturnStmt>(mLexer.GetCurrentLocation());
 
     mCurrentToken = mLexer.GetNextToken();
     rStmt->AddReturnValue(std::move(ParseExpr()));
@@ -453,12 +458,14 @@ std::unique_ptr<ScanStmt> Parser::ParseScanStmt()
     std::unique_ptr<ScanStmt> sStmt = std::make_unique<ScanStmt>();
 
     mCurrentToken = mLexer.GetNextToken();
+    const SourceLocation srcLoc = mLexer.GetCurrentLocation();
+
     std::unique_ptr<Expr> inputExpr = ParseExpr();
 
     if (inputExpr == nullptr)
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::SCAN_MISSING_INPUT_VAR, mLexer.GetCurrentLocation());
     else
-        sStmt.reset(new ScanStmt(std::make_unique<IdentifierExpr>(inputExpr->GetName())));
+        sStmt.reset(new ScanStmt(std::make_unique<IdentifierExpr>(inputExpr->GetName(), mLexer.GetCurrentLocation()), srcLoc));
         
     return sStmt;
 }
@@ -468,6 +475,8 @@ std::unique_ptr<WhileStmt> Parser::ParseWhileStmt()
     std::unique_ptr<WhileStmt> whileStmt = std::make_unique<WhileStmt>();
 
     mCurrentToken = mLexer.GetNextToken();
+    const SourceLocation srcLoc = mLexer.GetCurrentLocation();
+
     std::unique_ptr<Expr> condExpr = ParseExpr();
     if (condExpr == nullptr)
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WHILE_MISSING_COND, mLexer.GetCurrentLocation());
@@ -477,7 +486,7 @@ std::unique_ptr<WhileStmt> Parser::ParseWhileStmt()
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WHILE_MISSING_BODY, mLexer.GetCurrentLocation());
 
     if ((condExpr != nullptr) && (body != nullptr))
-        whileStmt.reset(new WhileStmt(std::move(condExpr), std::move(body)));
+        whileStmt.reset(new WhileStmt(std::move(condExpr), std::move(body), srcLoc));
     return whileStmt;
 }
 

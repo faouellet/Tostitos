@@ -60,7 +60,12 @@ namespace TosLang
         {
         public:
             VarDecl() : Decl{ NodeKind::ERROR } { }
-            explicit VarDecl(const std::string& varName, Common::Type type) : Decl{ NodeKind::VAR_DECL }, mType{ type } { mName = varName; }
+            explicit VarDecl(const std::string& varName, Common::Type type, const Utils::SourceLocation& srcLoc) 
+                : Decl{ NodeKind::VAR_DECL }, mType{ type } 
+            {
+                mName = varName; 
+                mSrcLoc = srcLoc;
+            }
             virtual ~VarDecl() { }
 
 		public:
@@ -143,10 +148,13 @@ namespace TosLang
         {
         public:
             FunctionDecl() : Decl{ NodeKind::ERROR } { }
-            FunctionDecl(const std::string& fnName, Common::Type type, std::unique_ptr<ParamVarDecls>&& params, std::unique_ptr<CompoundStmt>&& body) 
+            FunctionDecl(const std::string& fnName, Common::Type type, 
+                         std::unique_ptr<ParamVarDecls>&& params, std::unique_ptr<CompoundStmt>&& body,
+                         const Utils::SourceLocation& srcLoc)
                 : Decl{ NodeKind::FUNCTION_DECL }, mReturnType{ type }
             {
                 mName = fnName;
+                mSrcLoc = srcLoc;
                 AddChildNode(std::move(params));
                 AddChildNode(std::move(body));
             }
