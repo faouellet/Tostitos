@@ -16,6 +16,8 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
     // Call
     { ErrorType::CALL_MISSING_PAREN,          "CALL ERROR: Function call is missing a closing parenthesis" },
     { ErrorType::CALL_ARG_ERROR,              "CALL ERROR: Incorrect function call arguments" },
+    { ErrorType::CALL_WRONG_ARG_NB,           "CALL ERROR: Trying to call a function with the wrong number of arguments" },
+    { ErrorType::CALL_WRONG_ARG_TYPE,         "CALL ERROR: Trying to call a function with a parameter of the wrong type" },
 
     // File
     { ErrorType::WRONG_FILE_TYPE,              "FILE ERROR: Wrong file type" },
@@ -31,7 +33,7 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
     { ErrorType::FN_MISSING_RETURN,           "FUNCTION ERROR: Missing return statement" },
     { ErrorType::FN_MISSING_RETURN_TYPE,      "FUNCTION ERROR: Missing return type" },
     { ErrorType::FN_REDEFINITION,             "FUNCTION ERROR: Trying to redefine an already defined function" },
-    { ErrorType::FN_UNDEFINED,                "FUNCTION ERROR: Trying to call an undefined function" },
+    { ErrorType::FN_UNDECLARED,               "FUNCTION ERROR: Trying to call an undeclared function" },
 
     // If
     { ErrorType::IF_MISSING_BODY,             "IF ERROR: Missing if body" },
@@ -73,7 +75,7 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
     { ErrorType::VAR_MISSING_COLON,            "VAR ERROR: Missing : between a variable and its type" },
     { ErrorType::VAR_MISSING_IDENTIFIER,       "VAR ERROR: The var keyword should be followed by an identifier" },
     { ErrorType::VAR_REDEFINITION,             "VAR ERROR: Trying to redefine an already defined variable" },
-    { ErrorType::VAR_UNDECLARED_IDENTIFIER,    "VAR ERROR: Trying to assign an undeclared variable" },
+    { ErrorType::VAR_UNDECLARED_IDENTIFIER,    "VAR ERROR: Trying to use an undeclared variable" },
     { ErrorType::VAR_VOID_TYPE,                "VAR ERROR: Trying to create a variable with void type" },
 
     // While

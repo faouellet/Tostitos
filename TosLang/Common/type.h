@@ -16,8 +16,6 @@ namespace TosLang
             STRING,
             VOID,
 
-            FUNCTION,
-
             // Arrays
 
             UNKNOWN,

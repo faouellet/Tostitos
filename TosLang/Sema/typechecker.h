@@ -51,6 +51,8 @@ namespace TosLang
             */
             bool TryGetSymbol(const std::string& fnName, const std::string& symName, const std::stack<int>& scopesToSearch, Symbol& sym);
 
+            void CheckCondExprEvaluateToBool(const Expr* condExpr);
+
         protected:  // Declarations
             void HandleVarDecl();
 

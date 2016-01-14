@@ -11,7 +11,7 @@ bool TosLang::FrontEnd::SymbolTable::AddLocalSymbol(const std::string& fnName, c
     // We suffix the symbol name with the scope level to allow for multiple definitions of the same variable in 
     // different scopes inside the function
     std::stringstream sStream;
-    sStream << varName << sym.mScopeID;
+    sStream << varName << sym.GetScopeID();
     std::string realSymName = sStream.str();
 
     auto fnIt = mLocalTables.find(fnName);

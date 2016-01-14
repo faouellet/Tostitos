@@ -32,6 +32,8 @@ namespace TosLang
                 // Call
                 CALL_ARG_ERROR,
                 CALL_MISSING_PAREN,
+                CALL_WRONG_ARG_NB,
+                CALL_WRONG_ARG_TYPE,
 
                 // File
                 WRONG_FILE_TYPE,
@@ -47,7 +49,7 @@ namespace TosLang
                 FN_MISSING_RETURN,
                 FN_MISSING_RETURN_TYPE,
                 FN_REDEFINITION,
-                FN_UNDEFINED,
+                FN_UNDECLARED,
 
                 // If
                 IF_MISSING_BODY,

@@ -15,13 +15,28 @@ namespace TosLang
         * \struct Symbol
         * \brief TODO
         */
-        struct Symbol
+        class Symbol
         {
-            Common::Type mType;
-            int mScopeID;
-
+        public:
             Symbol() : mType{ Common::Type::UNKNOWN }, mScopeID{ -1 } { };
             Symbol(Common::Type t, int scopeID) : mType{ t }, mScopeID{ scopeID } { }
+            Symbol(std::vector<Common::Type> ts, int scopeID) : mType{ ts }, mScopeID{ scopeID } { }
+
+            const Common::Type GetVariableType() const { return mType[0]; }
+            const Common::Type GetFunctionReturnType() const { return mType[0]; }
+            const std::vector<Common::Type> GetFunctionParamTypes() const 
+            {
+                return std::vector<Common::Type>{mType.begin() + 1, mType.end()};
+            }
+
+            const int GetScopeID() const { return mScopeID; }
+
+            // TODO: Add boolean to indicate if the symbol refer to a variable or a function
+        private:
+            std::vector<Common::Type> mType;    /*!< Type of the symbol
+                                                For variable, it is simply the variable type
+                                                For function, the first type is the return type and the others are its parameters types*/
+            int mScopeID;
         };
 
         /*

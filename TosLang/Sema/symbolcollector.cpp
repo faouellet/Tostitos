@@ -48,10 +48,13 @@ void SymbolCollector::HandleFunctionDecl()
     const FunctionDecl* fnDecl = dynamic_cast<const FunctionDecl*>(mCurrentNode);
     assert(fnDecl != nullptr);
 
+    std::vector<Type> fnType;
+
     // The symbol name for a function is a concatenation of its name, its return type and the type of its arguments
     std::stringstream sStream;
     sStream << fnDecl->GetName();
     sStream << static_cast<std::underlying_type<Common::Type>::type>(fnDecl->GetReturnType());
+    fnType.push_back(fnDecl->GetReturnType());
 
     const ParamVarDecls* paramDecl = dynamic_cast<const ParamVarDecls*>(fnDecl->GetArguments());
     assert(paramDecl != nullptr);
@@ -61,9 +64,11 @@ void SymbolCollector::HandleFunctionDecl()
         const VarDecl* paramVar = dynamic_cast<const VarDecl*>(param.get());
         // Since Common::Type is an enum class, we need to do a cast to its underlying type
         sStream << static_cast<std::underlying_type<Common::Type>::type>(paramVar->GetVarType());
+
+        fnType.push_back(paramVar->GetVarType());
     }
 
-    mSymbolTable->AddGlobalSymbol(sStream.str(), { Common::Type::FUNCTION, 0 });
+    mSymbolTable->AddGlobalSymbol(sStream.str(), { fnType, 0 });
 }
 
 void SymbolCollector::HandleParamVarDecl() 
