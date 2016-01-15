@@ -47,18 +47,6 @@ unsigned TypeChecker::Run(const std::unique_ptr<ASTNode>& root)
     return mErrorCount;
 }
 
-bool TosLang::FrontEnd::TypeChecker::TryGetSymbol(const std::string& fnName, const std::string& symName, const std::stack<int>& scopesToSearch, Symbol& sym)
-{
-    if (!mSymbolTable->GetSymbol(fnName, symName, scopesToSearch, sym))
-    {
-        // Variable wasn't declared
-        ErrorLogger::PrintError(ErrorLogger::ErrorType::VAR_UNDECLARED_IDENTIFIER);
-        ++mErrorCount;
-        return false;
-    }
-    return true;
-}
-
 void TosLang::FrontEnd::TypeChecker::CheckCondExprEvaluateToBool(const Expr* condExpr)
 {
     switch (condExpr->GetKind())
@@ -71,7 +59,7 @@ void TosLang::FrontEnd::TypeChecker::CheckCondExprEvaluateToBool(const Expr* con
         const BinaryOpExpr* bExpr = dynamic_cast<const BinaryOpExpr*>(condExpr);
         if (mBinOpTypes[bExpr] != Type::BOOL)
         {
-            ErrorLogger::PrintError(ErrorLogger::ErrorType::WRONG_COND_EXPR_TYPE);
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_COND_EXPR_TYPE, bExpr->GetSourceLocation());
             ++mErrorCount;
         }
     }
@@ -80,21 +68,21 @@ void TosLang::FrontEnd::TypeChecker::CheckCondExprEvaluateToBool(const Expr* con
     {
         const CallExpr* cExpr = dynamic_cast<const CallExpr*>(condExpr);
         Symbol callSym;
-        if (!TryGetSymbol(mCurrentFunc->GetName(), cExpr->GetName(), mCurrentScopesTraversed, callSym))
+        if (!mSymbolTable->GetSymbol(mCurrentFunc->GetName(), cExpr->GetName(), mCurrentScopesTraversed, callSym))
         {
-            ErrorLogger::PrintError(ErrorLogger::ErrorType::FN_UNDECLARED);
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::FN_UNDECLARED, cExpr->GetSourceLocation());
             ++mErrorCount;
         }
 
         if (callSym.GetFunctionReturnType() != Type::BOOL)
         {
-            ErrorLogger::PrintError(ErrorLogger::ErrorType::WRONG_COND_EXPR_TYPE);
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_COND_EXPR_TYPE, cExpr->GetSourceLocation());
             ++mErrorCount;
         }
     }
     break;
     default:    // This will happens when the condition expression is a string or a number
-        ErrorLogger::PrintError(ErrorLogger::ErrorType::WRONG_COND_EXPR_TYPE);
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_COND_EXPR_TYPE, mCurrentNode->GetSourceLocation());
         ++mErrorCount;
         break;
     }
@@ -112,15 +100,19 @@ void TypeChecker::HandleVarDecl()
         Symbol varSymbol;
         // Get the name of the function currently traversed. An empty name means that we're not in a function, we're in the global scope
         std::string fnName = mCurrentFunc == nullptr ? "" : mCurrentFunc->GetName();
-        if (!TryGetSymbol(fnName, vDecl->GetName(), mCurrentScopesTraversed, varSymbol))
-            return;
+        if (!mSymbolTable->GetSymbol(fnName, vDecl->GetName(), mCurrentScopesTraversed, varSymbol))
+        {
+            // Variable wasn't declared
+            ++mErrorCount;
+            return ;
+        }
 
         // Check of there is a mismatch between the variable type and the type of its initialization expression
         // (for boolean or number literals)
         if ((initExpr->GetKind() == ASTNode::NodeKind::BOOLEAN_EXPR && varSymbol.GetVariableType() != Type::BOOL)
             || (initExpr->GetKind() == ASTNode::NodeKind::NUMBER_EXPR && varSymbol.GetVariableType() != Type::NUMBER))
         {
-            ErrorLogger::PrintError(ErrorLogger::ErrorType::WRONG_LITERAL_TYPE);
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_LITERAL_TYPE, initExpr->GetSourceLocation());
             ++mErrorCount;
             return;
         }
@@ -132,7 +124,7 @@ void TypeChecker::HandleVarDecl()
             // (when the initialization expression is a binary expression)
             if (varSymbol.GetVariableType() != mBinOpTypes[bExpr])
             {
-                ErrorLogger::PrintError(ErrorLogger::ErrorType::WRONG_EXPR_TYPE);
+                ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_EXPR_TYPE, bExpr->GetSourceLocation());
                 ++mErrorCount;
             }
         }
@@ -141,11 +133,11 @@ void TypeChecker::HandleVarDecl()
             // Check of there is a mismatch between the variable type and the type of its initialization expression
             // (when the initialization expression is a another variable or a function call)
             Symbol initSymbol;
-            if (TryGetSymbol(fnName, initExpr->GetName(), mCurrentScopesTraversed, initSymbol))
+            if (mSymbolTable->GetSymbol(fnName, initExpr->GetName(), mCurrentScopesTraversed, initSymbol))
             {
                 if (varSymbol.GetVariableType() != initSymbol.GetFunctionReturnType())
                 {
-                    ErrorLogger::PrintError(ErrorLogger::ErrorType::WRONG_VARIABLE_TYPE);
+                    ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_VARIABLE_TYPE, mCurrentNode->GetSourceLocation());
                     ++mErrorCount;
                 }
             }
@@ -177,7 +169,7 @@ void TosLang::FrontEnd::TypeChecker::HandleBinaryExpr()
         {
             const CallExpr* cExpr = dynamic_cast<const CallExpr*>(children[i].get());
             Symbol callSym;
-            if (!TryGetSymbol(mCurrentFunc->GetName(), cExpr->GetName(), mCurrentScopesTraversed, callSym))
+            if (!mSymbolTable->GetSymbol(mCurrentFunc->GetName(), cExpr->GetName(), mCurrentScopesTraversed, callSym))
             {
                 // Trying to call a function that doesn't exist
                 mBinOpTypes[bExpr] = Type::ERROR;
@@ -199,7 +191,7 @@ void TosLang::FrontEnd::TypeChecker::HandleBinaryExpr()
     // Check if the operands' types match
     if (operandTypes[0] != operandTypes[1])
     {
-        ErrorLogger::PrintError(ErrorLogger::ErrorType::WRONG_BIN_EXPR_TYPE);
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_BIN_EXPR_TYPE, bExpr->GetSourceLocation());
         ++mErrorCount;
         return;
     }
@@ -215,7 +207,7 @@ void TosLang::FrontEnd::TypeChecker::HandleCallExpr()
     Symbol fnSymbol;
     if (!mSymbolTable->GetSymbol("", cExpr->GetCalleeName(), mCurrentScopesTraversed, fnSymbol))
     {
-        ErrorLogger::PrintError(ErrorLogger::ErrorType::FN_UNDECLARED);
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::FN_UNDECLARED, cExpr->GetSourceLocation());
         ++mErrorCount;
         return;
     }
@@ -225,7 +217,7 @@ void TosLang::FrontEnd::TypeChecker::HandleCallExpr()
 
     if (expectedArgTypes.size() != args.size())
     {
-        ErrorLogger::PrintError(ErrorLogger::ErrorType::CALL_WRONG_ARG_NB);
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::CALL_WRONG_ARG_NB, cExpr->GetSourceLocation());
         ++mErrorCount;
         return;
     }
@@ -243,7 +235,7 @@ void TosLang::FrontEnd::TypeChecker::HandleCallExpr()
             const BinaryOpExpr* bExpr = dynamic_cast<const BinaryOpExpr*>(arg.get());
             if (expectedArgTy != mBinOpTypes[bExpr])
             {
-                ErrorLogger::PrintError(ErrorLogger::ErrorType::CALL_WRONG_ARG_TYPE);
+                ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::CALL_WRONG_ARG_TYPE, bExpr->GetSourceLocation());
                 ++mErrorCount;
                 return;
             }
@@ -252,7 +244,7 @@ void TosLang::FrontEnd::TypeChecker::HandleCallExpr()
         case ASTNode::NodeKind::BOOLEAN_EXPR:
             if (expectedArgTy != Type::BOOL)
             {
-                ErrorLogger::PrintError(ErrorLogger::ErrorType::CALL_WRONG_ARG_TYPE);
+                ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::CALL_WRONG_ARG_TYPE, arg->GetSourceLocation());
                 ++mErrorCount;
                 return;
             }
@@ -260,16 +252,16 @@ void TosLang::FrontEnd::TypeChecker::HandleCallExpr()
         case ASTNode::NodeKind::CALL_EXPR:
         {
             Symbol fnSym;
-            if (!TryGetSymbol(mCurrentFunc->GetName(), arg->GetName(), mCurrentScopesTraversed, fnSym))
+            if (!mSymbolTable->GetSymbol(mCurrentFunc->GetName(), arg->GetName(), mCurrentScopesTraversed, fnSym))
             {
-                ErrorLogger::PrintError(ErrorLogger::ErrorType::FN_UNDECLARED);
+                ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::FN_UNDECLARED, arg->GetSourceLocation());
                 ++mErrorCount;
                 return;
             }
 
             if (expectedArgTy != fnSym.GetFunctionReturnType())
             {
-                ErrorLogger::PrintError(ErrorLogger::ErrorType::CALL_WRONG_ARG_TYPE);
+                ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::CALL_WRONG_ARG_TYPE, arg->GetSourceLocation());
                 ++mErrorCount;
                 return;
             }
@@ -278,16 +270,16 @@ void TosLang::FrontEnd::TypeChecker::HandleCallExpr()
         case ASTNode::NodeKind::IDENTIFIER_EXPR:
         {
             Symbol varSym;
-            if (!TryGetSymbol(mCurrentFunc->GetName(), arg->GetName(), mCurrentScopesTraversed, varSym))
+            if (!mSymbolTable->GetSymbol(mCurrentFunc->GetName(), arg->GetName(), mCurrentScopesTraversed, varSym))
             {
-                ErrorLogger::PrintError(ErrorLogger::ErrorType::VAR_UNDECLARED_IDENTIFIER);
+                ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_UNDECLARED_IDENTIFIER, arg->GetSourceLocation());
                 ++mErrorCount;
                 return;
             }
 
             if (expectedArgTy != varSym.GetVariableType())
             {
-                ErrorLogger::PrintError(ErrorLogger::ErrorType::CALL_WRONG_ARG_TYPE);
+                ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::CALL_WRONG_ARG_TYPE, arg->GetSourceLocation());
                 ++mErrorCount;
                 return;
             }
@@ -296,7 +288,7 @@ void TosLang::FrontEnd::TypeChecker::HandleCallExpr()
         case ASTNode::NodeKind::NUMBER_EXPR:
             if (expectedArgTy != Type::NUMBER)
             {
-                ErrorLogger::PrintError(ErrorLogger::ErrorType::CALL_WRONG_ARG_TYPE);
+                ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::CALL_WRONG_ARG_TYPE, arg->GetSourceLocation());
                 ++mErrorCount;
                 return;
             }
@@ -315,7 +307,6 @@ void TosLang::FrontEnd::TypeChecker::HandleIfStmt()
     assert(ifStmt != nullptr);
 
     CheckCondExprEvaluateToBool(ifStmt->GetCondExpr());
-
 }
 
 void TosLang::FrontEnd::TypeChecker::HandlePrintStmt()
@@ -330,7 +321,7 @@ void TosLang::FrontEnd::TypeChecker::HandlePrintStmt()
             && msgExpr->GetKind() != ASTNode::NodeKind::NUMBER_EXPR)
         {
             // Expression is not an identifier or a number, log an error
-            ErrorLogger::PrintError(ErrorLogger::ErrorType::PRINT_WRONG_INPUT_TYPE);
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::PRINT_WRONG_INPUT_TYPE, pStmt->GetSourceLocation());
             ++mErrorCount;
         }
     }
@@ -345,7 +336,7 @@ void TosLang::FrontEnd::TypeChecker::HandleScanStmt()
     if (iExpr == nullptr)
     {
         // Expression is not an identifier, log an error
-        ErrorLogger::PrintError(ErrorLogger::ErrorType::SCAN_WRONG_INPUT_TYPE);
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::SCAN_WRONG_INPUT_TYPE, sStmt->GetSourceLocation());
         ++mErrorCount;
     }
 }

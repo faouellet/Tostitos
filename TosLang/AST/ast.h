@@ -83,6 +83,13 @@ namespace TosLang
             */
             const std::string& GetName() const { return mName; }
 
+            /*
+            * \fn       GetSourceLocation
+            * \brief    Gets the location in the source code associated with the AST node
+            * \return   Source location
+            */
+            const Utils::SourceLocation& GetSourceLocation() const { return mSrcLoc; }
+
         protected:
             /*
             * \fn       AddChildNode

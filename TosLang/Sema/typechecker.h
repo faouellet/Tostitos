@@ -41,16 +41,10 @@ namespace TosLang
 
         private:
             /*
-            * \fn                       TryGetSymbol
-            * \brief                    Tries to get the symbol associated with a variable. If this fails, logs an error.
-            * \param fnName             Name of the function in which the symbol is defined. Will be empty in case of a global symbol.
-            * \param symName            Name of the symbol (either a function or variable)
-            * \param scopesToSearch     Scopes in which the symbol might be defined
-            * \param sym                Symbol to be found (output)
-            * \return                   True if the symbol is found, else false
+            * \fn               CheckCondExprEvaluateToBool
+            * \brief            Checks if the conditional expression evaluates to a boolean value
+            * \param condExpr   The conditional expression
             */
-            bool TryGetSymbol(const std::string& fnName, const std::string& symName, const std::stack<int>& scopesToSearch, Symbol& sym);
-
             void CheckCondExprEvaluateToBool(const Expr* condExpr);
 
         protected:  // Declarations
