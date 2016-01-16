@@ -268,7 +268,7 @@ void CPU::SetCarryOverflowFlagSub(UInt16 op1, UInt16 op2)
     // Set carry flag
     mFR = result & 0x10000 ? mFR | UNSIGNED_CARRY_FLAG : mFR & ~UNSIGNED_CARRY_FLAG;
     // Set overflow flag
-    mFR = (result >= 0 && op1 & 0x8000 && op2 >= 0)
+    mFR = (op1 & 0x8000 && op2 >= 0)
         || (result & 0x8000 && op1 >= 0 && op2 & 0x8000) ?
         mFR | SIGNED_OVERFLOW_FLAG : mFR & ~SIGNED_OVERFLOW_FLAG;
 }
