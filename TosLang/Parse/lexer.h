@@ -79,7 +79,7 @@ namespace TosLang
             };
 
         public:
-            Lexer() : mCurrentNumber{ 0 } { };
+            Lexer() : mCurrentNumber{ 0 }, mCurrentType{ Common::Type::ERROR } { };
             ~Lexer() = default;
 
         public:

@@ -8,7 +8,7 @@
 using namespace TosLang::FrontEnd;
 using namespace TosLang::BackEnd;
 
-InstructionSelector::InstructionSelector(const std::shared_ptr<SymbolTable>& symTab) : mNextRegister{ 0 }, mSymTable{ symTab }
+InstructionSelector::InstructionSelector(const std::shared_ptr<SymbolTable>& symTab) : mNextRegister{ 0 }, mSymTable{ symTab }, mCurrentFunc{ nullptr }
 {
     this->mPrologueFtr = [this]()
     {

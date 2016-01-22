@@ -62,6 +62,7 @@ void SymbolCollector::HandleFunctionDecl()
     for (auto& param : paramDecl->GetParameters())
     {
         const VarDecl* paramVar = dynamic_cast<const VarDecl*>(param.get());
+        assert(paramVar != nullptr);
         // Since Common::Type is an enum class, we need to do a cast to its underlying type
         sStream << static_cast<std::underlying_type<Common::Type>::type>(paramVar->GetVarType());
 
@@ -81,6 +82,7 @@ void SymbolCollector::HandleParamVarDecl()
     {
         // Add the parameter type to the list of the function's parameters' types
         const VarDecl* paramVar = dynamic_cast<const VarDecl*>(param.get());
+        assert(paramVar);
         paramTypes.push_back(paramVar->GetVarType());
 
         // Add the parameter to the symbols defined in the scope of the current function

@@ -17,6 +17,7 @@ BOOST_AUTO_TEST_CASE( ParseHelloWorldTest )
     auto& cNodes = GetProgramAST("../inputs/io/hello_world.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
+    BOOST_REQUIRE(cNodes[0] != nullptr);
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
     const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(cNodes[0].get());
     BOOST_REQUIRE(fDecl != nullptr);
@@ -26,6 +27,7 @@ BOOST_AUTO_TEST_CASE( ParseHelloWorldTest )
     auto& bStmts = body->GetStatements();
     BOOST_REQUIRE_EQUAL(bStmts.size(), 1);
 
+    BOOST_REQUIRE(bStmts[0] != nullptr);
     BOOST_REQUIRE(bStmts[0]->GetKind() == ASTNode::NodeKind::PRINT_STMT);
     const PrintStmt* pStmt = dynamic_cast<const PrintStmt*>(bStmts[0].get());
     BOOST_REQUIRE(pStmt != nullptr);
@@ -40,6 +42,7 @@ BOOST_AUTO_TEST_CASE( ParseBasicIOTest )
     auto& cNodes = GetProgramAST("../inputs/io/io.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
+    BOOST_REQUIRE(cNodes[0] != nullptr);
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
     const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(cNodes[0].get());
     BOOST_REQUIRE(fDecl != nullptr);
@@ -49,11 +52,13 @@ BOOST_AUTO_TEST_CASE( ParseBasicIOTest )
     auto& bStmts = body->GetStatements();
     BOOST_REQUIRE_EQUAL(bStmts.size(), 3);
 
+    BOOST_REQUIRE(bStmts[0] != nullptr);
     BOOST_REQUIRE(bStmts[0]->GetKind() == ASTNode::NodeKind::VAR_DECL);
     const VarDecl* vDecl = dynamic_cast<const VarDecl*>(bStmts[0].get());
     BOOST_REQUIRE(vDecl != nullptr);
     BOOST_REQUIRE_EQUAL(vDecl->GetVarName(), "Message");
 
+    BOOST_REQUIRE(bStmts[1] != nullptr);
     BOOST_REQUIRE(bStmts[1]->GetKind() == ASTNode::NodeKind::SCAN_STMT);
     const ScanStmt* sStmt = dynamic_cast<const ScanStmt*>(bStmts[1].get());
     BOOST_REQUIRE(sStmt != nullptr);
@@ -62,6 +67,7 @@ BOOST_AUTO_TEST_CASE( ParseBasicIOTest )
     BOOST_REQUIRE(sExpr != nullptr);
     BOOST_REQUIRE_EQUAL(sExpr->GetName(), "Message");
 
+    BOOST_REQUIRE(bStmts[2] != nullptr);
     BOOST_REQUIRE(bStmts[2]->GetKind() == ASTNode::NodeKind::PRINT_STMT);
     const PrintStmt* pStmt = dynamic_cast<const PrintStmt*>(bStmts[2].get());
     BOOST_REQUIRE(pStmt != nullptr);
@@ -78,6 +84,7 @@ BOOST_AUTO_TEST_CASE( ParseBadIOTest )
     auto& cNodes = GetProgramAST("../inputs/io/bad_io.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
+    BOOST_REQUIRE(cNodes[0] != nullptr);
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
     const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(cNodes[0].get());
     BOOST_REQUIRE(fDecl != nullptr);
@@ -105,6 +112,7 @@ BOOST_AUTO_TEST_CASE( ParseBadIOGlobalScopeTest )
     auto& cNodes = GetProgramAST("../inputs/io/io_global_scope.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
+    BOOST_REQUIRE(cNodes[0] != nullptr);
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::ERROR);
 
     // Check if the correct error message got printed

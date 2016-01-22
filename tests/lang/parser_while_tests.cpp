@@ -17,6 +17,7 @@ BOOST_AUTO_TEST_CASE( ParseWhileLiteralCondTest )
     auto& cNodes = GetProgramAST("../inputs/while/while_literal_cond.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
+    BOOST_REQUIRE(cNodes[0] != nullptr);
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
     const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(cNodes[0].get());
     BOOST_REQUIRE(fDecl != nullptr);
@@ -26,11 +27,13 @@ BOOST_AUTO_TEST_CASE( ParseWhileLiteralCondTest )
     auto& bStmts = body->GetStatements();
     BOOST_REQUIRE_EQUAL(bStmts.size(), 2);
 
+    BOOST_REQUIRE(bStmts[0] != nullptr);
     BOOST_REQUIRE(bStmts[0]->GetKind() == ASTNode::NodeKind::VAR_DECL);
     const VarDecl* vDecl = dynamic_cast<const VarDecl*>(bStmts[0].get());
     BOOST_REQUIRE(vDecl != nullptr);
     BOOST_REQUIRE_EQUAL(vDecl->GetVarName(), "BoolVar");
 
+    BOOST_REQUIRE(bStmts[1] != nullptr);
     BOOST_REQUIRE(bStmts[1]->GetKind() == ASTNode::NodeKind::WHILE_STMT);
     const WhileStmt* wStmt = dynamic_cast<const WhileStmt*>(bStmts[1].get());
     BOOST_REQUIRE(wStmt != nullptr);
@@ -39,6 +42,7 @@ BOOST_AUTO_TEST_CASE( ParseWhileLiteralCondTest )
     BOOST_REQUIRE(cExpr != nullptr);
     BOOST_REQUIRE(cExpr->GetKind() == ASTNode::NodeKind::BOOLEAN_EXPR);
     const BooleanExpr* bExpr = dynamic_cast<const BooleanExpr*>(cExpr);
+    BOOST_REQUIRE(bExpr != nullptr);
     BOOST_REQUIRE_EQUAL(bExpr->GetValue(), true);
 
     const CompoundStmt* wBody = wStmt->GetBody();
@@ -52,6 +56,7 @@ BOOST_AUTO_TEST_CASE( ParseWhileSimpleCondTest )
     auto& cNodes = GetProgramAST("../inputs/while/while_simple_cond.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
+    BOOST_REQUIRE(cNodes[0] != nullptr);
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
     const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(cNodes[0].get());
     BOOST_REQUIRE(fDecl != nullptr);
@@ -61,11 +66,13 @@ BOOST_AUTO_TEST_CASE( ParseWhileSimpleCondTest )
     auto& bStmts = body->GetStatements();
     BOOST_REQUIRE_EQUAL(bStmts.size(), 2);
 
+    BOOST_REQUIRE(bStmts[0] != nullptr);
     BOOST_REQUIRE(bStmts[0]->GetKind() == ASTNode::NodeKind::VAR_DECL);
     const VarDecl* vDecl = dynamic_cast<const VarDecl*>(bStmts[0].get());
     BOOST_REQUIRE(vDecl != nullptr);
     BOOST_REQUIRE_EQUAL(vDecl->GetVarName(), "BoolVar");
 
+    BOOST_REQUIRE(bStmts[1] != nullptr);
     BOOST_REQUIRE(bStmts[1]->GetKind() == ASTNode::NodeKind::WHILE_STMT);
     const WhileStmt* wStmt = dynamic_cast<const WhileStmt*>(bStmts[1].get());
     BOOST_REQUIRE(wStmt != nullptr);

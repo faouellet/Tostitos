@@ -59,7 +59,7 @@ namespace TosLang
         class VarDecl : public Decl
         {
         public:
-            VarDecl() : Decl{ NodeKind::ERROR } { }
+            VarDecl() : Decl{ NodeKind::ERROR }, mType{ Common::Type::ERROR } { }
             explicit VarDecl(const std::string& varName, Common::Type type, const Utils::SourceLocation& srcLoc) 
                 : Decl{ NodeKind::VAR_DECL }, mType{ type } 
             {
@@ -147,7 +147,7 @@ namespace TosLang
         class FunctionDecl : public Decl
         {
         public:
-            FunctionDecl() : Decl{ NodeKind::ERROR } { }
+            FunctionDecl() : Decl{ NodeKind::ERROR }, mReturnType{ Common::Type::ERROR } { }
             FunctionDecl(const std::string& fnName, Common::Type type, 
                          std::unique_ptr<ParamVarDecls>&& params, std::unique_ptr<CompoundStmt>&& body,
                          const Utils::SourceLocation& srcLoc)
@@ -188,7 +188,7 @@ namespace TosLang
             * \brief    Gets the body of the function
             * \return   Body of the function
             */
-            const CompoundStmt* GetBody() const { assert(mChildren.size() == 2); return GetChildNodeAs<CompoundStmt>(1);; }
+            const CompoundStmt* GetBody() const { assert(mChildren.size() == 2); return GetChildNodeAs<CompoundStmt>(1); }
 
         private:
             Common::Type mReturnType; /*!< Function return type */
