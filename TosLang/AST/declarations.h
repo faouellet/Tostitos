@@ -59,9 +59,9 @@ namespace TosLang
         class VarDecl : public Decl
         {
         public:
-            VarDecl() : Decl{ NodeKind::ERROR }, mType{ Common::Type::ERROR } { }
-            explicit VarDecl(const std::string& varName, Common::Type type, const Utils::SourceLocation& srcLoc) 
-                : Decl{ NodeKind::VAR_DECL }, mType{ type } 
+            VarDecl() : Decl{ NodeKind::ERROR }, mType{ Common::Type::ERROR }, mIsFunctionParameter{ false } { }
+            explicit VarDecl(const std::string& varName, Common::Type type, bool isFuncParam, const Utils::SourceLocation& srcLoc) 
+                : Decl{ NodeKind::VAR_DECL }, mType{ type }, mIsFunctionParameter{ isFuncParam }
             {
                 mName = varName; 
                 mSrcLoc = srcLoc;
@@ -109,8 +109,16 @@ namespace TosLang
             */
             const Common::Type GetVarType() const { return mType; }
 
+            /*
+            * \fn       IsFunctionParameter
+            * \brief    Indicates if the variable is a function parameter
+            * \return   True if the variable is a function parameter
+            */
+            const bool IsFunctionParameter() const { return mIsFunctionParameter; }
+
         private:
-            Common::Type mType; /*!< Variable type */
+            Common::Type mType;         /*!< Variable type */
+            bool mIsFunctionParameter;   /*!< Is the variable a function parameter */
         };
 
         /*

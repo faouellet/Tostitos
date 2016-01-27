@@ -61,7 +61,7 @@ bool SymbolTable::GetSymbol(const std::string& fnName, const std::string& symNam
 {
     if (fnName.empty()) // We were asked for a global symbol
     {
-        auto symIt = mGlobalTable.find(symName);
+        auto symIt = std::find_if(mGlobalTable.begin(), mGlobalTable.end(), [symName](const SymTable::value_type& sym) { return sym.second.GetName() == symName; });
         
         // Symbol name is not in the global table
         if (symIt == mGlobalTable.end())
@@ -102,3 +102,9 @@ bool SymbolTable::GetSymbol(const std::string& fnName, const std::string& symNam
         return false;
     }
 }
+
+const bool TosLang::FrontEnd::SymbolTable::IsGlobalVariable(const std::string & varName) const
+{
+    return mGlobalTable.find(varName) == mGlobalTable.end();
+}
+

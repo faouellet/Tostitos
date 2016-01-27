@@ -12,28 +12,34 @@ SymbolCollector::SymbolCollector(const std::shared_ptr<SymbolTable>& symTab)
     // TODO: This probably needs some refactoring since the same code is also present in the type checker
     this->mPrologueFtr = [this]()
     { 
-        if (mCurrentNode->GetKind() == ASTNode::NodeKind::COMPOUND_STMT)
+        if (mCurrentNode != nullptr)
         {
-            ++mCurrentScopeID;
-            ++mCurrentScopeLevel;
-        }
-        else if (mCurrentNode->GetKind() == ASTNode::NodeKind::FUNCTION_DECL)
-        {
-            mCurrentFunc = dynamic_cast<FunctionDecl*>(mCurrentNode);
-            assert(mCurrentFunc != nullptr);
+            if (mCurrentNode->GetKind() == ASTNode::NodeKind::COMPOUND_STMT)
+            {
+                ++mCurrentScopeID;
+                ++mCurrentScopeLevel;
+            }
+            else if (mCurrentNode->GetKind() == ASTNode::NodeKind::FUNCTION_DECL)
+            {
+                mCurrentFunc = dynamic_cast<FunctionDecl*>(mCurrentNode);
+                assert(mCurrentFunc != nullptr);
+            }
         }
     };
 
     this->mEpilogueFtr = [this]()
     {
-        if (mCurrentNode->GetKind() == ASTNode::NodeKind::COMPOUND_STMT)
+        if (mCurrentNode != nullptr)
         {
-            --mCurrentScopeLevel;
-        }
-        else if (mCurrentNode->GetKind() == ASTNode::NodeKind::FUNCTION_DECL)
-        {
-            assert(mCurrentFunc != nullptr);
-            mCurrentFunc = nullptr;
+            if (mCurrentNode->GetKind() == ASTNode::NodeKind::COMPOUND_STMT)
+            {
+                --mCurrentScopeLevel;
+            }
+            else if (mCurrentNode->GetKind() == ASTNode::NodeKind::FUNCTION_DECL)
+            {
+                assert(mCurrentFunc != nullptr);
+                mCurrentFunc = nullptr;
+            }
         }
     };
 }
@@ -69,7 +75,7 @@ void SymbolCollector::HandleFunctionDecl()
         fnType.push_back(paramVar->GetVarType());
     }
 
-    mSymbolTable->AddGlobalSymbol(sStream.str(), { fnType, 0 });
+    mSymbolTable->AddGlobalSymbol(sStream.str(), { fnType, 0, fnDecl->GetName() });
 }
 
 void SymbolCollector::HandleParamVarDecl() 
@@ -82,11 +88,11 @@ void SymbolCollector::HandleParamVarDecl()
     {
         // Add the parameter type to the list of the function's parameters' types
         const VarDecl* paramVar = dynamic_cast<const VarDecl*>(param.get());
-        assert(paramVar);
+        assert(paramVar != nullptr);
         paramTypes.push_back(paramVar->GetVarType());
 
         // Add the parameter to the symbols defined in the scope of the current function
-        mSymbolTable->AddLocalSymbol(mCurrentFunc->GetName(), paramVar->GetVarName(), { paramVar->GetVarType(), mCurrentScopeID + 1 });
+        mSymbolTable->AddLocalSymbol(mCurrentFunc->GetName(), paramVar->GetVarName(), { paramVar->GetVarType(), mCurrentScopeID + 1, paramVar->GetName() });
     }
 }
 
@@ -94,9 +100,13 @@ void SymbolCollector::HandleVarDecl()
 {
     const VarDecl* varDecl = dynamic_cast<const VarDecl*>(mCurrentNode);
     assert(varDecl != nullptr);
+    
+    // If this a function parameter, it will have been already handled by HandleParamVarDecl
+    if (varDecl->IsFunctionParameter())
+        return;
 
     if (mCurrentScopeLevel == M_GLOBAL_SCOPE_LEVEL)
-        mSymbolTable->AddGlobalSymbol(varDecl->GetName(), { varDecl->GetVarType(), 0 });
+        mSymbolTable->AddGlobalSymbol(varDecl->GetName(), { varDecl->GetVarType(), 0, varDecl->GetName() });
     else
-        mSymbolTable->AddLocalSymbol(mCurrentFunc->GetName(), varDecl->GetName(), { varDecl->GetVarType(), mCurrentScopeID });
+        mSymbolTable->AddLocalSymbol(mCurrentFunc->GetName(), varDecl->GetName(), { varDecl->GetVarType(), mCurrentScopeID, varDecl->GetName() });
 }

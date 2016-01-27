@@ -87,6 +87,7 @@ BOOST_AUTO_TEST_CASE( ParseFuncOneArgTest )
     const VarDecl* arg = dynamic_cast<const VarDecl*>(params[0].get());
     BOOST_REQUIRE(arg != nullptr);
     BOOST_REQUIRE_EQUAL(arg->GetName(), "arg");
+    BOOST_REQUIRE(arg->IsFunctionParameter());
 
     const CompoundStmt* body = fDecl->GetBody();
     BOOST_REQUIRE(body != nullptr);
@@ -121,14 +122,17 @@ BOOST_AUTO_TEST_CASE( ParseFuncMultiArgsTest )
     const VarDecl* arg1 = dynamic_cast<const VarDecl*>(params[0].get());
     BOOST_REQUIRE(arg1 != nullptr);
     BOOST_REQUIRE_EQUAL(arg1->GetName(), "arg1");
+    BOOST_REQUIRE(arg1->IsFunctionParameter());
 
     const VarDecl* arg2 = dynamic_cast<const VarDecl*>(params[1].get());
     BOOST_REQUIRE(arg2 != nullptr);
     BOOST_REQUIRE_EQUAL(arg2->GetName(), "arg2");
+    BOOST_REQUIRE(arg2->IsFunctionParameter());
 
     const VarDecl* arg3 = dynamic_cast<const VarDecl*>(params[2].get());
     BOOST_REQUIRE(arg3 != nullptr);
     BOOST_REQUIRE_EQUAL(arg3->GetName(), "arg3");
+    BOOST_REQUIRE(arg3->IsFunctionParameter());
 
     const CompoundStmt* body = fDecl->GetBody();
     BOOST_REQUIRE(body != nullptr);

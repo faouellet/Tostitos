@@ -1,12 +1,14 @@
 #ifndef SYMBOLS_H__TOSTITOS
 #define SYMBOLS_H__TOSTITOS
 
+#include "../Common/type.h"
+
+#include <cassert>
 #include <string>
 #include <stack>
+#include <string>
 #include <unordered_map>
 #include <vector>
-
-#include "../Common/type.h"
 
 namespace TosLang
 {
@@ -14,35 +16,41 @@ namespace TosLang
     {
         /*
         * \struct Symbol
-        * \brief TODO
+        * \brief A symbol is a collection of informations about an AST node as it appears in the source code
         */
         class Symbol
         {
         public:
-            Symbol() : mType{ Common::Type::UNKNOWN }, mScopeID{ -1 } { };
-            Symbol(Common::Type t, int scopeID) : mType{ t }, mScopeID{ scopeID } { }
-            Symbol(std::vector<Common::Type> ts, int scopeID) : mType{ ts }, mScopeID{ scopeID } { }
+            Symbol() : mType{ Common::Type::UNKNOWN }, mScopeID{ -1 }, mIsFunction{ false } { };
+            Symbol(Common::Type t, int scopeID, const std::string& name) : mType{ t }, mScopeID{ scopeID }, mIsFunction{ false }, mName{ name } { }
+            Symbol(std::vector<Common::Type> ts, int scopeID, const std::string& name) : mType{ ts }, mScopeID{ scopeID }, mIsFunction{ true }, mName{ name } { }
 
-            const Common::Type GetVariableType() const { return mType[0]; }
-            const Common::Type GetFunctionReturnType() const { return mType[0]; }
+            const Common::Type GetVariableType() const { assert(!mIsFunction);  return mType[0]; }
+            const Common::Type GetFunctionReturnType() const { assert(mIsFunction);  return mType[0]; }
             const std::vector<Common::Type> GetFunctionParamTypes() const 
             {
+                assert(mIsFunction);
                 return std::vector<Common::Type>{mType.begin() + 1, mType.end()};
             }
 
             const int GetScopeID() const { return mScopeID; }
+            const bool IsFunction() const { return mIsFunction; }
+            const std::string& GetName() const { return mName; }
 
-            // TODO: Add boolean to indicate if the symbol refer to a variable or a function
         private:
             std::vector<Common::Type> mType;    /*!< Type of the symbol
                                                 For variable, it is simply the variable type
                                                 For function, the first type is the return type and the others are its parameters types*/
-            int mScopeID;
+            int mScopeID;                       /*!< Scope in which the symbol was declared */
+            bool mIsFunction;                   /*!< Is the symbol representing a function */
+            std::string mName;                  /*!< Name of the symbol in the source code */
         };
 
         /*
         * \class SymbolTable
-        * \brief TODO
+        * \brief Manages the symbols produced by the compiler. 
+        *        Concretly, this is where the symbols produced by the symbol collection pass are put. 
+        *        They are then later queried by the type checker and the instruction selector.
         */
         class SymbolTable
         {
@@ -70,6 +78,7 @@ namespace TosLang
             * \fn                       GetSymbol
             * \brief                    Gets the symbol associated to a name
             * \param fnName             Name of the function in which the symbol is defined. Will be empty in case of a global symbol.
+            *                           (All functions are global symbols as are variable declared at global scope)
             * \param symName            Name of the symbol (either a function or variable)
             * \param scopesToSearch     Scopes in which the symbol might be defined
             * \param sym                Symbol to be added to the symbol table
@@ -77,12 +86,19 @@ namespace TosLang
             */
             bool GetSymbol(const std::string& fnName, const std::string& symName, const std::stack<int>& scopesToSearch, Symbol& sym);
 
-            bool IsGlobalVariable(const std::string& varName) const;
+            /*
+            * \fn               IsGlobalVariable
+            * \brief            Indicates if the variable was declared at global scope
+            * \param varName    Name of the variable
+            * \return           True if the variable was declared at global scope, else false
+            */
+            const bool IsGlobalVariable(const std::string& varName) const;
 
         private:
             using SymTable = std::unordered_map<std::string, Symbol>;
             using LocalSymTables = std::unordered_map<std::string, SymTable>;
             
+        private:
             SymTable mGlobalTable;          /*!< Table containing all symbol defined in the global scope */
             LocalSymTables mLocalTables;    /*!< Tables containing symbols defined in a given local scope i.e. in a function */
         };

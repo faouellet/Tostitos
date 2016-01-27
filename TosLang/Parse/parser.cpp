@@ -109,7 +109,7 @@ std::unique_ptr<FunctionDecl> Parser::ParseFunctionDecl()
             ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::PARAM_MISSING_TYPE, mLexer.GetCurrentLocation());
             return std::move(fnNode);
         }
-        param.reset(std::make_unique<VarDecl>(varName, mLexer.GetCurrentType(), srcLoc).release());
+        param.reset(std::make_unique<VarDecl>(varName, mLexer.GetCurrentType(), /*isFunctionParam=*/true, srcLoc).release());
 
         mCurrentToken = mLexer.GetNextToken();
         if ((mCurrentToken != Lexer::Token::RIGHT_PAREN) && (mCurrentToken != Lexer::Token::COMMA))
@@ -178,7 +178,7 @@ std::unique_ptr<VarDecl> Parser::ParseVarDecl()
         return std::move(node);
     }
      
-    VarDecl* vDecl = new VarDecl(varName, vType, srcLoc);
+    VarDecl* vDecl = new VarDecl(varName, vType, /*isFunctionParam=*/false, srcLoc);
     
     mCurrentToken = mLexer.GetNextToken();
 
