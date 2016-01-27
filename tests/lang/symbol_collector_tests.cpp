@@ -10,12 +10,13 @@
 
 #include "frontend_error_fixture.h"
 
-#include "Parse/parser.h"
 #include "Sema/symbolcollector.h"
+
+BOOST_FIXTURE_TEST_SUITE( FrontEndTestSuite, FrontEndErrorFixture )
 
 //////////////////// CORRECT USE CASES ////////////////////
 
-BOOST_FIXTURE_TEST_CASE( CollectSymbolVar, FrontEndErrorFixture )
+BOOST_AUTO_TEST_CASE( CollectSymbolVar )
 {
     Parser parser;
     std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/var/var_decl.tos");
@@ -46,7 +47,7 @@ BOOST_FIXTURE_TEST_CASE( CollectSymbolVar, FrontEndErrorFixture )
     BOOST_REQUIRE(varSymbol.GetVariableType() == TosLang::Common::Type::STRING);
 }
 
-BOOST_FIXTURE_TEST_CASE( CollectSymbolFunctionNoParam, FrontEndErrorFixture )
+BOOST_AUTO_TEST_CASE( CollectSymbolFunctionNoParam )
 {
     Parser parser;
     std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/function/fn_def_void.tos");
@@ -66,7 +67,7 @@ BOOST_FIXTURE_TEST_CASE( CollectSymbolFunctionNoParam, FrontEndErrorFixture )
     BOOST_REQUIRE(fnSymbol.GetFunctionReturnType() == TosLang::Common::Type::VOID);
 }
 
-BOOST_FIXTURE_TEST_CASE( CollectSymbolFunctionMultiParam, FrontEndErrorFixture )
+BOOST_AUTO_TEST_CASE( CollectSymbolFunctionMultiParam )
 {
     Parser parser;
     std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/function/fn_def_multi_args.tos");
@@ -107,7 +108,7 @@ BOOST_FIXTURE_TEST_CASE( CollectSymbolFunctionMultiParam, FrontEndErrorFixture )
     }
 }
 
-BOOST_FIXTURE_TEST_CASE( CollectSymbolFunctionWithLocalVar, FrontEndErrorFixture )
+BOOST_AUTO_TEST_CASE( CollectSymbolFunctionWithLocalVar )
 {
     Parser parser;
     std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/call/call_one_arg.tos");
@@ -160,17 +161,19 @@ BOOST_FIXTURE_TEST_CASE( CollectSymbolFunctionWithLocalVar, FrontEndErrorFixture
 
 //////////////////// ERROR USE CASES ////////////////////
 
-BOOST_FIXTURE_TEST_CASE( CollectSymbolVarRedefinition, FrontEndErrorFixture )
+BOOST_AUTO_TEST_CASE( CollectSymbolVarRedefinition )
 {
 
 }
 
-BOOST_FIXTURE_TEST_CASE( CollectSymbolFunctionRedefinition, FrontEndErrorFixture )
+BOOST_AUTO_TEST_CASE( CollectSymbolFunctionRedefinition )
 {
 
 }
 
-BOOST_FIXTURE_TEST_CASE( CollectSymbolFunctionParamRedefinition, FrontEndErrorFixture )
+BOOST_AUTO_TEST_CASE( CollectSymbolFunctionParamRedefinition )
 {
 
 }
+
+BOOST_AUTO_TEST_SUITE_END()

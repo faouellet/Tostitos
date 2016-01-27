@@ -12,7 +12,9 @@
 
 #include "Parse/lexer.h"
 
-BOOST_FIXTURE_TEST_CASE( LexerBadInitTest, FrontEndErrorFixture )
+BOOST_FIXTURE_TEST_SUITE( FrontEndTestSuite, FrontEndErrorFixture )
+
+BOOST_AUTO_TEST_CASE( LexerBadInitTest )
 {
     Lexer lex;
     BOOST_REQUIRE(!lex.Init("BadFile.tos"));
@@ -20,7 +22,7 @@ BOOST_FIXTURE_TEST_CASE( LexerBadInitTest, FrontEndErrorFixture )
     BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 0);
 }
 
-BOOST_FIXTURE_TEST_CASE( LexerBadStrLitTest, FrontEndErrorFixture )
+BOOST_AUTO_TEST_CASE( LexerBadStrLitTest )
 {
     Lexer lex;
     BOOST_REQUIRE(lex.Init("../inputs/var/bad_string_literal.tos"));
@@ -60,7 +62,7 @@ BOOST_FIXTURE_TEST_CASE( LexerBadStrLitTest, FrontEndErrorFixture )
     BOOST_REQUIRE_EQUAL(messages[1], "LITERAL ERROR: Missing closing quote at line 2, column 17");
 }
 
-BOOST_FIXTURE_TEST_CASE( LexerBadVarNameTest, FrontEndErrorFixture )
+BOOST_AUTO_TEST_CASE( LexerBadVarNameTest )
 {
     Lexer lex;
     BOOST_REQUIRE(lex.Init("../inputs/var/bad_var_name.tos"));
@@ -81,7 +83,7 @@ BOOST_FIXTURE_TEST_CASE( LexerBadVarNameTest, FrontEndErrorFixture )
     BOOST_REQUIRE_EQUAL(messages[0], "LITERAL ERROR: Bad suffix on number at line 1, column 4");
 }
 
-BOOST_FIXTURE_TEST_CASE( LexerBadMLCommentTest, FrontEndErrorFixture )
+BOOST_AUTO_TEST_CASE( LexerBadMLCommentTest )
 {
     Lexer lex;
     BOOST_REQUIRE(lex.Init("../inputs/comment/bad_ml_comment.tos"));
@@ -100,3 +102,5 @@ BOOST_FIXTURE_TEST_CASE( LexerBadMLCommentTest, FrontEndErrorFixture )
     BOOST_REQUIRE_EQUAL(messages.size(), 1);
     BOOST_REQUIRE_EQUAL(messages[0], "ERROR: Unclosed multiline comment at line 1, column 1");
 }
+
+BOOST_AUTO_TEST_SUITE_END()
