@@ -83,6 +83,7 @@ namespace TosLang
                 WRONG_VARIABLE_TYPE,
 
                 // Var
+                PARAM_REDEFINITION,
                 VAR_MISSING_TYPE,
                 VAR_MISSING_COLON,
                 VAR_MISSING_IDENTIFIER,

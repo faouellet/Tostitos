@@ -1,0 +1,6 @@
+fn MyFunc() -> Int {
+	var i : Int = 1;
+	var i : Int = 2;
+	
+	return i + i;
+}

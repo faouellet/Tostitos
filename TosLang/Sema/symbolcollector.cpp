@@ -1,10 +1,13 @@
 #include "symbolcollector.h"
 
+#include "../Utils/errorlogger.h"
+
 #include <sstream>
 #include <type_traits>
 
 using namespace TosLang::FrontEnd;
 using namespace TosLang::Common;
+using namespace TosLang::Utils;
 
 SymbolCollector::SymbolCollector(const std::shared_ptr<SymbolTable>& symTab) 
     : mCurrentScopeLevel{ 0 }, mCurrentScopeID{ 0 }, mCurrentFunc{ nullptr }, mSymbolTable{ symTab }
@@ -75,7 +78,10 @@ void SymbolCollector::HandleFunctionDecl()
         fnType.push_back(paramVar->GetVarType());
     }
 
-    mSymbolTable->AddGlobalSymbol(sStream.str(), { fnType, 0, fnDecl->GetName() });
+    // Add the function symbol to the table
+    if(!mSymbolTable->AddGlobalSymbol(sStream.str(), { fnType, 0, fnDecl->GetName() }))
+        // Couldn't insert the function in the symbol table because it's trying to redefine another function
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::FN_REDEFINITION, fnDecl->GetSourceLocation());
 }
 
 void SymbolCollector::HandleParamVarDecl() 
@@ -92,7 +98,9 @@ void SymbolCollector::HandleParamVarDecl()
         paramTypes.push_back(paramVar->GetVarType());
 
         // Add the parameter to the symbols defined in the scope of the current function
-        mSymbolTable->AddLocalSymbol(mCurrentFunc->GetName(), paramVar->GetVarName(), { paramVar->GetVarType(), mCurrentScopeID + 1, paramVar->GetName() });
+        if(!mSymbolTable->AddLocalSymbol(mCurrentFunc->GetName(), paramVar->GetVarName(), { paramVar->GetVarType(), mCurrentScopeID + 1, paramVar->GetName() }))
+            // Couldn't insert the param in the symbol table because it's trying to redefine another param
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::PARAM_REDEFINITION, paramVar->GetSourceLocation());
     }
 }
 
@@ -105,8 +113,12 @@ void SymbolCollector::HandleVarDecl()
     if (varDecl->IsFunctionParameter())
         return;
 
+    bool isNotAlreadyDefined = false;
     if (mCurrentScopeLevel == M_GLOBAL_SCOPE_LEVEL)
-        mSymbolTable->AddGlobalSymbol(varDecl->GetName(), { varDecl->GetVarType(), 0, varDecl->GetName() });
+        isNotAlreadyDefined  = mSymbolTable->AddGlobalSymbol(varDecl->GetName(), { varDecl->GetVarType(), 0, varDecl->GetName() });
     else
-        mSymbolTable->AddLocalSymbol(mCurrentFunc->GetName(), varDecl->GetName(), { varDecl->GetVarType(), mCurrentScopeID, varDecl->GetName() });
+        isNotAlreadyDefined = mSymbolTable->AddLocalSymbol(mCurrentFunc->GetName(), varDecl->GetName(), { varDecl->GetVarType(), mCurrentScopeID, varDecl->GetName() });
+
+    if (!isNotAlreadyDefined)
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_REDEFINITION, varDecl->GetSourceLocation());
 }

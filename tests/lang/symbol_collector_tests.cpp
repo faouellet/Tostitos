@@ -161,19 +161,68 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionWithLocalVar )
 
 //////////////////// ERROR USE CASES ////////////////////
 
-BOOST_AUTO_TEST_CASE( CollectSymbolVarRedefinition )
+BOOST_AUTO_TEST_CASE( CollectSymbolGlobalVarRedefinition )
 {
+    Parser parser;
+    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/var/bad_global_var_redef.tos");
+    BOOST_REQUIRE(rootNode != nullptr);
 
+    auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
+    TosLang::FrontEnd::SymbolCollector sCollector{ symbolTable };
+    sCollector.Run(rootNode);
+
+    // Check if the correct error message got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
+    BOOST_REQUIRE_EQUAL(messages.size(), 1);
+    BOOST_REQUIRE_EQUAL(messages[0], "VAR ERROR: Trying to redefine an already defined variable at line 2, column 8");
+}
+
+BOOST_AUTO_TEST_CASE( CollectSymbolLocalVarRedefinition )
+{
+    Parser parser;
+    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/var/bad_local_var_redef.tos");
+    BOOST_REQUIRE(rootNode != nullptr);
+
+    auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
+    TosLang::FrontEnd::SymbolCollector sCollector{ symbolTable };
+    sCollector.Run(rootNode);
+
+    // Check if the correct error message got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
+    BOOST_REQUIRE_EQUAL(messages.size(), 1);
+    BOOST_REQUIRE_EQUAL(messages[0], "VAR ERROR: Trying to redefine an already defined variable at line 3, column 5");
 }
 
 BOOST_AUTO_TEST_CASE( CollectSymbolFunctionRedefinition )
 {
+    Parser parser;
+    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/function/bad_fn_redef.tos");
+    BOOST_REQUIRE(rootNode != nullptr);
 
+    auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
+    TosLang::FrontEnd::SymbolCollector sCollector{ symbolTable };
+    sCollector.Run(rootNode);
+
+    // Check if the correct error message got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
+    BOOST_REQUIRE_EQUAL(messages.size(), 1);
+    BOOST_REQUIRE_EQUAL(messages[0], "FUNCTION ERROR: Trying to redefine an already defined function at line 3, column 8");
 }
 
 BOOST_AUTO_TEST_CASE( CollectSymbolFunctionParamRedefinition )
 {
+    Parser parser;
+    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/function/bad_fn_param_redef.tos");
+    BOOST_REQUIRE(rootNode != nullptr);
 
+    auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
+    TosLang::FrontEnd::SymbolCollector sCollector{ symbolTable };
+    sCollector.Run(rootNode);
+
+    // Check if the correct error message got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
+    BOOST_REQUIRE_EQUAL(messages.size(), 1);
+    BOOST_REQUIRE_EQUAL(messages[0], "VAR ERROR: Trying to redefine an already defined function parameter at line 1, column 16");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -71,6 +71,7 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
     { ErrorType::WRONG_VARIABLE_TYPE,          "TYPE ERROR: Type mismatch between a variable and its intializer" },
 
     // Var
+    { ErrorType::PARAM_REDEFINITION,           "VAR ERROR: Trying to redefine an already defined function parameter" },
     { ErrorType::VAR_MISSING_TYPE,             "VAR ERROR: Missing type from variable declaration" },
     { ErrorType::VAR_MISSING_COLON,            "VAR ERROR: Missing : between a variable and its type" },
     { ErrorType::VAR_MISSING_IDENTIFIER,       "VAR ERROR: The var keyword should be followed by an identifier" },
