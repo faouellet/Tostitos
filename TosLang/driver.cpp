@@ -17,11 +17,13 @@ static void Compile(const std::string& programFile)
  
     auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
     TosLang::FrontEnd::SymbolCollector sCollector{ symbolTable };
-    sCollector.Run(programAST);
+    size_t errorCount = sCollector.Run(programAST);
+    if (errorCount != 0)
+        return;
 
     TosLang::FrontEnd::TypeChecker tChecker{ symbolTable };
-    tChecker.Run(programAST);
-    if (tChecker.GetErrorCount() != 0)
+    errorCount = tChecker.Run(programAST);
+    if (errorCount != 0)
         return;
 }
 

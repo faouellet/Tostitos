@@ -75,6 +75,12 @@ namespace TosLang
             bool AddGlobalSymbol(const std::string& symName, Symbol&& sym);
             
             /*
+            * \fn       Clear
+            * \brief    Clears all the internal structures maintained by the symbol table
+            */
+            void Clear();
+
+            /*
             * \fn                       GetSymbol
             * \brief                    Gets the symbol associated to a name
             * \param fnName             Name of the function in which the symbol is defined. Will be empty in case of a global symbol.

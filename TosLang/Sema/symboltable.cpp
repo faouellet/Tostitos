@@ -57,6 +57,12 @@ bool SymbolTable::AddGlobalSymbol(const std::string& symName, Symbol&& sym)
     }
 }
 
+void TosLang::FrontEnd::SymbolTable::Clear()
+{
+    mLocalTables.clear();
+    mGlobalTable.clear();
+}
+
 bool SymbolTable::GetSymbol(const std::string& fnName, const std::string& symName, const std::stack<int>& scopesToSearch, Symbol& sym)
 {
     if (fnName.empty()) // We were asked for a global symbol

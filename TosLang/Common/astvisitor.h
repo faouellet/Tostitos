@@ -31,6 +31,7 @@ namespace TosLang
             {
                 if (root != nullptr)
                 {
+                    mCurrentNode = root.get();
                     mPrologueFtr();
 
                     for (auto& childNode : root->GetChildrenNodes())
@@ -52,14 +53,15 @@ namespace TosLang
             {
                 if (root != nullptr)
                 {
+                    mCurrentNode = root.get();
                     mPrologueFtr();
                     
-                    mCurrentNode = root.get();
                     DispatchNode(root.get());
 
                     for (auto& childNode : root->GetChildrenNodes())
                         VisitPreOrder(childNode);
 
+                    mCurrentNode = root.get();
                     mEpilogueFtr();
                 }
             }

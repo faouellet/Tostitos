@@ -24,7 +24,8 @@ BOOST_AUTO_TEST_CASE( CollectSymbolVar )
 
     auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
     TosLang::FrontEnd::SymbolCollector sCollector{ symbolTable };
-    sCollector.Run(rootNode);
+    size_t errorCount = sCollector.Run(rootNode);
+    BOOST_REQUIRE_EQUAL(errorCount, 0);
 
     Symbol varSymbol;
 
@@ -55,7 +56,8 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionNoParam )
 
     auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
     TosLang::FrontEnd::SymbolCollector sCollector{ symbolTable };
-    sCollector.Run(rootNode);
+    size_t errorCount = sCollector.Run(rootNode);
+    BOOST_REQUIRE_EQUAL(errorCount, 0);
 
     Symbol fnSymbol;
     BOOST_REQUIRE(symbolTable->GetSymbol("", "MyFunc", std::stack<int>{}, fnSymbol));
@@ -75,7 +77,8 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionMultiParam )
 
     auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
     TosLang::FrontEnd::SymbolCollector sCollector{ symbolTable };
-    sCollector.Run(rootNode);
+    size_t errorCount = sCollector.Run(rootNode);
+    BOOST_REQUIRE_EQUAL(errorCount, 0);
 
     Symbol fnSymbol;
     BOOST_REQUIRE(symbolTable->GetSymbol("", "MyFunc", std::stack<int>{}, fnSymbol));
@@ -116,7 +119,8 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionWithLocalVar )
 
     auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
     TosLang::FrontEnd::SymbolCollector sCollector{ symbolTable };
-    sCollector.Run(rootNode);
+    size_t errorCount = sCollector.Run(rootNode);
+    BOOST_REQUIRE_EQUAL(errorCount, 0);
 
     Symbol fnSymbol;
     
@@ -159,6 +163,21 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionWithLocalVar )
     BOOST_REQUIRE(paramSym.GetVariableType() == TosLang::Common::Type::NUMBER);
 }
 
+BOOST_AUTO_TEST_CASE( CollectSymbolNoErrorAccumulation )
+{
+    Parser parser;
+    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/function/fn_def_void.tos");
+    BOOST_REQUIRE(rootNode != nullptr);
+
+    auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
+    TosLang::FrontEnd::SymbolCollector sCollector{ symbolTable };
+    size_t errorCount = sCollector.Run(rootNode);
+    BOOST_REQUIRE_EQUAL(errorCount, 0);
+
+    errorCount = sCollector.Run(rootNode);
+    BOOST_REQUIRE_EQUAL(errorCount, 0);
+}
+
 //////////////////// ERROR USE CASES ////////////////////
 
 BOOST_AUTO_TEST_CASE( CollectSymbolGlobalVarRedefinition )
@@ -169,7 +188,8 @@ BOOST_AUTO_TEST_CASE( CollectSymbolGlobalVarRedefinition )
 
     auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
     TosLang::FrontEnd::SymbolCollector sCollector{ symbolTable };
-    sCollector.Run(rootNode);
+    size_t errorCount = sCollector.Run(rootNode);
+    BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed
     std::vector<std::string> messages{ GetErrorMessages() };
@@ -185,7 +205,8 @@ BOOST_AUTO_TEST_CASE( CollectSymbolLocalVarRedefinition )
 
     auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
     TosLang::FrontEnd::SymbolCollector sCollector{ symbolTable };
-    sCollector.Run(rootNode);
+    size_t errorCount = sCollector.Run(rootNode);
+    BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed
     std::vector<std::string> messages{ GetErrorMessages() };
@@ -201,7 +222,8 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionRedefinition )
 
     auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
     TosLang::FrontEnd::SymbolCollector sCollector{ symbolTable };
-    sCollector.Run(rootNode);
+    size_t errorCount = sCollector.Run(rootNode);
+    BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed
     std::vector<std::string> messages{ GetErrorMessages() };
@@ -217,7 +239,8 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionParamRedefinition )
 
     auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
     TosLang::FrontEnd::SymbolCollector sCollector{ symbolTable };
-    sCollector.Run(rootNode);
+    size_t errorCount = sCollector.Run(rootNode);
+    BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed
     std::vector<std::string> messages{ GetErrorMessages() };
