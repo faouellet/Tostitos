@@ -243,7 +243,7 @@ void CPU::SetCarryOverflowFlagAdd(UInt16 op1, UInt16 op2)
 	Int16 op2Signed = static_cast<Int16>(op2);
 
     // Set overflow flag
-    mFR = (result >= 0 && (op1Signed & 0x8000) && (op2Signed & 0x8000))
+    mFR = ((op1Signed & 0x8000) && (op2Signed & 0x8000))
         || ((result & 0x8000) && (op1Signed >= 0) && (op2Signed >= 0)) ?
         mFR | SIGNED_OVERFLOW_FLAG : mFR & ~SIGNED_OVERFLOW_FLAG;
 }

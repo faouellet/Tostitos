@@ -5,7 +5,7 @@
 using namespace TosLang::FrontEnd;
 using namespace TosLang::Common;
 
-TosLang::FrontEnd::TypeInfer::TypeInfer(const std::shared_ptr<SymbolTable>& symTab) : mSymbolTable{ symTab }
+TosLang::FrontEnd::TypeInfer::TypeInfer(const std::shared_ptr<SymbolTable>& symTab) : mCurrentScopeLevel{ 0 }, mSymbolTable { symTab }
 {
     this->mPrologueFtr = [this]()
     {
