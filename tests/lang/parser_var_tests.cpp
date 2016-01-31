@@ -98,6 +98,64 @@ BOOST_AUTO_TEST_CASE( ParseVarInitIdentifierTest )
 	BOOST_REQUIRE_EQUAL(iExpr->GetName(), "MyIntVar");
 }
 
+BOOST_AUTO_TEST_CASE( ParseVarInitBoolBinOpTest )
+{
+    auto& cNodes = GetProgramAST("../inputs/var/binary_op_bool.tos");
+    const size_t childExpectedSize = 4;
+    BOOST_REQUIRE_EQUAL(cNodes.size(), childExpectedSize);
+
+    TosLang::Common::Opcode operations[] =
+    {
+        TosLang::Common::Opcode::AND_BOOL,
+        TosLang::Common::Opcode::OR_BOOL,
+        TosLang::Common::Opcode::GREATER_THAN,
+        TosLang::Common::Opcode::LESS_THAN,
+    };
+
+    size_t i = 0;
+    for (; i < 2; ++i)
+    {
+        BOOST_REQUIRE(cNodes[i]->GetKind() == ASTNode::NodeKind::VAR_DECL);
+        const VarDecl* vDecl = dynamic_cast<const VarDecl*>(cNodes[i].get());
+        BOOST_REQUIRE(vDecl != nullptr);
+        BOOST_REQUIRE_EQUAL(vDecl->GetVarName(), "V" + std::to_string(i + 1));
+
+        BOOST_REQUIRE(vDecl->GetInitExpr()->GetKind() == ASTNode::NodeKind::BINARY_EXPR);
+        const BinaryOpExpr* bExpr = dynamic_cast<const BinaryOpExpr*>(vDecl->GetInitExpr());
+        BOOST_REQUIRE(bExpr != nullptr);
+        BOOST_REQUIRE(bExpr->GetOperation() == operations[i]);
+
+        const BooleanExpr* boolExpr = dynamic_cast<const BooleanExpr*>(bExpr->GetLHS());
+        BOOST_REQUIRE(boolExpr != nullptr);
+        BOOST_REQUIRE_EQUAL(boolExpr->GetValue(), true);
+
+        boolExpr = dynamic_cast<const BooleanExpr*>(bExpr->GetRHS());
+        BOOST_REQUIRE(boolExpr!= nullptr);
+        BOOST_REQUIRE_EQUAL(boolExpr->GetValue(), false);
+    }
+
+    for (; i < childExpectedSize; i++)
+    {
+        BOOST_REQUIRE(cNodes[i]->GetKind() == ASTNode::NodeKind::VAR_DECL);
+        const VarDecl* vDecl = dynamic_cast<const VarDecl*>(cNodes[i].get());
+        BOOST_REQUIRE(vDecl != nullptr);
+        BOOST_REQUIRE_EQUAL(vDecl->GetVarName(), "V" + std::to_string(i + 1));
+
+        BOOST_REQUIRE(vDecl->GetInitExpr()->GetKind() == ASTNode::NodeKind::BINARY_EXPR);
+        const BinaryOpExpr* bExpr = dynamic_cast<const BinaryOpExpr*>(vDecl->GetInitExpr());
+        BOOST_REQUIRE(bExpr != nullptr);
+        BOOST_REQUIRE(bExpr->GetOperation() == operations[i]);
+
+        const NumberExpr* nExpr = dynamic_cast<const NumberExpr*>(bExpr->GetLHS());
+        BOOST_REQUIRE(nExpr != nullptr);
+        BOOST_REQUIRE_EQUAL(nExpr->GetValue(), 1);
+
+        nExpr = dynamic_cast<const NumberExpr*>(bExpr->GetRHS());
+        BOOST_REQUIRE(nExpr != nullptr);
+        BOOST_REQUIRE_EQUAL(nExpr->GetValue(), 2);
+    }
+}
+
 BOOST_AUTO_TEST_CASE( ParseVarInitIntBinOpTest )
 {
     auto& cNodes = GetProgramAST("../inputs/var/binary_op_int.tos");
@@ -117,7 +175,7 @@ BOOST_AUTO_TEST_CASE( ParseVarInitIntBinOpTest )
         TosLang::Common::Opcode::LEFT_SHIFT,
     };
 
-    for (size_t i = 0; i < childExpectedSize; i++)
+    for (size_t i = 0; i < childExpectedSize; ++i)
     {
         BOOST_REQUIRE(cNodes[i]->GetKind() == ASTNode::NodeKind::VAR_DECL);
         const VarDecl* vDecl = dynamic_cast<const VarDecl*>(cNodes[i].get());
