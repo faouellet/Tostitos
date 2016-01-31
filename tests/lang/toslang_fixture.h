@@ -6,7 +6,7 @@
 #include "AST/expressions.h"
 #include "AST/statements.h"
 #include "Parse/parser.h"
-#include "Sema/symboltable.h"
+#include "Sema/symbolcollector.h"
 
 #include <boost/test/unit_test.hpp>
 
@@ -17,15 +17,15 @@
 
 using namespace TosLang::FrontEnd;
 
-struct FrontEndErrorFixture
+struct TosLangFixture
 {
-    FrontEndErrorFixture()
+    TosLangFixture()
     {
         oldBuffer = std::cerr.rdbuf();
         std::cerr.rdbuf(buffer.rdbuf());
     }
 
-    ~FrontEndErrorFixture()
+    ~TosLangFixture()
     {
         std::cerr.rdbuf(oldBuffer);
         buffer.clear();
@@ -59,8 +59,16 @@ struct FrontEndErrorFixture
         return cNodes;
     }
 
+    const size_t GetProgramSymbolTable(const std::string& filename, std::shared_ptr<SymbolTable>& symTable)
+    {
+        auto& cNodes = GetProgramAST(filename);
+        BOOST_REQUIRE_NE(cNodes.size(), 0);
+
+        TosLang::FrontEnd::SymbolCollector sCollector{ symTable };
+        return sCollector.Run(programAST);
+    }
+
     std::unique_ptr<ASTNode> programAST;
-    std::shared_ptr<SymbolTable> symTab;
     std::stringstream buffer;
     std::streambuf* oldBuffer;
 };

@@ -8,23 +8,16 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "frontend_error_fixture.h"
+#include "toslang_fixture.h"
 
-#include "Sema/symbolcollector.h"
-
-BOOST_FIXTURE_TEST_SUITE( FrontEndTestSuite, FrontEndErrorFixture )
+BOOST_FIXTURE_TEST_SUITE( FrontEndTestSuite, TosLangFixture )
 
 //////////////////// CORRECT USE CASES ////////////////////
 
 BOOST_AUTO_TEST_CASE( CollectSymbolVar )
 {
-    Parser parser;
-    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/var/var_decl.tos");
-    BOOST_REQUIRE(rootNode != nullptr);
-
     auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
-    TosLang::FrontEnd::SymbolCollector sCollector{ symbolTable };
-    size_t errorCount = sCollector.Run(rootNode);
+    size_t errorCount = GetProgramSymbolTable("../inputs/var/var_decl.tos", symbolTable);
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 
     Symbol varSymbol;
@@ -50,13 +43,8 @@ BOOST_AUTO_TEST_CASE( CollectSymbolVar )
 
 BOOST_AUTO_TEST_CASE( CollectSymbolFunctionNoParam )
 {
-    Parser parser;
-    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/function/fn_def_void.tos");
-    BOOST_REQUIRE(rootNode != nullptr);
-
     auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
-    TosLang::FrontEnd::SymbolCollector sCollector{ symbolTable };
-    size_t errorCount = sCollector.Run(rootNode);
+    size_t errorCount = GetProgramSymbolTable("../inputs/function/fn_def_void.tos", symbolTable);
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 
     Symbol fnSymbol;
@@ -71,13 +59,8 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionNoParam )
 
 BOOST_AUTO_TEST_CASE( CollectSymbolFunctionMultiParam )
 {
-    Parser parser;
-    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/function/fn_def_multi_args.tos");
-    BOOST_REQUIRE(rootNode != nullptr);
-
     auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
-    TosLang::FrontEnd::SymbolCollector sCollector{ symbolTable };
-    size_t errorCount = sCollector.Run(rootNode);
+    size_t errorCount = GetProgramSymbolTable("../inputs/function/fn_def_multi_args.tos", symbolTable);
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 
     Symbol fnSymbol;
@@ -113,13 +96,8 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionMultiParam )
 
 BOOST_AUTO_TEST_CASE( CollectSymbolFunctionWithLocalVar )
 {
-    Parser parser;
-    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/call/call_one_arg.tos");
-    BOOST_REQUIRE(rootNode != nullptr);
-
     auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
-    TosLang::FrontEnd::SymbolCollector sCollector{ symbolTable };
-    size_t errorCount = sCollector.Run(rootNode);
+    size_t errorCount = GetProgramSymbolTable("../inputs/call/call_one_arg.tos", symbolTable);
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 
     Symbol fnSymbol;
@@ -182,13 +160,8 @@ BOOST_AUTO_TEST_CASE( CollectSymbolNoErrorAccumulation )
 
 BOOST_AUTO_TEST_CASE( CollectSymbolGlobalVarRedefinition )
 {
-    Parser parser;
-    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/var/bad_global_var_redef.tos");
-    BOOST_REQUIRE(rootNode != nullptr);
-
     auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
-    TosLang::FrontEnd::SymbolCollector sCollector{ symbolTable };
-    size_t errorCount = sCollector.Run(rootNode);
+    size_t errorCount = GetProgramSymbolTable("../inputs/var/bad_global_var_redef.tos", symbolTable);
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed
@@ -199,13 +172,8 @@ BOOST_AUTO_TEST_CASE( CollectSymbolGlobalVarRedefinition )
 
 BOOST_AUTO_TEST_CASE( CollectSymbolLocalVarRedefinition )
 {
-    Parser parser;
-    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/var/bad_local_var_redef.tos");
-    BOOST_REQUIRE(rootNode != nullptr);
-
     auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
-    TosLang::FrontEnd::SymbolCollector sCollector{ symbolTable };
-    size_t errorCount = sCollector.Run(rootNode);
+    size_t errorCount = GetProgramSymbolTable("../inputs/var/bad_local_var_redef.tos", symbolTable);
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed
@@ -216,13 +184,8 @@ BOOST_AUTO_TEST_CASE( CollectSymbolLocalVarRedefinition )
 
 BOOST_AUTO_TEST_CASE( CollectSymbolFunctionRedefinition )
 {
-    Parser parser;
-    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/function/bad_fn_redef.tos");
-    BOOST_REQUIRE(rootNode != nullptr);
-
     auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
-    TosLang::FrontEnd::SymbolCollector sCollector{ symbolTable };
-    size_t errorCount = sCollector.Run(rootNode);
+    size_t errorCount = GetProgramSymbolTable("../inputs/function/bad_fn_redef.tos", symbolTable);
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed

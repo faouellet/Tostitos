@@ -8,11 +8,11 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "frontend_error_fixture.h"
+#include "toslang_fixture.h"
 
 #include <sstream>
 
-BOOST_FIXTURE_TEST_SUITE( FrontEndTestSuite, FrontEndErrorFixture )
+BOOST_FIXTURE_TEST_SUITE( FrontEndTestSuite, TosLangFixture )
 
 //////////////////// CORRECT USE CASES ////////////////////
 
