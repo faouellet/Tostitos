@@ -52,8 +52,8 @@ BOOST_AUTO_TEST_CASE( VarInitBinaryOpIntTypeCheck )
 
 BOOST_AUTO_TEST_CASE( VarInitCallTypeCheck )
 {
-    //size_t errorCount = GetTypeErrors("");
-    //BOOST_REQUIRE_EQUAL(errorCount, 0);
+    size_t errorCount = GetTypeErrors("../inputs/call/call_one_arg.tos");
+    BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 //////////////////// ERROR USE CASES ////////////////////

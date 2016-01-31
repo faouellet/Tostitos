@@ -132,7 +132,11 @@ BOOST_AUTO_TEST_CASE( ParseCallOneArgTest )
     BOOST_REQUIRE_EQUAL(nExpr->GetValue(), 42);
 
     BOOST_REQUIRE(mainStmts[1] != nullptr);
-    const CallExpr* cExpr = dynamic_cast<const CallExpr*>(mainStmts[1].get());
+    vDecl = dynamic_cast<const VarDecl*>(mainStmts[1].get());
+    BOOST_REQUIRE(vDecl != nullptr);
+    BOOST_REQUIRE_EQUAL(vDecl->GetVarName(), "MyInt2");
+    BOOST_REQUIRE(vDecl->GetInitExpr()->GetKind() == ASTNode::NodeKind::CALL_EXPR);
+    const CallExpr* cExpr = dynamic_cast<const CallExpr*>(vDecl->GetInitExpr());
     BOOST_REQUIRE(cExpr != nullptr);
     auto& cArgs = cExpr->GetArgs();
     BOOST_REQUIRE_EQUAL(cArgs.size(), 1);

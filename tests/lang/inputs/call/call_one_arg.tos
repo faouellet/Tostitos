@@ -4,6 +4,6 @@ fn identity(i : Int) -> Int {
 
 fn main() -> Void {
 	var MyInt : Int = 42;
-	identity(MyInt);
+	var MyInt2: Int = identity(MyInt);
 	return;
 }
