@@ -40,7 +40,7 @@ TypeChecker::TypeChecker(const std::shared_ptr<SymbolTable>& symTab)
     };
 }
 
-unsigned TypeChecker::Run(const std::unique_ptr<ASTNode>& root)
+size_t TypeChecker::Run(const std::unique_ptr<ASTNode>& root)
 {
     mErrorCount = 0;
     this->VisitPostOrder(root);
@@ -135,10 +135,21 @@ void TypeChecker::HandleVarDecl()
             Symbol initSymbol;
             if (mSymbolTable->GetSymbol(fnName, initExpr->GetName(), mCurrentScopesTraversed, initSymbol))
             {
-                if (varSymbol.GetVariableType() != initSymbol.GetFunctionReturnType())
+                if (initSymbol.IsFunction())
                 {
-                    ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_VARIABLE_TYPE, mCurrentNode->GetSourceLocation());
-                    ++mErrorCount;
+                    if (varSymbol.GetVariableType() != initSymbol.GetFunctionReturnType())
+                    {
+                        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_CALL_TYPE, mCurrentNode->GetSourceLocation());
+                        ++mErrorCount;
+                    }
+                }
+                else
+                {
+                    if (varSymbol.GetVariableType() != initSymbol.GetVariableType())
+                    {
+                        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_VARIABLE_TYPE, mCurrentNode->GetSourceLocation());
+                        ++mErrorCount;
+                    }
                 }
             }
         }
@@ -196,7 +207,12 @@ void TosLang::FrontEnd::TypeChecker::HandleBinaryExpr()
         return;
     }
 
-    mBinOpTypes[bExpr] = operandTypes[0];
+    if ((bExpr->GetOperation() == Opcode::GREATER_THAN) || (bExpr->GetOperation() == Opcode::LESS_THAN))
+        // When using either '<' or '>', the resulting type will be different than the operand types.
+        // It is using number expressions to produce a boolean expression.
+        mBinOpTypes[bExpr] = Type::BOOL;
+    else
+        mBinOpTypes[bExpr] = operandTypes[0];
 }
 
 void TosLang::FrontEnd::TypeChecker::HandleCallExpr()

@@ -30,14 +30,7 @@ namespace TosLang
             * \param root   Root of the tree to print
             * \return       Number of errors encountered during type checking
             */
-            unsigned Run(const std::unique_ptr<ASTNode>& root);
-
-            /*
-            * \fn       GetErrorCount
-            * \brief    Gets the current number of type errors encountered by the type checker
-            * \return   Current number of type errors encountered by the type checker
-            */
-            unsigned GetErrorCount() const { return mErrorCount; }
+            size_t Run(const std::unique_ptr<ASTNode>& root);
 
         private:
             /*
@@ -61,7 +54,7 @@ namespace TosLang
             void HandleWhileStmt();
 
         private:
-            unsigned mErrorCount;                                       /*!< Number of errors found by the type checker */
+            size_t mErrorCount;                                         /*!< Number of errors found by the type checker */
             int mCurrentScopeID;                                        /*!< Current scope identifier */
             FunctionDecl* mCurrentFunc;                                 /*!< Current traversed function */
             std::stack<int> mCurrentScopesTraversed;                    /*!< Path from the current scope to the global scopes */

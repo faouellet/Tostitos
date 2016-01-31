@@ -77,6 +77,7 @@ namespace TosLang
 
                 // Type
                 WRONG_BIN_EXPR_TYPE,
+                WRONG_CALL_TYPE,
                 WRONG_COND_EXPR_TYPE,
                 WRONG_EXPR_TYPE,
                 WRONG_LITERAL_TYPE,

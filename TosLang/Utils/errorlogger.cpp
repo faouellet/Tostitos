@@ -65,10 +65,11 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
 
     // Type
     { ErrorType::WRONG_BIN_EXPR_TYPE,          "TYPE ERROR: Mismatch between binary expression operands type" },
+    { ErrorType::WRONG_CALL_TYPE,              "TYPE ERROR: Trying to initialize a variable with the return value of a function of the wrong type" },
     { ErrorType::WRONG_COND_EXPR_TYPE,         "TYPE ERROR: Conditional expression must evaluate to a boolean value" },
     { ErrorType::WRONG_EXPR_TYPE,              "TYPE ERROR: Trying to instantiate variable with an expression of the wrong type" },
     { ErrorType::WRONG_LITERAL_TYPE,           "TYPE ERROR: Trying to instantiate variable with a literal of the wrong type" },
-    { ErrorType::WRONG_VARIABLE_TYPE,          "TYPE ERROR: Type mismatch between a variable and its intializer" },
+    { ErrorType::WRONG_VARIABLE_TYPE,          "TYPE ERROR: Trying to initialize a variable with another variable of a different type" },
 
     // Var
     { ErrorType::PARAM_REDEFINITION,           "VAR ERROR: Trying to redefine an already defined function parameter" },
