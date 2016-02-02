@@ -1,0 +1,12 @@
+fn isGreater(i1 : Int, i2 : Int) -> Bool {
+	return i1 > i2;
+}
+
+fn main() -> Void {
+	var BoolVar: Bool = True;
+
+	if isGreater(1,2) {
+		BoolVar = False;
+	}
+	return;
+}

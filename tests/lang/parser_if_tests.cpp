@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE( ParseIfSimpleCondTest )
 
 BOOST_AUTO_TEST_CASE( ParseIfMultiCondTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/if/if_multi_cond.tos");
+    auto& cNodes = GetProgramAST("../inputs/if/if_bin_bool_cond.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);

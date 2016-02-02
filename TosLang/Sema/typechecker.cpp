@@ -47,7 +47,7 @@ size_t TypeChecker::Run(const std::unique_ptr<ASTNode>& root)
     return mErrorCount;
 }
 
-void TosLang::FrontEnd::TypeChecker::CheckCondExprEvaluateToBool(const Expr* condExpr)
+void TypeChecker::CheckCondExprEvaluateToBool(const Expr* condExpr)
 {
     switch (condExpr->GetKind())
     {
@@ -63,15 +63,19 @@ void TosLang::FrontEnd::TypeChecker::CheckCondExprEvaluateToBool(const Expr* con
             ++mErrorCount;
         }
     }
-    break;
+        break;
     case ASTNode::NodeKind::CALL_EXPR:
     {
         const CallExpr* cExpr = dynamic_cast<const CallExpr*>(condExpr);
         Symbol callSym;
-        if (!mSymbolTable->GetSymbol(mCurrentFunc->GetName(), cExpr->GetName(), mCurrentScopesTraversed, callSym))
+
+        // Get the called function symbol. 
+        // The first argument is an empty string because we want to fetch a global symbol (all functions are global symbols).
+        if (!mSymbolTable->GetSymbol(std::string{}, cExpr->GetName(), mCurrentScopesTraversed, callSym))
         {
             ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::FN_UNDECLARED, cExpr->GetSourceLocation());
             ++mErrorCount;
+            return;
         }
 
         if (callSym.GetFunctionReturnType() != Type::BOOL)
@@ -80,7 +84,25 @@ void TosLang::FrontEnd::TypeChecker::CheckCondExprEvaluateToBool(const Expr* con
             ++mErrorCount;
         }
     }
-    break;
+        break;
+    case ASTNode::NodeKind::IDENTIFIER_EXPR:
+    {
+        const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(condExpr);
+        Symbol varSym;
+        if (!mSymbolTable->GetSymbol(mCurrentFunc->GetName(), iExpr->GetName(), mCurrentScopesTraversed, varSym))
+        {
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_UNDECLARED_IDENTIFIER, iExpr->GetSourceLocation());
+            ++mErrorCount;
+            return;
+        }
+
+        if (varSym.GetVariableType() != Type::BOOL)
+        {
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_COND_EXPR_TYPE, iExpr->GetSourceLocation());
+            ++mErrorCount;
+        }
+    }
+        break;
     default:    // This will happens when the condition expression is a string or a number
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_COND_EXPR_TYPE, mCurrentNode->GetSourceLocation());
         ++mErrorCount;

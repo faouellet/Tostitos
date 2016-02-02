@@ -2,7 +2,7 @@
 #   define BOOST_TEST_MODULE Main
 #else
 #ifndef _WIN32
-#   define BOOST_TEST_MODULE TypeChecker
+#   define BOOST_TEST_MODULE TypeCheckerVarTests
 #endif
 #endif
 
@@ -58,37 +58,10 @@ BOOST_AUTO_TEST_CASE( VarInitCallTypeCheck )
 
 //////////////////// ERROR USE CASES ////////////////////
 
-BOOST_AUTO_TEST_CASE( VarInitValueTypeError )
-{
-    /*size_t errorCount = GetTypeErrors("");
-    BOOST_REQUIRE_EQUAL(errorCount, 1);
-
-    // Check if the correct error messages got printed
-    std::vector<std::string> messages{ GetErrorMessages() };
-    BOOST_REQUIRE_EQUAL(messages.size(), 1);
-    BOOST_REQUIRE_EQUAL(messages[0], "");*/
-}
-
-BOOST_AUTO_TEST_CASE( VarInitBinaryTypeError )
-{
-    /*size_t errorCount = GetTypeErrors("");
-    BOOST_REQUIRE_EQUAL(errorCount, 1);
-
-    // Check if the correct error messages got printed
-    std::vector<std::string> messages{ GetErrorMessages() };
-    BOOST_REQUIRE_EQUAL(messages.size(), 1);
-    BOOST_REQUIRE_EQUAL(messages[0], "");*/
-}
-
-BOOST_AUTO_TEST_CASE( VarInitCallTypeError )
-{
-    /*size_t errorCount = GetTypeErrors("");
-    BOOST_REQUIRE_EQUAL(errorCount, 1);
-
-    // Check if the correct error messages got printed
-    std::vector<std::string> messages{ GetErrorMessages() };
-    BOOST_REQUIRE_EQUAL(messages.size(), 1);
-    BOOST_REQUIRE_EQUAL(messages[0], "");*/
-}
+// TODO
+// Initialize a variable with a literal of wrong type
+// Initialize a variable with a variable of wrong type
+// Initialize a variable with a call to a function with the wrong return type
+// Initialize a variable with a binary expression producing a value of the wrong type
 
 BOOST_AUTO_TEST_SUITE_END()

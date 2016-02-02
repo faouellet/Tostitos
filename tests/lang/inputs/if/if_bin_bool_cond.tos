@@ -1,0 +1,7 @@
+fn main() -> Void {
+	var BoolVar: Bool = True;
+
+	if True && False {
+		BoolVar = False;
+	}
+}
