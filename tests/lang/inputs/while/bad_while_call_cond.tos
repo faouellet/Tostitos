@@ -1,0 +1,12 @@
+fn sum(i1 : Int, i2 : Int) -> Int {
+	return i1 + i2;
+}
+
+fn main() -> Void {
+	var BoolVar: Bool = True;
+
+	while sum(1,2) {
+		BoolVar = False;
+	}
+	return;
+}

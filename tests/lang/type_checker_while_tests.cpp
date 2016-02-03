@@ -52,10 +52,48 @@ BOOST_AUTO_TEST_CASE( WhileCallCondTypeCheck )
 
 //////////////////// ERROR USE CASES ////////////////////
 
-// TODOs
-// Condition is an integer literal
-// Condition is an integer variable
-// Condition is a call to a function with the wrong return type
-// Condition is a binary expression that doesn't produce a boolean value
+BOOST_AUTO_TEST_CASE( BadWhileNumberLiteralCondTypeCheck )
+{
+    size_t errorCount = GetTypeErrors("../inputs/while/bad_while_int_literal_cond.tos");
+    BOOST_REQUIRE_EQUAL(errorCount, 1);
+
+    // Check if the correct error message got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
+    BOOST_REQUIRE_EQUAL(messages.size(), 1);
+    BOOST_REQUIRE_EQUAL(messages[0], "TYPE ERROR: Conditional expression must evaluate to a boolean value at line 4, column 7");
+}
+
+BOOST_AUTO_TEST_CASE( BadWhileNumberVariableCondTypeCheck )
+{
+    size_t errorCount = GetTypeErrors("../inputs/while/bad_while_int_variable_cond.tos");
+    BOOST_REQUIRE_EQUAL(errorCount, 1);
+
+    // Check if the correct error message got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
+    BOOST_REQUIRE_EQUAL(messages.size(), 1);
+    BOOST_REQUIRE_EQUAL(messages[0], "TYPE ERROR: Conditional expression must evaluate to a boolean value at line 5, column 12");
+}
+
+BOOST_AUTO_TEST_CASE( BadWhileNumberBinaryExprCondTypeCheck )
+{
+    size_t errorCount = GetTypeErrors("../inputs/while/bad_while_bin_int_cond.tos");
+    BOOST_REQUIRE_EQUAL(errorCount, 1);
+
+    // Check if the correct error message got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
+    BOOST_REQUIRE_EQUAL(messages.size(), 1);
+    BOOST_REQUIRE_EQUAL(messages[0], "TYPE ERROR: Conditional expression must evaluate to a boolean value at line 4, column 9");
+}
+
+BOOST_AUTO_TEST_CASE( BadWhileCallCondTypeCheck )
+{
+    size_t errorCount = GetTypeErrors("../inputs/while/bad_while_call_cond.tos");
+    BOOST_REQUIRE_EQUAL(errorCount, 1);
+
+    // Check if the correct error message got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
+    BOOST_REQUIRE_EQUAL(messages.size(), 1);
+    BOOST_REQUIRE_EQUAL(messages[0], "TYPE ERROR: Conditional expression must evaluate to a boolean value at line 8, column 9");
+}
 
 BOOST_AUTO_TEST_SUITE_END()

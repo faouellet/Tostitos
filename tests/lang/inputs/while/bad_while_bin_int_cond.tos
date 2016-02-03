@@ -1,0 +1,7 @@
+fn main() -> Void {
+	var BoolVar: Bool = True;
+
+	while 1 + 2 {
+		BoolVar = False;
+	}
+}
