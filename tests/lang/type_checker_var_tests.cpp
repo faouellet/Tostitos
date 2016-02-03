@@ -61,6 +61,7 @@ BOOST_AUTO_TEST_CASE( VarInitCallTypeCheck )
 // TODO
 // Initialize a variable with a literal of wrong type
 // Initialize a variable with a variable of wrong type
+// Initialize a variable with an undeclared variable
 // Initialize a variable with a call to a function with the wrong return type
 // Initialize a variable with a binary expression producing a value of the wrong type
 
