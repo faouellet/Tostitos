@@ -1,0 +1,4 @@
+fn main() -> Void {
+	var Hello : String = "Hello World!";
+	print Hello;
+}

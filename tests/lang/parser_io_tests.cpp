@@ -14,7 +14,7 @@ BOOST_FIXTURE_TEST_SUITE( FrontEndTestSuite, TosLangFixture )
 
 BOOST_AUTO_TEST_CASE( ParseHelloWorldTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/io/hello_world.tos");
+    auto& cNodes = GetProgramAST("../inputs/io/print_string_literal.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0] != nullptr);

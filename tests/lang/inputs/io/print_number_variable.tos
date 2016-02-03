@@ -1,0 +1,4 @@
+fn main() -> Void {
+	var MyInt : Int = 42;
+	print MyInt;
+}

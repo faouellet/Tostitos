@@ -1,0 +1,3 @@
+fn main() -> Void {
+	print 42;
+}
