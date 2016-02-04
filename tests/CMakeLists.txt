@@ -51,9 +51,10 @@ if(Boost_FOUND)
 		
         add_boost_test(lang/symbol_collector_tests.cpp lang)
         
-        add_boost_test(lang/type_checker_var_tests.cpp lang)
         add_boost_test(lang/type_checker_if_tests.cpp lang)
         add_boost_test(lang/type_checker_io_tests.cpp lang)
+        add_boost_test(lang/type_checker_return_tests.cpp lang)
+        add_boost_test(lang/type_checker_var_tests.cpp lang)
         add_boost_test(lang/type_checker_while_tests.cpp lang)
     endif()
 endif()

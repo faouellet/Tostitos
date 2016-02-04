@@ -1,0 +1,3 @@
+fn MyFunc() -> Bool {
+    return 42;
+}
