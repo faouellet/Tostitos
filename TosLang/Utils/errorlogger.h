@@ -81,6 +81,7 @@ namespace TosLang
                 WRONG_COND_EXPR_TYPE,
                 WRONG_EXPR_TYPE,
                 WRONG_LITERAL_TYPE,
+                WRONG_RETURN_TYPE,
                 WRONG_VARIABLE_TYPE,
 
                 // Var

@@ -69,6 +69,7 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
     { ErrorType::WRONG_COND_EXPR_TYPE,         "TYPE ERROR: Conditional expression must evaluate to a boolean value" },
     { ErrorType::WRONG_EXPR_TYPE,              "TYPE ERROR: Trying to instantiate variable with an expression of the wrong type" },
     { ErrorType::WRONG_LITERAL_TYPE,           "TYPE ERROR: Trying to instantiate variable with a literal of the wrong type" },
+    { ErrorType::WRONG_RETURN_TYPE,            "TYPE ERROR: Returned value type doesn't match the function specified return type" },
     { ErrorType::WRONG_VARIABLE_TYPE,          "TYPE ERROR: Trying to initialize a variable with another variable of a different type" },
 
     // Var

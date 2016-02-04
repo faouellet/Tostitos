@@ -47,26 +47,20 @@ size_t TypeChecker::Run(const std::unique_ptr<ASTNode>& root)
     return mErrorCount;
 }
 
-void TypeChecker::CheckCondExprEvaluateToBool(const Expr* condExpr)
+bool TypeChecker::CheckExprEvaluateToType(const Expr* expr, Type type)
 {
-    switch (condExpr->GetKind())
+    switch (expr->GetKind())
     {
     case ASTNode::NodeKind::BOOLEAN_EXPR:
-        // Trivial, nothing to do
-        break;
+        return type == Type::BOOL;
     case ASTNode::NodeKind::BINARY_EXPR:
     {
-        const BinaryOpExpr* bExpr = dynamic_cast<const BinaryOpExpr*>(condExpr);
-        if (mBinOpTypes[bExpr] != Type::BOOL)
-        {
-            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_COND_EXPR_TYPE, bExpr->GetSourceLocation());
-            ++mErrorCount;
-        }
+        const BinaryOpExpr* bExpr = dynamic_cast<const BinaryOpExpr*>(expr);
+        return mBinOpTypes[bExpr] == type;
     }
-        break;
     case ASTNode::NodeKind::CALL_EXPR:
     {
-        const CallExpr* cExpr = dynamic_cast<const CallExpr*>(condExpr);
+        const CallExpr* cExpr = dynamic_cast<const CallExpr*>(expr);
         Symbol callSym;
 
         // Get the called function symbol. 
@@ -75,38 +69,31 @@ void TypeChecker::CheckCondExprEvaluateToBool(const Expr* condExpr)
         {
             ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::FN_UNDECLARED, cExpr->GetSourceLocation());
             ++mErrorCount;
-            return;
+            return false;
         }
 
-        if (callSym.GetFunctionReturnType() != Type::BOOL)
-        {
-            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_COND_EXPR_TYPE, cExpr->GetSourceLocation());
-            ++mErrorCount;
-        }
+        return callSym.GetFunctionReturnType() == type;
     }
-        break;
     case ASTNode::NodeKind::IDENTIFIER_EXPR:
     {
-        const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(condExpr);
+        const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(expr);
         Symbol varSym;
-        if (!mSymbolTable->GetSymbol(mCurrentFunc->GetName(), iExpr->GetName(), mCurrentScopesTraversed, varSym))
+        std::string fnName = mCurrentFunc == nullptr ? "" : mCurrentFunc->GetName();
+        if (!mSymbolTable->GetSymbol(fnName, iExpr->GetName(), mCurrentScopesTraversed, varSym))
         {
             ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_UNDECLARED_IDENTIFIER, iExpr->GetSourceLocation());
             ++mErrorCount;
-            return;
+            return false;
         }
 
-        if (varSym.GetVariableType() != Type::BOOL)
-        {
-            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_COND_EXPR_TYPE, iExpr->GetSourceLocation());
-            ++mErrorCount;
-        }
+        return varSym.GetVariableType() == type;
     }
-        break;
-    default:    // This will happens when the condition expression is a string or a number
-        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_COND_EXPR_TYPE, mCurrentNode->GetSourceLocation());
-        ++mErrorCount;
-        break;
+    case ASTNode::NodeKind::NUMBER_EXPR:
+        return type == Type::NUMBER;
+    default:    
+        // This shouldn't happen
+        assert(false);
+        return false;
     }
 }
 
@@ -122,63 +109,38 @@ void TypeChecker::HandleVarDecl()
         Symbol varSymbol;
         // Get the name of the function currently traversed. An empty name means that we're not in a function, we're in the global scope
         std::string fnName = mCurrentFunc == nullptr ? "" : mCurrentFunc->GetName();
-        if (!mSymbolTable->GetSymbol(fnName, vDecl->GetName(), mCurrentScopesTraversed, varSymbol))
-        {
-            // Variable wasn't declared
-            ++mErrorCount;
-            return ;
-        }
+        assert(mSymbolTable->GetSymbol(fnName, vDecl->GetName(), mCurrentScopesTraversed, varSymbol));
 
-        // Check of there is a mismatch between the variable type and the type of its initialization expression
-        // (for boolean or number literals)
-        if ((initExpr->GetKind() == ASTNode::NodeKind::BOOLEAN_EXPR && varSymbol.GetVariableType() != Type::BOOL)
-            || (initExpr->GetKind() == ASTNode::NodeKind::NUMBER_EXPR && varSymbol.GetVariableType() != Type::NUMBER))
+        if (!CheckExprEvaluateToType(initExpr, varSymbol.GetVariableType()))
         {
-            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_LITERAL_TYPE, initExpr->GetSourceLocation());
-            ++mErrorCount;
-            return;
-        }
-        
-        const BinaryOpExpr* bExpr = dynamic_cast<const BinaryOpExpr*>(initExpr);
-        if (bExpr != nullptr)
-        {
-            // Check of there is a mismatch between the variable type and the type of its initialization expression
-            // (when the initialization expression is a binary expression)
-            if (varSymbol.GetVariableType() != mBinOpTypes[bExpr])
+            switch (initExpr->GetKind())
             {
-                ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_EXPR_TYPE, bExpr->GetSourceLocation());
+            case ASTNode::NodeKind::BOOLEAN_EXPR:
+            case ASTNode::NodeKind::NUMBER_EXPR:
+                ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_LITERAL_TYPE, initExpr->GetSourceLocation());
                 ++mErrorCount;
-            }
-        }
-        else
-        {
-            // Check of there is a mismatch between the variable type and the type of its initialization expression
-            // (when the initialization expression is a another variable or a function call)
-            Symbol initSymbol;
-            if (mSymbolTable->GetSymbol(fnName, initExpr->GetName(), mCurrentScopesTraversed, initSymbol))
-            {
-                if (initSymbol.IsFunction())
-                {
-                    if (varSymbol.GetVariableType() != initSymbol.GetFunctionReturnType())
-                    {
-                        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_CALL_TYPE, mCurrentNode->GetSourceLocation());
-                        ++mErrorCount;
-                    }
-                }
-                else
-                {
-                    if (varSymbol.GetVariableType() != initSymbol.GetVariableType())
-                    {
-                        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_VARIABLE_TYPE, mCurrentNode->GetSourceLocation());
-                        ++mErrorCount;
-                    }
-                }
+                return;
+            case ASTNode::NodeKind::BINARY_EXPR:
+                ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_EXPR_TYPE, initExpr->GetSourceLocation());
+                ++mErrorCount;
+                return;
+            case ASTNode::NodeKind::CALL_EXPR:
+                ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_CALL_TYPE, mCurrentNode->GetSourceLocation());
+                ++mErrorCount;
+                return;
+            case ASTNode::NodeKind::IDENTIFIER_EXPR:
+                ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_VARIABLE_TYPE, mCurrentNode->GetSourceLocation());
+                ++mErrorCount;
+                return;
+            default:
+                // This shouldn't happen
+                assert(false);
             }
         }
     }
 }
 
-void TosLang::FrontEnd::TypeChecker::HandleBinaryExpr()
+void TypeChecker::HandleBinaryExpr()
 {
     const BinaryOpExpr* bExpr = dynamic_cast<const BinaryOpExpr*>(this->mCurrentNode);
     assert(bExpr != nullptr);
@@ -212,9 +174,18 @@ void TosLang::FrontEnd::TypeChecker::HandleBinaryExpr()
         }
             break;
         case ASTNode::NodeKind::IDENTIFIER_EXPR:
-            // It is an error to use binary expression with an identifier as one of its operands
-            mBinOpTypes[bExpr] = Type::ERROR;
-            return;
+        {
+            const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(children[i].get());
+            Symbol varSym;
+            if (!mSymbolTable->GetSymbol(mCurrentFunc->GetName(), iExpr->GetName(), mCurrentScopesTraversed, varSym))
+            {
+                // Trying to call a function that doesn't exist
+                mBinOpTypes[bExpr] = Type::ERROR;
+                return;
+            }
+            operandTypes[i] = varSym.GetVariableType();
+        }
+            break;
         case ASTNode::NodeKind::NUMBER_EXPR:
             operandTypes[i] = Type::NUMBER;
             break;
@@ -237,7 +208,7 @@ void TosLang::FrontEnd::TypeChecker::HandleBinaryExpr()
         mBinOpTypes[bExpr] = operandTypes[0];
 }
 
-void TosLang::FrontEnd::TypeChecker::HandleCallExpr()
+void TypeChecker::HandleCallExpr()
 {
     const CallExpr* cExpr = dynamic_cast<const CallExpr*>(this->mCurrentNode);
     assert(cExpr != nullptr);
@@ -264,90 +235,29 @@ void TosLang::FrontEnd::TypeChecker::HandleCallExpr()
     {
         auto& arg = args[i];
         Type expectedArgTy = expectedArgTypes[i];
-
-        // TODO: Too much repetition down below
-        switch (arg->GetKind())
+        const Expr* argExpr = dynamic_cast<const Expr*>(arg.get());
+        if (!CheckExprEvaluateToType(argExpr, expectedArgTy))
         {
-        case ASTNode::NodeKind::BINARY_EXPR:
-        {
-            const BinaryOpExpr* bExpr = dynamic_cast<const BinaryOpExpr*>(arg.get());
-            if (expectedArgTy != mBinOpTypes[bExpr])
-            {
-                ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::CALL_WRONG_ARG_TYPE, bExpr->GetSourceLocation());
-                ++mErrorCount;
-                return;
-            }
-        }
-            break;
-        case ASTNode::NodeKind::BOOLEAN_EXPR:
-            if (expectedArgTy != Type::BOOL)
-            {
-                ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::CALL_WRONG_ARG_TYPE, arg->GetSourceLocation());
-                ++mErrorCount;
-                return;
-            }
-            break;
-        case ASTNode::NodeKind::CALL_EXPR:
-        {
-            Symbol fnSym;
-            if (!mSymbolTable->GetSymbol(mCurrentFunc->GetName(), arg->GetName(), mCurrentScopesTraversed, fnSym))
-            {
-                ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::FN_UNDECLARED, arg->GetSourceLocation());
-                ++mErrorCount;
-                return;
-            }
-
-            if (expectedArgTy != fnSym.GetFunctionReturnType())
-            {
-                ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::CALL_WRONG_ARG_TYPE, arg->GetSourceLocation());
-                ++mErrorCount;
-                return;
-            }
-        }
-            break;
-        case ASTNode::NodeKind::IDENTIFIER_EXPR:
-        {
-            Symbol varSym;
-            if (!mSymbolTable->GetSymbol(mCurrentFunc->GetName(), arg->GetName(), mCurrentScopesTraversed, varSym))
-            {
-                ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_UNDECLARED_IDENTIFIER, arg->GetSourceLocation());
-                ++mErrorCount;
-                return;
-            }
-
-            if (expectedArgTy != varSym.GetVariableType())
-            {
-                ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::CALL_WRONG_ARG_TYPE, arg->GetSourceLocation());
-                ++mErrorCount;
-                return;
-            }
-        }
-            break;
-        case ASTNode::NodeKind::NUMBER_EXPR:
-            if (expectedArgTy != Type::NUMBER)
-            {
-                ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::CALL_WRONG_ARG_TYPE, arg->GetSourceLocation());
-                ++mErrorCount;
-                return;
-            }
-            break;
-        default:
-            // This shouldn't be possible
-            assert(false);
-            break;
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::CALL_WRONG_ARG_TYPE, argExpr->GetSourceLocation());
+            ++mErrorCount;
+            return;
         }
     }
 }
 
-void TosLang::FrontEnd::TypeChecker::HandleIfStmt()
+void TypeChecker::HandleIfStmt()
 {
     const IfStmt* ifStmt = dynamic_cast<const IfStmt*>(this->mCurrentNode);
     assert(ifStmt != nullptr);
 
-    CheckCondExprEvaluateToBool(ifStmt->GetCondExpr());
+    if (!CheckExprEvaluateToType(ifStmt->GetCondExpr(), Type::BOOL))
+    {
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_COND_EXPR_TYPE, ifStmt->GetCondExpr()->GetSourceLocation());
+        ++mErrorCount;
+    }
 }
 
-void TosLang::FrontEnd::TypeChecker::HandlePrintStmt()
+void TypeChecker::HandlePrintStmt()
 {
     const PrintStmt* pStmt = dynamic_cast<const PrintStmt*>(this->mCurrentNode);
     assert(pStmt != nullptr);
@@ -365,7 +275,34 @@ void TosLang::FrontEnd::TypeChecker::HandlePrintStmt()
     }
 }
 
-void TosLang::FrontEnd::TypeChecker::HandleScanStmt()
+void TosLang::FrontEnd::TypeChecker::HandleReturnStmt()
+{
+    const ReturnStmt* rStmt = dynamic_cast<const ReturnStmt*>(this->mCurrentNode);
+    assert(rStmt != nullptr);
+
+    Symbol fnSymbol;
+    assert(mSymbolTable->GetSymbol("", mCurrentFunc->GetName(), mCurrentScopesTraversed, fnSymbol));
+
+    Type fnType = fnSymbol.GetFunctionReturnType();
+    if (fnType == Type::VOID)
+    {
+        if(rStmt->GetReturnExpr() != nullptr)
+        { 
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_RETURN_TYPE, rStmt->GetSourceLocation());
+            ++mErrorCount;
+        }
+    }
+    else
+    {
+        if (!CheckExprEvaluateToType(rStmt->GetReturnExpr(), fnType))
+        {
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_RETURN_TYPE, rStmt->GetSourceLocation());
+            ++mErrorCount;
+        }
+    }
+}
+
+void TypeChecker::HandleScanStmt()
 {
     const ScanStmt* sStmt = dynamic_cast<const ScanStmt*>(this->mCurrentNode);
     assert(sStmt != nullptr);
@@ -379,10 +316,14 @@ void TosLang::FrontEnd::TypeChecker::HandleScanStmt()
     }
 }
 
-void TosLang::FrontEnd::TypeChecker::HandleWhileStmt()
+void TypeChecker::HandleWhileStmt()
 {
     const WhileStmt* wStmt = dynamic_cast<const WhileStmt*>(this->mCurrentNode);
     assert(wStmt != nullptr);
 
-    CheckCondExprEvaluateToBool(wStmt->GetCondExpr());
+    if (!CheckExprEvaluateToType(wStmt->GetCondExpr(), Type::BOOL))
+    {
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_COND_EXPR_TYPE, wStmt->GetCondExpr()->GetSourceLocation());
+        ++mErrorCount;
+    }
 }

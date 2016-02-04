@@ -35,10 +35,12 @@ namespace TosLang
         private:
             /*
             * \fn               CheckCondExprEvaluateToBool
-            * \brief            Checks if the conditional expression evaluates to a boolean value
-            * \param condExpr   The conditional expression
+            * \brief            Checks if the expression evaluates to a value of a given type
+            * \param expr       The expression to be checked
+            * \param type       The type to be matched
+            * \return           True if the type of the expression matches the type given, else false
             */
-            void CheckCondExprEvaluateToBool(const Expr* condExpr);
+            bool CheckExprEvaluateToType(const Expr* expr, Common::Type type);
 
         protected:  // Declarations
             void HandleVarDecl();
@@ -50,6 +52,7 @@ namespace TosLang
         protected:  // Statements
             void HandleIfStmt();
             void HandlePrintStmt();
+            void HandleReturnStmt();
             void HandleScanStmt();
             void HandleWhileStmt();
 
