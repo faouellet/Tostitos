@@ -97,7 +97,7 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionMultiParam )
 BOOST_AUTO_TEST_CASE( CollectSymbolFunctionWithLocalVar )
 {
     auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
-    size_t errorCount = GetProgramSymbolTable("../inputs/call/call_one_arg.tos", symbolTable);
+    size_t errorCount = GetProgramSymbolTable("../inputs/call/call_one_arg_var.tos", symbolTable);
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 
     Symbol fnSymbol;

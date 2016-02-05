@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE( ParseCallZeroArgTest )
 
 BOOST_AUTO_TEST_CASE( ParseCallOneArgTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/call/call_one_arg.tos");
+    auto& cNodes = GetProgramAST("../inputs/call/call_one_arg_var.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 2);
     BOOST_REQUIRE(cNodes[0] != nullptr);
 
