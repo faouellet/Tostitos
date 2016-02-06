@@ -65,13 +65,9 @@ bool TypeChecker::CheckExprEvaluateToType(const Expr* expr, Type type)
 
         // Get the called function symbol. 
         // The first argument is an empty string because we want to fetch a global symbol (all functions are global symbols).
-        if (!mSymbolTable->GetSymbol(std::string{}, cExpr->GetName(), mCurrentScopesTraversed, callSym))
-        {
-            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::FN_UNDECLARED, cExpr->GetSourceLocation());
-            ++mErrorCount;
-            return false;
-        }
-
+        // It is assumed that the scope checker has been run before the type checker
+        assert(mSymbolTable->GetSymbol(std::string{}, cExpr->GetName(), mCurrentScopesTraversed, callSym));
+        
         return callSym.GetFunctionReturnType() == type;
     }
     case ASTNode::NodeKind::IDENTIFIER_EXPR:
@@ -79,12 +75,9 @@ bool TypeChecker::CheckExprEvaluateToType(const Expr* expr, Type type)
         const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(expr);
         Symbol varSym;
         std::string fnName = mCurrentFunc == nullptr ? "" : mCurrentFunc->GetName();
-        if (!mSymbolTable->GetSymbol(fnName, iExpr->GetName(), mCurrentScopesTraversed, varSym))
-        {
-            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_UNDECLARED_IDENTIFIER, iExpr->GetSourceLocation());
-            ++mErrorCount;
-            return false;
-        }
+
+        // It is assumed that the scope checker has been run before the type checker
+        assert(mSymbolTable->GetSymbol(fnName, iExpr->GetName(), mCurrentScopesTraversed, varSym));
 
         return varSym.GetVariableType() == type;
     }
@@ -163,26 +156,18 @@ void TypeChecker::HandleBinaryExpr()
         case ASTNode::NodeKind::CALL_EXPR:
         {
             const CallExpr* cExpr = dynamic_cast<const CallExpr*>(children[i].get());
+            // It is assumed that the scope checker has been run before the type checker
             Symbol callSym;
-            if (!mSymbolTable->GetSymbol(mCurrentFunc->GetName(), cExpr->GetName(), mCurrentScopesTraversed, callSym))
-            {
-                // Trying to call a function that doesn't exist
-                mBinOpTypes[bExpr] = Type::ERROR;
-                return;
-            }
+            assert(mSymbolTable->GetSymbol(mCurrentFunc->GetName(), cExpr->GetName(), mCurrentScopesTraversed, callSym));
             operandTypes[i] = callSym.GetFunctionReturnType();
         }
             break;
         case ASTNode::NodeKind::IDENTIFIER_EXPR:
         {
             const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(children[i].get());
+            // It is assumed that the scope checker has been run before the type checker
             Symbol varSym;
-            if (!mSymbolTable->GetSymbol(mCurrentFunc->GetName(), iExpr->GetName(), mCurrentScopesTraversed, varSym))
-            {
-                // Trying to call a function that doesn't exist
-                mBinOpTypes[bExpr] = Type::ERROR;
-                return;
-            }
+            assert(mSymbolTable->GetSymbol(mCurrentFunc->GetName(), iExpr->GetName(), mCurrentScopesTraversed, varSym));
             operandTypes[i] = varSym.GetVariableType();
         }
             break;
@@ -213,13 +198,9 @@ void TypeChecker::HandleCallExpr()
     const CallExpr* cExpr = dynamic_cast<const CallExpr*>(this->mCurrentNode);
     assert(cExpr != nullptr);
 
+    // It is assumed that the scope checker has been run before the type checker
     Symbol fnSymbol;
-    if (!mSymbolTable->GetSymbol("", cExpr->GetCalleeName(), mCurrentScopesTraversed, fnSymbol))
-    {
-        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::FN_UNDECLARED, cExpr->GetSourceLocation());
-        ++mErrorCount;
-        return;
-    }
+    assert(mSymbolTable->GetSymbol("", cExpr->GetCalleeName(), mCurrentScopesTraversed, fnSymbol));
 
     std::vector<Type> expectedArgTypes = fnSymbol.GetFunctionParamTypes();
     const std::vector<std::unique_ptr<ASTNode>>& args = cExpr->GetArgs();
