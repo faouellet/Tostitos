@@ -63,9 +63,10 @@ void TosLang::FrontEnd::SymbolTable::Clear()
     mGlobalTable.clear();
 }
 
+// TODO: This could probably be refactored into something more elegant
 bool SymbolTable::GetSymbol(const std::string& fnName, const std::string& symName, const std::stack<int>& scopesToSearch, Symbol& sym)
 {
-    if (fnName.empty()) // We were asked for a global symbol
+    if (fnName.empty()) // We were asked for a symbol that is assumed to be global
     {
         auto symIt = std::find_if(mGlobalTable.begin(), mGlobalTable.end(), [symName](const SymTable::value_type& sym) { return sym.second.GetName() == symName; });
         
@@ -76,18 +77,21 @@ bool SymbolTable::GetSymbol(const std::string& fnName, const std::string& symNam
         sym = symIt->second;
         return true;
     }
-    else // We were asked for a local symbol
+    else // We were asked for a symbol that appeared in a local scope
     {
+        // Checking that we are indeed inside, at the very least, a function scope
+        assert(scopesToSearch.size() > 1);
+
         auto fnIt = mLocalTables.find(fnName);
 
         // Function name is not in the global table
         if (fnIt == mLocalTables.end())
             return false;
 
-        // Starting at the most nested scope, we search outward for the symbol
-        // associated with symName
+        // Starting at the most nested scope, we search outward for the symbol associated with symName.
+        // We thus traverse all the scopes inside the function associated with fnName
         std::stack<int> scopes{ scopesToSearch };
-        while (!scopes.empty())
+        while (scopes.size() > 1)
         {
             int scopeID = scopes.top();
             scopes.pop();
@@ -104,8 +108,17 @@ bool SymbolTable::GetSymbol(const std::string& fnName, const std::string& symNam
             }
         }
 
-        // No corresponding symbol found
-        return false;
+        // Last chance. It must be a global symbol or it is undeclared.
+        std::stringstream sStream;
+        sStream << symName << "0";
+
+        auto symIt = std::find_if(mGlobalTable.begin(), mGlobalTable.end(), [symName](const SymTable::value_type& sym) { return sym.second.GetName() == symName; });
+        
+        if (symIt == mGlobalTable.end())
+            return false;
+
+        sym = symIt->second;
+        return true;
     }
 }
 

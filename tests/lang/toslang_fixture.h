@@ -6,6 +6,7 @@
 #include "AST/expressions.h"
 #include "AST/statements.h"
 #include "Parse/parser.h"
+#include "Sema/scopechecker.h"
 #include "Sema/symbolcollector.h"
 #include "Sema/typechecker.h"
 
@@ -98,6 +99,22 @@ struct TosLangFixture
 
         TosLang::FrontEnd::SymbolCollector sCollector{ symTable };
         return sCollector.Run(programAST);
+    }
+
+    /*
+    * \fn               GetAccessibilityErrors
+    * \brief            Parse a TosLang program and check the resulting AST for accessibility (scope) errors
+    * \param filename   Name of a file containing a TosLang program
+    * \return           The number of errors that happened during scope checking
+    */
+    const size_t GetAccessibilityErrors(const std::string& filename)
+    {
+        auto symTable = std::make_shared<SymbolTable>();
+        size_t errorCount = GetProgramSymbolTable(filename, symTable);
+        BOOST_REQUIRE_EQUAL(errorCount, 0);
+
+        ScopeChecker sChecker(symTable);
+        return sChecker.Run(programAST);
     }
 
     /*

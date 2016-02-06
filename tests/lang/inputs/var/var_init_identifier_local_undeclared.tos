@@ -1,0 +1,6 @@
+fn main() -> Void
+{
+	var MyIntVar2: Int = MyIntVar;
+	
+	return;
+}
