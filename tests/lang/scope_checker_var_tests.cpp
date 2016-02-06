@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE( UneclaredGlobalVarUsedInGlobalScopeCheck )
 
 BOOST_AUTO_TEST_CASE( UndeclaredVarUsedInLocalScopeCheck )
 {
-    size_t errorCount = GetAccessibilityErrors("../inputs/var/var_init_identifier_from_global_undeclared.tos");
+    size_t errorCount = GetAccessibilityErrors("../inputs/var/var_init_identifier_local_undeclared.tos");
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed
