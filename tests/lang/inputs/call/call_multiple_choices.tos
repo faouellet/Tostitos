@@ -1,0 +1,15 @@
+fn increment(i : Int) -> Int {
+	return i+1;
+}
+
+fn increment(i : Int, inc : Int) -> Int {
+	return i + inc;
+}
+
+
+fn main() -> Void {
+	var MyInt : Int = 42;
+	var MyInt2: Int = increment(MyInt);
+	var MyInt3: Int = increment(MyInt, 9);
+	return;
+}

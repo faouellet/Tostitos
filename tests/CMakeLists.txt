@@ -50,6 +50,9 @@ if(Boost_FOUND)
         add_boost_test(lang/parser_while_tests.cpp lang)
 		
         add_boost_test(lang/symbol_collector_tests.cpp lang)
+
+        add_boost_test(lang/scope_checker_call_tests.cpp lang)
+        add_boost_test(lang/scope_checker_var_tests.cpp lang)
         
         add_boost_test(lang/type_checker_call_tests.cpp lang)
         add_boost_test(lang/type_checker_if_tests.cpp lang)

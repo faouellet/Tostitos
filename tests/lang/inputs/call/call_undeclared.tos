@@ -1,0 +1,5 @@
+fn main() -> Void {
+	var MyInt : Int = 42;
+	var MyInt2: Int = identity(MyInt);
+	return;
+}
