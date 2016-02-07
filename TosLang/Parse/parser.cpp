@@ -224,6 +224,7 @@ std::unique_ptr<Expr> Parser::ParseExpr()
         node = std::make_unique<NumberExpr>(mLexer.GetCurrentNumber(), mLexer.GetCurrentLocation());
         break;
     case Lexer::Token::IDENTIFIER:
+    case Lexer::Token::STRING_LITERAL:
         node = std::make_unique<IdentifierExpr>(mLexer.GetCurrentStr(), mLexer.GetCurrentLocation());
         break;
     case Lexer::Token::SEMI_COLON:
