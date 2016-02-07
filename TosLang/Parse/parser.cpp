@@ -224,11 +224,13 @@ std::unique_ptr<Expr> Parser::ParseExpr()
         node = std::make_unique<NumberExpr>(mLexer.GetCurrentNumber(), mLexer.GetCurrentLocation());
         break;
     case Lexer::Token::IDENTIFIER:
-    case Lexer::Token::STRING_LITERAL:
         node = std::make_unique<IdentifierExpr>(mLexer.GetCurrentStr(), mLexer.GetCurrentLocation());
         break;
     case Lexer::Token::SEMI_COLON:
         return nullptr;
+    case Lexer::Token::STRING_LITERAL:
+        node = std::make_unique<StringExpr>(mLexer.GetCurrentStr(), mLexer.GetCurrentLocation());
+        break;
     default:
         if ((Lexer::Token::OP_START <= mCurrentToken) && (mCurrentToken <= Lexer::Token::OP_END))
         {

@@ -1,0 +1,1 @@
+var MyIntVar: Int = "Hello World";

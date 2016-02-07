@@ -83,6 +83,8 @@ bool TypeChecker::CheckExprEvaluateToType(const Expr* expr, Type type)
     }
     case ASTNode::NodeKind::NUMBER_EXPR:
         return type == Type::NUMBER;
+    case ASTNode::NodeKind::STRING_EXPR:
+        return type == Type::STRING;
     default:    
         // This shouldn't happen
         assert(false);
@@ -110,6 +112,7 @@ void TypeChecker::HandleVarDecl()
             {
             case ASTNode::NodeKind::BOOLEAN_EXPR:
             case ASTNode::NodeKind::NUMBER_EXPR:
+            case ASTNode::NodeKind::STRING_EXPR:
                 ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_LITERAL_TYPE, initExpr->GetSourceLocation());
                 ++mErrorCount;
                 return;

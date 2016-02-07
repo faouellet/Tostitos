@@ -39,6 +39,7 @@ namespace TosLang
                 CALL_EXPR,
                 IDENTIFIER_EXPR,
                 NUMBER_EXPR,
+                STRING_EXPR,
 
                 // Misc
                 ERROR,

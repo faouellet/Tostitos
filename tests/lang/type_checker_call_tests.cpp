@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE( BadCallLiteralArgTypeCheck )
 
 BOOST_AUTO_TEST_CASE( BadCallVariableArgTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../inputs/call/bad_call_one_arg_var.tos");
+    size_t errorCount = GetTypeErrors("../inputs/call/bad_param_call_one_arg_var.tos");
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed

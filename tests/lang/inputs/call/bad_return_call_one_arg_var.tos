@@ -1,0 +1,8 @@
+fn identity(i : Int) -> Int {
+	return i;
+}
+
+fn main() -> Void {
+	var MyStringVar: String = identity(42);
+	return;
+}

@@ -170,6 +170,22 @@ namespace TosLang
         private:
             int mValue;     /*!< Integer value of the number literal */
         };
+
+        /*
+        * \class IdentifierExpr
+        * \brief Node of the AST representing a string literal
+        */
+        class StringExpr : public Expr
+        {
+        public:
+            explicit StringExpr(const std::string& value, const Utils::SourceLocation& srcLoc)
+                : Expr{ NodeKind::STRING_EXPR }
+            {
+                mName = value;
+                mSrcLoc = srcLoc;
+            }
+            virtual ~StringExpr() { }
+        };
     }
 }
 

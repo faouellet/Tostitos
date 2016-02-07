@@ -107,10 +107,10 @@ BOOST_AUTO_TEST_CASE( ParseVarInitStringTest )
     const VarDecl* vDecl = dynamic_cast<const VarDecl*>(cNodes[0].get());
     BOOST_REQUIRE(vDecl != nullptr);
     BOOST_REQUIRE_EQUAL(vDecl->GetVarName(), "MyStringVar");
-    BOOST_REQUIRE(vDecl->GetInitExpr()->GetKind() == ASTNode::NodeKind::IDENTIFIER_EXPR);
-    const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(vDecl->GetInitExpr());
-    BOOST_REQUIRE(iExpr != nullptr);
-    BOOST_REQUIRE_EQUAL(iExpr->GetName(), "Hello World");
+    BOOST_REQUIRE(vDecl->GetInitExpr()->GetKind() == ASTNode::NodeKind::STRING_EXPR);
+    const StringExpr* sExpr = dynamic_cast<const StringExpr*>(vDecl->GetInitExpr());
+    BOOST_REQUIRE(sExpr != nullptr);
+    BOOST_REQUIRE_EQUAL(sExpr->GetName(), "Hello World");
 }
 
 BOOST_AUTO_TEST_CASE( ParseVarInitBoolBinOpTest )

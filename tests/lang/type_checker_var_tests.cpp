@@ -59,10 +59,50 @@ BOOST_AUTO_TEST_CASE( VarInitCallTypeCheck )
 //////////////////// ERROR USE CASES ////////////////////
 
 // TODO
-// Initialize a variable with a literal of wrong type
-// Initialize a variable with a variable of wrong type
-// Initialize a variable with an undeclared variable
 // Initialize a variable with a call to a function with the wrong return type
-// Initialize a variable with a binary expression producing a value of the wrong type
+
+BOOST_AUTO_TEST_CASE( BadVarInitBinaryOpTypeCheck )
+{
+    size_t errorCount = GetTypeErrors("../inputs/var/bad_var_init_bin_op.tos");
+    BOOST_REQUIRE_EQUAL(errorCount, 1);
+
+    // Check if the correct error message got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
+    BOOST_REQUIRE_EQUAL(messages.size(), 1);
+    BOOST_REQUIRE_EQUAL(messages[0], "TYPE ERROR: Trying to instantiate variable with an expression of the wrong type at line 1, column 20");
+}
+
+BOOST_AUTO_TEST_CASE( BadVarInitCallTypeCheck )
+{
+    size_t errorCount = GetTypeErrors("../inputs/call/bad_return_call_one_arg_var.tos");
+    BOOST_REQUIRE_EQUAL(errorCount, 1);
+
+    // Check if the correct error message got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
+    BOOST_REQUIRE_EQUAL(messages.size(), 1);
+    BOOST_REQUIRE_EQUAL(messages[0], "TYPE ERROR: Trying to initialize a variable with the return value of a function of the wrong type at line 6, column 15");
+}
+
+BOOST_AUTO_TEST_CASE( BadVarInitIdentifierTypeCheck )
+{
+    size_t errorCount = GetTypeErrors("../inputs/var/bad_var_init_identifier.tos");
+    BOOST_REQUIRE_EQUAL(errorCount, 1);
+
+    // Check if the correct error message got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
+    BOOST_REQUIRE_EQUAL(messages.size(), 1);
+    BOOST_REQUIRE_EQUAL(messages[0], "TYPE ERROR: Trying to initialize a variable with another variable of a different type at line 2, column 12");
+}
+
+BOOST_AUTO_TEST_CASE( BadVarInitLiteralTypeCheck )
+{
+    size_t errorCount = GetTypeErrors("../inputs/var/bad_var_init_literal.tos");
+    BOOST_REQUIRE_EQUAL(errorCount, 1);
+
+    // Check if the correct error message got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
+    BOOST_REQUIRE_EQUAL(messages.size(), 1);
+    BOOST_REQUIRE_EQUAL(messages[0], "TYPE ERROR: Trying to instantiate variable with a literal of the wrong type at line 1, column 16");
+}
 
 BOOST_AUTO_TEST_SUITE_END()
