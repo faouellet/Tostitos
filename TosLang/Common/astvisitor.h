@@ -121,6 +121,12 @@ namespace TosLang
             * \brief    Handle a node of the NUMBER_EXPR kind
             */
             void HandleNumberExpr() { }
+
+            /*
+            * \fn       HandleStringExpr
+            * \brief    Handle a node of the STRING_EXPR kind
+            */
+            void HandleStringExpr() { }
         
         protected:  // Statements
             /*
