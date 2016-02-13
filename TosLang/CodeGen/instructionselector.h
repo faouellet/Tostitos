@@ -29,7 +29,7 @@ namespace TosLang
             ~InstructionSelector() = default;
 
         public:
-            FunctionGraph Execute(const std::unique_ptr<FrontEnd::ASTNode>& root);
+            FunctionGraph Run(const std::unique_ptr<FrontEnd::ASTNode>& root);
 
         protected:  // Declarations
             void HandleFunctionDecl();
@@ -50,13 +50,16 @@ namespace TosLang
             void HandleWhileStmt();
 
         private:
+            void CreateNewCurrentBlock(const std::vector<VirtualInstruction>& insts);
+
+        private:
             unsigned mNextRegister;
             std::shared_ptr<FrontEnd::SymbolTable> mSymTable;
             std::map<const FrontEnd::ASTNode*, unsigned> mNodeRegister;
             FunctionGraph mFunctionGraphs;
             FunctionDecl* mCurrentFunc;                 /*!< Current traversed function */
             ControlFlowGraph mCurrentCFG;
-            BasicBlock mCurrentBlock;
+            BasicBlock* mCurrentBlock;
         };
     }
 }

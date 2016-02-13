@@ -1,5 +1,7 @@
 #include "controlflowgraph.h"
 
+using namespace TosLang::BackEnd;
+
 //////////////////// Basic block implementation ////////////////////
 
 void BasicBlock::InsertBranch(const BlockPtr& block)

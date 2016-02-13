@@ -13,13 +13,13 @@ InstructionSelector::InstructionSelector(const std::shared_ptr<SymbolTable>& sym
 {
     this->mPrologueFtr = [this]()
     {
-        // Assign a register to the binray expression
+        // Assign a register to the binary expression
         mNodeRegister[mCurrentNode] = ++mNextRegister;
     };
 };
 
 
-InstructionSelector::FunctionGraph InstructionSelector::Execute(const std::unique_ptr<ASTNode>& root)
+InstructionSelector::FunctionGraph InstructionSelector::Run(const std::unique_ptr<ASTNode>& root)
 {
     this->VisitPreOrder(root);
     return mFunctionGraphs;
@@ -41,8 +41,13 @@ void InstructionSelector::HandleVarDecl()
 
     // Instructions are only generated for variable with initialization expression
     if (initExpr != nullptr)
+    {
+        std::vector<VirtualInstruction> insts;
         // Generate a load instruction into the variable's register
-        mCurrentBlock.InsertInstruction(VirtualInstruction(Instruction::LOAD_IMM, mNodeRegister[mCurrentNode], mNodeRegister[initExpr]));
+        insts.emplace_back(Instruction::LOAD_IMM, mNodeRegister[mCurrentNode], mNodeRegister[initExpr]);
+
+        CreateNewCurrentBlock(insts);
+    }
 }
 
 // Expressions
@@ -99,8 +104,11 @@ void InstructionSelector::HandleBinaryExpr()
 
     assert(opcode != Instruction::UNKNOWN);
 
+    std::vector<VirtualInstruction> insts;
     // Generate the virtual instruction
-    mCurrentBlock.InsertInstruction(VirtualInstruction(opcode, mNodeRegister[bExpr->GetLHS()], mNodeRegister[bExpr->GetRHS()]));
+    insts.emplace_back(opcode, mNodeRegister[bExpr->GetLHS()], mNodeRegister[bExpr->GetRHS()]);
+
+    CreateNewCurrentBlock(insts);
 }
 
 void InstructionSelector::HandleBooleanExpr() 
@@ -108,8 +116,11 @@ void InstructionSelector::HandleBooleanExpr()
     const BooleanExpr* bExpr = dynamic_cast<const BooleanExpr*>(mCurrentNode);
     assert(bExpr != nullptr);
 
+    std::vector<VirtualInstruction> insts;
     // We simply load the boolean value into a register
-    mCurrentBlock.InsertInstruction(VirtualInstruction(Instruction::LOAD_IMM, mNodeRegister[mCurrentNode], bExpr->GetValue()));
+    insts.emplace_back(Instruction::LOAD_IMM, mNodeRegister[mCurrentNode], bExpr->GetValue());
+
+    CreateNewCurrentBlock(insts);
 }
 
 void InstructionSelector::HandleCallExpr() { }
@@ -119,10 +130,13 @@ void InstructionSelector::HandleIdentifierExpr()
     const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(mCurrentNode);
     assert(iExpr != nullptr);
 
+    std::vector<VirtualInstruction> insts;
     // We generate a load of the identifier into a new register.
     // This load is clearly redundant but it simplfies the instruction selection process.
     // TODO: Have a backend pass remove redundant load
-    mCurrentBlock.InsertInstruction(VirtualInstruction(Instruction::LOAD_IMM, mNodeRegister[mCurrentNode], mNodeRegister[iExpr]));
+    insts.emplace_back(Instruction::LOAD_IMM, mNodeRegister[mCurrentNode], mNodeRegister[iExpr]);
+
+    CreateNewCurrentBlock(insts);
 }
 
 void InstructionSelector::HandleNumberExpr() 
@@ -130,13 +144,19 @@ void InstructionSelector::HandleNumberExpr()
     const NumberExpr* nExpr = dynamic_cast<const NumberExpr*>(mCurrentNode);
     assert(nExpr != nullptr);
 
+    std::vector<VirtualInstruction> insts;
     // We simply load the number value into a register
     // TODO: There need to be a check in the semantic analyzer to ensure that the number value is reasonable
-    mCurrentBlock.InsertInstruction(VirtualInstruction(Instruction::LOAD_IMM, mNodeRegister[mCurrentNode], nExpr->GetValue()));
+    insts.emplace_back(Instruction::LOAD_IMM, mNodeRegister[mCurrentNode], nExpr->GetValue());
+
+    CreateNewCurrentBlock(insts);
 }
 
 // Statements
-void InstructionSelector::HandleIfStmt() { }
+void InstructionSelector::HandleIfStmt() 
+{
+
+}
 
 void InstructionSelector::HandlePrintStmt() { }
 
@@ -145,4 +165,16 @@ void InstructionSelector::HandleReturnStmt() { }
 void InstructionSelector::HandleScanStmt() { }
 
 void InstructionSelector::HandleWhileStmt() { }
+
+void TosLang::BackEnd::InstructionSelector::CreateNewCurrentBlock(const std::vector<VirtualInstruction>& insts)
+{
+    BlockPtr newBlock = std::make_shared<BasicBlock>();
+
+    for (auto& inst : insts)
+        mCurrentBlock->InsertInstruction(inst);
+    
+    mCurrentCFG.InsertNode(newBlock);
+    mCurrentBlock->InsertBranch(newBlock);
+    mCurrentBlock = newBlock.get();
+}
 

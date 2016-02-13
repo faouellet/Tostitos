@@ -2,25 +2,31 @@
 #   define BOOST_TEST_MODULE Main
 #else
 #ifndef _WIN32
-#   define BOOST_TEST_MODULE ISel
+#   define BOOST_TEST_MODULE ISelTests
 #endif
 #endif
 
 #include <boost/test/unit_test.hpp>
 
-#include "Parse/parser.h"
+#include "toslang_fixture.h"
+
 #include "CodeGen/instructionselector.h"
 
-using namespace TosLang::FrontEnd;
+using namespace TosLang::BackEnd;
+
+BOOST_FIXTURE_TEST_SUITE( BackEndTestSuite, TosLangFixture )
+
+//////////////////// CORRECT USE CASES ////////////////////
 
 BOOST_AUTO_TEST_CASE( VarInitSelectTest )
 {
     BOOST_REQUIRE(true);
+    /*auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
+    size_t errorCount = GetProgramSymbolTable("../inputs/var/var_decl.tos", symbolTable);
+    BOOST_REQUIRE_EQUAL(errorCount, 0);
 
-    /*Parser parser(std::make_shared<SymbolTable>());
-    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/varinit.tos");
-    BOOST_REQUIRE(rootNode != nullptr);
-
-    TosLang::BackEnd::InstructionSelector iSel;
-    std::vector<Instruction> program(iSel.Execute(rootNode));*/
+    InstructionSelector iSel{ symbolTable };
+    InstructionSelector::FunctionGraph fg = iSel.Run(programAST);*/
 }
+
+BOOST_AUTO_TEST_SUITE_END()
