@@ -55,7 +55,9 @@ namespace TosLang
             const_iterator end() const { return mInstructions.begin(); }
 
         public:
+            void InsertBranch(const BasicBlock* block);
             void InsertBranch(const BlockPtr& block);
+            void InsertInstruction(VirtualInstruction&& inst);
             void InsertInstruction(const VirtualInstruction& inst);
 
         private:

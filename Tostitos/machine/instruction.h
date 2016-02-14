@@ -24,7 +24,7 @@ namespace MachineEngine
             */
             enum InstructionOpCode
             {
-                MISC        = 0x00,
+                NO_OP       = 0x00,
                 JUMP        = 0x10,
                 LOAD_IMM    = 0x20,
                 MOV         = 0x24,

@@ -17,7 +17,7 @@ namespace TosLang
          * \class InstructionSelector
          * \brief: TODO
          */
-        class InstructionSelector : Common::ASTVisitor<InstructionSelector>
+        class InstructionSelector : public Common::ASTVisitor<InstructionSelector>
         {
             friend class Common::ASTVisitor<InstructionSelector>;
 
@@ -43,6 +43,7 @@ namespace TosLang
             void HandleNumberExpr();
 
         protected:  // Statements
+            void HandleCompoundStmt();
             void HandleIfStmt();
             void HandlePrintStmt();
             void HandleReturnStmt();
@@ -50,16 +51,23 @@ namespace TosLang
             void HandleWhileStmt();
 
         private:
-            void CreateNewCurrentBlock(const std::vector<VirtualInstruction>& insts);
+            /*
+            * \fn           CreateNewCurrentBlock
+            * \brief        Creates a new basic block. It then adds it to the current CFG by linking it with the previous current block. 
+            *               This will change mCurrentBlock so that it will now points to the newly created block.
+            * \param insts  Instructions to be inserted in the new current block
+            */
+            void CreateNewCurrentBlock(std::vector<VirtualInstruction>&& insts);
 
         private:
             unsigned mNextRegister;
             std::shared_ptr<FrontEnd::SymbolTable> mSymTable;
             std::map<const FrontEnd::ASTNode*, unsigned> mNodeRegister;
             FunctionGraph mFunctionGraphs;
-            FunctionDecl* mCurrentFunc;                 /*!< Current traversed function */
+            FunctionDecl* mCurrentFunc;                 /*!< Currently traversed function */
             ControlFlowGraph mCurrentCFG;
             BasicBlock* mCurrentBlock;
+            std::map<const FrontEnd::ASTNode*, BasicBlock*> mTreeToGraphMap;
         };
     }
 }

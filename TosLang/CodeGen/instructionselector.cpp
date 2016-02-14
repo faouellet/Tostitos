@@ -9,7 +9,7 @@ using namespace TosLang::FrontEnd;
 using namespace TosLang::BackEnd;
 using namespace MachineEngine::ProcessorSpace;
 
-InstructionSelector::InstructionSelector(const std::shared_ptr<SymbolTable>& symTab) : mNextRegister{ 0 }, mSymTable{ symTab }, mCurrentFunc{ nullptr }
+InstructionSelector::InstructionSelector(const std::shared_ptr<SymbolTable>& symTab) : mNextRegister{ 0 }, mSymTable{ symTab }, mCurrentFunc{ nullptr }, mTreeToGraphMap{ }
 {
     this->mPrologueFtr = [this]()
     {
@@ -46,7 +46,7 @@ void InstructionSelector::HandleVarDecl()
         // Generate a load instruction into the variable's register
         insts.emplace_back(Instruction::LOAD_IMM, mNodeRegister[mCurrentNode], mNodeRegister[initExpr]);
 
-        CreateNewCurrentBlock(insts);
+        CreateNewCurrentBlock(std::move(insts));
     }
 }
 
@@ -108,7 +108,7 @@ void InstructionSelector::HandleBinaryExpr()
     // Generate the virtual instruction
     insts.emplace_back(opcode, mNodeRegister[bExpr->GetLHS()], mNodeRegister[bExpr->GetRHS()]);
 
-    CreateNewCurrentBlock(insts);
+    CreateNewCurrentBlock(std::move(insts));
 }
 
 void InstructionSelector::HandleBooleanExpr() 
@@ -120,7 +120,7 @@ void InstructionSelector::HandleBooleanExpr()
     // We simply load the boolean value into a register
     insts.emplace_back(Instruction::LOAD_IMM, mNodeRegister[mCurrentNode], bExpr->GetValue());
 
-    CreateNewCurrentBlock(insts);
+    CreateNewCurrentBlock(std::move(insts));
 }
 
 void InstructionSelector::HandleCallExpr() { }
@@ -136,7 +136,7 @@ void InstructionSelector::HandleIdentifierExpr()
     // TODO: Have a backend pass remove redundant load
     insts.emplace_back(Instruction::LOAD_IMM, mNodeRegister[mCurrentNode], mNodeRegister[iExpr]);
 
-    CreateNewCurrentBlock(insts);
+    CreateNewCurrentBlock(std::move(insts));
 }
 
 void InstructionSelector::HandleNumberExpr() 
@@ -149,13 +149,50 @@ void InstructionSelector::HandleNumberExpr()
     // TODO: There need to be a check in the semantic analyzer to ensure that the number value is reasonable
     insts.emplace_back(Instruction::LOAD_IMM, mNodeRegister[mCurrentNode], nExpr->GetValue());
 
-    CreateNewCurrentBlock(insts);
+    CreateNewCurrentBlock(std::move(insts));
 }
 
 // Statements
+void InstructionSelector::HandleCompoundStmt()
+{
+    std::vector<VirtualInstruction> insts;
+    // We add a block containing only a no-op instruction so that every AST node will
+    // be matched with a basic block
+    insts.emplace_back(Instruction::NO_OP);
+
+    CreateNewCurrentBlock(std::move(insts));
+}
+
 void InstructionSelector::HandleIfStmt() 
 {
+    const IfStmt* iStmt = dynamic_cast<const IfStmt*>(mCurrentNode);
+    assert(iStmt != nullptr);
 
+    // Go back to the block associated with this AST node
+    BasicBlock* condBlock = mTreeToGraphMap[mCurrentNode];
+
+    // Link the current block with the condition block
+    mCurrentBlock->InsertBranch(condBlock);
+
+    // Switch over to the condition block
+    mCurrentBlock = condBlock;
+
+    // Generate a comparison instruction to prepare the flag register
+    // before the branch
+    mCurrentBlock->InsertInstruction({ Instruction::AND, mNodeRegister[iStmt->GetCondExpr()], 1 }); // TODO: more precision on the instruction type
+
+    // Generate a branch instruction
+    mCurrentBlock->InsertInstruction({Instruction::JUMP, 0}); // TODO: Correctly generate the branch
+
+    // Create the exit block
+    CreateNewCurrentBlock(std::vector<VirtualInstruction>{});
+
+    // As per the instruction selection process the then statement should already be linked with
+    // the condition expression. What we need to do now is link the then statement and the condition
+    // expression (for when the condition evaluates to false) with the exit block
+    condBlock->InsertBranch(mCurrentBlock);
+
+    mTreeToGraphMap[iStmt->GetBody()]->InsertBranch(mCurrentBlock);
 }
 
 void InstructionSelector::HandlePrintStmt() { }
@@ -166,7 +203,7 @@ void InstructionSelector::HandleScanStmt() { }
 
 void InstructionSelector::HandleWhileStmt() { }
 
-void TosLang::BackEnd::InstructionSelector::CreateNewCurrentBlock(const std::vector<VirtualInstruction>& insts)
+void TosLang::BackEnd::InstructionSelector::CreateNewCurrentBlock(std::vector<VirtualInstruction>&& insts)
 {
     BlockPtr newBlock = std::make_shared<BasicBlock>();
 
@@ -176,5 +213,6 @@ void TosLang::BackEnd::InstructionSelector::CreateNewCurrentBlock(const std::vec
     mCurrentCFG.InsertNode(newBlock);
     mCurrentBlock->InsertBranch(newBlock);
     mCurrentBlock = newBlock.get();
+    mTreeToGraphMap[mCurrentNode] = mCurrentBlock;
 }
 
