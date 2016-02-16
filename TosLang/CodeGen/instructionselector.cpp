@@ -14,7 +14,18 @@ InstructionSelector::InstructionSelector(const std::shared_ptr<SymbolTable>& sym
     this->mPrologueFtr = [this]()
     {
         // Assign a register to the binary expression
-        mNodeRegister[mCurrentNode] = ++mNextRegister;
+        mNodeRegister[mCurrentNode] = mNextRegister++;
+
+        // If a node is a statement node, it will generate a new basic block
+        switch (mCurrentNode->GetKind())
+        {
+        case ASTNode::NodeKind::COMPOUND_STMT:
+        case ASTNode::NodeKind::IF_STMT:
+        case ASTNode::NodeKind::WHILE_STMT:
+            CreateNewCurrentBlock(std::vector<VirtualInstruction>{});
+        default:
+            break;
+        }
     };
 };
 
@@ -41,13 +52,8 @@ void InstructionSelector::HandleVarDecl()
 
     // Instructions are only generated for variable with initialization expression
     if (initExpr != nullptr)
-    {
-        std::vector<VirtualInstruction> insts;
         // Generate a load instruction into the variable's register
-        insts.emplace_back(Instruction::LOAD_IMM, mNodeRegister[mCurrentNode], mNodeRegister[initExpr]);
-
-        CreateNewCurrentBlock(std::move(insts));
-    }
+        mCurrentBlock->InsertInstruction({ Instruction::LOAD_IMM, mNodeRegister[mCurrentNode], mNodeRegister[initExpr] });
 }
 
 // Expressions
@@ -104,11 +110,8 @@ void InstructionSelector::HandleBinaryExpr()
 
     assert(opcode != Instruction::UNKNOWN);
 
-    std::vector<VirtualInstruction> insts;
     // Generate the virtual instruction
-    insts.emplace_back(opcode, mNodeRegister[bExpr->GetLHS()], mNodeRegister[bExpr->GetRHS()]);
-
-    CreateNewCurrentBlock(std::move(insts));
+    mCurrentBlock->InsertInstruction({ opcode, mNodeRegister[bExpr->GetLHS()], mNodeRegister[bExpr->GetRHS()] });
 }
 
 void InstructionSelector::HandleBooleanExpr() 
@@ -116,11 +119,8 @@ void InstructionSelector::HandleBooleanExpr()
     const BooleanExpr* bExpr = dynamic_cast<const BooleanExpr*>(mCurrentNode);
     assert(bExpr != nullptr);
 
-    std::vector<VirtualInstruction> insts;
     // We simply load the boolean value into a register
-    insts.emplace_back(Instruction::LOAD_IMM, mNodeRegister[mCurrentNode], bExpr->GetValue());
-
-    CreateNewCurrentBlock(std::move(insts));
+    mCurrentBlock->InsertInstruction({ Instruction::LOAD_IMM, mNodeRegister[mCurrentNode], bExpr->GetValue() });
 }
 
 void InstructionSelector::HandleCallExpr() { }
@@ -130,13 +130,10 @@ void InstructionSelector::HandleIdentifierExpr()
     const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(mCurrentNode);
     assert(iExpr != nullptr);
 
-    std::vector<VirtualInstruction> insts;
     // We generate a load of the identifier into a new register.
     // This load is clearly redundant but it simplfies the instruction selection process.
     // TODO: Have a backend pass remove redundant load
-    insts.emplace_back(Instruction::LOAD_IMM, mNodeRegister[mCurrentNode], mNodeRegister[iExpr]);
-
-    CreateNewCurrentBlock(std::move(insts));
+    mCurrentBlock->InsertInstruction({ Instruction::LOAD_IMM, mNodeRegister[mCurrentNode], mNodeRegister[iExpr] });
 }
 
 void InstructionSelector::HandleNumberExpr() 
@@ -144,55 +141,47 @@ void InstructionSelector::HandleNumberExpr()
     const NumberExpr* nExpr = dynamic_cast<const NumberExpr*>(mCurrentNode);
     assert(nExpr != nullptr);
 
-    std::vector<VirtualInstruction> insts;
     // We simply load the number value into a register
     // TODO: There need to be a check in the semantic analyzer to ensure that the number value is reasonable
-    insts.emplace_back(Instruction::LOAD_IMM, mNodeRegister[mCurrentNode], nExpr->GetValue());
-
-    CreateNewCurrentBlock(std::move(insts));
+    mCurrentBlock->InsertInstruction(VirtualInstruction(Instruction::LOAD_IMM, mNodeRegister[mCurrentNode], nExpr->GetValue()));
 }
 
 // Statements
-void InstructionSelector::HandleCompoundStmt()
-{
-    std::vector<VirtualInstruction> insts;
-    // We add a block containing only a no-op instruction so that every AST node will
-    // be matched with a basic block
-    insts.emplace_back(Instruction::NO_OP);
-
-    CreateNewCurrentBlock(std::move(insts));
-}
-
-void InstructionSelector::HandleIfStmt() 
+void InstructionSelector::HandleIfStmt()
 {
     const IfStmt* iStmt = dynamic_cast<const IfStmt*>(mCurrentNode);
     assert(iStmt != nullptr);
 
     // Go back to the block associated with this AST node
-    BasicBlock* condBlock = mTreeToGraphMap[mCurrentNode];
+    BasicBlock* ifBlock = mTreeToGraphMap[mCurrentNode];
 
-    // Link the current block with the condition block
-    mCurrentBlock->InsertBranch(condBlock);
+    // Keep a pointer to the current block which correspond to the end of the then statement
+    BasicBlock* thenEndBlock = mCurrentBlock;
 
-    // Switch over to the condition block
-    mCurrentBlock = condBlock;
+    // Create the exit block
+    CreateNewCurrentBlock(std::vector<VirtualInstruction>{});
+    BasicBlock* endBlock = mCurrentBlock;
+
+    // Link the then statement end with the exit block
+    thenEndBlock->InsertBranch(mCurrentBlock);
+
+    // Done with the then statement, switch over to the if block
+    mCurrentBlock = ifBlock;
 
     // Generate a comparison instruction to prepare the flag register
     // before the branch
     mCurrentBlock->InsertInstruction({ Instruction::AND, mNodeRegister[iStmt->GetCondExpr()], 1 }); // TODO: more precision on the instruction type
 
-    // Generate a branch instruction
-    mCurrentBlock->InsertInstruction({Instruction::JUMP, 0}); // TODO: Correctly generate the branch
-
-    // Create the exit block
-    CreateNewCurrentBlock(std::vector<VirtualInstruction>{});
+    // TODO: Correctly generate the branches
+    // Generate a branch instruction to the then block
+    mCurrentBlock->InsertInstruction({ Instruction::JUMP, 0 }); 
+    // Generate a branch instruction to the exit block
+    mCurrentBlock->InsertInstruction({ Instruction::JUMP, 0 });
 
     // As per the instruction selection process the then statement should already be linked with
-    // the condition expression. What we need to do now is link the then statement and the condition
+    // the condition expression. What we need to do now is link the condition
     // expression (for when the condition evaluates to false) with the exit block
-    condBlock->InsertBranch(mCurrentBlock);
-
-    mTreeToGraphMap[iStmt->GetBody()]->InsertBranch(mCurrentBlock);
+    ifBlock->InsertBranch(endBlock);
 }
 
 void InstructionSelector::HandlePrintStmt() { }
@@ -201,7 +190,32 @@ void InstructionSelector::HandleReturnStmt() { }
 
 void InstructionSelector::HandleScanStmt() { }
 
-void InstructionSelector::HandleWhileStmt() { }
+void InstructionSelector::HandleWhileStmt() 
+{
+    const WhileStmt* wStmt = dynamic_cast<const WhileStmt*>(mCurrentNode);
+    assert(wStmt != nullptr);
+
+    // Go back to the block associated with this AST node
+    BasicBlock* whileBlock = mTreeToGraphMap[mCurrentNode];
+    
+    // Keep a pointer to the current block which correspond to the end of the then statement
+    BasicBlock* thenEndBlock = mCurrentBlock;
+
+    // Link the end of the then statement with the condition block
+    thenEndBlock->InsertBranch(whileBlock);
+
+    // Done with the then statement, switch over to the condition block
+    mCurrentBlock = whileBlock;
+
+    // Generate a comparison instruction to prepare the flag register before the branch
+    mCurrentBlock->InsertInstruction({ Instruction::AND, mNodeRegister[wStmt->GetCondExpr()], 1 }); // TODO: more precision on the instruction type
+
+    // TODO: Correctly generate the branches
+    // Generate a branch instruction to the then block
+    mCurrentBlock->InsertInstruction({ Instruction::JUMP, 0 }); 
+    // Generate a branch instruction to the exit block
+    CreateNewCurrentBlock(std::vector<VirtualInstruction>{});
+}
 
 void TosLang::BackEnd::InstructionSelector::CreateNewCurrentBlock(std::vector<VirtualInstruction>&& insts)
 {

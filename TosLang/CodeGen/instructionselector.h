@@ -43,7 +43,6 @@ namespace TosLang
             void HandleNumberExpr();
 
         protected:  // Statements
-            void HandleCompoundStmt();
             void HandleIfStmt();
             void HandlePrintStmt();
             void HandleReturnStmt();
