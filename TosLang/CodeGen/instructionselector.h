@@ -22,14 +22,14 @@ namespace TosLang
             friend class Common::ASTVisitor<InstructionSelector>;
 
         public:
-            using FunctionGraph = std::map<FunctionDecl*, ControlFlowGraph>;
+            using FunctionCFGs = std::map<FunctionDecl*, ControlFlowGraph>;
 
         public:
             InstructionSelector(const std::shared_ptr<FrontEnd::SymbolTable>& symTab);
             ~InstructionSelector() = default;
 
         public:
-            FunctionGraph Run(const std::unique_ptr<FrontEnd::ASTNode>& root);
+            FunctionCFGs Run(const std::unique_ptr<FrontEnd::ASTNode>& root);
 
         protected:  // Declarations
             void HandleFunctionDecl();
@@ -62,7 +62,7 @@ namespace TosLang
             unsigned mNextRegister;
             std::shared_ptr<FrontEnd::SymbolTable> mSymTable;
             std::map<const FrontEnd::ASTNode*, unsigned> mNodeRegister;
-            FunctionGraph mFunctionGraphs;
+            FunctionCFGs mFunctionGraphs;
             FunctionDecl* mCurrentFunc;                 /*!< Currently traversed function */
             ControlFlowGraph mCurrentCFG;
             BasicBlock* mCurrentBlock;

@@ -17,13 +17,15 @@ using namespace MachineEngine::ProcessorSpace;
 BOOST_AUTO_TEST_CASE( InstructionTypeTest )
 {
     std::vector<Instruction::InstructionOpCode> types = {
-        Instruction::NO_OP, Instruction::JUMP, Instruction::LOAD_IMM, Instruction::MOV,
-        Instruction::STORE, Instruction::ADD_IMM, Instruction::ADD, Instruction::SUB_IMM,
-        Instruction::SUB, Instruction::AND_IMM, Instruction::AND, Instruction::OR_IMM,
-        Instruction::OR, Instruction::XOR_IMM, Instruction::XOR, Instruction::MUL_IMM,
-        Instruction::MUL, Instruction::DIV_IMM, Instruction::DIV, Instruction::MOD_IMM,
-        Instruction::MOD, Instruction::SHIFT, Instruction::STACK, Instruction::NOT_IMM,
-        Instruction::NOT, Instruction::NEG_IMM, Instruction::NEG, Instruction::UNKNOWN
+        Instruction::NO_OP, Instruction::JUMP, Instruction::CALL, Instruction::RET, 
+        Instruction::LOAD_IMM, Instruction::MOV, Instruction::STORE, Instruction::PUSH,
+        Instruction::POP, Instruction::PUSHALL, Instruction::POPALL, Instruction::ADD_IMM, 
+        Instruction::ADD, Instruction::SUB_IMM, Instruction::SUB, Instruction::AND_IMM, 
+        Instruction::AND, Instruction::TST, Instruction::OR_IMM, Instruction::OR, 
+        Instruction::XOR_IMM, Instruction::XOR, Instruction::MUL_IMM, Instruction::MUL, 
+        Instruction::DIV_IMM, Instruction::DIV, Instruction::SHIFT, Instruction::MOD_IMM,
+        Instruction::MOD, Instruction::NOT_IMM, Instruction::NOT, Instruction::NEG_IMM, 
+        Instruction::NEG, Instruction::UNKNOWN
     };
 
     for (auto& type : types)
@@ -41,7 +43,7 @@ BOOST_AUTO_TEST_CASE( InstructionGetSetTest )
     BOOST_REQUIRE(!inst.UseImmediateValue());
     BOOST_REQUIRE_EQUAL(inst.GetType(), Instruction::ADD);
 	BOOST_REQUIRE(inst.IsArithmeticInstruction());
-	BOOST_REQUIRE(!inst.UseSecondOperand());
+	BOOST_REQUIRE(inst.UseSecondOperand());
 	BOOST_REQUIRE(inst.UseThirdOperand());
 
     inst.SetFirstOperand(1);
@@ -49,7 +51,7 @@ BOOST_AUTO_TEST_CASE( InstructionGetSetTest )
     BOOST_REQUIRE(!inst.IsInplace());
     BOOST_REQUIRE(!inst.UseImmediateValue());
     BOOST_REQUIRE(inst.IsArithmeticInstruction());
-	BOOST_REQUIRE(!inst.UseSecondOperand());
+	BOOST_REQUIRE(inst.UseSecondOperand());
 	BOOST_REQUIRE(inst.UseThirdOperand());
 
     inst.SetSecondOperand(2);
@@ -57,7 +59,7 @@ BOOST_AUTO_TEST_CASE( InstructionGetSetTest )
     BOOST_REQUIRE(!inst.IsInplace());
     BOOST_REQUIRE(!inst.UseImmediateValue());
     BOOST_REQUIRE(inst.IsArithmeticInstruction());
-	BOOST_REQUIRE(!inst.UseSecondOperand());
+	BOOST_REQUIRE(inst.UseSecondOperand());
 	BOOST_REQUIRE(inst.UseThirdOperand());
 
     inst.SetThirdOperand(3);
@@ -65,7 +67,7 @@ BOOST_AUTO_TEST_CASE( InstructionGetSetTest )
     BOOST_REQUIRE(!inst.IsInplace());
     BOOST_REQUIRE(!inst.UseImmediateValue());
     BOOST_REQUIRE(inst.IsArithmeticInstruction());
-	BOOST_REQUIRE(!inst.UseSecondOperand());
+	BOOST_REQUIRE(inst.UseSecondOperand());
 	BOOST_REQUIRE(inst.UseThirdOperand());
 
     inst.SetImmediateValue(4);
@@ -73,7 +75,7 @@ BOOST_AUTO_TEST_CASE( InstructionGetSetTest )
     BOOST_REQUIRE(!inst.IsInplace());
     BOOST_REQUIRE(!inst.UseImmediateValue());
     BOOST_REQUIRE(inst.IsArithmeticInstruction());
-	BOOST_REQUIRE(!inst.UseSecondOperand());
+	BOOST_REQUIRE(inst.UseSecondOperand());
 	BOOST_REQUIRE(inst.UseThirdOperand());
 }
 

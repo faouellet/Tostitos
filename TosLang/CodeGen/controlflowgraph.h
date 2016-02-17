@@ -43,11 +43,7 @@ namespace TosLang
         public:
             using iterator = std::vector<VirtualInstruction>::iterator;
             using const_iterator = std::vector<VirtualInstruction>::const_iterator;
-
-        public:
-            BasicBlock() = default;
-            ~BasicBlock() = default;
-
+            
         public:
             iterator begin() { return mInstructions.begin(); }
             iterator end() { return mInstructions.begin(); }
@@ -71,10 +67,6 @@ namespace TosLang
         */
         class ControlFlowGraph
         {
-        public:
-            ControlFlowGraph() = default;
-            ~ControlFlowGraph() = default;
-
         public:
             void InsertNode(const BlockPtr& node);
 

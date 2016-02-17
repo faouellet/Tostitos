@@ -88,12 +88,12 @@ bool Instruction::UseImmediateValue() const
 
 bool Instruction::IsArithmeticInstruction() const
 {
-    return mValue >= 0x05000000;
+    return mValue >= 0x50000000;
 }
 
 bool Instruction::IsInplace() const
 {
-    return (mValue & 0x01000000) != 0;
+    return IsArithmeticInstruction() && ((mValue & 0x01000000) != 0);
 }
 
 // TODO: Find a better way to test for second operand

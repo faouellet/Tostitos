@@ -30,7 +30,7 @@ InstructionSelector::InstructionSelector(const std::shared_ptr<SymbolTable>& sym
 };
 
 
-InstructionSelector::FunctionGraph InstructionSelector::Run(const std::unique_ptr<ASTNode>& root)
+InstructionSelector::FunctionCFGs InstructionSelector::Run(const std::unique_ptr<ASTNode>& root)
 {
     this->VisitPreOrder(root);
     return mFunctionGraphs;
@@ -41,6 +41,8 @@ void InstructionSelector::HandleFunctionDecl()
 {
     // New function declaration so we need to build a new control flow graph
     ControlFlowGraph cfg;
+
+
 }
 
 void InstructionSelector::HandleVarDecl() 
@@ -123,7 +125,17 @@ void InstructionSelector::HandleBooleanExpr()
     mCurrentBlock->InsertInstruction({ Instruction::LOAD_IMM, mNodeRegister[mCurrentNode], bExpr->GetValue() });
 }
 
-void InstructionSelector::HandleCallExpr() { }
+void InstructionSelector::HandleCallExpr() 
+{ 
+    const CallExpr* cExpr = dynamic_cast<const CallExpr*>(mCurrentNode);
+    assert(cExpr != nullptr);
+
+    // TODO: what to do with the function arguments?
+
+    // We generate a call instruction. This will take care of the stack pointer.
+    // TODO: Set correct call target
+    mCurrentBlock->InsertInstruction({ Instruction::CALL, 0 });
+}
 
 void InstructionSelector::HandleIdentifierExpr() 
 {
@@ -170,7 +182,7 @@ void InstructionSelector::HandleIfStmt()
 
     // Generate a comparison instruction to prepare the flag register
     // before the branch
-    mCurrentBlock->InsertInstruction({ Instruction::AND, mNodeRegister[iStmt->GetCondExpr()], 1 }); // TODO: more precision on the instruction type
+    mCurrentBlock->InsertInstruction({ Instruction::TST, mNodeRegister[iStmt->GetCondExpr()], 1 });
 
     // TODO: Correctly generate the branches
     // Generate a branch instruction to the then block
@@ -186,7 +198,19 @@ void InstructionSelector::HandleIfStmt()
 
 void InstructionSelector::HandlePrintStmt() { }
 
-void InstructionSelector::HandleReturnStmt() { }
+void InstructionSelector::HandleReturnStmt() 
+{
+    const ReturnStmt* rStmt = dynamic_cast<const ReturnStmt*>(mCurrentNode);
+    assert(rStmt != nullptr);
+
+    if (rStmt->GetReturnExpr())
+    {
+        // TODO: What to do with the returned value (when there is one)?
+    }
+
+    // We generate a return opcode. This will take care of dealing with the stack pointer.
+    mCurrentBlock->InsertInstruction({ Instruction::RET });
+}
 
 void InstructionSelector::HandleScanStmt() { }
 
@@ -208,7 +232,7 @@ void InstructionSelector::HandleWhileStmt()
     mCurrentBlock = whileBlock;
 
     // Generate a comparison instruction to prepare the flag register before the branch
-    mCurrentBlock->InsertInstruction({ Instruction::AND, mNodeRegister[wStmt->GetCondExpr()], 1 }); // TODO: more precision on the instruction type
+    mCurrentBlock->InsertInstruction({ Instruction::TST, mNodeRegister[wStmt->GetCondExpr()], 1 });
 
     // TODO: Correctly generate the branches
     // Generate a branch instruction to the then block
