@@ -30,3 +30,11 @@ void ControlFlowGraph::InsertNode(const BlockPtr& node)
 {
 	mNodes.push_back(node);
 }
+
+void TosLang::BackEnd::Module::InsertFunction(const CFGPtr & cfg)
+{
+}
+
+void TosLang::BackEnd::Module::InsertGlobalVariable()
+{
+}

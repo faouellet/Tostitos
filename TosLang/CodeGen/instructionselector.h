@@ -1,7 +1,7 @@
 #ifndef INSTRUCTION_SELECTOR_H__TOSTITOS
 #define INSTRUCTION_SELECTOR_H__TOSTITOS
 
-#include "controlflowgraph.h"
+#include "../CFG/controlflowgraph.h"
 #include "../Common/astvisitor.h"
 #include "../Sema/symboltable.h"
 
