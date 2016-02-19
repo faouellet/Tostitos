@@ -55,7 +55,9 @@ void InstructionSelector::HandleVarDecl()
     // Instructions are only generated for variable with initialization expression
     if (initExpr != nullptr)
         // Generate a load instruction into the variable's register
-        mCurrentBlock->InsertInstruction({ Instruction::LOAD_IMM, mNodeRegister[mCurrentNode], mNodeRegister[initExpr] });
+        mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::LOAD_IMM }
+                                         .AddRegOperand(mNodeRegister[mCurrentNode])
+                                         .AddRegOperand(mNodeRegister[initExpr]));
 }
 
 // Expressions
@@ -113,7 +115,9 @@ void InstructionSelector::HandleBinaryExpr()
     assert(opcode != Instruction::UNKNOWN);
 
     // Generate the virtual instruction
-    mCurrentBlock->InsertInstruction({ opcode, mNodeRegister[bExpr->GetLHS()], mNodeRegister[bExpr->GetRHS()] });
+    mCurrentBlock->InsertInstruction(VirtualInstruction{ opcode }
+                                     .AddRegOperand(mNodeRegister[bExpr->GetLHS()])
+                                     .AddRegOperand(mNodeRegister[bExpr->GetRHS()]));
 }
 
 void InstructionSelector::HandleBooleanExpr() 
@@ -122,7 +126,9 @@ void InstructionSelector::HandleBooleanExpr()
     assert(bExpr != nullptr);
 
     // We simply load the boolean value into a register
-    mCurrentBlock->InsertInstruction({ Instruction::LOAD_IMM, mNodeRegister[mCurrentNode], bExpr->GetValue() });
+    mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::LOAD_IMM }
+                                     .AddRegOperand(mNodeRegister[mCurrentNode])
+                                     .AddImmOperand(bExpr->GetValue()));
 }
 
 void InstructionSelector::HandleCallExpr() 
@@ -134,7 +140,8 @@ void InstructionSelector::HandleCallExpr()
 
     // We generate a call instruction. This will take care of the stack pointer.
     // TODO: Set correct call target
-    mCurrentBlock->InsertInstruction({ Instruction::CALL, 0 });
+    /*mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::CALL }
+                                     .AddTargetOperand(cExpr));*/
 }
 
 void InstructionSelector::HandleIdentifierExpr() 
@@ -145,7 +152,9 @@ void InstructionSelector::HandleIdentifierExpr()
     // We generate a load of the identifier into a new register.
     // This load is clearly redundant but it simplfies the instruction selection process.
     // TODO: Have a backend pass remove redundant load
-    mCurrentBlock->InsertInstruction({ Instruction::LOAD_IMM, mNodeRegister[mCurrentNode], mNodeRegister[iExpr] });
+    mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::LOAD_IMM }
+                                     .AddRegOperand(mNodeRegister[mCurrentNode])
+                                     .AddRegOperand(mNodeRegister[iExpr]));
 }
 
 void InstructionSelector::HandleNumberExpr() 
@@ -155,7 +164,9 @@ void InstructionSelector::HandleNumberExpr()
 
     // We simply load the number value into a register
     // TODO: There need to be a check in the semantic analyzer to ensure that the number value is reasonable
-    mCurrentBlock->InsertInstruction(VirtualInstruction(Instruction::LOAD_IMM, mNodeRegister[mCurrentNode], nExpr->GetValue()));
+    mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::LOAD_IMM }
+                                     .AddRegOperand(mNodeRegister[mCurrentNode])
+                                     .AddRegOperand(nExpr->GetValue()));
 }
 
 // Statements
@@ -182,13 +193,16 @@ void InstructionSelector::HandleIfStmt()
 
     // Generate a comparison instruction to prepare the flag register
     // before the branch
-    mCurrentBlock->InsertInstruction({ Instruction::TST, mNodeRegister[iStmt->GetCondExpr()], 1 });
+    mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::TST }
+                                     .AddRegOperand(mNodeRegister[iStmt->GetCondExpr()])
+                                     .AddImmOperand(1));
 
-    // TODO: Correctly generate the branches
     // Generate a branch instruction to the then block
-    mCurrentBlock->InsertInstruction({ Instruction::JUMP, 0 }); 
+    mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::JUMP }
+                                     .AddTargetOperand(ifBlock->bb_begin()->get()));
     // Generate a branch instruction to the exit block
-    mCurrentBlock->InsertInstruction({ Instruction::JUMP, 0 });
+    mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::JUMP }
+                                     .AddTargetOperand(endBlock));
 
     // As per the instruction selection process the then statement should already be linked with
     // the condition expression. What we need to do now is link the condition
@@ -209,7 +223,7 @@ void InstructionSelector::HandleReturnStmt()
     }
 
     // We generate a return opcode. This will take care of dealing with the stack pointer.
-    mCurrentBlock->InsertInstruction({ Instruction::RET });
+    mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::RET });
 }
 
 void InstructionSelector::HandleScanStmt() { }
@@ -232,11 +246,14 @@ void InstructionSelector::HandleWhileStmt()
     mCurrentBlock = whileBlock;
 
     // Generate a comparison instruction to prepare the flag register before the branch
-    mCurrentBlock->InsertInstruction({ Instruction::TST, mNodeRegister[wStmt->GetCondExpr()], 1 });
+    mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::TST }
+                                     .AddRegOperand(mNodeRegister[wStmt->GetCondExpr()])
+                                     .AddImmOperand(1));
 
-    // TODO: Correctly generate the branches
     // Generate a branch instruction to the then block
-    mCurrentBlock->InsertInstruction({ Instruction::JUMP, 0 }); 
+    mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::JUMP }
+                                     .AddTargetOperand(whileBlock->bb_begin()->get())); 
+    
     // Generate a branch instruction to the exit block
     CreateNewCurrentBlock(std::vector<VirtualInstruction>{});
 }
