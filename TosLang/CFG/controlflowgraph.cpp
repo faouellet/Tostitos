@@ -7,7 +7,20 @@ const BlockPtr& ControlFlowGraph::GetEntryBlock() const
     return mBlocks.front();
 }
 
-void ControlFlowGraph::InsertNode(const BlockPtr& node)
+BlockPtr ControlFlowGraph::CreateNewBlock()
 {
-	mBlocks.push_back(node);
+    BlockPtr newBlock = std::make_shared<BasicBlock>();
+    mBlocks.push_back(newBlock);
+    return newBlock;
+}
+
+BlockPtr ControlFlowGraph::CreateNewBlock(std::vector<VirtualInstruction>&& insts)
+{
+    BlockPtr newBlock = std::make_shared<BasicBlock>();
+
+    for (auto& inst : insts)
+        newBlock->InsertInstruction(inst);
+
+    mBlocks.push_back(newBlock);
+    return newBlock;
 }

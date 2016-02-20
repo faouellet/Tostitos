@@ -38,7 +38,7 @@ namespace TosLang
             bb_iterator bb_end() { return mAdjacentBlocks.begin(); }
             bb_const_iterator bb_begin() const { return mAdjacentBlocks.begin(); }
             bb_const_iterator bb_end() const { return mAdjacentBlocks.begin(); }
-
+            
         public:
             void InsertBranch(const BasicBlock* block);
             void InsertBranch(const BlockPtr& block);

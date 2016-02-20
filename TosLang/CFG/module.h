@@ -3,12 +3,14 @@
 
 #include "controlflowgraph.h"
 
+#include <unordered_map>
+
 namespace TosLang
 {
     namespace BackEnd
     {
         using CFGPtr = std::shared_ptr<ControlFlowGraph>;
-        using FunctionList = std::vector<CFGPtr>;
+        using FunctionCFGs = std::unordered_map<std::string, CFGPtr>;
 
         /*
         * \class Module
@@ -17,11 +19,14 @@ namespace TosLang
         class Module
         {
         public:
-            void InsertFunction(const CFGPtr& cfg);
+            const CFGPtr& GetFunction(const std::string& name) const;
+
+        public:
+            void InsertFunction(const std::string& name, const CFGPtr& cfg);
             void InsertGlobalVariable();
 
         private:
-            FunctionList mFunc;
+            FunctionCFGs mFuncCFGs;
         };
     }
 }

@@ -9,8 +9,11 @@ using namespace TosLang::FrontEnd;
 using namespace TosLang::BackEnd;
 using namespace MachineEngine::ProcessorSpace;
 
-InstructionSelector::InstructionSelector(const std::shared_ptr<SymbolTable>& symTab) : mNextRegister{ 0 }, mSymTable{ symTab }, mCurrentFunc{ nullptr }, mTreeToGraphMap{ }
+InstructionSelector::InstructionSelector() : 
+    mNextRegister{ 0 }, mCurrentFunc{ nullptr }, mTreeToGraphMap{ }
 {
+    mMod.reset(new Module{});
+
     this->mPrologueFtr = [this]()
     {
         // Assign a register to the binary expression
@@ -30,24 +33,34 @@ InstructionSelector::InstructionSelector(const std::shared_ptr<SymbolTable>& sym
 };
 
 
-InstructionSelector::FunctionCFGs InstructionSelector::Run(const std::unique_ptr<ASTNode>& root)
+std::unique_ptr<Module> InstructionSelector::Run(const std::unique_ptr<ASTNode>& root)
 {
+    // Reset the module to be produced
+    mMod.reset(new Module{});
+
     this->VisitPreOrder(root);
-    return mFunctionGraphs;
+    return std::move(mMod);
 }
 
 // Declarations
 void InstructionSelector::HandleFunctionDecl() 
 {
+    const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(mCurrentNode);
+    assert(fDecl != nullptr);
+
     // New function declaration so we need to build a new control flow graph
-    ControlFlowGraph cfg;
+    CFGPtr pCFG = std::make_shared<ControlFlowGraph>();
+    mCurrentCFG = pCFG.get();
+    mCurrentBlock = mCurrentCFG->CreateNewBlock().get();
 
+    mMod->InsertFunction(fDecl->GetFunctionName(), pCFG);
 
+    // TODO: Insert instructions to fetch the arguements
 }
 
 void InstructionSelector::HandleVarDecl() 
 {
-    VarDecl* vDecl = dynamic_cast<VarDecl*>(mCurrentNode);
+    const VarDecl* vDecl = dynamic_cast<const VarDecl*>(mCurrentNode);
     assert(vDecl != nullptr);
 
     const Expr* initExpr = vDecl->GetInitExpr();
@@ -63,7 +76,7 @@ void InstructionSelector::HandleVarDecl()
 // Expressions
 void InstructionSelector::HandleBinaryExpr() 
 {
-    BinaryOpExpr* bExpr = dynamic_cast<BinaryOpExpr*>(mCurrentNode);
+    const BinaryOpExpr* bExpr = dynamic_cast<const BinaryOpExpr*>(mCurrentNode);
     assert(bExpr != nullptr);
 
     // Choose the correct opcode
@@ -139,9 +152,9 @@ void InstructionSelector::HandleCallExpr()
     // TODO: what to do with the function arguments?
 
     // We generate a call instruction. This will take care of the stack pointer.
-    // TODO: Set correct call target
-    /*mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::CALL }
-                                     .AddTargetOperand(cExpr));*/
+    mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::CALL }
+                                     // TODO: Quite a mouthful
+                                     .AddTargetOperand(mMod->GetFunction(cExpr->GetCalleeName())->GetEntryBlock().get()));
 }
 
 void InstructionSelector::HandleIdentifierExpr() 
@@ -239,6 +252,10 @@ void InstructionSelector::HandleWhileStmt()
     // Keep a pointer to the current block which correspond to the end of the then statement
     BasicBlock* thenEndBlock = mCurrentBlock;
 
+    // Insert a jump instruction that points back to the condition block
+    thenEndBlock->InsertInstruction(VirtualInstruction{Instruction::JUMP}
+                                    .AddTargetOperand(whileBlock));
+
     // Link the end of the then statement with the condition block
     thenEndBlock->InsertBranch(whileBlock);
 
@@ -260,12 +277,7 @@ void InstructionSelector::HandleWhileStmt()
 
 void TosLang::BackEnd::InstructionSelector::CreateNewCurrentBlock(std::vector<VirtualInstruction>&& insts)
 {
-    BlockPtr newBlock = std::make_shared<BasicBlock>();
-
-    for (auto& inst : insts)
-        mCurrentBlock->InsertInstruction(inst);
-    
-    mCurrentCFG.InsertNode(newBlock);
+    BlockPtr newBlock = mCurrentCFG->CreateNewBlock(std::move(insts));
     mCurrentBlock->InsertBranch(newBlock);
     mCurrentBlock = newBlock.get();
     mTreeToGraphMap[mCurrentNode] = mCurrentBlock;

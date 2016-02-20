@@ -15,7 +15,8 @@ namespace TosLang
         {
         public:
             const BlockPtr& GetEntryBlock() const;
-            void InsertNode(const BlockPtr& node);
+            BlockPtr CreateNewBlock();
+            BlockPtr CreateNewBlock(std::vector<VirtualInstruction>&& insts);
 
         private:
             BlockList mBlocks;
