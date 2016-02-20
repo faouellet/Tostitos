@@ -10,7 +10,9 @@ using namespace TosLang::BackEnd;
 
 VirtualOperand::VirtualOperand(unsigned op, VirtualOperand::OperandKind kind)
 {
-    assert((kind == VirtualOperand::OperandKind::IMMEDIATE) || (kind == VirtualOperand::OperandKind::REGISTER));
+    assert((kind == VirtualOperand::OperandKind::IMMEDIATE) 
+            || (kind == VirtualOperand::OperandKind::MEM_SLOT)
+            || (kind == VirtualOperand::OperandKind::REGISTER));
     mKind = kind;
 
     if (kind == VirtualOperand::OperandKind::IMMEDIATE)
@@ -33,6 +35,12 @@ VirtualOperand::VirtualOperand(BasicBlock* bb) : mKind{ VirtualOperand::OperandK
 VirtualInstruction& VirtualInstruction::AddImmOperand(unsigned op)
 {
     mOperands[mNumOperands++] = VirtualOperand(op, VirtualOperand::OperandKind::IMMEDIATE);
+    return *this;
+}
+
+VirtualInstruction& VirtualInstruction::AddMemSlotOperand(unsigned op)
+{
+    mOperands[mNumOperands++] = VirtualOperand(op, VirtualOperand::OperandKind::MEM_SLOT);
     return *this;
 }
 

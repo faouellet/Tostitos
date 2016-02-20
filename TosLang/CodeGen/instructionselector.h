@@ -40,6 +40,7 @@ namespace TosLang
             void HandleCallExpr();
             void HandleIdentifierExpr();
             void HandleNumberExpr();
+            void HandleStringExpr();
 
         protected:  // Statements
             void HandleIfStmt();

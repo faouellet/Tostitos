@@ -23,6 +23,7 @@ namespace TosLang
             enum class OperandKind
             {
                 IMMEDIATE,
+                MEM_SLOT,
                 REGISTER,
                 TARGET,
                 UNKNOWN
@@ -57,6 +58,7 @@ namespace TosLang
 
         public:
             VirtualInstruction& AddImmOperand(unsigned op);
+            VirtualInstruction& AddMemSlotOperand(unsigned op);
             VirtualInstruction& AddRegOperand(unsigned op);
             VirtualInstruction& AddTargetOperand(BasicBlock* bb);
 

@@ -16,7 +16,7 @@ InstructionSelector::InstructionSelector() :
 
     this->mPrologueFtr = [this]()
     {
-        // Assign a register to the binary expression
+        // Assign a register to AST node
         mNodeRegister[mCurrentNode] = mNextRegister++;
 
         // If a node is a statement node, it will generate a new basic block
@@ -179,7 +179,21 @@ void InstructionSelector::HandleNumberExpr()
     // TODO: There need to be a check in the semantic analyzer to ensure that the number value is reasonable
     mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::LOAD_IMM }
                                      .AddRegOperand(mNodeRegister[mCurrentNode])
-                                     .AddRegOperand(nExpr->GetValue()));
+                                     .AddImmOperand(nExpr->GetValue()));
+}
+
+void InstructionSelector::HandleStringExpr()
+{
+    const StringExpr* sExpr = dynamic_cast<const StringExpr*>(mCurrentNode);
+    assert(sExpr != nullptr);
+
+    // We add the string literal to the module
+    unsigned memSlot = mMod->InsertArrayVariable(sExpr->GetName(), sExpr->GetName()); // Name and value are the same for simplicity
+
+    // We generate a load of the string literal address
+    mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::LOAD_IMM }
+                                     .AddRegOperand(mNodeRegister[mCurrentNode])
+                                     .AddMemSlotOperand(memSlot));
 }
 
 // Statements
