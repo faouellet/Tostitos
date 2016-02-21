@@ -7,6 +7,18 @@
 #include <regex>
 #include <unordered_map>
 
+namespace std
+{
+    template<>
+    struct hash<TosLang::FrontEnd::ASTNode::NodeKind>
+    {
+        size_t operator()(const TosLang::FrontEnd::ASTNode::NodeKind& kind) const
+        {
+            return std::hash<std::underlying_type<TosLang::FrontEnd::ASTNode::NodeKind>::type>()(static_cast<std::underlying_type<TosLang::FrontEnd::ASTNode::NodeKind>::type>(kind));
+        }
+    };
+}
+
 namespace TosLang
 {
     namespace FrontEnd
