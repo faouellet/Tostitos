@@ -52,7 +52,7 @@ std::unique_ptr<ASTNode> ASTReader::Run(const std::string& filename)
             mStream.close();
     }
 
-    return astRoot;
+    return std::move(astRoot);
 }
 
 //////////////////// Declarations ////////////////////
