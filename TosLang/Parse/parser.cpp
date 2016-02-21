@@ -52,7 +52,7 @@ std::unique_ptr<ASTNode> Parser::ParseProgramDecl()
             break;
         }
         
-        programNode->AddProgramStmt(std::move(node));
+        programNode->AddProgramDecl(std::move(node));
 
         // Go to next declaration.
         // In case an error happens, this will skip straight to the next declaration

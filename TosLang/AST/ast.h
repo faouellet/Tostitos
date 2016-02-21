@@ -25,13 +25,14 @@ namespace TosLang
         public:
             enum class NodeKind : unsigned int
             {
+                // Misc
+                ERROR,
+
                 // Declarations
                 FUNCTION_DECL,
                 PROGRAM_DECL,
                 PARAM_VAR_DECL,
                 VAR_DECL,
-
-                // Statements
 
                 // Expressions
                 BINARY_EXPR,
@@ -40,9 +41,6 @@ namespace TosLang
                 IDENTIFIER_EXPR,
                 NUMBER_EXPR,
                 STRING_EXPR,
-
-                // Misc
-                ERROR,
 
                 // Statements
                 COMPOUND_STMT,

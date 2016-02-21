@@ -60,7 +60,9 @@ namespace TosLang
                 assert(vDecl != nullptr);
 
                 Indent();
-                mStream << "VarDecl: " << vDecl->GetVarName() << "\n";
+                mStream << "VarDecl: " << vDecl->GetVarName() 
+                        << " Type: " << static_cast<std::underlying_type<Common::Type>::type>(vDecl->GetVarType()) 
+                        << "\n";
             }
 
         protected:  // Expressions
@@ -104,7 +106,7 @@ namespace TosLang
             */
             void Indent()
             {
-                for (unsigned i = 0; i < this->mCurrentLevel; ++i)
+                for (unsigned i = 0; i < this->mCurrentLevel - 1; ++i)
                     mStream << "\t";
             }
 

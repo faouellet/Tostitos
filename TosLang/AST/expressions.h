@@ -74,11 +74,12 @@ namespace TosLang
         class BooleanExpr : public Expr
         {
         public:
-            explicit BooleanExpr(bool value, const Utils::SourceLocation& srcLoc) : Expr{ NodeKind::BOOLEAN_EXPR }, mValue{ value } 
+            BooleanExpr(bool value, const Utils::SourceLocation& srcLoc = Utils::SourceLocation{}) : Expr{ NodeKind::BOOLEAN_EXPR }, mValue{ value }
             { 
                 mName = mValue ? "True" : "False"; 
                 mSrcLoc = srcLoc;
             }
+
             virtual ~BooleanExpr() { }
 
         public:
@@ -133,7 +134,7 @@ namespace TosLang
         class IdentifierExpr : public Expr
         {
         public:
-            explicit IdentifierExpr(const std::string& value, const Utils::SourceLocation& srcLoc) 
+            IdentifierExpr(const std::string& value, const Utils::SourceLocation& srcLoc) 
                 : Expr{ NodeKind::IDENTIFIER_EXPR } 
             {
                 mName = value; 
@@ -149,7 +150,7 @@ namespace TosLang
         class NumberExpr : public Expr
         {
         public:
-            explicit NumberExpr(int value, const Utils::SourceLocation& srcLoc) 
+            NumberExpr(int value, const Utils::SourceLocation& srcLoc = Utils::SourceLocation{})
                 : Expr{ NodeKind::NUMBER_EXPR }, mValue{ value } 
             { 
                 // TODO: This most likely won't guarantee a unique name for every number expression in a program.
@@ -178,7 +179,7 @@ namespace TosLang
         class StringExpr : public Expr
         {
         public:
-            explicit StringExpr(const std::string& value, const Utils::SourceLocation& srcLoc)
+            StringExpr(const std::string& value, const Utils::SourceLocation& srcLoc)
                 : Expr{ NodeKind::STRING_EXPR }
             {
                 mName = value;

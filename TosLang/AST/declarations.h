@@ -38,17 +38,17 @@ namespace TosLang
         public:
             /*
             * \fn           AddProgramStmt
-            * \brief        Adds a statement to the program
-            * \param stmt   Statement to add to the program
+            * \brief        Adds a declaration to the program
+            * \param stmt   Declaration to add to the program
             */
-            void AddProgramStmt(std::unique_ptr<Decl>&& stmt) { AddChildNode(std::move(stmt)); }
+            void AddProgramDecl(std::unique_ptr<Decl>&& stmt) { AddChildNode(std::move(stmt)); }
 
             /*
-            * \fn       GetInitExpr
-            * \brief    Gets the initialization expression linked to the variable declaration
-            * \return   Pointer to the initialization expression
+            * \fn       GetProgramDecls
+            * \brief    Gets the declarations (functions and variables) contained within the program
+            * \return   Sequence of declarations
             */
-            ChildrenNodes& GetProgramStmts() { return mChildren; }
+            ChildrenNodes& GetProgramDecls() { return mChildren; }
         };
 
         /*
@@ -60,7 +60,7 @@ namespace TosLang
         {
         public:
             VarDecl() : Decl{ NodeKind::ERROR }, mType{ Common::Type::ERROR }, mIsFunctionParameter{ false } { }
-            explicit VarDecl(const std::string& varName, Common::Type type, bool isFuncParam, const Utils::SourceLocation& srcLoc) 
+            VarDecl(const std::string& varName, Common::Type type, bool isFuncParam, const Utils::SourceLocation& srcLoc = Utils::SourceLocation{})
                 : Decl{ NodeKind::VAR_DECL }, mType{ type }, mIsFunctionParameter{ isFuncParam }
             {
                 mName = varName; 

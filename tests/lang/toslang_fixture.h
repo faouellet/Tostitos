@@ -79,7 +79,7 @@ struct TosLangFixture
         ProgramDecl* pDecl = dynamic_cast<ProgramDecl*>(programAST.get());
         BOOST_REQUIRE(pDecl != nullptr);
 
-        auto& cNodes = pDecl->GetProgramStmts();
+        auto& cNodes = pDecl->GetProgramDecls();
         BOOST_REQUIRE(std::all_of(cNodes.begin(), cNodes.end(), [](const std::unique_ptr<ASTNode>& node) { return node != nullptr; }));
 
         return cNodes;
