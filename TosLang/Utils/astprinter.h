@@ -91,11 +91,13 @@ namespace TosLang
                 assert(bExpr != nullptr);
 
                 Indent();
-                mStream << "BinaryOpExpr: " << bExpr->GetOperation() << "\n";
+                mStream << "BinaryOpExpr: " 
+                        << static_cast<std::underlying_type<Common::Opcode>::type>(bExpr->GetOperation())
+                        << "\n";
             }
 
             /*
-            * \fn       HandleNumberExpr
+            * \fn       HandleBooleanExpr
             * \brief    Prints a node of the BOOLEAN_EXPR kind
             */
             void HandleBooleanExpr()
@@ -125,6 +127,19 @@ namespace TosLang
 
                 Indent();
                 mStream << "CallExpr: " << cExpr->GetCalleeName() << "\n";
+            }
+
+            /*
+            * \fn       HandleIdentifierExpr
+            * \brief    Prints a node of the IDENTIFIER_EXPR kind
+            */
+            void HandleIdentifierExpr()
+            {
+                const FrontEnd::IdentifierExpr* iExpr = dynamic_cast<const FrontEnd::IdentifierExpr*>(this->mCurrentNode);
+                assert(iExpr != nullptr);
+
+                Indent();
+                mStream << "IdentifierExpr: " << iExpr->GetName() << "\n";
             }
 
             /*

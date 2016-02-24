@@ -23,8 +23,10 @@ namespace TosLang
 {
     namespace FrontEnd
     {
+        class CompoundStmt;
         class Expr;
         class FunctionDecl;
+        class Stmt;
         class VarDecl;
     }
 
@@ -47,6 +49,10 @@ namespace TosLang
 
             // Expressions
             std::unique_ptr<FrontEnd::Expr> ReadExpr();
+
+            // Statements
+            std::unique_ptr<FrontEnd::CompoundStmt> ReadCompoundStmt();
+            std::unique_ptr<FrontEnd::Stmt> ReadStmt();
 
         private:
             std::ifstream mStream;

@@ -27,7 +27,7 @@ namespace TosLang
 		{
 		public:
             BinaryOpExpr(Common::Opcode op, std::unique_ptr<Expr>&& lhs, std::unique_ptr<Expr>&& rhs,
-                         const Utils::SourceLocation& srcLoc) : 
+                const Utils::SourceLocation& srcLoc = Utils::SourceLocation{}) :
                 Expr{ NodeKind::BINARY_EXPR }, mOp{ op }
             {
                 assert(lhs != nullptr);
@@ -101,7 +101,7 @@ namespace TosLang
         class CallExpr : public Expr
         {
         public:
-            CallExpr(const std::string& fnName, std::vector<std::unique_ptr<Expr>>&& args, const Utils::SourceLocation srcLoc) 
+            CallExpr(const std::string& fnName, std::vector<std::unique_ptr<Expr>>&& args, const Utils::SourceLocation srcLoc = Utils::SourceLocation{})
                 : Expr{ NodeKind::CALL_EXPR }
             { 
                 mName = fnName; 
@@ -134,7 +134,7 @@ namespace TosLang
         class IdentifierExpr : public Expr
         {
         public:
-            IdentifierExpr(const std::string& value, const Utils::SourceLocation& srcLoc) 
+            IdentifierExpr(const std::string& value, const Utils::SourceLocation& srcLoc = Utils::SourceLocation{})
                 : Expr{ NodeKind::IDENTIFIER_EXPR } 
             {
                 mName = value; 
@@ -179,7 +179,7 @@ namespace TosLang
         class StringExpr : public Expr
         {
         public:
-            StringExpr(const std::string& value, const Utils::SourceLocation& srcLoc)
+            StringExpr(const std::string& value, const Utils::SourceLocation& srcLoc = Utils::SourceLocation{})
                 : Expr{ NodeKind::STRING_EXPR }
             {
                 mName = value;
