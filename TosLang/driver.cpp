@@ -36,7 +36,7 @@ static void DumpAST(const std::string& programFile)
         return;
 
     std::ostream& stream = std::cout;
-    TosLang::Utils::ASTPrinter<std::ostream> printer(std::move(stream));
+    TosLang::Utils::ASTPrinter<std::ostream> printer(stream);
 }
 
 int main(int argc, char** argv)
