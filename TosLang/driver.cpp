@@ -3,6 +3,7 @@
 #include "Sema/symbolcollector.h"
 #include "Sema/symboltable.h"
 #include "Sema/typechecker.h"
+#include "Utils/astprinter.h"
 
 // TODO: include codegen
 
@@ -27,6 +28,35 @@ static void Compile(const std::string& programFile)
         return;
 }
 
-int main()
+static void DumpAST(const std::string& programFile)
 {
+    TosLang::FrontEnd::Parser parser;
+    auto programAST = parser.ParseProgram(programFile);
+    if (programAST == nullptr)
+        return;
+
+    std::ostream& stream = std::cout;
+    TosLang::Utils::ASTPrinter<std::ostream> printer(std::move(stream));
+}
+
+int main(int argc, char** argv)
+{
+    if (argc < 2)
+    {
+        std::cout << "Correct usage: tc [options] <filename>"                               << std::endl
+                  << "Options:"                                                             << std::endl
+                  << "  -dump-ast                   Will output the program AST to stdout"  << std::endl;
+
+    }
+    else if (argc == 2)
+    {
+        Compile(argv[1]);
+    }
+    else
+    {
+        if (argv[1] == "-dump-ast")
+        {
+            DumpAST(argv[2]);
+        }
+    }
 }
