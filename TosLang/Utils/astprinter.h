@@ -20,7 +20,7 @@ namespace TosLang
             friend class Common::ASTVisitor<ASTPrinter<OS>>;
 
         public:
-            explicit ASTPrinter(OS&& stream) : mCurrentLevel{ 0 }, mStream(std::move(stream))
+            explicit ASTPrinter(OS& stream) : mCurrentLevel{ 0 }, mStream(stream)
             {
                 this->mPrologueFtr = [this]() { ++mCurrentLevel; };
                 this->mEpilogueFtr = [this]() { --mCurrentLevel; };
@@ -242,7 +242,7 @@ namespace TosLang
 
         private:
             size_t mCurrentLevel;   /*!< Current tree level of the traversal */
-            OS mStream;             /*!< Output stream to which the AST will be printed */
+            OS& mStream;             /*!< Output stream to which the AST will be printed */
         };
 
     }
