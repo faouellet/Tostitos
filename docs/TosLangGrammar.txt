@@ -1,0 +1,89 @@
+ProgramDecl
+	::= Decls
+		
+Decls
+	::= Decl
+	::= Decl Decls
+	
+Decl
+	::= FunctionDecl
+	::= VarDecl
+	
+FunctionDecl 
+	::= 'fn' IdentifierExpr '(' ( VardDecl, )* ')' '->' Type CompoundStmt
+	
+VarDecl ::= 'var' IdentifierExpr ':' TypeExpr ( '=' Expr )? ';'
+
+Stmt 
+	::= CompoundStmt
+	::= IfStmt
+	::= PrintStmt
+	::= ReturnStmt
+	::= ScanStmt
+	::= WhileStmt
+	
+CompoundStmt
+	::= '{' Stmt* '}'
+	
+IfStmt
+	::= 'if' Expr CompoundStmt
+	
+PrintStmt
+	::= 'print' Expr
+	
+ReturnStmt
+	::= 'return' Expr? ';'
+	
+ScanStmt
+	::= 'scan' IdentifierExpr
+	
+WhileStmt
+	::= 'while' Expr CompoundStmt
+	
+Expr
+	::= BinOpExpr
+    ::= BooleanExpr
+	::= CallExpr
+    ::= IdentifierExpr
+    ::= NumberExpr
+	::= StringExpr
+	
+BinOpExpr
+	::= Expr Op Expr
+	
+BooleanExpr
+	::=
+	
+CallExpr
+	::= IdentifierExpr '(' Expr* ')'
+	
+IdentifierExpr
+	::= [a-zA-Z].*
+	
+NumberExpr
+	::= [1-9][0-9]*
+	
+StringExpr
+	::= '"'.*'"'
+	
+Type
+	::= 'Bool'
+	::= 'Int'
+	::= 'String'
+	::= 'Void'
+	
+Op
+	::= '+'
+	::= '-'
+	::= '*'
+	::= '/'
+	::= '%'
+	::= '<'
+	::= '>'
+	::= '<<'
+	::= '>>'
+	::= '|'
+	::= '&'
+	::= '||'
+	::= '&&'
+	
