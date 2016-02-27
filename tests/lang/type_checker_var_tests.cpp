@@ -8,51 +8,51 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "toslang_fixture.h"
+#include "toslang_sema_fixture.h"
 
-BOOST_FIXTURE_TEST_SUITE( FrontEndTestSuite, TosLangFixture )
+BOOST_FIXTURE_TEST_SUITE( SemaTestSuite, TosLangSemaFixture )
 
 //////////////////// CORRECT USE CASES ////////////////////
 
 BOOST_AUTO_TEST_CASE( VarInitValueBoolTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../inputs/var/var_init_bool.tos");
+    size_t errorCount = GetTypeErrors("../programs/var/var_init_bool.tos");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( VarInitValueIdentifierTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../inputs/var/var_init_identifier.tos");
+    size_t errorCount = GetTypeErrors("../programs/var/var_init_identifier.tos");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( VarInitValueIntTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../inputs/var/var_init_int.tos");
+    size_t errorCount = GetTypeErrors("../programs/var/var_init_int.tos");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( VarInitValueStringTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../inputs/var/var_init_string.tos");
+    size_t errorCount = GetTypeErrors("../programs/var/var_init_string.tos");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( VarInitBinaryOpBoolTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../inputs/var/binary_op_bool.tos");
+    size_t errorCount = GetTypeErrors("../programs/var/binary_op_bool.tos");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( VarInitBinaryOpIntTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../inputs/var/binary_op_int.tos");
+    size_t errorCount = GetTypeErrors("../programs/var/binary_op_int.tos");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( VarInitCallTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../inputs/call/call_one_arg_var.tos");
+    size_t errorCount = GetTypeErrors("../programs/call/call_one_arg_var.tos");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE( VarInitCallTypeCheck )
 
 BOOST_AUTO_TEST_CASE( BadVarInitBinaryOpTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../inputs/var/bad_var_init_bin_op.tos");
+    size_t errorCount = GetTypeErrors("../programs/var/bad_var_init_bin_op.tos");
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed
@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE( BadVarInitBinaryOpTypeCheck )
 
 BOOST_AUTO_TEST_CASE( BadVarInitCallTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../inputs/call/bad_return_call_one_arg_var.tos");
+    size_t errorCount = GetTypeErrors("../programs/call/bad_return_call_one_arg_var.tos");
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE( BadVarInitCallTypeCheck )
 
 BOOST_AUTO_TEST_CASE( BadVarInitIdentifierTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../inputs/var/bad_var_init_identifier.tos");
+    size_t errorCount = GetTypeErrors("../programs/var/bad_var_init_identifier.tos");
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed
@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE( BadVarInitIdentifierTypeCheck )
 
 BOOST_AUTO_TEST_CASE( BadVarInitLiteralTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../inputs/var/bad_var_init_literal.tos");
+    size_t errorCount = GetTypeErrors("../programs/var/bad_var_init_literal.tos");
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed

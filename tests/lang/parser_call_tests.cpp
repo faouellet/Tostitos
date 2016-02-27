@@ -8,17 +8,17 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "toslang_fixture.h"
+#include "toslang_parser_fixture.h"
 
 #include <sstream>
 
-BOOST_FIXTURE_TEST_SUITE( FrontEndTestSuite, TosLangFixture )
+BOOST_FIXTURE_TEST_SUITE( ParseTestSuite, TosLangParserFixture )
 
 //////////////////// CORRECT USE CASES ////////////////////
 
 BOOST_AUTO_TEST_CASE( ParseCallZeroArgTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/call/call_zero_arg.tos");
+    auto& cNodes = GetProgramAST("../programs/call/call_zero_arg.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 2);
     BOOST_REQUIRE(cNodes[0] != nullptr);
 
@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE( ParseCallZeroArgTest )
 
 BOOST_AUTO_TEST_CASE( ParseCallOneArgTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/call/call_one_arg_var.tos");
+    auto& cNodes = GetProgramAST("../programs/call/call_one_arg_var.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 2);
     BOOST_REQUIRE(cNodes[0] != nullptr);
 
@@ -155,7 +155,7 @@ BOOST_AUTO_TEST_CASE( ParseCallOneArgTest )
 
 BOOST_AUTO_TEST_CASE( ParseCallOneArgBinopTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/call/call_one_arg_binop.tos");
+    auto& cNodes = GetProgramAST("../programs/call/call_one_arg_binop.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 2);
     BOOST_REQUIRE(cNodes[0] != nullptr);
 
@@ -241,7 +241,7 @@ BOOST_AUTO_TEST_CASE( ParseCallOneArgBinopTest )
 
 BOOST_AUTO_TEST_CASE( ParseCallMultiArgsTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/call/call_multi_args.tos");
+    auto& cNodes = GetProgramAST("../programs/call/call_multi_args.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 2);
     BOOST_REQUIRE(cNodes[0] != nullptr);
 
@@ -336,7 +336,7 @@ BOOST_AUTO_TEST_CASE( ParseCallMultiArgsTest )
 
 BOOST_AUTO_TEST_CASE( ParseCallMultiArgsOneBinopTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/call/call_multi_args_one_binop.tos");
+    auto& cNodes = GetProgramAST("../programs/call/call_multi_args_one_binop.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 2);
     BOOST_REQUIRE(cNodes[0] != nullptr);
 
@@ -435,7 +435,7 @@ BOOST_AUTO_TEST_CASE( ParseCallMultiArgsOneBinopTest )
 
 BOOST_AUTO_TEST_CASE( ParseCallMultiArgsMultiBinopsTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/call/call_multi_args_multi_binops.tos");
+    auto& cNodes = GetProgramAST("../programs/call/call_multi_args_multi_binops.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 2);
     BOOST_REQUIRE(cNodes[0] != nullptr);
 
@@ -528,7 +528,7 @@ BOOST_AUTO_TEST_CASE( ParseCallMultiArgsMultiBinopsTest )
 
 BOOST_AUTO_TEST_CASE( ParseBadCallMissingCommaTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/call/call_missing_comma.tos");
+    auto& cNodes = GetProgramAST("../programs/call/call_missing_comma.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 2);
     
     // Check if the correct error message got printed
@@ -540,7 +540,7 @@ BOOST_AUTO_TEST_CASE( ParseBadCallMissingCommaTest )
 
 BOOST_AUTO_TEST_CASE( ParseBadCallMissingParenTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/call/call_missing_paren.tos");
+    auto& cNodes = GetProgramAST("../programs/call/call_missing_paren.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 2);
 
     // Check if the correct error message got printed
@@ -551,7 +551,7 @@ BOOST_AUTO_TEST_CASE( ParseBadCallMissingParenTest )
 
 BOOST_AUTO_TEST_CASE( ParseBadCallGlobalScopeTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/call/call_global_scope.tos");
+    auto& cNodes = GetProgramAST("../programs/call/call_global_scope.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::ERROR);

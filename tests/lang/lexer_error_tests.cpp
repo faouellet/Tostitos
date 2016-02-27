@@ -8,11 +8,11 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "toslang_fixture.h"
+#include "toslang_parser_fixture.h"
 
 #include "Parse/lexer.h"
 
-BOOST_FIXTURE_TEST_SUITE( FrontEndTestSuite, TosLangFixture )
+BOOST_FIXTURE_TEST_SUITE( ParseTestSuite, TosLangParserFixture )
 
 BOOST_AUTO_TEST_CASE( LexerBadInitTest )
 {
@@ -25,7 +25,7 @@ BOOST_AUTO_TEST_CASE( LexerBadInitTest )
 BOOST_AUTO_TEST_CASE( LexerBadStrLitTest )
 {
     Lexer lex;
-    BOOST_REQUIRE(lex.Init("../inputs/var/bad_string_literal.tos"));
+    BOOST_REQUIRE(lex.Init("../programs/var/bad_string_literal.tos"));
     BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
     BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
 
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE( LexerBadStrLitTest )
 BOOST_AUTO_TEST_CASE( LexerBadVarNameTest )
 {
     Lexer lex;
-    BOOST_REQUIRE(lex.Init("../inputs/var/bad_var_name.tos"));
+    BOOST_REQUIRE(lex.Init("../programs/var/bad_var_name.tos"));
     BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
     BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
 
@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE( LexerBadVarNameTest )
 BOOST_AUTO_TEST_CASE( LexerBadMLCommentTest )
 {
     Lexer lex;
-    BOOST_REQUIRE(lex.Init("../inputs/comment/bad_ml_comment.tos"));
+    BOOST_REQUIRE(lex.Init("../programs/comment/bad_ml_comment.tos"));
     BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
     BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
 

@@ -20,21 +20,21 @@ using namespace TosLang::Utils;
 BOOST_AUTO_TEST_CASE( ASTPrinterTest )
 {
     Parser parser;
-    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../inputs/var/var_init_bool.tos");
+    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../programs/var/var_init_bool.tos");
     BOOST_REQUIRE(rootNode != nullptr);
 
     {
-        std::ofstream printStream("../outputs/varinit_ast_tests.txt");
+        std::ofstream printStream("../asts/varinit_ast_tests.txt");
         BOOST_REQUIRE(printStream.is_open());
 
-        ASTPrinter<std::ofstream> printer{ std::move(printStream) };
+        ASTPrinter<std::ofstream> printer{ printStream };
         printer.Run(rootNode);
         printStream.flush();
         printStream.close();
     }
     
-    std::ifstream testStream("../outputs/varinit_ast_tests.txt");
-    std::ifstream expectedStream("../outputs/varinit_ast.txt");
+    std::ifstream testStream("../programs/varinit_ast_tests.txt");
+    std::ifstream expectedStream("../asts/varinit_ast.txt");
 
     std::string expectedStr;
     std::string testStr;

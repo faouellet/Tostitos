@@ -6,15 +6,15 @@
 #endif
 #endif
 
-#include "toslang_fixture.h"
+#include "toslang_parser_fixture.h"
 
-BOOST_FIXTURE_TEST_SUITE( FrontEndTestSuite, TosLangFixture )
+BOOST_FIXTURE_TEST_SUITE( ParseTestSuite, TosLangParserFixture )
 
 //////////////////// CORRECT USE CASES ////////////////////
 
 BOOST_AUTO_TEST_CASE( ParseHelloWorldTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/io/print_string_literal.tos");
+    auto& cNodes = GetProgramAST("../programs/io/print_string_literal.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0] != nullptr);
@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE( ParseHelloWorldTest )
 
 BOOST_AUTO_TEST_CASE( ParseBasicIOTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/io/io.tos");
+    auto& cNodes = GetProgramAST("../programs/io/io.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0] != nullptr);
@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE( ParseBasicIOTest )
 
 BOOST_AUTO_TEST_CASE( ParseBadIOTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/io/bad_io.tos");
+    auto& cNodes = GetProgramAST("../programs/io/bad_io.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0] != nullptr);
@@ -109,7 +109,7 @@ BOOST_AUTO_TEST_CASE( ParseBadIOTest )
 
 BOOST_AUTO_TEST_CASE( ParseBadIOGlobalScopeTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/io/io_global_scope.tos");
+    auto& cNodes = GetProgramAST("../programs/io/io_global_scope.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0] != nullptr);

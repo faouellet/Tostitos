@@ -8,15 +8,15 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "toslang_fixture.h"
+#include "toslang_parser_fixture.h"
 
-BOOST_FIXTURE_TEST_SUITE( FrontEndTestSuite, TosLangFixture )
+BOOST_FIXTURE_TEST_SUITE( ParseTestSuite, TosLangParserFixture )
 
 //////////////////// CORRECT USE CASES ////////////////////
 
 BOOST_AUTO_TEST_CASE( ParseFuncVoidTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/function/fn_def_void.tos");
+    auto& cNodes = GetProgramAST("../programs/function/fn_def_void.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
     BOOST_REQUIRE(cNodes[0] != nullptr);
 
@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE( ParseFuncVoidTest )
 
 BOOST_AUTO_TEST_CASE( ParseFuncZeroArgTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/function/fn_def_zero_arg.tos");
+    auto& cNodes = GetProgramAST("../programs/function/fn_def_zero_arg.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
     BOOST_REQUIRE(cNodes[0] != nullptr);
 
@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE( ParseFuncZeroArgTest )
 
 BOOST_AUTO_TEST_CASE( ParseFuncOneArgTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/function/fn_def_one_arg.tos");
+    auto& cNodes = GetProgramAST("../programs/function/fn_def_one_arg.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
     BOOST_REQUIRE(cNodes[0] != nullptr);
 
@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE( ParseFuncOneArgTest )
 
 BOOST_AUTO_TEST_CASE( ParseFuncMultiArgsTest )
 {
-    auto& cNodes = GetProgramAST("../inputs/function/fn_def_multi_args.tos");
+    auto& cNodes = GetProgramAST("../programs/function/fn_def_multi_args.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
     BOOST_REQUIRE(cNodes[0] != nullptr);
 
@@ -151,7 +151,7 @@ BOOST_AUTO_TEST_CASE( ParseFuncMultiArgsTest )
 
 BOOST_AUTO_TEST_CASE( ParseBadFunctionMissingArrow )
 {
-    auto& cNodes = GetProgramAST("../inputs/function/bad_fn_missing_arrow.tos");
+    auto& cNodes = GetProgramAST("../programs/function/bad_fn_missing_arrow.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
     auto& node = cNodes.front();
     BOOST_REQUIRE(node != nullptr);
@@ -165,7 +165,7 @@ BOOST_AUTO_TEST_CASE( ParseBadFunctionMissingArrow )
 
 BOOST_AUTO_TEST_CASE( ParseBadFunctionMissingName )
 {
-    auto& cNodes = GetProgramAST("../inputs/function/bad_fn_no_name.tos");
+    auto& cNodes = GetProgramAST("../programs/function/bad_fn_no_name.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
     auto& node = cNodes.front();
     BOOST_REQUIRE(node != nullptr);
@@ -179,7 +179,7 @@ BOOST_AUTO_TEST_CASE( ParseBadFunctionMissingName )
 
 BOOST_AUTO_TEST_CASE( ParseBadFunctionMissingLeftParen )
 {
-    auto& cNodes = GetProgramAST("../inputs/function/bad_fn_missing_left_paren.tos");
+    auto& cNodes = GetProgramAST("../programs/function/bad_fn_missing_left_paren.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
     auto& node = cNodes.front();
     BOOST_REQUIRE(node != nullptr);
@@ -193,7 +193,7 @@ BOOST_AUTO_TEST_CASE( ParseBadFunctionMissingLeftParen )
 
 BOOST_AUTO_TEST_CASE( ParseBadFunctionMissingRightParen )
 {
-    auto& cNodes = GetProgramAST("../inputs/function/bad_fn_missing_right_paren.tos");
+    auto& cNodes = GetProgramAST("../programs/function/bad_fn_missing_right_paren.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
     auto& node = cNodes.front();
     BOOST_REQUIRE(node != nullptr);
@@ -207,7 +207,7 @@ BOOST_AUTO_TEST_CASE( ParseBadFunctionMissingRightParen )
 
 BOOST_AUTO_TEST_CASE( ParseBadFunctionMissingReturnType )
 {
-    auto& cNodes = GetProgramAST("../inputs/function/bad_fn_missing_return_type.tos");
+    auto& cNodes = GetProgramAST("../programs/function/bad_fn_missing_return_type.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
     auto& node = cNodes.front();
     BOOST_REQUIRE(node != nullptr);
@@ -221,7 +221,7 @@ BOOST_AUTO_TEST_CASE( ParseBadFunctionMissingReturnType )
 
 BOOST_AUTO_TEST_CASE( ParseBadFunctionMissingInternalFunction )
 {
-    auto& cNodes = GetProgramAST("../inputs/function/bad_fn_internal_fn.tos");
+    auto& cNodes = GetProgramAST("../programs/function/bad_fn_internal_fn.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
     BOOST_REQUIRE(cNodes[0] != nullptr);
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
@@ -234,7 +234,7 @@ BOOST_AUTO_TEST_CASE( ParseBadFunctionMissingInternalFunction )
 
 BOOST_AUTO_TEST_CASE( ParseBadParamMissingName )
 {
-    auto& cNodes = GetProgramAST("../inputs/function/bad_fn_missing_param_name.tos");
+    auto& cNodes = GetProgramAST("../programs/function/bad_fn_missing_param_name.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
     auto& node = cNodes.front();
     BOOST_REQUIRE(node != nullptr);
@@ -248,7 +248,7 @@ BOOST_AUTO_TEST_CASE( ParseBadParamMissingName )
 
 BOOST_AUTO_TEST_CASE( ParseBadParamMissingType )
 {
-    auto& cNodes = GetProgramAST("../inputs/function/bad_fn_missing_param_type.tos");
+    auto& cNodes = GetProgramAST("../programs/function/bad_fn_missing_param_type.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
     auto& node = cNodes.front();
     BOOST_REQUIRE(node != nullptr);
@@ -262,7 +262,7 @@ BOOST_AUTO_TEST_CASE( ParseBadParamMissingType )
 
 BOOST_AUTO_TEST_CASE( ParseBadParamMissingColon )
 {
-    auto& cNodes = GetProgramAST("../inputs/function/bad_fn_missing_param_colon.tos");
+    auto& cNodes = GetProgramAST("../programs/function/bad_fn_missing_param_colon.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
     auto& node = cNodes.front();
     BOOST_REQUIRE(node != nullptr);

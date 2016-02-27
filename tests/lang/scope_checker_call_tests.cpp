@@ -8,21 +8,21 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "toslang_fixture.h"
+#include "toslang_sema_fixture.h"
 
-BOOST_FIXTURE_TEST_SUITE( FrontEndTestSuite, TosLangFixture )
+BOOST_FIXTURE_TEST_SUITE( SemaTestSuite, TosLangSemaFixture )
 
 //////////////////// CORRECT USE CASES ////////////////////
 
 BOOST_AUTO_TEST_CASE( BasicCallScopeCheck )
 {
-    size_t errorCount = GetAccessibilityErrors("../inputs/call/call_one_arg_var.tos");
+    size_t errorCount = GetAccessibilityErrors("../programs/call/call_one_arg_var.tos");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( CallChoiceScopeCheck )
 {
-    size_t errorCount = GetAccessibilityErrors("../inputs/call/call_multiple_choices.tos");
+    size_t errorCount = GetAccessibilityErrors("../programs/call/call_multiple_choices.tos");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE( CallChoiceScopeCheck )
 
 BOOST_AUTO_TEST_CASE( UndeclaredFunctionCallScopeCheck )
 {
-    size_t errorCount = GetAccessibilityErrors("../inputs/call/call_undeclared.tos");
+    size_t errorCount = GetAccessibilityErrors("../programs/call/call_undeclared.tos");
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed

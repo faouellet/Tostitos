@@ -1,14 +1,11 @@
-#ifndef CONSOLE_ERROR_FIXTURE_H__TOSTITOS
-#define CONSOLE_ERROR_FIXTURE_H__TOSTITOS
+#ifndef TOSLANG_SEMA_FIXTURE_H__TOSTITOS
+#define TOSLANG_SEMA_FIXTURE_H__TOSTITOS
 
 #include "AST/ast.h"
-#include "AST/declarations.h"
-#include "AST/expressions.h"
-#include "AST/statements.h"
-#include "Parse/parser.h"
 #include "Sema/scopechecker.h"
 #include "Sema/symbolcollector.h"
 #include "Sema/typechecker.h"
+#include "Utils/astreader.h"
 
 #include <boost/test/unit_test.hpp>
 
@@ -21,16 +18,16 @@ using namespace TosLang::FrontEnd;
 
 /*
 * \struct TosLangFixture
-* \brief  Fixture used to test the TosLang compiler
+* \brief  Fixture used to test the semantic passes of the TosLang compiler
 */
-struct TosLangFixture
+struct TosLangSemaFixture
 {
     /*
-    * \fn    TosLangFixture
+    * \fn    TosLangSemaFixture
     * \brief Constructor. Redirect stderr to its internal buffer to help verify that the 
     *        correct error messages are outputted during error case tests
     */
-    TosLangFixture()
+    TosLangSemaFixture()
     {
         oldBuffer = std::cerr.rdbuf();
         std::cerr.rdbuf(buffer.rdbuf());
@@ -40,7 +37,7 @@ struct TosLangFixture
     * \fn    ~TosLangFixture
     * \brief Destructor. Put stderr back in its original state
     */
-    ~TosLangFixture()
+    ~TosLangSemaFixture()
     {
         std::cerr.rdbuf(oldBuffer);
         buffer.clear();
@@ -64,28 +61,6 @@ struct TosLangFixture
     }
 
     /*
-    * \fn               GetProgramAST
-    * \brief            Parse a TosLang program to construct its AST
-    * \param filename   Name of a file containing a TosLang program
-    * \return           The nodes making up the program's AST
-    */
-    const ChildrenNodes& GetProgramAST(const std::string& filename)
-    {
-        Parser parser;
-        programAST.reset(parser.ParseProgram(filename).release());
-        BOOST_REQUIRE(programAST != nullptr);
-
-        BOOST_REQUIRE(programAST->GetKind() == ASTNode::NodeKind::PROGRAM_DECL);
-        ProgramDecl* pDecl = dynamic_cast<ProgramDecl*>(programAST.get());
-        BOOST_REQUIRE(pDecl != nullptr);
-
-        auto& cNodes = pDecl->GetProgramDecls();
-        BOOST_REQUIRE(std::all_of(cNodes.begin(), cNodes.end(), [](const std::unique_ptr<ASTNode>& node) { return node != nullptr; }));
-
-        return cNodes;
-    }
-
-    /*
     * \fn               GetProgramSymbolTable
     * \brief            Parse a TosLang program and collect the symbols contained in the resulting AST
     * \param filename   Name of a file containing a TosLang program
@@ -94,8 +69,8 @@ struct TosLangFixture
     */
     const size_t GetProgramSymbolTable(const std::string& filename, std::shared_ptr<SymbolTable>& symTable)
     {
-        auto& cNodes = GetProgramAST(filename);
-        BOOST_REQUIRE_NE(cNodes.size(), 0);
+        programAST = reader.Run(filename);
+        BOOST_REQUIRE(programAST != nullptr);
 
         TosLang::FrontEnd::SymbolCollector sCollector{ symTable };
         return sCollector.Run(programAST);
@@ -136,7 +111,8 @@ struct TosLangFixture
     std::unique_ptr<ASTNode> programAST;    /*!< Program abstract syntax tree */
     std::stringstream buffer;               /*!< Buffer in which to put error messages during testing */
     std::streambuf* oldBuffer;              /*!< Original stderr buffer */
+    TosLang::Utils::ASTReader reader;       /*!< Use to acquire ASTs stored in files */
 };
 
 
-#endif // CONSOLE_ERROR_FIXTURE_H__TOSTITOS
+#endif // TOSLANG_SEMA_FIXTURE_H__TOSTITOS

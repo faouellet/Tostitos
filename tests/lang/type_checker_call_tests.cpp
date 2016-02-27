@@ -8,39 +8,39 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "toslang_fixture.h"
+#include "toslang_sema_fixture.h"
 
-BOOST_FIXTURE_TEST_SUITE( FrontEndTestSuite, TosLangFixture )
+BOOST_FIXTURE_TEST_SUITE( SemaTestSuite, TosLangSemaFixture )
 
 //////////////////// CORRECT USE CASES ////////////////////
 
 BOOST_AUTO_TEST_CASE( CallBinOpArgTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../inputs/call/call_one_arg_binop.tos");
+    size_t errorCount = GetTypeErrors("../programs/call/call_one_arg_binop.tos");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( CallCallArgTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../inputs/call/call_one_arg_call.tos");
+    size_t errorCount = GetTypeErrors("../programs/call/call_one_arg_call.tos");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( CallLiteralArgTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../inputs/call/call_one_arg_literal.tos");
+    size_t errorCount = GetTypeErrors("../programs/call/call_one_arg_literal.tos");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( CallVariableArgTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../inputs/call/call_one_arg_var.tos");
+    size_t errorCount = GetTypeErrors("../programs/call/call_one_arg_var.tos");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( CallNoArgTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../inputs/call/call_zero_arg.tos");
+    size_t errorCount = GetTypeErrors("../programs/call/call_zero_arg.tos");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE( CallNoArgTypeCheck )
 
 BOOST_AUTO_TEST_CASE( BadCallBinOpArgTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../inputs/call/bad_call_one_arg_binop.tos");
+    size_t errorCount = GetTypeErrors("../programs/call/bad_call_one_arg_binop.tos");
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE( BadCallBinOpArgTypeCheck )
 
 BOOST_AUTO_TEST_CASE( BadCallCallArgTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../inputs/call/bad_call_one_arg_call.tos");
+    size_t errorCount = GetTypeErrors("../programs/call/bad_call_one_arg_call.tos");
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed
@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE( BadCallCallArgTypeCheck )
 
 BOOST_AUTO_TEST_CASE( BadCallLiteralArgTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../inputs/call/bad_call_one_arg_literal.tos");
+    size_t errorCount = GetTypeErrors("../programs/call/bad_call_one_arg_literal.tos");
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed
@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE( BadCallLiteralArgTypeCheck )
 
 BOOST_AUTO_TEST_CASE( BadCallVariableArgTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../inputs/call/bad_param_call_one_arg_var.tos");
+    size_t errorCount = GetTypeErrors("../programs/call/bad_param_call_one_arg_var.tos");
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE( BadCallVariableArgTypeCheck )
 
 BOOST_AUTO_TEST_CASE( BadCallNoArgTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../inputs/call/bad_call_zero_arg.tos");
+    size_t errorCount = GetTypeErrors("../programs/call/bad_call_zero_arg.tos");
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed
