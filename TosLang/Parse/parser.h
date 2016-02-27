@@ -85,7 +85,7 @@ namespace TosLang
 
             /*
             * \fn           ParseCallExpr
-            * \brief        callexpr ::= identifier '(' expr* ')'
+            * \brief        callexpr ::= identifierexpr '(' expr* ')'
             * \param fn     The function to be called
             * \return       A node representing function call expression
             */
@@ -94,21 +94,21 @@ namespace TosLang
         private:    // Statements
             /*
             * \fn           ParseCompoundStmt
-            * \brief        '{' stmt* '}'
+            * \brief        compoundstmt ::= '{' stmt* '}'
             * \return       A node representing a compound statement i.e. an aggregation of statements
             */
             std::unique_ptr<CompoundStmt> ParseCompoundStmt();
 
             /*
             * \fn           ParseIfStmt
-            * \brief        'if' expr '{' compoundstmt '}' 'else' '{' compoundstmt '}'
+            * \brief        ifstmt ::= 'if' expr compoundstmt
             * \return       A node representing an if statement
             */
             std::unique_ptr<IfStmt> ParseIfStmt();
 
             /*
             * \fn           ParsePrintStmt
-            * \brief        'print' expr
+            * \brief        printstmt ::= 'print' expr
             * \return       A node representing a print statement
             */
             std::unique_ptr<PrintStmt> ParsePrintStmt();
@@ -122,14 +122,14 @@ namespace TosLang
 
             /*
             * \fn           ParseScanStmt
-            * \brief        'scan' identifierexpr
+            * \brief        scanstmt ::= 'scan' identifierexpr
             * \return       A node representing an if statement
             */
             std::unique_ptr<ScanStmt> ParseScanStmt();
 
             /*
-            * \fn           ParseIdentifierExpr
-            * \brief        'while' expr '{' compoundstmt '}'
+            * \fn           ParseWhileStmt
+            * \brief        whilestmt ::= 'while' expr compoundstmt
             * \return       A node representing a while statement
             */
             std::unique_ptr<WhileStmt> ParseWhileStmt();

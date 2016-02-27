@@ -37,6 +37,7 @@ static void DumpAST(const std::string& programFile)
 
     std::ostream& stream = std::cout;
     TosLang::Utils::ASTPrinter<std::ostream> printer(stream);
+    printer.Run(programAST);
 }
 
 int main(int argc, char** argv)
@@ -54,7 +55,8 @@ int main(int argc, char** argv)
     }
     else
     {
-        if (argv[1] == "-dump-ast")
+        std::string arg = argv[1];
+        if (arg == "-dump-ast")
         {
             DumpAST(argv[2]);
         }
