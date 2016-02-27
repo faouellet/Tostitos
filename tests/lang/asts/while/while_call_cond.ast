@@ -1,0 +1,20 @@
+ProgramDecl
+	FunctionDecl: isGreater Return Type: 1 SrcLoc: 1, 18
+			VarDecl: i1 Type: 2 SrcLoc: 1, 12
+			VarDecl: i2 Type: 2 SrcLoc: 1, 18
+		CompoundStmt SrcLoc: 0, 0
+			ReturnStmt SrcLoc: 2, 7
+					IdentifierExpr: i1 SrcLoc: 2, 9
+					IdentifierExpr: i2 SrcLoc: 2, 12
+	FunctionDecl: main Return Type: 4 SrcLoc: 5, 6
+		CompoundStmt SrcLoc: 0, 0
+			VarDecl: BoolVar Type: 1 SrcLoc: 6, 11
+				BooleanExpr: True SrcLoc: 6, 20
+			WhileStmt SrcLoc: 8, 15
+				CallExpr: isGreater SrcLoc: 8, 15
+					NumberExpr: 1 SrcLoc: 8, 15
+					NumberExpr: 2 SrcLoc: 8, 15
+				CompoundStmt SrcLoc: 0, 0
+						IdentifierExpr: BoolVar SrcLoc: 9, 9
+						BooleanExpr: False SrcLoc: 9, 15
+			ReturnStmt SrcLoc: 11, 7

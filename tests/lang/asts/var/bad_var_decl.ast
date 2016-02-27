@@ -1,0 +1,3 @@
+ProgramDecl
+	VarDecl: MyIntVar Type: 2 SrcLoc: 8, 11
+	VarDecl: MyIntVar Type: 2 SrcLoc: 9, 11

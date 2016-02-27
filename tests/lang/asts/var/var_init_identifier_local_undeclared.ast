@@ -1,0 +1,6 @@
+ProgramDecl
+	FunctionDecl: main Return Type: 4 SrcLoc: 1, 6
+		CompoundStmt SrcLoc: 0, 0
+			VarDecl: MyIntVar2 Type: 2 SrcLoc: 3, 13
+				IdentifierExpr: MyIntVar SrcLoc: 3, 25
+			ReturnStmt SrcLoc: 5, 7

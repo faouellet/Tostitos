@@ -1,0 +1,4 @@
+ProgramDecl
+	VarDecl: MyBoolVar Type: 1 SrcLoc: 1, 12
+			NumberExpr: 1 SrcLoc: 1, 18
+			NumberExpr: 1 SrcLoc: 1, 20

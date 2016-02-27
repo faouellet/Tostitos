@@ -1,0 +1,2 @@
+ProgramDecl
+	VarDecl: MyStringVar Type: 3 SrcLoc: 1, 14

@@ -1,0 +1,9 @@
+ProgramDecl
+	VarDecl: MyBoolVar Type: 1 SrcLoc: 1, 12
+		NumberExpr: 42 SrcLoc: 1, 18
+	VarDecl: MyIntVar1 Type: 2 SrcLoc: 2, 12
+		BooleanExpr: False SrcLoc: 2, 21
+	VarDecl: MyIntVar2 Type: 2 SrcLoc: 3, 12
+		BooleanExpr: True SrcLoc: 3, 20
+	VarDecl: MyVar Type: 2 SrcLoc: 4, 8
+		IdentifierExpr: MyOtherVar SrcLoc: 4, 22

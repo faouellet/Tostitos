@@ -1,0 +1,5 @@
+ProgramDecl
+	FunctionDecl: main Return Type: 4 SrcLoc: 1, 6
+		CompoundStmt SrcLoc: 0, 0
+			PrintStmt SrcLoc: 2, 6
+				NumberExpr: 42 SrcLoc: 2, 7

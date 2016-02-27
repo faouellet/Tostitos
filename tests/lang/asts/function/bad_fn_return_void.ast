@@ -1,0 +1,5 @@
+ProgramDecl
+	FunctionDecl: MyFunc Return Type: 4 SrcLoc: 1, 8
+		CompoundStmt SrcLoc: 0, 0
+			ReturnStmt SrcLoc: 2, 10
+				NumberExpr: 42 SrcLoc: 2, 11

@@ -1,0 +1,5 @@
+ProgramDecl
+	VarDecl: MyTrueVar Type: 1 SrcLoc: 1, 12
+		BooleanExpr: True SrcLoc: 1, 22
+	VarDecl: MyFalseVar Type: 1 SrcLoc: 2, 13
+		BooleanExpr: False SrcLoc: 2, 24

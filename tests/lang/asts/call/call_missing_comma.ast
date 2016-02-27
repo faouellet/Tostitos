@@ -1,0 +1,14 @@
+ProgramDecl
+	FunctionDecl: sum Return Type: 2 SrcLoc: 1, 12
+			VarDecl: i1 Type: 2 SrcLoc: 1, 6
+			VarDecl: i2 Type: 2 SrcLoc: 1, 12
+		CompoundStmt SrcLoc: 0, 0
+			ReturnStmt SrcLoc: 2, 7
+					IdentifierExpr: i1 SrcLoc: 2, 9
+					IdentifierExpr: i2 SrcLoc: 2, 12
+	FunctionDecl: main Return Type: 4 SrcLoc: 5, 6
+		CompoundStmt SrcLoc: 0, 0
+			VarDecl: MyInt1 Type: 2 SrcLoc: 6, 10
+				NumberExpr: 1 SrcLoc: 6, 16
+			VarDecl: MyInt2 Type: 2 SrcLoc: 7, 10
+				NumberExpr: 2 SrcLoc: 7, 16

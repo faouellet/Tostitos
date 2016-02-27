@@ -1,0 +1,8 @@
+ProgramDecl
+	FunctionDecl: main Return Type: 4 SrcLoc: 1, 6
+		CompoundStmt SrcLoc: 0, 0
+			VarDecl: MyInt Type: 2 SrcLoc: 6, 9
+				NumberExpr: 42 SrcLoc: 6, 15
+			CallExpr: identity SrcLoc: 7, 13
+				IdentifierExpr: MyInt SrcLoc: 7, 13
+			ReturnStmt SrcLoc: 8, 7

@@ -1,0 +1,3 @@
+ProgramDecl
+	VarDecl: MyIntVar2 Type: 2 SrcLoc: 1, 12
+		IdentifierExpr: MyIntVar SrcLoc: 1, 24

@@ -1,0 +1,12 @@
+ProgramDecl
+	FunctionDecl: main Return Type: 4 SrcLoc: 1, 6
+		CompoundStmt SrcLoc: 0, 0
+			VarDecl: BoolVar Type: 1 SrcLoc: 2, 11
+				BooleanExpr: True SrcLoc: 2, 20
+			VarDecl: IntVar Type: 2 SrcLoc: 3, 10
+				NumberExpr: 42 SrcLoc: 3, 15
+			IfStmt SrcLoc: 5, 9
+				IdentifierExpr: IntVar SrcLoc: 5, 9
+				CompoundStmt SrcLoc: 0, 0
+						IdentifierExpr: BoolVar SrcLoc: 6, 9
+						BooleanExpr: False SrcLoc: 6, 15

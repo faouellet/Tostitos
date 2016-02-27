@@ -1,0 +1,6 @@
+ProgramDecl
+	FunctionDecl: main Return Type: 4 SrcLoc: 1, 6
+		CompoundStmt SrcLoc: 0, 0
+			VarDecl: Hello Type: 3 SrcLoc: 2, 9
+			PrintStmt SrcLoc: 3, 6
+				IdentifierExpr: Hello SrcLoc: 3, 11
