@@ -60,7 +60,7 @@ namespace TosLang
         {
         public:
             VarDecl() : Decl{ NodeKind::ERROR }, mType{ Common::Type::ERROR }, mIsFunctionParameter{ false } { }
-            VarDecl(const std::string& varName, Common::Type type, bool isFuncParam, const Utils::SourceLocation& srcLoc = Utils::SourceLocation{})
+            VarDecl(const std::string& varName, Common::Type type, bool isFuncParam, const Utils::SourceLocation& srcLoc)
                 : Decl{ NodeKind::VAR_DECL }, mType{ type }, mIsFunctionParameter{ isFuncParam }
             {
                 mName = varName; 

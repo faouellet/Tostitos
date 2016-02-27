@@ -1,5 +1,0 @@
-ProgramDecl
-	VarDecl: MyTrueVar Type: 1
-		BooleanExpr: True
-	VarDecl: MyFalseVar Type: 1
-		BooleanExpr: False

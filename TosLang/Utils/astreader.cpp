@@ -3,13 +3,14 @@
 #include "../AST/declarations.h"
 #include "../AST/expressions.h"
 #include "../AST/statements.h"
+#include "sourceloc.h"
 
 #include <fstream>
 
 using namespace TosLang::FrontEnd;
 using namespace TosLang::Utils;
 
-ASTReader::ASTReader() : mStream{}, mCurrentLine{}
+ASTReader::ASTReader() : mStream{}, mCurrentLine{}, mSrcLocRegex{ "SrcLoc: ([1-9][0-9]*),([1-9][0-9]*)" }
 {
     // TODO: Should be a constexpr member variable
 
@@ -64,6 +65,15 @@ std::unique_ptr<ASTNode> ASTReader::Run(const std::string& filename)
     return std::move(astRoot);
 }
 
+const SourceLocation ASTReader::ReadSourceLocation()
+{
+    std::smatch match;
+    if (std::regex_match(mCurrentLine, match, mSrcLocRegex))
+        return SourceLocation(std::stoi(match[0].str()), std::stoi(match[1].str()));
+    
+    return SourceLocation{};
+}
+
 //////////////////// Declarations ////////////////////
 
 std::unique_ptr<FunctionDecl> ASTReader::ReadFuncDecl()
@@ -76,8 +86,11 @@ std::unique_ptr<VarDecl> ASTReader::ReadVarDecl()
     // Get the name of the variable
     assert(mCurrentMatch.size() == 2);
     
+    // Get the source location information
+    SourceLocation srcLoc = ReadSourceLocation();
+
     // Create the VarDecl node
-    auto vDecl = std::make_unique<VarDecl>(mCurrentMatch[0].str(), static_cast<Common::Type>(std::stoi(mCurrentMatch[0].str())), /*isFuncParam=*/false);
+    auto vDecl = std::make_unique<VarDecl>(mCurrentMatch[0].str(), static_cast<Common::Type>(std::stoi(mCurrentMatch[0].str())), /*isFuncParam=*/false, srcLoc);
 
     // Add an initialization expression if needed
     size_t oldIndent = std::count(mCurrentLine.begin(), mCurrentLine.end(), '\t');
@@ -95,21 +108,27 @@ std::unique_ptr<VarDecl> ASTReader::ReadVarDecl()
 
 std::unique_ptr<Expr> ASTReader::ReadExpr()
 {
+    // Get the source location information
+    SourceLocation srcLoc = ReadSourceLocation();
+
     if (std::regex_match(mCurrentLine, mCurrentMatch, mNodeKindRegexes[ASTNode::NodeKind::BINARY_EXPR]))
     {
         std::smatch binOpMatch = mCurrentMatch;
+    
         std::getline(mStream, mCurrentLine);
         auto lhs = ReadExpr();
+        
         std::getline(mStream, mCurrentLine);
         auto rhs = ReadExpr();
+        
         std::getline(mStream, mCurrentLine);
-        return std::make_unique<BinaryOpExpr>(static_cast<Common::Opcode>(std::stoi(binOpMatch[0].str())), std::move(lhs), std::move(rhs));
+        return std::make_unique<BinaryOpExpr>(static_cast<Common::Opcode>(std::stoi(binOpMatch[0].str())), std::move(lhs), std::move(rhs), srcLoc);
 
     }
     else if (std::regex_match(mCurrentLine, mCurrentMatch, mNodeKindRegexes[ASTNode::NodeKind::BOOLEAN_EXPR]))
-    {
+    {      
         std::getline(mStream, mCurrentLine);
-        return std::make_unique<BooleanExpr>(mCurrentMatch[0].str() == "True");
+        return std::make_unique<BooleanExpr>(mCurrentMatch[0].str() == "True", srcLoc);
     }
     else if (std::regex_match(mCurrentLine, mCurrentMatch, mNodeKindRegexes[ASTNode::NodeKind::CALL_EXPR]))
     {
@@ -126,22 +145,22 @@ std::unique_ptr<Expr> ASTReader::ReadExpr()
             currentIndentLevel = std::count(mCurrentLine.begin(), mCurrentLine.end(), '\t');
         }
 
-        return std::make_unique<CallExpr>(mCurrentMatch[0].str(), std::move(args));
+        return std::make_unique<CallExpr>(mCurrentMatch[0].str(), std::move(args), srcLoc);
     }
     else if (std::regex_match(mCurrentLine, mCurrentMatch, mNodeKindRegexes[ASTNode::NodeKind::IDENTIFIER_EXPR]))
     {
         std::getline(mStream, mCurrentLine);
-        return std::make_unique<IdentifierExpr>(mCurrentMatch[0].str());
+        return std::make_unique<IdentifierExpr>(mCurrentMatch[0].str(), srcLoc);
     }
     else if (std::regex_match(mCurrentLine, mCurrentMatch, mNodeKindRegexes[ASTNode::NodeKind::NUMBER_EXPR]))
     {
         std::getline(mStream, mCurrentLine);
-        return std::make_unique<NumberExpr>(std::stoi(mCurrentMatch[0].str()));
+        return std::make_unique<NumberExpr>(std::stoi(mCurrentMatch[0].str()), srcLoc);
     }
     else if (std::regex_match(mCurrentLine, mCurrentMatch, mNodeKindRegexes[ASTNode::NodeKind::STRING_EXPR]))
     {
         std::getline(mStream, mCurrentLine);
-        return std::make_unique<StringExpr>(mCurrentMatch[0].str());
+        return std::make_unique<StringExpr>(mCurrentMatch[0].str(), srcLoc);
     }
     else
     {
@@ -181,6 +200,9 @@ std::unique_ptr<CompoundStmt> ASTReader::ReadCompoundStmt()
 
 std::unique_ptr<Stmt> ASTReader::ReadStmt()
 {
+    // Get the source location information
+    SourceLocation srcLoc = ReadSourceLocation();
+
     if (std::regex_match(mCurrentLine, mCurrentMatch, mNodeKindRegexes[ASTNode::NodeKind::COMPOUND_STMT]))
     {
         return ReadCompoundStmt();
@@ -190,11 +212,11 @@ std::unique_ptr<Stmt> ASTReader::ReadStmt()
         std::getline(mStream, mCurrentLine);
         auto condExpr = ReadExpr();
         auto body = ReadCompoundStmt();
-        return std::make_unique<IfStmt>(std::move(condExpr), std::move(body));
+        return std::make_unique<IfStmt>(std::move(condExpr), std::move(body), srcLoc);
     }
     else if (std::regex_match(mCurrentLine, mCurrentMatch, mNodeKindRegexes[ASTNode::NodeKind::PRINT_STMT]))
     {
-        auto pStmt = std::make_unique<PrintStmt>();
+        auto pStmt = std::make_unique<PrintStmt>(srcLoc);
 
         const size_t returnIndentLevel = std::count(mCurrentLine.begin(), mCurrentLine.end(), '\t');
         std::getline(mStream, mCurrentLine);
@@ -207,7 +229,7 @@ std::unique_ptr<Stmt> ASTReader::ReadStmt()
     }
     else if (std::regex_match(mCurrentLine, mCurrentMatch, mNodeKindRegexes[ASTNode::NodeKind::RETURN_STMT]))
     {
-        auto rStmt = std::make_unique<ReturnStmt>();
+        auto rStmt = std::make_unique<ReturnStmt>(srcLoc);
 
         const size_t returnIndentLevel = std::count(mCurrentLine.begin(), mCurrentLine.end(), '\t');
         std::getline(mStream, mCurrentLine);
@@ -222,14 +244,14 @@ std::unique_ptr<Stmt> ASTReader::ReadStmt()
     {
         auto expr = ReadExpr();
         assert(expr->GetKind() == ASTNode::NodeKind::IDENTIFIER_EXPR);
-        return std::make_unique<ScanStmt>(std::make_unique<IdentifierExpr>(expr->GetName()));
+        return std::make_unique<ScanStmt>(std::make_unique<IdentifierExpr>(expr->GetName(), expr->GetSourceLocation()), srcLoc);
     }
     else if (std::regex_match(mCurrentLine, mCurrentMatch, mNodeKindRegexes[ASTNode::NodeKind::WHILE_STMT]))
     {
         std::getline(mStream, mCurrentLine);
         auto condExpr = ReadExpr();
         auto body = ReadCompoundStmt();
-        return std::make_unique<WhileStmt>(std::move(condExpr), std::move(body));
+        return std::make_unique<WhileStmt>(std::move(condExpr), std::move(body), srcLoc);
     }
     else
     {

@@ -5,6 +5,7 @@
 
 #include "../AST/declarations.h"
 #include "../AST/expressions.h"
+#include "../AST/statements.h"
 
 namespace TosLang
 {
@@ -62,7 +63,8 @@ namespace TosLang
                 Indent();
                 mStream << "FunctionDecl: " << fDecl->GetName()
                         << " Return Type: " << static_cast<std::underlying_type<Common::Type>::type>(fDecl->GetReturnType())
-                        << "\n";
+                        << " ";
+                PrintSourceLocation(fDecl->GetSourceLocation());
             }
 
             /*
@@ -77,7 +79,8 @@ namespace TosLang
                 Indent();
                 mStream << "VarDecl: " << vDecl->GetVarName() 
                         << " Type: " << static_cast<std::underlying_type<Common::Type>::type>(vDecl->GetVarType()) 
-                        << "\n";
+                        << " ";
+                PrintSourceLocation(vDecl->GetSourceLocation());
             }
 
         protected:  // Expressions
@@ -93,7 +96,8 @@ namespace TosLang
                 Indent();
                 mStream << "BinaryOpExpr: " 
                         << static_cast<std::underlying_type<Common::Opcode>::type>(bExpr->GetOperation())
-                        << "\n";
+                        << " ";
+                PrintSourceLocation(bExpr->GetSourceLocation());
             }
 
             /*
@@ -113,7 +117,8 @@ namespace TosLang
                 else
                     mStream << "False";
 
-                mStream << "\n";
+                mStream << " ";
+                PrintSourceLocation(bExpr->GetSourceLocation());
             }
 
             /*
@@ -126,7 +131,8 @@ namespace TosLang
                 assert(cExpr != nullptr);
 
                 Indent();
-                mStream << "CallExpr: " << cExpr->GetCalleeName() << "\n";
+                mStream << "CallExpr: " << cExpr->GetCalleeName() << " ";
+                PrintSourceLocation(cExpr->GetSourceLocation());
             }
 
             /*
@@ -139,7 +145,8 @@ namespace TosLang
                 assert(iExpr != nullptr);
 
                 Indent();
-                mStream << "IdentifierExpr: " << iExpr->GetName() << "\n";
+                mStream << "IdentifierExpr: " << iExpr->GetName() << " ";
+                PrintSourceLocation(iExpr->GetSourceLocation());
             }
 
             /*
@@ -152,7 +159,8 @@ namespace TosLang
                 assert(nExpr != nullptr);
 
                 Indent();
-                mStream << "NumberExpr: " << nExpr->GetValue() << "\n";
+                mStream << "NumberExpr: " << nExpr->GetValue() << " ";
+                PrintSourceLocation(nExpr->GetSourceLocation());
             }
 
             /*
@@ -165,7 +173,8 @@ namespace TosLang
                 assert(sExpr != nullptr);
 
                 Indent();
-                mStream << "StringExpr: " << sExpr->GetName() << "\n";
+                mStream << "StringExpr: " << sExpr->GetName() << " ";
+                PrintSourceLocation(sExpr->GetSourceLocation());
             }
 
         protected:  // Statements
@@ -175,8 +184,12 @@ namespace TosLang
             */
             void HandleCompoundStmt()
             {
+                const FrontEnd::CompoundStmt* cStmt = dynamic_cast<const FrontEnd::CompoundStmt*>(this->mCurrentNode);
+                assert(cStmt != nullptr);
+
                 Indent();
-                mStream << "CompoundStmt\n";
+                mStream << "CompoundStmt ";
+                PrintSourceLocation(cStmt->GetSourceLocation());
             }
 
             /*
@@ -185,8 +198,12 @@ namespace TosLang
             */
             void HandleIfStmt()
             {
+                const FrontEnd::IfStmt* iStmt = dynamic_cast<const FrontEnd::IfStmt*>(this->mCurrentNode);
+                assert(iStmt != nullptr);
+
                 Indent();
-                mStream << "IfStmt\n";
+                mStream << "IfStmt ";
+                PrintSourceLocation(iStmt->GetSourceLocation());
             }
 
             /*
@@ -195,8 +212,12 @@ namespace TosLang
             */
             void HandlePrintStmt()
             {
+                const FrontEnd::PrintStmt* pStmt = dynamic_cast<const FrontEnd::PrintStmt*>(this->mCurrentNode);
+                assert(pStmt != nullptr);
+
                 Indent();
-                mStream << "PrintStmt\n";
+                mStream << "PrintStmt ";
+                PrintSourceLocation(pStmt->GetSourceLocation());
             }
 
             /*
@@ -205,8 +226,12 @@ namespace TosLang
             */
             void HandleReturnStmt()
             {
+                const FrontEnd::ReturnStmt* rStmt = dynamic_cast<const FrontEnd::ReturnStmt*>(this->mCurrentNode);
+                assert(rStmt != nullptr);
+
                 Indent();
-                mStream << "ReturnStmt\n";
+                mStream << "ReturnStmt ";
+                PrintSourceLocation(rStmt->GetSourceLocation());
             }
 
             /*
@@ -215,8 +240,12 @@ namespace TosLang
             */
             void HandleScanStmt()
             {
+                const FrontEnd::ScanStmt* sStmt = dynamic_cast<const FrontEnd::ScanStmt*>(this->mCurrentNode);
+                assert(sStmt != nullptr);
+
                 Indent();
-                mStream << "ScanStmt\n";
+                mStream << "ScanStmt ";
+                PrintSourceLocation(sStmt->GetSourceLocation());
             }
 
             /*
@@ -225,8 +254,12 @@ namespace TosLang
             */
             void HandleWhileStmt()
             {
+                const FrontEnd::WhileStmt* wStmt = dynamic_cast<const FrontEnd::WhileStmt*>(this->mCurrentNode);
+                assert(wStmt != nullptr);
+
                 Indent();
-                mStream << "WhileStmt\n";
+                mStream << "WhileStmt ";
+                PrintSourceLocation(wStmt->GetSourceLocation());
             }
 
         private:
@@ -238,6 +271,16 @@ namespace TosLang
             {
                 for (unsigned i = 0; i < this->mCurrentLevel - 1; ++i)
                     mStream << "\t";
+            }
+
+            /*
+            * \fn           PrintSourceLocation
+            * \brief        Prints the source location information to the stream
+            * \param srcLoc Source location of an AST node
+            */
+            void PrintSourceLocation(const SourceLocation& srcLoc)
+            {
+                mStream << "SrcLoc: " << srcLoc.GetCurrentLine() << ", " << srcLoc.GetCurrentColumn() << std::endl;
             }
 
         private:

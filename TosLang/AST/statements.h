@@ -54,7 +54,7 @@ namespace TosLang
         {
         public:
             IfStmt() : Stmt{ NodeKind::ERROR } { }
-            IfStmt(std::unique_ptr<Expr>&& condExpr, std::unique_ptr<CompoundStmt>&& thenStmt, const Utils::SourceLocation& srcLoc = Utils::SourceLocation{}) :
+            IfStmt(std::unique_ptr<Expr>&& condExpr, std::unique_ptr<CompoundStmt>&& thenStmt, const Utils::SourceLocation& srcLoc) :
                 Stmt{ NodeKind::IF_STMT }
             {
                 assert(condExpr != nullptr);
@@ -91,7 +91,7 @@ namespace TosLang
         class PrintStmt : public Stmt
         {
         public:
-            PrintStmt(const Utils::SourceLocation& srcLoc = Utils::SourceLocation{}) : Stmt{ NodeKind::PRINT_STMT } { mSrcLoc = srcLoc; }
+            PrintStmt(const Utils::SourceLocation& srcLoc) : Stmt{ NodeKind::PRINT_STMT } { mSrcLoc = srcLoc; }
             virtual ~PrintStmt() { }
 
         public:
@@ -121,7 +121,7 @@ namespace TosLang
         class ReturnStmt : public Stmt
         {
         public:
-            ReturnStmt(const Utils::SourceLocation& srcLoc = Utils::SourceLocation{}) : Stmt{ NodeKind::RETURN_STMT } { mSrcLoc = srcLoc; }
+            ReturnStmt(const Utils::SourceLocation& srcLoc) : Stmt{ NodeKind::RETURN_STMT } { mSrcLoc = srcLoc; }
             virtual ~ReturnStmt() { }
 
         public:
@@ -160,7 +160,7 @@ namespace TosLang
         {
         public:
             ScanStmt() : Stmt{ NodeKind::ERROR } { }
-            ScanStmt(std::unique_ptr<IdentifierExpr>&& message, const Utils::SourceLocation& srcLoc = Utils::SourceLocation{})
+            ScanStmt(std::unique_ptr<IdentifierExpr>&& message, const Utils::SourceLocation& srcLoc)
                 : Stmt{ NodeKind::SCAN_STMT } 
             {
                 mSrcLoc = srcLoc;
@@ -185,7 +185,7 @@ namespace TosLang
         {
         public:
             WhileStmt() : Stmt{ NodeKind::ERROR } { }
-            WhileStmt(std::unique_ptr<Expr>&& condExpr, std::unique_ptr<CompoundStmt>&& body, const Utils::SourceLocation& srcLoc = Utils::SourceLocation{}) :
+            WhileStmt(std::unique_ptr<Expr>&& condExpr, std::unique_ptr<CompoundStmt>&& body, const Utils::SourceLocation& srcLoc) :
                 Stmt{ NodeKind::WHILE_STMT }
             {
                 assert(condExpr != nullptr);

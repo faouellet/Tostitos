@@ -16,7 +16,15 @@ namespace TosLang
             * \fn       SourceLocation
             * \brief    Constructor
             */
-            SourceLocation() : mCurrentColumn{ 0 }, mCurrentLine{ 0 } { }
+            SourceLocation() : mCurrentLine{ 0 }, mCurrentColumn{ 0 } { }
+
+            /*
+            * \fn           SourceLocation
+            * \brief        Constructor
+            * \param line   Line number in the source file (1-based)
+            * \param column Column number in the source file (1-based)
+            */
+            SourceLocation(const size_t line, const size_t column) : mCurrentLine{ line }, mCurrentColumn { column } { }
 
         public:
             /*
@@ -38,18 +46,18 @@ namespace TosLang
             * \brief    Gives the current number
             * \return   The current column
             */
-            const int GetCurrentColumn() const { return mCurrentColumn; }
+            const size_t GetCurrentColumn() const { return mCurrentColumn; }
 
             /*
             * \fn       GetCurrentLine
             * \brief    Gives the current number
             * \return   The current line
             */
-            const int GetCurrentLine() const { return mCurrentLine; }
+            const size_t GetCurrentLine() const { return mCurrentLine; }
 
         private:
-            unsigned mCurrentColumn;    /*!< Current column in the file the lexer is at */
-            unsigned mCurrentLine;      /*!< Current line in the file the lexer is at */
+            size_t mCurrentLine;      /*!< Current line in the file the lexer is at */
+            size_t mCurrentColumn;    /*!< Current column in the file the lexer is at */
 
             // TODO: std::string mFilename ??
         };

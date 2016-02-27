@@ -30,6 +30,8 @@ namespace TosLang
         class VarDecl;
     }
 
+    class SourceLocation;
+
     namespace Utils
     {
         /*
@@ -41,6 +43,14 @@ namespace TosLang
         public:
             ASTReader();
             std::unique_ptr<FrontEnd::ASTNode> Run(const std::string& filename);
+
+        private:
+            /*
+            * \fn       ReadSourceLocation
+            * \brief    Reads the source location information on the current line
+            * \return   Source location of an AST node
+            */
+            const SourceLocation ReadSourceLocation();
 
         private:
             // Declarations
@@ -59,6 +69,7 @@ namespace TosLang
             std::string mCurrentLine;
             std::smatch mCurrentMatch;
             std::unordered_map<FrontEnd::ASTNode::NodeKind, std::regex> mNodeKindRegexes;
+            std::regex mSrcLocRegex;
         };
     }
 }

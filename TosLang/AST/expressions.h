@@ -27,7 +27,7 @@ namespace TosLang
 		{
 		public:
             BinaryOpExpr(Common::Opcode op, std::unique_ptr<Expr>&& lhs, std::unique_ptr<Expr>&& rhs,
-                const Utils::SourceLocation& srcLoc = Utils::SourceLocation{}) :
+                const Utils::SourceLocation& srcLoc) :
                 Expr{ NodeKind::BINARY_EXPR }, mOp{ op }
             {
                 assert(lhs != nullptr);
@@ -74,7 +74,7 @@ namespace TosLang
         class BooleanExpr : public Expr
         {
         public:
-            BooleanExpr(bool value, const Utils::SourceLocation& srcLoc = Utils::SourceLocation{}) : Expr{ NodeKind::BOOLEAN_EXPR }, mValue{ value }
+            BooleanExpr(bool value, const Utils::SourceLocation& srcLoc) : Expr{ NodeKind::BOOLEAN_EXPR }, mValue{ value }
             { 
                 mName = mValue ? "True" : "False"; 
                 mSrcLoc = srcLoc;
@@ -101,7 +101,7 @@ namespace TosLang
         class CallExpr : public Expr
         {
         public:
-            CallExpr(const std::string& fnName, std::vector<std::unique_ptr<Expr>>&& args, const Utils::SourceLocation srcLoc = Utils::SourceLocation{})
+            CallExpr(const std::string& fnName, std::vector<std::unique_ptr<Expr>>&& args, const Utils::SourceLocation srcLoc)
                 : Expr{ NodeKind::CALL_EXPR }
             { 
                 mName = fnName; 
@@ -134,7 +134,7 @@ namespace TosLang
         class IdentifierExpr : public Expr
         {
         public:
-            IdentifierExpr(const std::string& value, const Utils::SourceLocation& srcLoc = Utils::SourceLocation{})
+            IdentifierExpr(const std::string& value, const Utils::SourceLocation& srcLoc)
                 : Expr{ NodeKind::IDENTIFIER_EXPR } 
             {
                 mName = value; 
@@ -150,7 +150,7 @@ namespace TosLang
         class NumberExpr : public Expr
         {
         public:
-            NumberExpr(int value, const Utils::SourceLocation& srcLoc = Utils::SourceLocation{})
+            NumberExpr(int value, const Utils::SourceLocation& srcLoc)
                 : Expr{ NodeKind::NUMBER_EXPR }, mValue{ value } 
             { 
                 // TODO: This most likely won't guarantee a unique name for every number expression in a program.
@@ -179,7 +179,7 @@ namespace TosLang
         class StringExpr : public Expr
         {
         public:
-            StringExpr(const std::string& value, const Utils::SourceLocation& srcLoc = Utils::SourceLocation{})
+            StringExpr(const std::string& value, const Utils::SourceLocation& srcLoc)
                 : Expr{ NodeKind::STRING_EXPR }
             {
                 mName = value;
