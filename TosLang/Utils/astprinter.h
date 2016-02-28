@@ -280,7 +280,7 @@ namespace TosLang
             */
             void PrintSourceLocation(const SourceLocation& srcLoc)
             {
-                mStream << "SrcLoc: " << srcLoc.GetCurrentLine() << ", " << srcLoc.GetCurrentColumn() << std::endl;
+                mStream << "SrcLoc: " << srcLoc.GetCurrentLine() << ", " << srcLoc.GetCurrentColumn() << "\n";
             }
 
         private:
