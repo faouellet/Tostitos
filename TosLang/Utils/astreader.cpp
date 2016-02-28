@@ -7,31 +7,36 @@
 
 #include <fstream>
 
+#include <iostream>
+
 using namespace TosLang::FrontEnd;
 using namespace TosLang::Utils;
 
-ASTReader::ASTReader() : mStream{}, mCurrentLine{}, mSrcLocRegex{ "SrcLoc: ([1-9][0-9]*),([1-9][0-9]*)" }
+ASTReader::ASTReader() : mStream{}, mCurrentLine{}, mSrcLocRegex{ ".*SrcLoc: ([1-9][0-9]*), ([1-9][0-9]*)" }
 {
     // TODO: Should be a constexpr member variable
 
     // Declaration
-    mNodeKindRegexes[ASTNode::NodeKind::VAR_DECL] = std::regex("VarDecl: ([a-zA-Z].*) Type: ([0-9]+)");
-    mNodeKindRegexes[ASTNode::NodeKind::FUNCTION_DECL] = std::regex("FunctionDecl: ([a-zA-Z].*) Return Type: ([0-9]+)");
-    mNodeKindRegexes[ASTNode::NodeKind::PROGRAM_DECL] = std::regex("ProgramDecl");
-    
-    // Expressions
-    mNodeKindRegexes[ASTNode::NodeKind::BINARY_EXPR] = std::regex("BinaryExpr: ([0-9]+)");
-    mNodeKindRegexes[ASTNode::NodeKind::BOOLEAN_EXPR] = std::regex("BooleanExpr: (True|False)");
-    mNodeKindRegexes[ASTNode::NodeKind::IDENTIFIER_EXPR] = std::regex("IdentifierExpr: (.*)");
-    mNodeKindRegexes[ASTNode::NodeKind::NUMBER_EXPR] = std::regex("NumberExpr: ([1-9][0-9]*)");
-    mNodeKindRegexes[ASTNode::NodeKind::STRING_EXPR] = std::regex("StringExpr: (.*)");
-    
-    // Statements
-    mNodeKindRegexes[ASTNode::NodeKind::COMPOUND_STMT] = std::regex("CompoundStmt:");
-    mNodeKindRegexes[ASTNode::NodeKind::IF_STMT] = std::regex("IfStmt:");
-    mNodeKindRegexes[ASTNode::NodeKind::PRINT_STMT] = std::regex("PrintStmt:");
-    mNodeKindRegexes[ASTNode::NodeKind::RETURN_STMT] = std::regex("ReturnStmt:");
-    mNodeKindRegexes[ASTNode::NodeKind::SCAN_STMT] = std::regex("ScanStmt:");
+    mNodeKindRegexes[ASTNode::NodeKind::FUNCTION_DECL]      = std::regex("\t+FunctionDecl: ([a-zA-Z][^ ]*) Return Type: ([0-9]+).*");
+    mNodeKindRegexes[ASTNode::NodeKind::PARAM_VAR_DECL]     = std::regex("\t+ParamVarDecl: ([a-zA-Z].*) Type: ([0-9]+).*");
+    mNodeKindRegexes[ASTNode::NodeKind::PROGRAM_DECL]       = std::regex("ProgramDecl");
+    mNodeKindRegexes[ASTNode::NodeKind::VAR_DECL]           = std::regex("\t+VarDecl: ([a-zA-Z].*) Type: ([0-9]+).*");
+                                                                            
+    // Expressions                                                          
+    mNodeKindRegexes[ASTNode::NodeKind::BINARY_EXPR]        = std::regex("\t+BinaryOpExpr: ([0-9]+).*");
+    mNodeKindRegexes[ASTNode::NodeKind::BOOLEAN_EXPR]       = std::regex("\t+BooleanExpr: (True|False).*");
+    mNodeKindRegexes[ASTNode::NodeKind::CALL_EXPR]          = std::regex("\t+CallExpr: ([a-zA-Z][^ ]*).*");
+    mNodeKindRegexes[ASTNode::NodeKind::IDENTIFIER_EXPR]    = std::regex("\t+IdentifierExpr: ([a-zA-Z][^ ]*).*");
+    mNodeKindRegexes[ASTNode::NodeKind::NUMBER_EXPR]        = std::regex("\t+NumberExpr: ([1-9][0-9]*).*");
+    mNodeKindRegexes[ASTNode::NodeKind::STRING_EXPR]        = std::regex("\t+StringExpr: \"([^\"]*).*");
+                                                                            
+    // Statements                                                           
+    mNodeKindRegexes[ASTNode::NodeKind::COMPOUND_STMT]      = std::regex("\t+CompoundStmt");
+    mNodeKindRegexes[ASTNode::NodeKind::IF_STMT]            = std::regex("\t+IfStmt.*");
+    mNodeKindRegexes[ASTNode::NodeKind::PRINT_STMT]         = std::regex("\t+PrintStmt.*");
+    mNodeKindRegexes[ASTNode::NodeKind::RETURN_STMT]        = std::regex("\t+ReturnStmt.*");
+    mNodeKindRegexes[ASTNode::NodeKind::SCAN_STMT]          = std::regex("\t+ScanStmt.*");
+    mNodeKindRegexes[ASTNode::NodeKind::WHILE_STMT]         = std::regex("\t+WhileStmt.*");
 }
 
 std::unique_ptr<ASTNode> ASTReader::Run(const std::string& filename)
@@ -69,7 +74,7 @@ const SourceLocation ASTReader::ReadSourceLocation()
 {
     std::smatch match;
     if (std::regex_match(mCurrentLine, match, mSrcLocRegex))
-        return SourceLocation(std::stoi(match[0].str()), std::stoi(match[1].str()));
+        return SourceLocation(std::stoi(match[1].str()), std::stoi(match[2].str()));
     
     return SourceLocation{};
 }
@@ -78,28 +83,44 @@ const SourceLocation ASTReader::ReadSourceLocation()
 
 std::unique_ptr<FunctionDecl> ASTReader::ReadFuncDecl()
 {
-    return std::unique_ptr<FunctionDecl>();
+    assert(mCurrentMatch.size() == 3);
+
+    // Get the function declaration information
+    SourceLocation srcLoc = ReadSourceLocation();
+    const std::string fnName = mCurrentMatch[1].str();
+    const Common::Type fnType = static_cast<Common::Type>(std::stoi(mCurrentMatch[2].str()));
+
+    // Read the parameters
+    auto params = std::make_unique<ParamVarDecls>();
+    std::getline(mStream, mCurrentLine);
+    while(std::regex_match(mCurrentLine, mCurrentMatch, mNodeKindRegexes[ASTNode::NodeKind::PARAM_VAR_DECL]))
+        params->AddParameter(ReadVarDecl(/*isFuncParam=*/true));
+    
+    // Read the body
+    std::unique_ptr<CompoundStmt> body = ReadCompoundStmt();
+
+    // Create the FunctionDecl node
+    return std::make_unique<FunctionDecl>(fnName, fnType, std::move(params), std::move(body), srcLoc);
 }
 
-std::unique_ptr<VarDecl> ASTReader::ReadVarDecl()
+std::unique_ptr<VarDecl> ASTReader::ReadVarDecl(const bool isFuncParam)
 {
-    // Get the name of the variable
-    assert(mCurrentMatch.size() == 2);
+    assert(mCurrentMatch.size() == 3);
     
     // Get the source location information
     SourceLocation srcLoc = ReadSourceLocation();
 
     // Create the VarDecl node
-    auto vDecl = std::make_unique<VarDecl>(mCurrentMatch[0].str(), static_cast<Common::Type>(std::stoi(mCurrentMatch[0].str())), /*isFuncParam=*/false, srcLoc);
+    auto vDecl = std::make_unique<VarDecl>(mCurrentMatch[1].str(), 
+                                           static_cast<Common::Type>(std::stoi(mCurrentMatch[2].str())), 
+                                           /*isFuncParam=*/isFuncParam, srcLoc);
 
     // Add an initialization expression if needed
     size_t oldIndent = std::count(mCurrentLine.begin(), mCurrentLine.end(), '\t');
     std::getline(mStream, mCurrentLine);
     size_t newIndent = std::count(mCurrentLine.begin(), mCurrentLine.end(), '\t');
-    if (oldIndent != newIndent)
-    {
+    if (oldIndent < newIndent)
         vDecl->AddInitialization(ReadExpr());
-    }
     
     return vDecl;
 }
@@ -113,25 +134,26 @@ std::unique_ptr<Expr> ASTReader::ReadExpr()
 
     if (std::regex_match(mCurrentLine, mCurrentMatch, mNodeKindRegexes[ASTNode::NodeKind::BINARY_EXPR]))
     {
-        std::smatch binOpMatch = mCurrentMatch;
+        const std::string binOpStr = mCurrentMatch[1].str();
     
         std::getline(mStream, mCurrentLine);
+        
         auto lhs = ReadExpr();
-        
-        std::getline(mStream, mCurrentLine);
         auto rhs = ReadExpr();
-        
-        std::getline(mStream, mCurrentLine);
-        return std::make_unique<BinaryOpExpr>(static_cast<Common::Opcode>(std::stoi(binOpMatch[0].str())), std::move(lhs), std::move(rhs), srcLoc);
+
+        return std::make_unique<BinaryOpExpr>(static_cast<Common::Opcode>(std::stoi(binOpStr)), std::move(lhs), std::move(rhs), srcLoc);
 
     }
     else if (std::regex_match(mCurrentLine, mCurrentMatch, mNodeKindRegexes[ASTNode::NodeKind::BOOLEAN_EXPR]))
     {      
+        const std::string boolStr = mCurrentMatch[1].str();
         std::getline(mStream, mCurrentLine);
-        return std::make_unique<BooleanExpr>(mCurrentMatch[0].str() == "True", srcLoc);
+        return std::make_unique<BooleanExpr>(boolStr == "True", srcLoc);
     }
     else if (std::regex_match(mCurrentLine, mCurrentMatch, mNodeKindRegexes[ASTNode::NodeKind::CALL_EXPR]))
     {
+        const std::string callStr = mCurrentMatch[1].str();
+
         const size_t callIndentLevel = std::count(mCurrentLine.begin(), mCurrentLine.end(), '\t');
         
         std::getline(mStream, mCurrentLine);
@@ -141,26 +163,29 @@ std::unique_ptr<Expr> ASTReader::ReadExpr()
         while (currentIndentLevel > callIndentLevel)
         {
             args.emplace_back(ReadExpr());
-            std::getline(mStream, mCurrentLine);
             currentIndentLevel = std::count(mCurrentLine.begin(), mCurrentLine.end(), '\t');
         }
 
-        return std::make_unique<CallExpr>(mCurrentMatch[0].str(), std::move(args), srcLoc);
+        //std::getline(mStream, mCurrentLine);
+        return std::make_unique<CallExpr>(callStr, std::move(args), srcLoc);
     }
     else if (std::regex_match(mCurrentLine, mCurrentMatch, mNodeKindRegexes[ASTNode::NodeKind::IDENTIFIER_EXPR]))
     {
+        const std::string identifierStr = mCurrentMatch[1].str();
         std::getline(mStream, mCurrentLine);
-        return std::make_unique<IdentifierExpr>(mCurrentMatch[0].str(), srcLoc);
+        return std::make_unique<IdentifierExpr>(identifierStr, srcLoc);
     }
     else if (std::regex_match(mCurrentLine, mCurrentMatch, mNodeKindRegexes[ASTNode::NodeKind::NUMBER_EXPR]))
     {
+        const std::string numberStr = mCurrentMatch[1].str();
         std::getline(mStream, mCurrentLine);
-        return std::make_unique<NumberExpr>(std::stoi(mCurrentMatch[0].str()), srcLoc);
+        return std::make_unique<NumberExpr>(std::stoi(numberStr), srcLoc);
     }
     else if (std::regex_match(mCurrentLine, mCurrentMatch, mNodeKindRegexes[ASTNode::NodeKind::STRING_EXPR]))
     {
+        const std::string str = mCurrentMatch[1].str();
         std::getline(mStream, mCurrentLine);
-        return std::make_unique<StringExpr>(mCurrentMatch[0].str(), srcLoc);
+        return std::make_unique<StringExpr>(str, srcLoc);
     }
     else
     {
@@ -184,15 +209,17 @@ std::unique_ptr<CompoundStmt> ASTReader::ReadCompoundStmt()
         ASTNode::NodeKind::RETURN_STMT, ASTNode::NodeKind::SCAN_STMT, ASTNode::NodeKind::WHILE_STMT 
     };
 
-    while (currentIndentLevel < topIndentLevel)
+    while (topIndentLevel < currentIndentLevel)
     {
-        if (std::regex_match(mCurrentLine, mCurrentMatch, mNodeKindRegexes[ASTNode::NodeKind::FUNCTION_DECL]))
+        if (std::regex_match(mCurrentLine, mCurrentMatch, mNodeKindRegexes[ASTNode::NodeKind::VAR_DECL]))
             cStmt->AddStatement(ReadVarDecl());
         else if (std::any_of(std::begin(stmtKinds), std::end(stmtKinds), [this](ASTNode::NodeKind kind) { return std::regex_match(mCurrentLine, mCurrentMatch, mNodeKindRegexes[kind]); }))
             cStmt->AddStatement(ReadStmt());
         else if (std::regex_match(mCurrentLine, mCurrentMatch, mNodeKindRegexes[ASTNode::NodeKind::BINARY_EXPR]) 
                 || std::regex_match(mCurrentLine, mCurrentMatch, mNodeKindRegexes[ASTNode::NodeKind::CALL_EXPR]))
             cStmt->AddStatement(ReadExpr());
+
+        currentIndentLevel = std::count(mCurrentLine.begin(), mCurrentLine.end(), '\t');
     }
 
     return std::move(cStmt);

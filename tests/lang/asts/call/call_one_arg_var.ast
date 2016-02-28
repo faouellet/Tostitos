@@ -1,11 +1,11 @@
 ProgramDecl
 	FunctionDecl: identity Return Type: 2 SrcLoc: 1, 10
-			VarDecl: i Type: 2 SrcLoc: 1, 10
-		CompoundStmt SrcLoc: 0, 0
+			ParamVarDecl: i Type: 2 SrcLoc: 1, 10
+		CompoundStmt
 			ReturnStmt SrcLoc: 2, 7
 				IdentifierExpr: i SrcLoc: 2, 8
 	FunctionDecl: main Return Type: 4 SrcLoc: 5, 6
-		CompoundStmt SrcLoc: 0, 0
+		CompoundStmt
 			VarDecl: MyInt Type: 2 SrcLoc: 6, 9
 				NumberExpr: 42 SrcLoc: 6, 15
 			VarDecl: MyInt2 Type: 2 SrcLoc: 7, 10

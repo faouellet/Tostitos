@@ -1,6 +1,6 @@
 ProgramDecl
 	FunctionDecl: main Return Type: 4 SrcLoc: 1, 6
-		CompoundStmt SrcLoc: 0, 0
+		CompoundStmt
 			VarDecl: MyInt Type: 2 SrcLoc: 2, 9
 				NumberExpr: 42 SrcLoc: 2, 15
 			PrintStmt SrcLoc: 3, 6

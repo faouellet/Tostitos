@@ -214,6 +214,9 @@ namespace TosLang
                 case FrontEnd::ASTNode::NodeKind::NUMBER_EXPR:
                     GetDerived().HandleNumberExpr();
                     break;
+                case FrontEnd::ASTNode::NodeKind::STRING_EXPR:
+                    GetDerived().HandleStringExpr();
+                    break;
                     ////// Statements //////
                 case FrontEnd::ASTNode::NodeKind::COMPOUND_STMT:
                     GetDerived().HandleCompoundStmt();

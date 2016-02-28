@@ -1,7 +1,7 @@
 ProgramDecl
 	FunctionDecl: MyFunc Return Type: 4 SrcLoc: 1, 8
-		CompoundStmt SrcLoc: 0, 0
+		CompoundStmt
 			ReturnStmt SrcLoc: 1, 20
 	FunctionDecl: MyFunc Return Type: 4 SrcLoc: 3, 8
-		CompoundStmt SrcLoc: 0, 0
+		CompoundStmt
 			ReturnStmt SrcLoc: 3, 20

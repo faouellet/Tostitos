@@ -33,8 +33,8 @@ BOOST_AUTO_TEST_CASE( ASTPrinterTest )
         printStream.close();
     }
     
-    std::ifstream testStream("../programs/varinit_ast_tests.txt");
-    std::ifstream expectedStream("../asts/varinit_ast.txt");
+    std::ifstream testStream("../asts/varinit_ast_tests.txt");
+    std::ifstream expectedStream("../asts/var/var_init_bool.ast");
 
     std::string expectedStr;
     std::string testStr;

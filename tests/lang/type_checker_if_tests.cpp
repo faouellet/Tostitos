@@ -16,37 +16,37 @@ BOOST_FIXTURE_TEST_SUITE( SemaTestSuite, TosLangSemaFixture )
 
 BOOST_AUTO_TEST_CASE( IfLiteralCondTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/if/if_literal_cond.tos");
+    size_t errorCount = GetTypeErrors("../asts/if/if_literal_cond.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( IfVariableCondTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/if/if_simple_cond.tos");
+    size_t errorCount = GetTypeErrors("../asts/if/if_simple_cond.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( IfBooleanBinaryExprCondTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/if/if_bin_bool_cond.tos");
+    size_t errorCount = GetTypeErrors("../asts/if/if_bin_bool_cond.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( IfNumberBinaryExprCondTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/if/if_bin_int_cond.tos");
+    size_t errorCount = GetTypeErrors("../asts/if/if_bin_int_cond.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( IfMixedBinaryExprCondTypeCheck )
 {
-    //size_t errorCount = GetTypeErrors("../programs/if/if_bin_bool_cond.tos");
+    //size_t errorCount = GetTypeErrors("../asts/if/if_bin_bool_cond.ast");
     //BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( IfCallCondTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/if/if_call_cond.tos");
+    size_t errorCount = GetTypeErrors("../asts/if/if_call_cond.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 0);    
 }
 
@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE( IfCallCondTypeCheck )
 
 BOOST_AUTO_TEST_CASE( BadIfNumberLiteralCondTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/if/bad_if_int_literal_cond.tos");
+    size_t errorCount = GetTypeErrors("../asts/if/bad_if_int_literal_cond.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE( BadIfNumberLiteralCondTypeCheck )
 
 BOOST_AUTO_TEST_CASE( BadIfNumberVariableCondTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/if/bad_if_int_variable_cond.tos");
+    size_t errorCount = GetTypeErrors("../asts/if/bad_if_int_variable_cond.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed
@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE( BadIfNumberVariableCondTypeCheck )
 
 BOOST_AUTO_TEST_CASE( BadIfNumberBinaryExprCondTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/if/bad_if_bin_int_cond.tos");
+    size_t errorCount = GetTypeErrors("../asts/if/bad_if_bin_int_cond.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed
@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE( BadIfNumberBinaryExprCondTypeCheck )
 
 BOOST_AUTO_TEST_CASE( BadIfCallCondTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/if/bad_if_call_cond.tos");
+    size_t errorCount = GetTypeErrors("../asts/if/bad_if_call_cond.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed

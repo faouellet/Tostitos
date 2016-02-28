@@ -17,7 +17,7 @@ BOOST_FIXTURE_TEST_SUITE( SemaTestSuite, TosLangSemaFixture )
 BOOST_AUTO_TEST_CASE( CollectSymbolVar )
 {
     auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
-    size_t errorCount = GetProgramSymbolTable("../programs/var/var_decl.tos", symbolTable);
+    size_t errorCount = GetProgramSymbolTable("../asts/var/var_decl.ast", symbolTable);
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 
     Symbol varSymbol;
@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE( CollectSymbolVar )
 BOOST_AUTO_TEST_CASE( CollectSymbolFunctionNoParam )
 {
     auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
-    size_t errorCount = GetProgramSymbolTable("../programs/function/fn_def_void.tos", symbolTable);
+    size_t errorCount = GetProgramSymbolTable("../asts/function/fn_def_void.ast", symbolTable);
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 
     Symbol fnSymbol;
@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionNoParam )
 BOOST_AUTO_TEST_CASE( CollectSymbolFunctionMultiParam )
 {
     auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
-    size_t errorCount = GetProgramSymbolTable("../programs/function/fn_def_multi_args.tos", symbolTable);
+    size_t errorCount = GetProgramSymbolTable("../asts/function/fn_def_multi_args.ast", symbolTable);
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 
     Symbol fnSymbol;
@@ -97,7 +97,7 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionMultiParam )
 BOOST_AUTO_TEST_CASE( CollectSymbolFunctionWithLocalVar )
 {
     auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
-    size_t errorCount = GetProgramSymbolTable("../programs/call/call_one_arg_var.tos", symbolTable);
+    size_t errorCount = GetProgramSymbolTable("../asts/call/call_one_arg_var.ast", symbolTable);
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 
     Symbol fnSymbol;
@@ -143,7 +143,7 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionWithLocalVar )
 
 BOOST_AUTO_TEST_CASE( CollectSymbolNoErrorAccumulation )
 {
-    std::unique_ptr<ASTNode> rootNode = reader.Run("../programs/function/fn_def_void.tos");
+    std::unique_ptr<ASTNode> rootNode = reader.Run("../asts/function/fn_def_void.ast");
     BOOST_REQUIRE(rootNode != nullptr);
 
     auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
@@ -160,7 +160,7 @@ BOOST_AUTO_TEST_CASE( CollectSymbolNoErrorAccumulation )
 BOOST_AUTO_TEST_CASE( CollectSymbolGlobalVarRedefinition )
 {
     auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
-    size_t errorCount = GetProgramSymbolTable("../programs/var/bad_global_var_redef.tos", symbolTable);
+    size_t errorCount = GetProgramSymbolTable("../asts/var/bad_global_var_redef.ast", symbolTable);
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed
@@ -172,7 +172,7 @@ BOOST_AUTO_TEST_CASE( CollectSymbolGlobalVarRedefinition )
 BOOST_AUTO_TEST_CASE( CollectSymbolLocalVarRedefinition )
 {
     auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
-    size_t errorCount = GetProgramSymbolTable("../programs/var/bad_local_var_redef.tos", symbolTable);
+    size_t errorCount = GetProgramSymbolTable("../asts/var/bad_local_var_redef.ast", symbolTable);
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed
@@ -184,7 +184,7 @@ BOOST_AUTO_TEST_CASE( CollectSymbolLocalVarRedefinition )
 BOOST_AUTO_TEST_CASE( CollectSymbolFunctionRedefinition )
 {
     auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
-    size_t errorCount = GetProgramSymbolTable("../programs/function/bad_fn_redef.tos", symbolTable);
+    size_t errorCount = GetProgramSymbolTable("../asts/function/bad_fn_redef.ast", symbolTable);
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed
@@ -195,7 +195,7 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionRedefinition )
 
 BOOST_AUTO_TEST_CASE( CollectSymbolFunctionParamRedefinition )
 {
-    std::unique_ptr<ASTNode> rootNode = reader.Run("../programs/function/bad_fn_param_redef.tos");
+    std::unique_ptr<ASTNode> rootNode = reader.Run("../asts/function/bad_fn_param_redef.ast");
     BOOST_REQUIRE(rootNode != nullptr);
 
     auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();

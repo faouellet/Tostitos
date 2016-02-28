@@ -16,13 +16,13 @@ BOOST_FIXTURE_TEST_SUITE( SemaTestSuite, TosLangSemaFixture )
 
 BOOST_AUTO_TEST_CASE( BasicCallScopeCheck )
 {
-    size_t errorCount = GetAccessibilityErrors("../programs/call/call_one_arg_var.tos");
+    size_t errorCount = GetAccessibilityErrors("../asts/call/call_one_arg_var.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( CallChoiceScopeCheck )
 {
-    size_t errorCount = GetAccessibilityErrors("../programs/call/call_multiple_choices.tos");
+    size_t errorCount = GetAccessibilityErrors("../asts/call/call_multiple_choices.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE( CallChoiceScopeCheck )
 
 BOOST_AUTO_TEST_CASE( UndeclaredFunctionCallScopeCheck )
 {
-    size_t errorCount = GetAccessibilityErrors("../programs/call/call_undeclared.tos");
+    size_t errorCount = GetAccessibilityErrors("../asts/call/call_undeclared.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed

@@ -75,9 +75,10 @@ namespace TosLang
             {
                 const FrontEnd::VarDecl* vDecl = dynamic_cast<const FrontEnd::VarDecl*>(this->mCurrentNode);
                 assert(vDecl != nullptr);
-
+                
                 Indent();
-                mStream << "VarDecl: " << vDecl->GetVarName() 
+                const std::string kindStr = vDecl->IsFunctionParameter() ? "ParamVarDecl: " : "VarDecl: ";
+                mStream << kindStr << vDecl->GetVarName() 
                         << " Type: " << static_cast<std::underlying_type<Common::Type>::type>(vDecl->GetVarType()) 
                         << " ";
                 PrintSourceLocation(vDecl->GetSourceLocation());
@@ -88,7 +89,7 @@ namespace TosLang
             * \fn       HandleBinaryOpExpr
             * \brief    Prints a node of the BINARY_EXPR kind
             */
-            void HandleBinaryOpExpr()
+            void HandleBinaryExpr()
             {
                 const FrontEnd::BinaryOpExpr* bExpr = dynamic_cast<const FrontEnd::BinaryOpExpr*>(this->mCurrentNode);
                 assert(bExpr != nullptr);
@@ -173,7 +174,7 @@ namespace TosLang
                 assert(sExpr != nullptr);
 
                 Indent();
-                mStream << "StringExpr: " << sExpr->GetName() << " ";
+                mStream << "StringExpr: " << "\"" << sExpr->GetName() << "\"" << " ";
                 PrintSourceLocation(sExpr->GetSourceLocation());
             }
 
@@ -188,8 +189,7 @@ namespace TosLang
                 assert(cStmt != nullptr);
 
                 Indent();
-                mStream << "CompoundStmt ";
-                PrintSourceLocation(cStmt->GetSourceLocation());
+                mStream << "CompoundStmt\n";
             }
 
             /*

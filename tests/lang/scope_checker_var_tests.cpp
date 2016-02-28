@@ -16,19 +16,19 @@ BOOST_FIXTURE_TEST_SUITE( SemaTestSuite, TosLangSemaFixture )
 
 BOOST_AUTO_TEST_CASE( GlobalVarUsedInGlobalScopeCheck )
 {
-    size_t errorCount = GetAccessibilityErrors("../programs/var/var_init_identifier.tos");
+    size_t errorCount = GetAccessibilityErrors("../asts/var/var_init_identifier.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( GlobalVarUsedInLocalScopeCheck )
 {
-    size_t errorCount = GetAccessibilityErrors("../programs/var/var_init_identifier_from_global.tos");
+    size_t errorCount = GetAccessibilityErrors("../asts/var/var_init_identifier_from_global.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( LocalVarUsedInLocalScopeCheck )
 {
-    size_t errorCount = GetAccessibilityErrors("../programs/var/var_init_identifier_local.tos");
+    size_t errorCount = GetAccessibilityErrors("../asts/var/var_init_identifier_local.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE( LocalVarUsedInLocalScopeCheck )
 
 BOOST_AUTO_TEST_CASE( UneclaredGlobalVarUsedInGlobalScopeCheck )
 {
-    size_t errorCount = GetAccessibilityErrors("../programs/var/var_init_identifier_undeclared.tos");
+    size_t errorCount = GetAccessibilityErrors("../asts/var/var_init_identifier_undeclared.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed
@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE( UneclaredGlobalVarUsedInGlobalScopeCheck )
 
 BOOST_AUTO_TEST_CASE( UndeclaredVarUsedInLocalScopeCheck )
 {
-    size_t errorCount = GetAccessibilityErrors("../programs/var/var_init_identifier_local_undeclared.tos");
+    size_t errorCount = GetAccessibilityErrors("../asts/var/var_init_identifier_local_undeclared.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed

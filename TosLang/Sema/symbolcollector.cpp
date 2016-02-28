@@ -123,6 +123,10 @@ void SymbolCollector::HandleVarDecl()
 {
     const VarDecl* varDecl = dynamic_cast<const VarDecl*>(mCurrentNode);
     assert(varDecl != nullptr);
+
+    // This method is only for handling variables that aren't function parameters
+    if (varDecl->IsFunctionParameter())
+        return;
     
     // If this a function parameter, it will have been already handled by HandleParamVarDecl
     if (varDecl->IsFunctionParameter())

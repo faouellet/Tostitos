@@ -1,2 +1,3 @@
 ProgramDecl
 	VarDecl: MyStringVar Type: 3 SrcLoc: 1, 14
+		StringExpr: "Hello World" SrcLoc: 1, 22

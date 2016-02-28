@@ -16,37 +16,37 @@ BOOST_FIXTURE_TEST_SUITE( FrontEndTestSuite, TosLangSemaFixture )
 
 BOOST_AUTO_TEST_CASE( WhileLiteralCondTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/while/while_literal_cond.tos");
+    size_t errorCount = GetTypeErrors("../asts/while/while_literal_cond.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( WhileVariableCondTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/while/while_simple_cond.tos");
+    size_t errorCount = GetTypeErrors("../asts/while/while_simple_cond.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( WhileBooleanBinaryExprCondTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/while/while_bin_bool_cond.tos");
+    size_t errorCount = GetTypeErrors("../asts/while/while_bin_bool_cond.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( WhileNumberBinaryExprCondTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/while/while_bin_int_cond.tos");
+    size_t errorCount = GetTypeErrors("../asts/while/while_bin_int_cond.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( WhileMixedBinaryExprCondTypeCheck )
 {
-    //size_t errorCount = GetTypeErrors("../programs/while/while_bin_bool_cond.tos");
+    //size_t errorCount = GetTypeErrors("../asts/while/while_bin_bool_cond.ast");
     //BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( WhileCallCondTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/while/while_call_cond.tos");
+    size_t errorCount = GetTypeErrors("../asts/while/while_call_cond.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 0);    
 }
 
@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE( WhileCallCondTypeCheck )
 
 BOOST_AUTO_TEST_CASE( BadWhileNumberLiteralCondTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/while/bad_while_int_literal_cond.tos");
+    size_t errorCount = GetTypeErrors("../asts/while/bad_while_int_literal_cond.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE( BadWhileNumberLiteralCondTypeCheck )
 
 BOOST_AUTO_TEST_CASE( BadWhileNumberVariableCondTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/while/bad_while_int_variable_cond.tos");
+    size_t errorCount = GetTypeErrors("../asts/while/bad_while_int_variable_cond.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed
@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE( BadWhileNumberVariableCondTypeCheck )
 
 BOOST_AUTO_TEST_CASE( BadWhileNumberBinaryExprCondTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/while/bad_while_bin_int_cond.tos");
+    size_t errorCount = GetTypeErrors("../asts/while/bad_while_bin_int_cond.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed
@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE( BadWhileNumberBinaryExprCondTypeCheck )
 
 BOOST_AUTO_TEST_CASE( BadWhileCallCondTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/while/bad_while_call_cond.tos");
+    size_t errorCount = GetTypeErrors("../asts/while/bad_while_call_cond.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed

@@ -1,10 +1,11 @@
 ProgramDecl
 	FunctionDecl: MyFunc Return Type: 2 SrcLoc: 1, 8
-		CompoundStmt SrcLoc: 0, 0
+		CompoundStmt
 			VarDecl: i Type: 2 SrcLoc: 2, 5
 				NumberExpr: 1 SrcLoc: 2, 11
 			VarDecl: i Type: 2 SrcLoc: 3, 5
 				NumberExpr: 2 SrcLoc: 3, 11
 			ReturnStmt SrcLoc: 5, 7
+				BinaryOpExpr: 13 SrcLoc: 5, 10
 					IdentifierExpr: i SrcLoc: 5, 8
 					IdentifierExpr: i SrcLoc: 5, 10

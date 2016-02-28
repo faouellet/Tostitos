@@ -1,19 +1,21 @@
 ProgramDecl
 	FunctionDecl: increment Return Type: 2 SrcLoc: 1, 11
-			VarDecl: i Type: 2 SrcLoc: 1, 11
-		CompoundStmt SrcLoc: 0, 0
+			ParamVarDecl: i Type: 2 SrcLoc: 1, 11
+		CompoundStmt
 			ReturnStmt SrcLoc: 2, 7
+				BinaryOpExpr: 13 SrcLoc: 2, 8
 					IdentifierExpr: i SrcLoc: 2, 8
 					NumberExpr: 1 SrcLoc: 2, 8
 	FunctionDecl: increment Return Type: 2 SrcLoc: 5, 18
-			VarDecl: i Type: 2 SrcLoc: 5, 11
-			VarDecl: inc Type: 2 SrcLoc: 5, 18
-		CompoundStmt SrcLoc: 0, 0
+			ParamVarDecl: i Type: 2 SrcLoc: 5, 11
+			ParamVarDecl: inc Type: 2 SrcLoc: 5, 18
+		CompoundStmt
 			ReturnStmt SrcLoc: 6, 7
+				BinaryOpExpr: 13 SrcLoc: 6, 12
 					IdentifierExpr: i SrcLoc: 6, 8
 					IdentifierExpr: inc SrcLoc: 6, 12
 	FunctionDecl: main Return Type: 4 SrcLoc: 10, 6
-		CompoundStmt SrcLoc: 0, 0
+		CompoundStmt
 			VarDecl: MyInt Type: 2 SrcLoc: 11, 9
 				NumberExpr: 42 SrcLoc: 11, 15
 			VarDecl: MyInt2 Type: 2 SrcLoc: 12, 10

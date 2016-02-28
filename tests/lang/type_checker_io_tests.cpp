@@ -16,25 +16,25 @@ BOOST_FIXTURE_TEST_SUITE( SemaTestSuite, TosLangSemaFixture )
 
 BOOST_AUTO_TEST_CASE( PrintNumberLiteralTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/io/print_number_literal.tos");
+    size_t errorCount = GetTypeErrors("../asts/io/print_number_literal.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( PrintNumberVariableTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/io/print_number_variable.tos");
+    size_t errorCount = GetTypeErrors("../asts/io/print_number_variable.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( PrintStringLiteralTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/io/print_string_literal.tos");
+    size_t errorCount = GetTypeErrors("../asts/io/print_string_literal.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( PrintStringVariableTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/io/print_string_variable.tos");
+    size_t errorCount = GetTypeErrors("../asts/io/print_string_variable.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 

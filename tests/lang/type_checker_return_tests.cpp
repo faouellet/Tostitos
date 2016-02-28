@@ -16,25 +16,25 @@ BOOST_FIXTURE_TEST_SUITE( SemaTestSuite, TosLangSemaFixture )
 
 BOOST_AUTO_TEST_CASE( ReturnBinaryExprTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/function/fn_def_multi_args.tos");
+    size_t errorCount = GetTypeErrors("../asts/function/fn_def_multi_args.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( ReturnLiteralTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/function/fn_def_zero_arg.tos");
+    size_t errorCount = GetTypeErrors("../asts/function/fn_def_zero_arg.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( ReturnVariableTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/function/fn_def_one_arg.tos");
+    size_t errorCount = GetTypeErrors("../asts/function/fn_def_one_arg.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( ReturnVoidTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/function/fn_def_void.tos");
+    size_t errorCount = GetTypeErrors("../asts/function/fn_def_void.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE( ReturnVoidTypeCheck )
 
 BOOST_AUTO_TEST_CASE( BadReturnBinOpTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/function/bad_fn_return_bin_op.tos");
+    size_t errorCount = GetTypeErrors("../asts/function/bad_fn_return_bin_op.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed
@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE( BadReturnBinOpTypeCheck )
 
 BOOST_AUTO_TEST_CASE( BadReturnLiteralTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/function/bad_fn_return_literal.tos");
+    size_t errorCount = GetTypeErrors("../asts/function/bad_fn_return_literal.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE( BadReturnLiteralTypeCheck )
 
 BOOST_AUTO_TEST_CASE( BadReturnVoidTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/function/bad_fn_return_void.tos");
+    size_t errorCount = GetTypeErrors("../asts/function/bad_fn_return_void.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed
@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE( BadReturnVoidTypeCheck )
 
 BOOST_AUTO_TEST_CASE( BadReturnVariableTypeCheck )
 {
-    size_t errorCount = GetTypeErrors("../programs/function/bad_fn_return_variable.tos");
+    size_t errorCount = GetTypeErrors("../asts/function/bad_fn_return_variable.ast");
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed

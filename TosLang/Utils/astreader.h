@@ -55,7 +55,7 @@ namespace TosLang
         private:
             // Declarations
             std::unique_ptr<FrontEnd::FunctionDecl> ReadFuncDecl();
-            std::unique_ptr<FrontEnd::VarDecl> ReadVarDecl();
+            std::unique_ptr<FrontEnd::VarDecl> ReadVarDecl(const bool isFuncParam = false);
 
             // Expressions
             std::unique_ptr<FrontEnd::Expr> ReadExpr();
