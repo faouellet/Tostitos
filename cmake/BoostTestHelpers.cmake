@@ -19,10 +19,11 @@ function(add_boost_test SOURCE_FILE_NAME DEPENDENCY_LIB)
        string(REGEX REPLACE ".*\\( *([A-Za-z_0-9]+), [A-Za-z_0-9]+ *\\)" "\\1" SUITE_NAME ${SUITE_MATCH})
    else()
        string(REGEX MATCH "BOOST_AUTO_TEST_SUITE\\( *([A-Za-z_0-9]+) *\\)"
-       SUITE_MATCHES ${SOURCE_FILE_CONTENTS})
+              SUITE_MATCHES ${SOURCE_FILE_CONTENTS})
+       list(LENGTH SUITE_MATCHES N)
        if(${N} EQUAL 1)
            list(GET SUITE_MATCHES 0 SUITE_MATCH)
-           string(REGEX REPLACE ".*\\( *([A-Za-z_0-9]+), [A-Za-z_0-9]+ *\\)" "\\1" SUITE_NAME ${SUITE_MATCH})
+           string(REGEX REPLACE ".*\\( *([A-Za-z_0-9]+) *\\)" "\\1" SUITE_NAME ${SUITE_MATCH})
        endif()
    endif()
 
