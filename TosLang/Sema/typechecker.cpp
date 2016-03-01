@@ -286,20 +286,6 @@ void TosLang::FrontEnd::TypeChecker::HandleReturnStmt()
     }
 }
 
-void TypeChecker::HandleScanStmt()
-{
-    const ScanStmt* sStmt = dynamic_cast<const ScanStmt*>(this->mCurrentNode);
-    assert(sStmt != nullptr);
-
-    const IdentifierExpr* iExpr = sStmt->GetInput();
-    if (iExpr == nullptr)
-    {
-        // Expression is not an identifier, log an error
-        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::SCAN_WRONG_INPUT_TYPE, sStmt->GetSourceLocation());
-        ++mErrorCount;
-    }
-}
-
 void TypeChecker::HandleWhileStmt()
 {
     const WhileStmt* wStmt = dynamic_cast<const WhileStmt*>(this->mCurrentNode);

@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE( ParseHelloWorldTest )
     const PrintStmt* pStmt = dynamic_cast<const PrintStmt*>(bStmts[0].get());
     BOOST_REQUIRE(pStmt != nullptr);
 
-    const IdentifierExpr* msg = dynamic_cast<const IdentifierExpr*>(pStmt->GetMessage());
+    const StringExpr* msg = dynamic_cast<const StringExpr*>(pStmt->GetMessage());
     BOOST_REQUIRE(msg != nullptr);
     BOOST_REQUIRE_EQUAL(msg->GetName(), "Hello World!");
 }
@@ -96,15 +96,17 @@ BOOST_AUTO_TEST_CASE( ParseBadIOTest )
 
     // Check that we have only error nodes.
     // TODO: Commented out for now, it should be decommented once I fully figure out what should be the PRINT syntax
-    // BOOST_REQUIRE(std::all_of(bStmts.begin(), bStmts.end(), [](const std::unique_ptr<ASTNode>& node) { return node->GetKind() == ASTNode::NodeKind::ERROR; }));
+    BOOST_REQUIRE(std::all_of(bStmts.begin(), bStmts.end(), [](const std::unique_ptr<ASTNode>& node) { return node->GetKind() == ASTNode::NodeKind::ERROR; }));
 
     // Check if the correct error messages got printed
     std::vector<std::string> messages{ GetErrorMessages() };
-    BOOST_REQUIRE_EQUAL(messages.size(), 4);
+    BOOST_REQUIRE_EQUAL(messages.size(), 6);
     BOOST_REQUIRE_EQUAL(messages[0], "SCAN ERROR: Missing input variable at line 2, column 5");
     BOOST_REQUIRE_EQUAL(messages[1], "ERROR: Not an acceptable use of a binary operation at line 3, column 6");
     BOOST_REQUIRE_EQUAL(messages[2], "SCAN ERROR: Missing input variable at line 3, column 6");
-    BOOST_REQUIRE_EQUAL(messages[3], "PRINT ERROR: Wrong message for printing at line 5, column 7");
+    BOOST_REQUIRE_EQUAL(messages[3], "SCAN ERROR: Input variable is not an identfier at line 4, column 6");
+    BOOST_REQUIRE_EQUAL(messages[4], "ERROR: Not an acceptable use of a binary operation at line 5, column 7");
+    BOOST_REQUIRE_EQUAL(messages[5], "PRINT ERROR: Wrong message for printing at line 5, column 7");
 }
 
 BOOST_AUTO_TEST_CASE( ParseBadIOGlobalScopeTest )

@@ -419,25 +419,20 @@ std::unique_ptr<PrintStmt> Parser::ParsePrintStmt()
     std::unique_ptr<PrintStmt> pStmt = std::make_unique<PrintStmt>(mLexer.GetCurrentLocation());
 
     mCurrentToken = mLexer.GetNextToken();
-
-    switch (mCurrentToken)
+    if (mCurrentToken != Lexer::Token::SEMI_COLON)
     {
-    case Lexer::Token::STRING_LITERAL:
-    case Lexer::Token::IDENTIFIER:
-        pStmt->AddMessage(std::make_unique<IdentifierExpr>(mLexer.GetCurrentStr(), mLexer.GetCurrentLocation()));
-        break;
-    case Lexer::Token::NUMBER:
-        pStmt->AddMessage(std::make_unique<NumberExpr>(mLexer.GetCurrentNumber(), mLexer.GetCurrentLocation()));
-        break;
-    case Lexer::Token::SEMI_COLON:
-        break;
-    default:
-        // TODO: Error should be logged in the type checker instead
-        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::PRINT_WRONG_MSG, mLexer.GetCurrentLocation());
-        break;
-    }
+        std::unique_ptr<Expr> msgExpr = ParseExpr();
 
-    mCurrentToken = mLexer.GetNextToken();
+        if (msgExpr == nullptr)
+        {
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::PRINT_WRONG_MSG, mLexer.GetCurrentLocation());
+            pStmt->SetErrorMessage();
+        }
+        else
+        {
+            pStmt->AddMessage(std::move(msgExpr));
+        }
+    }
 
     return pStmt;
 }
@@ -467,6 +462,8 @@ std::unique_ptr<ScanStmt> Parser::ParseScanStmt()
 
     if (inputExpr == nullptr)
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::SCAN_MISSING_INPUT_VAR, mLexer.GetCurrentLocation());
+    else if(inputExpr->GetKind() != ASTNode::NodeKind::IDENTIFIER_EXPR)
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::SCAN_WRONG_INPUT_TYPE, mLexer.GetCurrentLocation());
     else
         sStmt.reset(new ScanStmt(std::make_unique<IdentifierExpr>(inputExpr->GetName(), mLexer.GetCurrentLocation()), srcLoc));
         

@@ -53,7 +53,6 @@ namespace TosLang
             void HandleIfStmt();
             void HandlePrintStmt();
             void HandleReturnStmt();
-            void HandleScanStmt();
             void HandleWhileStmt();
 
         private:

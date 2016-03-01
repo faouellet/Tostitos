@@ -91,7 +91,13 @@ namespace TosLang
         class PrintStmt : public Stmt
         {
         public:
-            PrintStmt(const Utils::SourceLocation& srcLoc) : Stmt{ NodeKind::PRINT_STMT } { mSrcLoc = srcLoc; }
+            PrintStmt(const Utils::SourceLocation& srcLoc, NodeKind kind = NodeKind::PRINT_STMT) : Stmt { NodeKind::ERROR }
+            {
+                assert(kind == NodeKind::PRINT_STMT || kind == NodeKind::ERROR);
+                mKind = kind;
+                mSrcLoc = srcLoc; 
+            }
+
             virtual ~PrintStmt() { }
 
         public:
@@ -100,11 +106,13 @@ namespace TosLang
             * \brief        Adds a message to be ouputted by the print statement
             * \param msg    Message to be printed
             */
-            void AddMessage(std::unique_ptr<Expr>&& msg) 
-            {
-                assert(msg->GetKind() == ASTNode::NodeKind::NUMBER_EXPR || msg->GetKind() == ASTNode::NodeKind::IDENTIFIER_EXPR);
-                AddChildNode(std::move(msg));
-            }
+            void AddMessage(std::unique_ptr<Expr>&& msg) { AddChildNode(std::move(msg)); }
+
+            /*
+            * \fn       SetErrorMessage
+            * \brief    Sets the print statement to ERROR because of its incorrect message
+            */
+            void SetErrorMessage() { mKind = NodeKind::ERROR; }
 
             /*
             * \fn       GetMessage
