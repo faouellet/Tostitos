@@ -1,0 +1,8 @@
+fn identity(i : Int) -> Int {
+	return i;
+}
+
+fn main() -> Void {
+	print identity(1);
+	return;
+}
