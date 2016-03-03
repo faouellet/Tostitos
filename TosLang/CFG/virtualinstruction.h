@@ -36,7 +36,8 @@ namespace TosLang
             explicit VirtualOperand(BasicBlock* bb);
 
         public:
-            friend std::ostream& operator<<(std::ostream& stream, const VirtualOperand& op);
+            template <typename OS>
+            friend OS& operator<<(OS& stream, const VirtualOperand& op);
 
         private:
             union 
@@ -66,7 +67,8 @@ namespace TosLang
             VirtualInstruction& AddTargetOperand(BasicBlock* bb);
 
         public:
-            friend std::ostream& operator<<(std::ostream& stream, const VirtualInstruction& inst);
+            template <typename OS>
+            friend OS& operator<<(OS& stream, const VirtualInstruction& inst);
 
         private:
             Instruction::InstructionOpCode mOpCode;
