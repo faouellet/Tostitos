@@ -232,11 +232,7 @@ BOOST_AUTO_TEST_CASE( ParseBadVarDeclTest )
 {
     auto& cNodes = GetProgramAST("../programs/var/bad_var_decl.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 10);
-
-    // Check that there is all but one non error node
-    // TODO: This should be re-enabled once the type checker is workinh again
-    //BOOST_REQUIRE_EQUAL(std::count_if(cNodes.begin(), cNodes.end(), [](const std::unique_ptr<ASTNode>& node){ return node->GetKind() != ASTNode::NodeKind::ERROR; }), 1);
-    
+        
     // Check if the correct error messages got printed
     std::vector<std::string> messages{ GetErrorMessages() };
     BOOST_REQUIRE_EQUAL(messages.size(), 8);
@@ -248,9 +244,6 @@ BOOST_AUTO_TEST_CASE( ParseBadVarDeclTest )
     BOOST_REQUIRE_EQUAL(messages[5], "ERROR: Expected a ; at line 7, column 3");
     BOOST_REQUIRE_EQUAL(messages[6], "VAR ERROR: The var keyword should be followed by an identifier at line 7, column 3");
     BOOST_REQUIRE_EQUAL(messages[7], "VAR ERROR: Trying to create a variable with void type at line 10, column 17");
-    
-    // TODO: This should be re-enabled once the type checker is workinh again
-    // BOOST_REQUIRE_EQUAL(messages[7], "VAR ERROR: Trying to redefine an already defined variable at line 9, column 14");
 }
 
 BOOST_AUTO_TEST_CASE( ParseBadVarInitBinOpTest )
