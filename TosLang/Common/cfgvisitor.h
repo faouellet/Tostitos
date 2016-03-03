@@ -5,7 +5,7 @@
 
 namespace TosLang
 {
-    namespace Backend
+    namespace Common
     {
         /*
         * \class CFGVisitor
@@ -15,7 +15,7 @@ namespace TosLang
         class CFGVisitor
         {
         public:
-            CFGVisitor() : mCurrentBlock(nullptr) { }
+            CFGVisitor() = default;
             ~CFGVisitor() = default;
 
         protected:
@@ -49,7 +49,7 @@ namespace TosLang
                     }
                 }
 
-                NodeAction::Execute();
+                mAction.Execute(block);
             }
 
             /*
@@ -60,7 +60,7 @@ namespace TosLang
             {
                 mBlocksVisited.push_back(block);
 
-                NodeAction::Execute();
+                mAction.Execute(block);
 
                 for (auto& adjBlock : block)
                 {
@@ -72,8 +72,8 @@ namespace TosLang
             }
 
         private:
-            BasicBlock* mCurrentBlock;
             std::vector<BlockPtr> mBlocksVisited;
+            NodeAction mAction;
         };
     }
 }

@@ -30,6 +30,26 @@ VirtualOperand::VirtualOperand(BasicBlock* bb) : mKind{ VirtualOperand::OperandK
     mOperand.target = bb;
 }
 
+std::ostream & TosLang::BackEnd::operator<<(std::ostream & stream, const VirtualOperand & op)
+{
+    switch (op.mKind)
+    {
+    case VirtualOperand::OperandKind::IMMEDIATE:
+        stream << op.mOperand.imm;
+        break;
+    case VirtualOperand::OperandKind::REGISTER:
+        stream << op.mOperand.reg;
+        break;
+    case VirtualOperand::OperandKind::TARGET:
+        stream << op.mOperand.target->GetName();
+        break;
+    default:
+        break;
+    }
+
+    return stream;
+}
+
 //////////////////// VirtualInstruction ////////////////////
 
 VirtualInstruction& VirtualInstruction::AddImmOperand(unsigned op)
@@ -54,4 +74,13 @@ VirtualInstruction& VirtualInstruction::AddTargetOperand(BasicBlock* bb)
 {
     mOperands[mNumOperands++] = VirtualOperand(bb);
     return *this;
+}
+
+std::ostream& TosLang::BackEnd::operator<<(std::ostream & stream, const VirtualInstruction & inst)
+{
+    stream << inst.mOpCode << " ";
+    for (size_t iOp = 0; iOp < inst.mNumOperands; ++iOp)
+        stream << inst.mOperands[iOp] << " ";
+
+    return stream;
 }

@@ -4,6 +4,7 @@
 #include "virtualinstruction.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace TosLang
@@ -21,6 +22,18 @@ namespace TosLang
         */
         class BasicBlock
         {
+        public:
+            BasicBlock(const std::string& name = "")
+            {
+                // OK since we won't create multiple blocks in parallel
+                static size_t blockNumber = 0;
+
+                if (name.empty())
+                    mName = "Block" + std::to_string(blockNumber++);
+                else
+                    mName = name;
+            }
+
         public:
             using inst_iterator = std::vector<VirtualInstruction>::iterator;
             using inst_const_iterator = std::vector<VirtualInstruction>::const_iterator;
@@ -45,9 +58,13 @@ namespace TosLang
             void InsertInstruction(VirtualInstruction&& inst);
             void InsertInstruction(const VirtualInstruction& inst);
 
+        public:
+            const std::string& GetName() const { return mName; }
+
         private:
-            std::vector<VirtualInstruction> mInstructions;
-            BlockList mAdjacentBlocks;
+            std::vector<VirtualInstruction> mInstructions;  /*!< Instructions making up the basic block */
+            BlockList mAdjacentBlocks;                      /*!< List of blocks pointed to by the outgoing edges of the block */
+            std::string mName;                              /*<! Name of the basic block. For printing and debugginf purposes */
         };
     }
 }

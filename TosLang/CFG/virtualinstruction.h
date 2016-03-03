@@ -22,11 +22,11 @@ namespace TosLang
         public:
             enum class OperandKind
             {
-                IMMEDIATE,
+                IMMEDIATE,  // Immediate value folded into the operand
                 MEM_SLOT,
-                REGISTER,
-                TARGET,
-                UNKNOWN
+                REGISTER,   // Value is inside a register
+                TARGET,     // Basic block to which we will jump
+                UNKNOWN     // I am error
             };
 
         public:
@@ -34,6 +34,9 @@ namespace TosLang
 
             VirtualOperand(unsigned op, OperandKind kind);
             explicit VirtualOperand(BasicBlock* bb);
+
+        public:
+            friend std::ostream& operator<<(std::ostream& stream, const VirtualOperand& op);
 
         private:
             union 
@@ -61,6 +64,9 @@ namespace TosLang
             VirtualInstruction& AddMemSlotOperand(unsigned op);
             VirtualInstruction& AddRegOperand(unsigned op);
             VirtualInstruction& AddTargetOperand(BasicBlock* bb);
+
+        public:
+            friend std::ostream& operator<<(std::ostream& stream, const VirtualInstruction& inst);
 
         private:
             Instruction::InstructionOpCode mOpCode;
