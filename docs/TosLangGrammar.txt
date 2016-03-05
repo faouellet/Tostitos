@@ -29,13 +29,13 @@ IfStmt
 	::= 'if' Expr CompoundStmt
 	
 PrintStmt
-	::= 'print' Expr
+	::= 'print' Expr? ';'
 	
 ReturnStmt
 	::= 'return' Expr? ';'
 	
 ScanStmt
-	::= 'scan' IdentifierExpr
+	::= 'scan' IdentifierExpr ';'
 	
 WhileStmt
 	::= 'while' Expr CompoundStmt
@@ -52,19 +52,19 @@ BinOpExpr
 	::= Expr Op Expr
 	
 BooleanExpr
-	::=
+	::= ('True'|'False')
 	
 CallExpr
 	::= IdentifierExpr '(' Expr* ')'
 	
 IdentifierExpr
-	::= [a-zA-Z].*
+	::= [a-zA-Z][^\"]*
 	
 NumberExpr
 	::= [1-9][0-9]*
 	
 StringExpr
-	::= '"'.*'"'
+	::= '"'[^\"]*'"'
 	
 Type
 	::= 'Bool'
