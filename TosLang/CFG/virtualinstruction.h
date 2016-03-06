@@ -37,7 +37,20 @@ namespace TosLang
 
         public:
             template <typename OS>
-            friend OS& operator<<(OS& stream, const VirtualOperand& op);
+            friend OS& operator<<(OS& stream, const VirtualOperand& op)
+            {
+                switch (op.mKind)
+                {
+                case VirtualOperand::OperandKind::IMMEDIATE:
+                    return stream << op.mOperand.imm;
+                case VirtualOperand::OperandKind::REGISTER:
+                    return stream << op.mOperand.reg;
+                case VirtualOperand::OperandKind::TARGET:
+                    return stream << op.mOperand.target->GetName();
+                default:
+                    return stream;
+                }
+            }
 
         private:
             union 
@@ -68,7 +81,14 @@ namespace TosLang
 
         public:
             template <typename OS>
-            friend OS& operator<<(OS& stream, const VirtualInstruction& inst);
+            friend OS& operator<<(OS& stream, const VirtualInstruction& inst)
+            {
+                stream << inst.mOpCode << " ";
+                for (size_t iOp = 0; iOp < inst.mNumOperands; ++iOp)
+                    stream << inst.mOperands[iOp] << " ";
+
+                return stream;
+            }
 
         private:
             Instruction::InstructionOpCode mOpCode;
