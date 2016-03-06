@@ -3,18 +3,23 @@
 
 #include "../Common/cfgvisitor.h"
 
+#include <iostream>
+
 namespace TosLang
 {
     namespace Utils
     {
         template <typename OS>
-        struct PrintAction 
+        struct PrintAction;
+
+        template <>
+        struct PrintAction<std::ostream>
         {
-            void Execute(const BlockPtr block)
+            void Execute(const BackEnd::BlockPtr block)
             {
-                for (auto& inst : block.get())
+                for (auto instIt = block->inst_begin(), instEnd = block->inst_end(); instIt != instEnd; ++instIt)
                 {
-                    OS << inst << "\n";
+                    std::cout << *instIt << std::endl;;
                 }
             }
         };

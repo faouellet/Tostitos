@@ -43,14 +43,14 @@ namespace TosLang
 
         public:
             inst_iterator inst_begin() { return mInstructions.begin(); }
-            inst_iterator inst_end() { return mInstructions.begin(); }
+            inst_iterator inst_end() { return mInstructions.end(); }
             inst_const_iterator inst_begin() const { return mInstructions.begin(); }
-            inst_const_iterator inst_end() const { return mInstructions.begin(); }
+            inst_const_iterator inst_end() const { return mInstructions.end(); }
 
             bb_iterator bb_begin() { return mAdjacentBlocks.begin(); }
-            bb_iterator bb_end() { return mAdjacentBlocks.begin(); }
+            bb_iterator bb_end() { return mAdjacentBlocks.end(); }
             bb_const_iterator bb_begin() const { return mAdjacentBlocks.begin(); }
-            bb_const_iterator bb_end() const { return mAdjacentBlocks.begin(); }
+            bb_const_iterator bb_end() const { return mAdjacentBlocks.end(); }
             
         public:
             void InsertBranch(const BasicBlock* block);

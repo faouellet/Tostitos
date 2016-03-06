@@ -18,14 +18,14 @@ namespace TosLang
             CFGVisitor() = default;
             ~CFGVisitor() = default;
 
-        protected:
+        public:
             /*
-            * \fn DFSVisit
+            * \fn Visit
             * \brief TODO
             */
-            void Visit(const std::shared_ptr<ControlFlowGraph> cfg, bool postOrderVisit)
+            void Visit(const std::shared_ptr<BackEnd::ControlFlowGraph> cfg, bool postOrderVisit)
             {
-                BlockPtr entry = cfg.GetEntryBlock();
+                BackEnd::BlockPtr entry = cfg->GetEntryBlock();
                 if (postOrderVisit)
                     RecursiveDFSVisitPostOrder(entry);
                 else
@@ -37,15 +37,15 @@ namespace TosLang
             * \fn RecursiveDFSVisitPostOrder
             * \brief TODO
             */
-            void RecursiveDFSVisitPostOrder(const BlockPtr block)
+            void RecursiveDFSVisitPostOrder(const BackEnd::BlockPtr block)
             {
                 mBlocksVisited.push_back(block);
 
-                for (auto& adjBlock : block)
+                for (auto bbIt = block->bb_begin(), bbEnd = block->bb_end(); bbIt != bbEnd; ++bbIt)
                 {
-                    if (std::find(mBlocksVisited.begin(), mBlocksVisited.end(), block) == mBlocksVisited.end())
+                    if (std::find(mBlocksVisited.begin(), mBlocksVisited.end(), *bbIt) == mBlocksVisited.end())
                     {
-                        RecursiveDFSVisitPostOrder(adjbBlock);
+                        RecursiveDFSVisitPostOrder(*bbIt);
                     }
                 }
 
@@ -56,23 +56,23 @@ namespace TosLang
             * \fn RecursiveDFSVisitPreOrder
             * \brief TODO
             */
-            void RecursiveDFSVisitPreOrder(const BlockPtr block)
+            void RecursiveDFSVisitPreOrder(const BackEnd::BlockPtr block)
             {
                 mBlocksVisited.push_back(block);
 
                 mAction.Execute(block);
 
-                for (auto& adjBlock : block)
+                for (auto bbIt = block->bb_begin(), bbEnd = block->bb_end(); bbIt != bbEnd; ++bbIt)
                 {
-                    if (std::find(mBlocksVisited.begin(), mBlocksVisited.end(), block) == mBlocksVisited.end())
+                    if (std::find(mBlocksVisited.begin(), mBlocksVisited.end(), *bbIt) == mBlocksVisited.end())
                     {
-                        RecursiveDFSVisitPreOrder(adjBlock);
+                        RecursiveDFSVisitPreOrder(*bbIt);
                     }
                 }
             }
 
         private:
-            std::vector<BlockPtr> mBlocksVisited;
+            std::vector<BackEnd::BlockPtr> mBlocksVisited;
             NodeAction mAction;
         };
     }

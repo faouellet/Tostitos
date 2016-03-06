@@ -22,6 +22,16 @@ namespace TosLang
             Module() : mCurrentMemorySlot{ 0 } { }
 
         public:
+            using iterator = FunctionCFGs::iterator;
+            using const_iterator = FunctionCFGs::const_iterator;
+
+        public:
+            iterator begin() { return mFuncCFGs.begin(); }
+            iterator end() { return mFuncCFGs.end(); }
+            const_iterator begin() const  { return mFuncCFGs.begin(); }
+            const_iterator end() const { return mFuncCFGs.end(); }
+
+        public:
             const CFGPtr& GetFunction(const std::string& name) const;
 
         public:
