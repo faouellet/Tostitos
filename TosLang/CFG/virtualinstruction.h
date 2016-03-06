@@ -36,21 +36,7 @@ namespace TosLang
             explicit VirtualOperand(BasicBlock* bb);
 
         public:
-            template <typename OS>
-            friend OS& operator<<(OS& stream, const VirtualOperand& op)
-            {
-                switch (op.mKind)
-                {
-                case VirtualOperand::OperandKind::IMMEDIATE:
-                    return stream << op.mOperand.imm;
-                case VirtualOperand::OperandKind::REGISTER:
-                    return stream << op.mOperand.reg;
-                case VirtualOperand::OperandKind::TARGET:
-                    return stream << op.mOperand.target->GetName();
-                default:
-                    return stream;
-                }
-            }
+            friend std::ostream& operator<<(std::ostream& stream, const VirtualOperand& op);
 
         private:
             union 
@@ -80,15 +66,7 @@ namespace TosLang
             VirtualInstruction& AddTargetOperand(BasicBlock* bb);
 
         public:
-            template <typename OS>
-            friend OS& operator<<(OS& stream, const VirtualInstruction& inst)
-            {
-                stream << inst.mOpCode << " ";
-                for (size_t iOp = 0; iOp < inst.mNumOperands; ++iOp)
-                    stream << inst.mOperands[iOp] << " ";
-
-                return stream;
-            }
+            friend std::ostream& operator<<(std::ostream& stream, const VirtualInstruction& inst);
 
         private:
             Instruction::InstructionOpCode mOpCode;
