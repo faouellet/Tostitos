@@ -3,6 +3,7 @@
 #include "basicblock.h"
 
 #include <cassert>
+#include <iostream>
 
 using namespace TosLang::BackEnd;
 

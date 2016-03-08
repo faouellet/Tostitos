@@ -3,6 +3,8 @@
 
 #include "../CFG/controlflowgraph.h"
 
+#include <algorithm>
+
 namespace TosLang
 {
     namespace Common
