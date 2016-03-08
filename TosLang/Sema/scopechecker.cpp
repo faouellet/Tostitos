@@ -5,8 +5,8 @@
 using namespace TosLang::FrontEnd;
 using namespace TosLang::Utils;
 
-TosLang::FrontEnd::ScopeChecker::ScopeChecker(const std::shared_ptr<SymbolTable>& symTab)
-    : mErrorCount{ 0 }, mCurrentScopeID{ 0 }, mCurrentFunc{ nullptr }, mSymbolTable{ symTab }
+TosLang::FrontEnd::ScopeChecker::ScopeChecker()
+    : mErrorCount{ 0 }, mCurrentScopeID{ 0 }, mCurrentFunc{ nullptr }
 {
     mCurrentScopesTraversed.push(mCurrentScopeID);
 
@@ -37,9 +37,10 @@ TosLang::FrontEnd::ScopeChecker::ScopeChecker(const std::shared_ptr<SymbolTable>
     };
 }
 
-size_t TosLang::FrontEnd::ScopeChecker::Run(const std::unique_ptr<ASTNode>& root)
+size_t TosLang::FrontEnd::ScopeChecker::Run(const std::unique_ptr<ASTNode>& root, const std::shared_ptr<SymbolTable>& symTab)
 {
     mErrorCount = 0;
+    mSymbolTable = symTab;
     this->VisitPostOrder(root);
     return mErrorCount;
 }

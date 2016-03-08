@@ -20,27 +20,28 @@ namespace TosLang
             friend class Common::ASTVisitor<ScopeChecker>;
 
         public:
-            explicit ScopeChecker(const std::shared_ptr<SymbolTable>& symTab);
+            ScopeChecker();
 
         public:
             /*
             * \fn           Run
             * \brief        Recursively walk the tree rooted at root to check for inacessible function or variable
-            * \param root   Root of the tree to print
+            * \param root   Root of the tree to scope check
+            * \param symTab Symbol table associated with the given AST
             * \return       Number of errors encountered during type checking
             */
-            size_t Run(const std::unique_ptr<ASTNode>& root);
+            size_t Run(const std::unique_ptr<ASTNode>& root, const std::shared_ptr<SymbolTable>& symTab);
 
         protected:
             void HandleCallExpr();
             void HandleIdentifierExpr();
 
         private:
-            size_t mErrorCount;                                         /*!< Number of errors found by the type checker */
-            int mCurrentScopeID;                                        /*!< Current scope identifier */
-            FunctionDecl* mCurrentFunc;                                 /*!< Current traversed function */
-            std::stack<int> mCurrentScopesTraversed;                    /*!< Path from the current scope to the global scopes */
-            std::shared_ptr<SymbolTable> mSymbolTable;                  /*!< Symbol table to be used by the type checker */
+            size_t mErrorCount;                         /*!< Number of errors found by the type checker */
+            int mCurrentScopeID;                        /*!< Current scope identifier */
+            FunctionDecl* mCurrentFunc;                 /*!< Current traversed function */
+            std::stack<int> mCurrentScopesTraversed;    /*!< Path from the current scope to the global scopes */
+            std::shared_ptr<SymbolTable> mSymbolTable;  /*!< Symbol table to be used by the type checker */
         };
     }
 }

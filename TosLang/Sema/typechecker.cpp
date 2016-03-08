@@ -8,8 +8,8 @@ using namespace TosLang::FrontEnd;
 using namespace TosLang::Common;
 using namespace TosLang::Utils;
 
-TypeChecker::TypeChecker(const std::shared_ptr<SymbolTable>& symTab) 
-    : mErrorCount{ 0 }, mCurrentScopeID{ 0 }, mCurrentFunc{ nullptr }, mSymbolTable{ symTab }
+TypeChecker::TypeChecker() 
+    : mErrorCount{ 0 }, mCurrentScopeID{ 0 }, mCurrentFunc{ nullptr }
 {
     mCurrentScopesTraversed.push(mCurrentScopeID);
 
@@ -40,9 +40,10 @@ TypeChecker::TypeChecker(const std::shared_ptr<SymbolTable>& symTab)
     };
 }
 
-size_t TypeChecker::Run(const std::unique_ptr<ASTNode>& root)
+size_t TypeChecker::Run(const std::unique_ptr<ASTNode>& root, const std::shared_ptr<SymbolTable>& symTab)
 {
     mErrorCount = 0;
+    mSymbolTable = symTab;
     this->VisitPostOrder(root);
     return mErrorCount;
 }

@@ -24,8 +24,8 @@ static void Compile(const std::string& programFile)
     if (errorCount != 0)
         return;
 
-    TosLang::FrontEnd::TypeChecker tChecker{ symbolTable };
-    errorCount = tChecker.Run(programAST);
+    TosLang::FrontEnd::TypeChecker tChecker;
+    errorCount = tChecker.Run(programAST, symbolTable);
     if (errorCount != 0)
         return;
 }

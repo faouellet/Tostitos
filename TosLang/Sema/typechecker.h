@@ -21,16 +21,17 @@ namespace TosLang
             friend class Common::ASTVisitor<TypeChecker>;
 
         public:
-            explicit TypeChecker(const std::shared_ptr<SymbolTable>& symTab);
+            TypeChecker();
 
         public:
             /*
             * \fn           Run
             * \brief        Recursively walk the tree rooted at root to check for type errors
-            * \param root   Root of the tree to print
+            * \param root   Root of the tree to type check
+            * \param symTab Symbol table associated with the given AST
             * \return       Number of errors encountered during type checking
             */
-            size_t Run(const std::unique_ptr<ASTNode>& root);
+            size_t Run(const std::unique_ptr<ASTNode>& root, const std::shared_ptr<SymbolTable>& symTab);
 
         private:
             /*

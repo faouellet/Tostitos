@@ -88,8 +88,8 @@ struct TosLangSemaFixture
         size_t errorCount = GetProgramSymbolTable(filename, symTable);
         BOOST_REQUIRE_EQUAL(errorCount, 0);
 
-        ScopeChecker sChecker(symTable);
-        return sChecker.Run(programAST);
+        ScopeChecker sChecker;
+        return sChecker.Run(programAST, symTable);
     }
 
     /*
@@ -104,8 +104,8 @@ struct TosLangSemaFixture
         size_t errorCount = GetProgramSymbolTable(filename, symTable);
         BOOST_REQUIRE_EQUAL(errorCount, 0);
 
-        TypeChecker tChecker(symTable);
-        return tChecker.Run(programAST);
+        TypeChecker tChecker;
+        return tChecker.Run(programAST, symTable);
     }
 
     std::unique_ptr<ASTNode> programAST;    /*!< Program abstract syntax tree */
