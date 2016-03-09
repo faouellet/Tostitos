@@ -19,7 +19,7 @@ namespace TosLang
         class Module
         {
         public:
-            Module() : mCurrentMemorySlot{ 0 } { }
+            Module();
 
         public:
             using iterator = FunctionCFGs::iterator;
@@ -30,11 +30,23 @@ namespace TosLang
             iterator end() { return mFuncCFGs.end(); }
             const_iterator begin() const  { return mFuncCFGs.begin(); }
             const_iterator end() const { return mFuncCFGs.end(); }
-
+            
         public:
             const CFGPtr& GetFunction(const std::string& name) const;
 
         public:
+            void Print() const;
+
+        public:
+            /*
+            * \fn           InsertArrayVariable
+            * \brief        Insert string variable in the Module
+            * \param name   Name of the string
+            * \param value  Value of the string
+            * \return       Memory slot that the string was assigned
+            */
+            unsigned InsertArrayVariable(const std::string& name, const std::string& value);
+
             /*
             * \fn           InsertFunction
             * \brief        Inserts a function in the module
@@ -44,13 +56,11 @@ namespace TosLang
             void InsertFunction(const std::string& name, const CFGPtr& cfg);
 
             /*
-            * \fn           InsertArrayVariable
-            * \brief        Insert string variable in the Module
-            * \param name   Name of the string
-            * \param value  Value of the string
-            * \return       Memory slot that the string was assigned
+            * \fn           InsertGlobalVar
+            * \brief        Inserts a global variable in the module
+            * \param name   The name of the variable
             */
-            unsigned InsertArrayVariable(const std::string& name, const std::string& value);
+            void InsertGlobalVar(const VirtualInstruction& inst);
 
         private:
             /*
@@ -87,6 +97,7 @@ namespace TosLang
         private:
             unsigned mCurrentMemorySlot;
             FunctionCFGs mFuncCFGs;
+            BlockPtr mGlobalBlock;  /*!< Basic block used to hold all the global variables */
             std::unordered_map<std::string, std::unique_ptr<IArrayVar>> mArrayVars;
         };
 

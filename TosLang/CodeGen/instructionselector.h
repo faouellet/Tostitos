@@ -3,6 +3,7 @@
 
 #include "../CFG/module.h"
 #include "../Common/astvisitor.h"
+#include "../Sema/symboltable.h"
 
 #include <map>
 
@@ -11,6 +12,7 @@ namespace TosLang
     namespace FrontEnd
     {
         class FunctionDecl;
+        class SymbolTable;
     }
 
     namespace BackEnd
@@ -28,7 +30,8 @@ namespace TosLang
             ~InstructionSelector() = default;
 
         public:
-            std::unique_ptr<Module> Run(const std::unique_ptr<FrontEnd::ASTNode>& root);
+            std::unique_ptr<Module> Run(const std::unique_ptr<FrontEnd::ASTNode>& root, 
+                                        const std::shared_ptr<FrontEnd::SymbolTable>& symTab);
 
         protected:  // Declarations
             void HandleFunctionDecl();
@@ -59,13 +62,14 @@ namespace TosLang
             void CreateNewCurrentBlock(std::vector<VirtualInstruction>&& insts);
 
         private:
-            unsigned mNextRegister;
-            std::map<const FrontEnd::ASTNode*, unsigned> mNodeRegister;
-            std::unique_ptr<Module> mMod;
-            FrontEnd::FunctionDecl* mCurrentFunc;                 /*!< Currently traversed function */
-            ControlFlowGraph* mCurrentCFG;
-            BasicBlock* mCurrentBlock;
-            std::map<const FrontEnd::ASTNode*, BasicBlock*> mTreeToGraphMap;
+            unsigned mNextRegister;                                             /*!< Next register number to give out */
+            std::map<const FrontEnd::ASTNode*, unsigned> mNodeRegister;         /*!< Mapping indicating in which register an AST node value lives */
+            std::unique_ptr<Module> mMod;                                       /*!< Translation unit being built out of the AST */
+            FrontEnd::FunctionDecl* mCurrentFunc;                               /*!< Current function (AST version being read) */
+            ControlFlowGraph* mCurrentCFG;                                      /*!< Current function (CFG version being written) */
+            BasicBlock* mCurrentBlock;                                          /*!< Current basic block being written to */
+            std::map<const FrontEnd::ASTNode*, BasicBlock*> mTreeToGraphMap;    /*!< Mapping indicating what basic block an AST node corresponds to */
+            std::shared_ptr<FrontEnd::SymbolTable> mSymTable;                   /*!< Symbols associated with the AST being traversed */
         };
     }
 }

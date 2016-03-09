@@ -28,5 +28,5 @@ add_library( lang STATIC
 		
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 		
-add_executable (TosLang driver.cpp)
+add_executable (TosLang compiler.h compiler.cpp driver.cpp)
 target_link_libraries(TosLang lang)

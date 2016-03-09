@@ -33,10 +33,12 @@ InstructionSelector::InstructionSelector() :
 };
 
 
-std::unique_ptr<Module> InstructionSelector::Run(const std::unique_ptr<ASTNode>& root)
+std::unique_ptr<Module> InstructionSelector::Run(const std::unique_ptr<ASTNode>& root, const std::shared_ptr<SymbolTable>& symTab)
 {
     // Reset the module to be produced
     mMod.reset(new Module{});
+
+    mSymTable = symTab;
 
     this->VisitPreOrder(root);
     return std::move(mMod);
@@ -67,10 +69,21 @@ void InstructionSelector::HandleVarDecl()
 
     // Instructions are only generated for variable with initialization expression
     if (initExpr != nullptr)
+    {
         // Generate a load instruction into the variable's register
-        mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::LOAD_IMM }
-                                         .AddRegOperand(mNodeRegister[mCurrentNode])
-                                         .AddRegOperand(mNodeRegister[initExpr]));
+        VirtualInstruction vInst = VirtualInstruction{ Instruction::LOAD_IMM }
+                                   .AddRegOperand(mNodeRegister[mCurrentNode])
+                                   .AddRegOperand(mNodeRegister[initExpr]);
+
+        if (mSymTable->IsGlobalVariable(vDecl->GetName()))
+        {
+            mMod->InsertGlobalVar(vInst);
+        }
+        else
+        {
+            mCurrentBlock->InsertInstruction(vInst);
+        }
+    }
 }
 
 // Expressions
