@@ -10,26 +10,9 @@ using namespace TosLang::BackEnd;
 using namespace MachineEngine::ProcessorSpace;
 
 InstructionSelector::InstructionSelector() : 
-    mNextRegister{ 0 }, mCurrentFunc{ nullptr }, mTreeToGraphMap{ }
+    mNextRegister{ 0 }
 {
     mMod.reset(new Module{});
-
-    this->mPrologueFtr = [this]()
-    {
-        // Assign a register to AST node
-        mNodeRegister[mCurrentNode] = mNextRegister++;
-
-        // If a node is a statement node, it will generate a new basic block
-        switch (mCurrentNode->GetKind())
-        {
-        case ASTNode::NodeKind::COMPOUND_STMT:
-        case ASTNode::NodeKind::IF_STMT:
-        case ASTNode::NodeKind::WHILE_STMT:
-            CreateNewCurrentBlock(std::vector<VirtualInstruction>{});
-        default:
-            break;
-        }
-    };
 };
 
 
@@ -40,14 +23,27 @@ std::unique_ptr<Module> InstructionSelector::Run(const std::unique_ptr<ASTNode>&
 
     mSymTable = symTab;
 
-    this->VisitPreOrder(root);
+    HandleProgramDecl(root);
     return std::move(mMod);
 }
 
 // Declarations
-void InstructionSelector::HandleFunctionDecl() 
+void InstructionSelector::HandleProgramDecl(const std::unique_ptr<ASTNode>& root)
 {
-    const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(mCurrentNode);
+    for (auto& stmt : root->GetChildrenNodes())
+    {
+        if (stmt->GetKind() == ASTNode::NodeKind::FUNCTION_DECL)
+            HandleFunctionDecl(stmt.get());
+        else if (stmt->GetKind() == ASTNode::NodeKind::VAR_DECL)
+            HandleVarDecl(stmt.get());
+        else
+            assert(false);  // Shouldn't happen
+    }
+}
+
+void InstructionSelector::HandleFunctionDecl(const ASTNode* decl)
+{
+    const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(decl);
     assert(fDecl != nullptr);
 
     // New function declaration so we need to build a new control flow graph
@@ -58,11 +54,13 @@ void InstructionSelector::HandleFunctionDecl()
     mMod->InsertFunction(fDecl->GetFunctionName(), pCFG);
 
     // TODO: Insert instructions to fetch the arguements
+
+    HandleCompoundStmt(fDecl->GetBody());
 }
 
-void InstructionSelector::HandleVarDecl() 
+void InstructionSelector::HandleVarDecl(const ASTNode* decl) 
 {
-    const VarDecl* vDecl = dynamic_cast<const VarDecl*>(mCurrentNode);
+    const VarDecl* vDecl = dynamic_cast<const VarDecl*>(decl);
     assert(vDecl != nullptr);
 
     const Expr* initExpr = vDecl->GetInitExpr();
@@ -70,26 +68,88 @@ void InstructionSelector::HandleVarDecl()
     // Instructions are only generated for variable with initialization expression
     if (initExpr != nullptr)
     {
+        mNodeRegister[decl] = mNextRegister++;
+        HandleExpr(initExpr);
+
         // Generate a load instruction into the variable's register
         VirtualInstruction vInst = VirtualInstruction{ Instruction::LOAD_IMM }
-                                   .AddRegOperand(mNodeRegister[mCurrentNode])
+                                   .AddRegOperand(mNodeRegister[decl])
                                    .AddRegOperand(mNodeRegister[initExpr]);
 
         if (mSymTable->IsGlobalVariable(vDecl->GetName()))
-        {
             mMod->InsertGlobalVar(vInst);
-        }
         else
-        {
             mCurrentBlock->InsertInstruction(vInst);
-        }
     }
 }
 
 // Expressions
-void InstructionSelector::HandleBinaryExpr() 
+void InstructionSelector::HandleExpr(const Expr* expr)
 {
-    const BinaryOpExpr* bExpr = dynamic_cast<const BinaryOpExpr*>(mCurrentNode);
+    mNodeRegister[expr] = mNextRegister++;
+    
+    switch (expr->GetKind())
+    {
+    case ASTNode::NodeKind::BINARY_EXPR:
+    {
+        // TODO
+    }
+        break;
+    case ASTNode::NodeKind::BOOLEAN_EXPR:
+    {
+        const BooleanExpr* bExpr = dynamic_cast<const BooleanExpr*>(expr);
+        assert(bExpr != nullptr);
+        mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::LOAD_IMM }
+                                         .AddRegOperand(mNodeRegister[expr])
+                                         .AddImmOperand(bExpr->GetValue()));
+    }
+        break;
+    case ASTNode::NodeKind::CALL_EXPR:
+    {
+        // TODO
+    }
+        break;
+    case ASTNode::NodeKind::IDENTIFIER_EXPR:
+    {
+        const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(expr);
+        assert(iExpr != nullptr);
+        mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::LOAD_IMM }
+                                         .AddRegOperand(mNodeRegister[expr])
+                                         .AddRegOperand(mNodeRegister[iExpr]));
+    }
+        break;
+    case ASTNode::NodeKind::NUMBER_EXPR:
+    {
+        const NumberExpr* nExpr = dynamic_cast<const NumberExpr*>(expr);
+        assert(nExpr != nullptr);
+        mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::LOAD_IMM }
+                                         .AddRegOperand(mNodeRegister[expr])
+                                         .AddImmOperand(nExpr->GetValue()));
+    }
+        break;
+    case ASTNode::NodeKind::STRING_EXPR:
+    {
+        const StringExpr* sExpr = dynamic_cast<const StringExpr*>(expr);
+        assert(sExpr != nullptr);
+
+        // We add the string literal to the module
+        unsigned memSlot = mMod->InsertArrayVariable(sExpr->GetName(), sExpr->GetName()); // Name and value are the same for simplicity
+
+        // We generate a load of the string literal address
+        mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::LOAD_IMM }
+                                         .AddRegOperand(mNodeRegister[expr])
+                                         .AddMemSlotOperand(memSlot));
+    }
+        break;
+    default:
+        assert(false && "Unknown expression node");
+        break;
+    }
+}
+
+void InstructionSelector::HandleBinaryExpr(const ASTNode* expr)
+{
+    const BinaryOpExpr* bExpr = dynamic_cast<const BinaryOpExpr*>(expr);
     assert(bExpr != nullptr);
 
     // Choose the correct opcode
@@ -146,20 +206,9 @@ void InstructionSelector::HandleBinaryExpr()
                                      .AddRegOperand(mNodeRegister[bExpr->GetRHS()]));
 }
 
-void InstructionSelector::HandleBooleanExpr() 
-{
-    const BooleanExpr* bExpr = dynamic_cast<const BooleanExpr*>(mCurrentNode);
-    assert(bExpr != nullptr);
-
-    // We simply load the boolean value into a register
-    mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::LOAD_IMM }
-                                     .AddRegOperand(mNodeRegister[mCurrentNode])
-                                     .AddImmOperand(bExpr->GetValue()));
-}
-
-void InstructionSelector::HandleCallExpr() 
+void InstructionSelector::HandleCallExpr(const ASTNode* expr) 
 { 
-    const CallExpr* cExpr = dynamic_cast<const CallExpr*>(mCurrentNode);
+    const CallExpr* cExpr = dynamic_cast<const CallExpr*>(expr);
     assert(cExpr != nullptr);
 
     // TODO: what to do with the function arguments?
@@ -170,91 +219,98 @@ void InstructionSelector::HandleCallExpr()
                                      .AddTargetOperand(mMod->GetFunction(cExpr->GetCalleeName())->GetEntryBlock().get()));
 }
 
-void InstructionSelector::HandleIdentifierExpr() 
-{
-    const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(mCurrentNode);
-    assert(iExpr != nullptr);
-
-    // We generate a load of the identifier into a new register.
-    // This load is clearly redundant but it simplfies the instruction selection process.
-    // TODO: Have a backend pass remove redundant load
-    mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::LOAD_IMM }
-                                     .AddRegOperand(mNodeRegister[mCurrentNode])
-                                     .AddRegOperand(mNodeRegister[iExpr]));
-}
-
-void InstructionSelector::HandleNumberExpr() 
-{
-    const NumberExpr* nExpr = dynamic_cast<const NumberExpr*>(mCurrentNode);
-    assert(nExpr != nullptr);
-
-    // We simply load the number value into a register
-    // TODO: There need to be a check in the semantic analyzer to ensure that the number value is reasonable
-    mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::LOAD_IMM }
-                                     .AddRegOperand(mNodeRegister[mCurrentNode])
-                                     .AddImmOperand(nExpr->GetValue()));
-}
-
-void InstructionSelector::HandleStringExpr()
-{
-    const StringExpr* sExpr = dynamic_cast<const StringExpr*>(mCurrentNode);
-    assert(sExpr != nullptr);
-
-    // We add the string literal to the module
-    unsigned memSlot = mMod->InsertArrayVariable(sExpr->GetName(), sExpr->GetName()); // Name and value are the same for simplicity
-
-    // We generate a load of the string literal address
-    mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::LOAD_IMM }
-                                     .AddRegOperand(mNodeRegister[mCurrentNode])
-                                     .AddMemSlotOperand(memSlot));
-}
-
 // Statements
-void InstructionSelector::HandleIfStmt()
+BlockPtr InstructionSelector::HandleCompoundStmt(const CompoundStmt* cStmt)
 {
-    const IfStmt* iStmt = dynamic_cast<const IfStmt*>(mCurrentNode);
+    CreateNewCurrentBlock();
+    BlockPtr entryBlock{ mCurrentBlock };
+
+    for (auto& stmt : cStmt->GetStatements())
+    {
+        switch (stmt->GetKind())
+        {
+        case ASTNode::NodeKind::BINARY_EXPR:
+            HandleBinaryExpr(stmt.get());
+            break;
+        case ASTNode::NodeKind::CALL_EXPR:
+            HandleCallExpr(stmt.get());
+            break;
+        case ASTNode::NodeKind::IF_STMT:
+            HandleIfStmt(stmt.get());
+            break;
+        case ASTNode::NodeKind::PRINT_STMT:
+            HandlePrintStmt(stmt.get());
+            break;
+        case ASTNode::NodeKind::RETURN_STMT:
+            HandleReturnStmt(stmt.get());
+            break;
+        case ASTNode::NodeKind::SCAN_STMT:
+            HandleScanStmt(stmt.get());
+            break;
+        case ASTNode::NodeKind::VAR_DECL:
+            HandleVarDecl(stmt.get());
+            break;
+        case ASTNode::NodeKind::WHILE_STMT:
+            HandleWhileStmt(stmt.get());
+            break;
+        default:
+            break;
+        }
+    }
+
+    return entryBlock;
+}
+
+void InstructionSelector::HandleIfStmt(const ASTNode* stmt)
+{
+    const IfStmt* iStmt = dynamic_cast<const IfStmt*>(stmt);
     assert(iStmt != nullptr);
 
-    // Go back to the block associated with this AST node
-    BasicBlock* ifBlock = mTreeToGraphMap[mCurrentNode];
+    // Generating instructions for the condition expression
+    HandleExpr(iStmt->GetCondExpr());
 
-    // Keep a pointer to the current block which correspond to the end of the then statement
+    // Keeping a pointer to the condition block for later
+    BasicBlock* condBlock = mCurrentBlock;
+    
+    // Generating instructions for the if body
+    BlockPtr thenBeginBlock = HandleCompoundStmt(iStmt->GetBody());
+    
+    // Keep a pointer to the current block which correspond to the end of the if body
     BasicBlock* thenEndBlock = mCurrentBlock;
 
-    // Create the exit block
-    CreateNewCurrentBlock(std::vector<VirtualInstruction>{});
-    BasicBlock* endBlock = mCurrentBlock;
+    // Creating the exit block
+    CreateNewCurrentBlock();
 
-    // Link the then statement end with the exit block
-    thenEndBlock->InsertBranch(mCurrentBlock);
-
-    // Done with the then statement, switch over to the if block
-    mCurrentBlock = ifBlock;
-
-    // Generate a comparison instruction to prepare the flag register
+    // Generating a comparison instruction to prepare the flag register
     // before the branch
-    mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::TST }
-                                     .AddRegOperand(mNodeRegister[iStmt->GetCondExpr()])
-                                     .AddImmOperand(1));
+    condBlock->InsertInstruction(VirtualInstruction{ Instruction::TST }
+                                 .AddRegOperand(mNodeRegister[iStmt->GetCondExpr()])
+                                 .AddImmOperand(1));
 
-    // Generate a branch instruction to the then block
-    mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::JUMP }
-                                     .AddTargetOperand(ifBlock->bb_begin()->get()));
-    // Generate a branch instruction to the exit block
-    mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::JUMP }
-                                     .AddTargetOperand(endBlock));
+    // Generating a branch instruction from the condition block to the then begin block
+    condBlock->InsertInstruction(VirtualInstruction{ Instruction::JUMP }
+                                 .AddTargetOperand(thenBeginBlock.get()));
 
-    // As per the instruction selection process the then statement should already be linked with
-    // the condition expression. What we need to do now is link the condition
-    // expression (for when the condition evaluates to false) with the exit block
-    ifBlock->InsertBranch(endBlock);
+    // Generating a branch instruction from the condition block to the exit block
+    condBlock->InsertInstruction(VirtualInstruction{ Instruction::JUMP }
+                                 .AddTargetOperand(mCurrentBlock));
+
+    // Generating a branch instruction from the then end block to the exit block
+    thenEndBlock->InsertInstruction(VirtualInstruction{ Instruction::JUMP }
+                                    .AddTargetOperand(mCurrentBlock));
 }
 
-void InstructionSelector::HandlePrintStmt() { }
-
-void InstructionSelector::HandleReturnStmt() 
+void InstructionSelector::HandlePrintStmt(const ASTNode* stmt)
 {
-    const ReturnStmt* rStmt = dynamic_cast<const ReturnStmt*>(mCurrentNode);
+    const PrintStmt* pStmt = dynamic_cast<const PrintStmt*>(stmt);
+    assert(pStmt != nullptr);
+
+    // TODO
+}
+
+void InstructionSelector::HandleReturnStmt(const ASTNode* stmt) 
+{
+    const ReturnStmt* rStmt = dynamic_cast<const ReturnStmt*>(stmt);
     assert(rStmt != nullptr);
 
     if (rStmt->GetReturnExpr())
@@ -266,40 +322,54 @@ void InstructionSelector::HandleReturnStmt()
     mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::RET });
 }
 
-void InstructionSelector::HandleScanStmt() { }
-
-void InstructionSelector::HandleWhileStmt() 
+void InstructionSelector::HandleScanStmt(const ASTNode* stmt)
 {
-    const WhileStmt* wStmt = dynamic_cast<const WhileStmt*>(mCurrentNode);
+    const ScanStmt* sStmt = dynamic_cast<const ScanStmt*>(stmt);
+    assert(sStmt != nullptr);
+
+    // TODO
+}
+
+void InstructionSelector::HandleWhileStmt(const ASTNode* stmt)
+{
+    const WhileStmt* wStmt = dynamic_cast<const WhileStmt*>(stmt);
     assert(wStmt != nullptr);
 
-    // Go back to the block associated with this AST node
-    BasicBlock* whileBlock = mTreeToGraphMap[mCurrentNode];
-    
-    // Keep a pointer to the current block which correspond to the end of the then statement
-    BasicBlock* thenEndBlock = mCurrentBlock;
+    // Creating the loop header (condition block)
+    CreateNewCurrentBlock();
 
-    // Insert a jump instruction that points back to the condition block
-    thenEndBlock->InsertInstruction(VirtualInstruction{Instruction::JUMP}
-                                    .AddTargetOperand(whileBlock));
+    // Generating instructions for the condition expression
+    HandleExpr(wStmt->GetCondExpr());
 
-    // Link the end of the then statement with the condition block
-    thenEndBlock->InsertBranch(whileBlock);
+    // Keeping a pointer to the header block for later
+    BasicBlock* headerBlock = mCurrentBlock;
 
-    // Done with the then statement, switch over to the condition block
-    mCurrentBlock = whileBlock;
+    // Generating instructions for the while body
+    BlockPtr bodyBeginBlock = HandleCompoundStmt(wStmt->GetBody());
 
-    // Generate a comparison instruction to prepare the flag register before the branch
-    mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::TST }
-                                     .AddRegOperand(mNodeRegister[wStmt->GetCondExpr()])
-                                     .AddImmOperand(1));
+    // Keep a pointer to the current block which correspond to the end of the if body
+    BasicBlock* bodyEndBlock = mCurrentBlock;
 
-    // Generate a branch instruction to the then block
-    mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::JUMP }
-                                     .AddTargetOperand(whileBlock->bb_begin()->get())); 
-    
-    // Generate a branch instruction to the exit block
-    CreateNewCurrentBlock(std::vector<VirtualInstruction>{});
+    // Creating the exit block
+    CreateNewCurrentBlock();
+
+    // Generating a comparison instruction to prepare the flag register
+    // before the branch
+    headerBlock->InsertInstruction(VirtualInstruction{ Instruction::TST }
+                                  .AddRegOperand(mNodeRegister[wStmt->GetCondExpr()])
+                                  .AddImmOperand(1));
+
+    // Generating a branch instruction from the header block to the body begin block
+    headerBlock->InsertInstruction(VirtualInstruction{ Instruction::JUMP }
+                                   .AddTargetOperand(bodyBeginBlock.get()));
+
+    // Generating a branch instruction from the header block to the exit block
+    headerBlock->InsertInstruction(VirtualInstruction{ Instruction::JUMP }
+                                   .AddTargetOperand(mCurrentBlock));
+
+    // Generating a branch instruction from the body end block to the header block
+    bodyEndBlock->InsertInstruction(VirtualInstruction{ Instruction::JUMP }
+                                    .AddTargetOperand(headerBlock));
 }
 
 void TosLang::BackEnd::InstructionSelector::CreateNewCurrentBlock(std::vector<VirtualInstruction>&& insts)
@@ -307,6 +377,5 @@ void TosLang::BackEnd::InstructionSelector::CreateNewCurrentBlock(std::vector<Vi
     BlockPtr newBlock = mCurrentCFG->CreateNewBlock(std::move(insts));
     mCurrentBlock->InsertBranch(newBlock);
     mCurrentBlock = newBlock.get();
-    mTreeToGraphMap[mCurrentNode] = mCurrentBlock;
 }
 
