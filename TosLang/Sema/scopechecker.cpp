@@ -5,7 +5,7 @@
 using namespace TosLang::FrontEnd;
 using namespace TosLang::Utils;
 
-TosLang::FrontEnd::ScopeChecker::ScopeChecker()
+ScopeChecker::ScopeChecker()
     : mErrorCount{ 0 }, mCurrentScopeID{ 0 }, mCurrentFunc{ nullptr }
 {
     mCurrentScopesTraversed.push(mCurrentScopeID);
@@ -37,7 +37,7 @@ TosLang::FrontEnd::ScopeChecker::ScopeChecker()
     };
 }
 
-size_t TosLang::FrontEnd::ScopeChecker::Run(const std::unique_ptr<ASTNode>& root, const std::shared_ptr<SymbolTable>& symTab)
+size_t ScopeChecker::Run(const std::unique_ptr<ASTNode>& root, const std::shared_ptr<SymbolTable>& symTab)
 {
     mErrorCount = 0;
     mSymbolTable = symTab;
@@ -61,7 +61,7 @@ void TosLang::FrontEnd::ScopeChecker::HandleCallExpr()
     }
 }
 
-void TosLang::FrontEnd::ScopeChecker::HandleIdentifierExpr()
+void ScopeChecker::HandleIdentifierExpr()
 {
     const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(this->mCurrentNode);
     assert(iExpr != nullptr);

@@ -6,7 +6,7 @@
 using namespace TosLang::FrontEnd;
 using namespace TosLang::Common;
 
-bool TosLang::FrontEnd::SymbolTable::AddLocalSymbol(const std::string& fnName, const std::string& varName, Symbol&& sym)
+bool SymbolTable::AddLocalSymbol(const std::string& fnName, const std::string& varName, Symbol&& sym)
 {
     // We suffix the symbol name with the scope level to allow for multiple definitions of the same variable in 
     // different scopes inside the function
@@ -57,7 +57,7 @@ bool SymbolTable::AddGlobalSymbol(const std::string& symName, Symbol&& sym)
     }
 }
 
-void TosLang::FrontEnd::SymbolTable::Clear()
+void SymbolTable::Clear()
 {
     mLocalTables.clear();
     mGlobalTable.clear();
@@ -122,7 +122,7 @@ bool SymbolTable::GetSymbol(const std::string& fnName, const std::string& symNam
     }
 }
 
-const bool TosLang::FrontEnd::SymbolTable::IsGlobalVariable(const std::string & varName) const
+const bool SymbolTable::IsGlobalVariable(const std::string & varName) const
 {
     return mGlobalTable.find(varName) == mGlobalTable.end();
 }
