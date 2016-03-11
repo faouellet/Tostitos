@@ -25,7 +25,7 @@ BOOST_AUTO_TEST_CASE( InstructionTypeTest )
         Instruction::XOR_IMM, Instruction::XOR, Instruction::MUL_IMM, Instruction::MUL, 
         Instruction::DIV_IMM, Instruction::DIV, Instruction::SHIFT, Instruction::MOD_IMM,
         Instruction::MOD, Instruction::NOT_IMM, Instruction::NOT, Instruction::NEG_IMM, 
-        Instruction::NEG, Instruction::UNKNOWN
+        Instruction::NEG
     };
 
     for (auto& type : types)
