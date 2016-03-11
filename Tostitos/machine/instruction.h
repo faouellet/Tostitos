@@ -57,7 +57,7 @@ namespace MachineEngine
                 NOT         = 0xE2,
                 NEG_IMM     = 0xF0,
                 NEG         = 0xF2,
-                UNKNOWN     = 0xF0,
+                UNKNOWN     = 0xFF,
             };
 
         public:

@@ -9,18 +9,12 @@ using namespace TosLang::FrontEnd;
 using namespace TosLang::BackEnd;
 using namespace MachineEngine::ProcessorSpace;
 
-InstructionSelector::InstructionSelector() : 
-    mNextRegister{ 0 }
-{
-    mMod.reset(new Module{});
-};
-
-
 std::unique_ptr<Module> InstructionSelector::Run(const std::unique_ptr<ASTNode>& root, const std::shared_ptr<SymbolTable>& symTab)
 {
-    // Reset the module to be produced
+    // Reset the state of the instruction selector
+    mNextRegister = 0;
+    mNodeRegister.clear();
     mMod.reset(new Module{});
-
     mSymTable = symTab;
 
     HandleProgramDecl(root);
@@ -56,6 +50,10 @@ void InstructionSelector::HandleFunctionDecl(const ASTNode* decl)
     // TODO: Insert instructions to fetch the arguements
 
     HandleCompoundStmt(fDecl->GetBody());
+
+    // Removing ties to the function
+    mCurrentBlock = nullptr;
+    mCurrentCFG = nullptr;
 }
 
 void InstructionSelector::HandleVarDecl(const ASTNode* decl) 
@@ -87,44 +85,58 @@ void InstructionSelector::HandleVarDecl(const ASTNode* decl)
 void InstructionSelector::HandleExpr(const Expr* expr)
 {
     mNodeRegister[expr] = mNextRegister++;
-    
+
     switch (expr->GetKind())
     {
     case ASTNode::NodeKind::BINARY_EXPR:
-    {
-        // TODO
-    }
+        HandleBinaryExpr(expr);
         break;
     case ASTNode::NodeKind::BOOLEAN_EXPR:
     {
         const BooleanExpr* bExpr = dynamic_cast<const BooleanExpr*>(expr);
         assert(bExpr != nullptr);
-        mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::LOAD_IMM }
-                                         .AddRegOperand(mNodeRegister[expr])
-                                         .AddImmOperand(bExpr->GetValue()));
+
+        auto vInst = VirtualInstruction{ Instruction::LOAD_IMM }
+                     .AddRegOperand(mNodeRegister[expr])
+                     .AddImmOperand(bExpr->GetValue());
+
+        if (mCurrentBlock != nullptr)
+            mCurrentBlock->InsertInstruction(vInst);
+        else
+            mMod->InsertGlobalVar(vInst);
     }
         break;
     case ASTNode::NodeKind::CALL_EXPR:
-    {
-        // TODO
-    }
+        HandleCallExpr(expr);
         break;
     case ASTNode::NodeKind::IDENTIFIER_EXPR:
     {
         const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(expr);
         assert(iExpr != nullptr);
-        mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::LOAD_IMM }
-                                         .AddRegOperand(mNodeRegister[expr])
-                                         .AddRegOperand(mNodeRegister[iExpr]));
+
+        auto vInst = VirtualInstruction{ Instruction::LOAD_IMM }
+                     .AddRegOperand(mNodeRegister[expr])
+                     .AddRegOperand(mNodeRegister[iExpr]);
+
+        if (mCurrentBlock != nullptr)
+            mCurrentBlock->InsertInstruction(vInst);
+        else
+            mMod->InsertGlobalVar(vInst);
     }
         break;
     case ASTNode::NodeKind::NUMBER_EXPR:
     {
         const NumberExpr* nExpr = dynamic_cast<const NumberExpr*>(expr);
         assert(nExpr != nullptr);
-        mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::LOAD_IMM }
-                                         .AddRegOperand(mNodeRegister[expr])
-                                         .AddImmOperand(nExpr->GetValue()));
+
+        auto vInst = VirtualInstruction{ Instruction::LOAD_IMM }
+                     .AddRegOperand(mNodeRegister[expr])
+                     .AddImmOperand(nExpr->GetValue());
+
+        if (mCurrentBlock != nullptr)
+            mCurrentBlock->InsertInstruction(vInst);
+        else
+            mMod->InsertGlobalVar(vInst);
     }
         break;
     case ASTNode::NodeKind::STRING_EXPR:
@@ -136,9 +148,14 @@ void InstructionSelector::HandleExpr(const Expr* expr)
         unsigned memSlot = mMod->InsertArrayVariable(sExpr->GetName(), sExpr->GetName()); // Name and value are the same for simplicity
 
         // We generate a load of the string literal address
-        mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::LOAD_IMM }
-                                         .AddRegOperand(mNodeRegister[expr])
-                                         .AddMemSlotOperand(memSlot));
+        auto vInst = VirtualInstruction{ Instruction::LOAD_IMM }
+                     .AddRegOperand(mNodeRegister[expr])
+                     .AddMemSlotOperand(memSlot);
+
+        if (mCurrentBlock != nullptr)
+            mCurrentBlock->InsertInstruction(vInst);
+        else
+            mMod->InsertGlobalVar(vInst);
     }
         break;
     default:

@@ -41,9 +41,10 @@ namespace TosLang
         private:
             union 
             {
-                unsigned reg;
                 unsigned imm;
-                BasicBlock* target; 
+                unsigned memslot;
+                unsigned reg;
+                BasicBlock* target;
             } mOperand;
 
             OperandKind mKind;

@@ -23,7 +23,7 @@ namespace TosLang
         class BasicBlock
         {
         public:
-            BasicBlock(const std::string& name = "")
+            BasicBlock(const std::string& name = "") : mInstructions{}
             {
                 // OK since we won't create multiple blocks in parallel
                 static size_t blockNumber = 0;

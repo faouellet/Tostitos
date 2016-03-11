@@ -25,7 +25,9 @@ namespace TosLang
         class InstructionSelector
         {
         public:
-            InstructionSelector();
+            InstructionSelector() 
+                : mNextRegister{ 0 }, mNodeRegister{ }, mMod{ nullptr }, 
+                  mCurrentCFG{ nullptr }, mCurrentBlock{ nullptr }, mSymTable{ nullptr } { }
 
         public:
             std::unique_ptr<Module> Run(const std::unique_ptr<FrontEnd::ASTNode>& root, 
