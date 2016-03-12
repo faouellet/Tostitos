@@ -104,6 +104,8 @@ static const std::string GetOpCodeName(const Instruction::InstructionOpCode& opc
     case Instruction::InstructionOpCode::ADD:           return "ADD";
     case Instruction::InstructionOpCode::SUB_IMM:       return "SUBI";
     case Instruction::InstructionOpCode::SUB:           return "SUB";
+    case Instruction::InstructionOpCode::CMP_IMM:       return "CMPI";
+    case Instruction::InstructionOpCode::CMP:           return "CMP";
     case Instruction::InstructionOpCode::AND_IMM:       return "ANDI";
     case Instruction::InstructionOpCode::AND:           return "AND";
     case Instruction::InstructionOpCode::TST:           return "TST";

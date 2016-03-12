@@ -181,13 +181,13 @@ void InstructionSelector::HandleBinaryExpr(const ASTNode* expr)
         opcode = Instruction::DIV;
         break;
     case Common::Opcode::GREATER_THAN:
-        // TODO
+        opcode = Instruction::CMP; // TODO
         break;
     case Common::Opcode::LEFT_SHIFT:
         opcode = Instruction::SHIFT; // TODO: More precision
         break;
     case Common::Opcode::LESS_THAN:
-        // TODO
+        opcode = Instruction::CMP; // TODO
         break;
     case Common::Opcode::MINUS:
         opcode = Instruction::SUB;
@@ -217,10 +217,24 @@ void InstructionSelector::HandleBinaryExpr(const ASTNode* expr)
 
     assert(opcode != Instruction::UNKNOWN);
 
+    // Handle the expression's operands
+    HandleExpr(bExpr->GetLHS());
+    HandleExpr(bExpr->GetRHS());
+
     // Generate the virtual instruction
-    mCurrentBlock->InsertInstruction(VirtualInstruction{ opcode }
-                                     .AddRegOperand(mNodeRegister[bExpr->GetLHS()])
-                                     .AddRegOperand(mNodeRegister[bExpr->GetRHS()]));
+    if (mCurrentBlock != nullptr)
+    {
+        mCurrentBlock->InsertInstruction(VirtualInstruction{ opcode }
+                                         .AddRegOperand(mNodeRegister[bExpr->GetLHS()])
+                                         .AddRegOperand(mNodeRegister[bExpr->GetRHS()]));
+    }
+    else
+    {
+        mMod->InsertGlobalVar(VirtualInstruction{ opcode }
+                              .AddRegOperand(mNodeRegister[bExpr->GetLHS()])
+                              .AddRegOperand(mNodeRegister[bExpr->GetRHS()]));
+    }
+    
 }
 
 void InstructionSelector::HandleCallExpr(const ASTNode* expr) 

@@ -39,6 +39,8 @@ namespace MachineEngine
                 ADD         = 0x52,
                 SUB_IMM     = 0x60,
                 SUB         = 0x62,
+                CMP_IMM     = 0x63,
+                CMP         = 0x64,
                 AND_IMM     = 0x70,
                 AND         = 0x72,
                 TST         = 0x74,
