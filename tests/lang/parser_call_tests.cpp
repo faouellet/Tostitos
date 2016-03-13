@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE( ParseCallZeroArgTest )
     BOOST_REQUIRE(fDecl != nullptr);
     BOOST_REQUIRE_EQUAL(fDecl->GetFunctionName(), "nothing");
 
-    const ParamVarDecls* params = fDecl->GetArguments();
+    const ParamVarDecls* params = fDecl->GetParametersDecl();
     BOOST_REQUIRE(params != nullptr);
     BOOST_REQUIRE_EQUAL(params->GetParameters().size(), 0);
 
@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE( ParseCallZeroArgTest )
     BOOST_REQUIRE(mainDecl != nullptr);
     BOOST_REQUIRE_EQUAL(mainDecl->GetFunctionName(), "main");
 
-    const ParamVarDecls* mainParams = mainDecl->GetArguments();
+    const ParamVarDecls* mainParams = mainDecl->GetParametersDecl();
     BOOST_REQUIRE(mainParams != nullptr);
     BOOST_REQUIRE_EQUAL(mainParams->GetParameters().size(), 0);
 
@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE( ParseCallOneArgTest )
     BOOST_REQUIRE(fDecl != nullptr);
     BOOST_REQUIRE_EQUAL(fDecl->GetFunctionName(), "identity");
 
-    const ParamVarDecls* paramDecls = fDecl->GetArguments();
+    const ParamVarDecls* paramDecls = fDecl->GetParametersDecl();
     BOOST_REQUIRE(paramDecls != nullptr);
     auto& params = paramDecls->GetParameters();
     BOOST_REQUIRE_EQUAL(params.size(), 1);
@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE( ParseCallOneArgTest )
     BOOST_REQUIRE(mainDecl != nullptr);
     BOOST_REQUIRE_EQUAL(mainDecl->GetFunctionName(), "main");
 
-    const ParamVarDecls* mainParams = mainDecl->GetArguments();
+    const ParamVarDecls* mainParams = mainDecl->GetParametersDecl();
     BOOST_REQUIRE(mainParams != nullptr);
     BOOST_REQUIRE_EQUAL(mainParams->GetParameters().size(), 0);
 
@@ -165,7 +165,7 @@ BOOST_AUTO_TEST_CASE( ParseCallOneArgBinopTest )
     BOOST_REQUIRE(fDecl != nullptr);
     BOOST_REQUIRE_EQUAL(fDecl->GetFunctionName(), "identity");
 
-    const ParamVarDecls* paramDecls = fDecl->GetArguments();
+    const ParamVarDecls* paramDecls = fDecl->GetParametersDecl();
     BOOST_REQUIRE(paramDecls != nullptr);
     auto& params = paramDecls->GetParameters();
     BOOST_REQUIRE_EQUAL(params.size(), 1);
@@ -195,7 +195,7 @@ BOOST_AUTO_TEST_CASE( ParseCallOneArgBinopTest )
     BOOST_REQUIRE(mainDecl != nullptr);
     BOOST_REQUIRE_EQUAL(mainDecl->GetFunctionName(), "main");
 
-    const ParamVarDecls* mainParams = mainDecl->GetArguments();
+    const ParamVarDecls* mainParams = mainDecl->GetParametersDecl();
     BOOST_REQUIRE(mainParams != nullptr);
     BOOST_REQUIRE_EQUAL(mainParams->GetParameters().size(), 0);
 
@@ -251,7 +251,7 @@ BOOST_AUTO_TEST_CASE( ParseCallMultiArgsTest )
     BOOST_REQUIRE(fDecl != nullptr);
     BOOST_REQUIRE_EQUAL(fDecl->GetFunctionName(), "sum");
 
-    const ParamVarDecls* paramDecls = fDecl->GetArguments();
+    const ParamVarDecls* paramDecls = fDecl->GetParametersDecl();
     BOOST_REQUIRE(paramDecls != nullptr);
     auto& params = paramDecls->GetParameters();
     BOOST_REQUIRE_EQUAL(params.size(), 3);
@@ -286,7 +286,7 @@ BOOST_AUTO_TEST_CASE( ParseCallMultiArgsTest )
     BOOST_REQUIRE(mainDecl != nullptr);
     BOOST_REQUIRE_EQUAL(mainDecl->GetFunctionName(), "main");
 
-    const ParamVarDecls* mainParams = mainDecl->GetArguments();
+    const ParamVarDecls* mainParams = mainDecl->GetParametersDecl();
     BOOST_REQUIRE(mainParams != nullptr);
     BOOST_REQUIRE_EQUAL(mainParams->GetParameters().size(), 0);
 
@@ -346,7 +346,7 @@ BOOST_AUTO_TEST_CASE( ParseCallMultiArgsOneBinopTest )
     BOOST_REQUIRE(fDecl != nullptr);
     BOOST_REQUIRE_EQUAL(fDecl->GetFunctionName(), "sum");
 
-    const ParamVarDecls* paramDecls = fDecl->GetArguments();
+    const ParamVarDecls* paramDecls = fDecl->GetParametersDecl();
     BOOST_REQUIRE(paramDecls != nullptr);
     auto& params = paramDecls->GetParameters();
     BOOST_REQUIRE_EQUAL(params.size(), 3);
@@ -381,7 +381,7 @@ BOOST_AUTO_TEST_CASE( ParseCallMultiArgsOneBinopTest )
     BOOST_REQUIRE(mainDecl != nullptr);
     BOOST_REQUIRE_EQUAL(mainDecl->GetFunctionName(), "main");
 
-    const ParamVarDecls* mainParams = mainDecl->GetArguments();
+    const ParamVarDecls* mainParams = mainDecl->GetParametersDecl();
     BOOST_REQUIRE(mainParams != nullptr);
     BOOST_REQUIRE_EQUAL(mainParams->GetParameters().size(), 0);
 
@@ -445,7 +445,7 @@ BOOST_AUTO_TEST_CASE( ParseCallMultiArgsMultiBinopsTest )
     BOOST_REQUIRE(fDecl != nullptr);
     BOOST_REQUIRE_EQUAL(fDecl->GetFunctionName(), "sum");
 
-    const ParamVarDecls* paramDecls = fDecl->GetArguments();
+    const ParamVarDecls* paramDecls = fDecl->GetParametersDecl();
     BOOST_REQUIRE(paramDecls != nullptr);
     auto& params = paramDecls->GetParameters();
     BOOST_REQUIRE_EQUAL(params.size(), 3);
@@ -480,7 +480,7 @@ BOOST_AUTO_TEST_CASE( ParseCallMultiArgsMultiBinopsTest )
     BOOST_REQUIRE(mainDecl != nullptr);
     BOOST_REQUIRE_EQUAL(mainDecl->GetFunctionName(), "main");
 
-    const ParamVarDecls* mainParams = mainDecl->GetArguments();
+    const ParamVarDecls* mainParams = mainDecl->GetParametersDecl();
     BOOST_REQUIRE(mainParams != nullptr);
     BOOST_REQUIRE_EQUAL(mainParams->GetParameters().size(), 0);
 

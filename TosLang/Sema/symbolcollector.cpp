@@ -74,7 +74,7 @@ void SymbolCollector::HandleFunctionDecl()
     sStream << static_cast<std::underlying_type<Common::Type>::type>(fnDecl->GetReturnType());
     fnType.push_back(fnDecl->GetReturnType());
 
-    const ParamVarDecls* paramDecl = dynamic_cast<const ParamVarDecls*>(fnDecl->GetArguments());
+    const ParamVarDecls* paramDecl = dynamic_cast<const ParamVarDecls*>(fnDecl->GetParametersDecl());
     assert(paramDecl != nullptr);
 
     for (auto& param : paramDecl->GetParameters())

@@ -185,11 +185,11 @@ namespace TosLang
             const Common::Type GetReturnType() const { return mReturnType; }
 
             /*
-            * \fn       GetArguments
-            * \brief    Gets the arguments of the function
+            * \fn       GetParametersDecl
+            * \brief    Gets the parammeters declarations of the function
             * \return   Arguments of the function
             */
-            const ParamVarDecls* GetArguments() const { assert(mChildren.size() == 2); return GetChildNodeAs<ParamVarDecls>(0); }
+            const ParamVarDecls* GetParametersDecl() const { assert(mChildren.size() == 2); return GetChildNodeAs<ParamVarDecls>(0); }
 
             /*
             * \fn       GetBody

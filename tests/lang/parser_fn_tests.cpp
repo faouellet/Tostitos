@@ -25,7 +25,7 @@ BOOST_AUTO_TEST_CASE( ParseFuncVoidTest )
     BOOST_REQUIRE(fDecl != nullptr);
     BOOST_REQUIRE_EQUAL(fDecl->GetFunctionName(), "MyFunc");
 
-    const ParamVarDecls* params = fDecl->GetArguments();
+    const ParamVarDecls* params = fDecl->GetParametersDecl();
     BOOST_REQUIRE(params != nullptr);
     BOOST_REQUIRE_EQUAL(params->GetParameters().size(), 0);
 
@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE( ParseFuncZeroArgTest )
     BOOST_REQUIRE(fDecl != nullptr);
     BOOST_REQUIRE_EQUAL(fDecl->GetFunctionName(), "MyFunc");
     
-    const ParamVarDecls* params = fDecl->GetArguments();
+    const ParamVarDecls* params = fDecl->GetParametersDecl();
     BOOST_REQUIRE(params != nullptr);
     BOOST_REQUIRE_EQUAL(params->GetParameters().size(), 0);
     
@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE( ParseFuncOneArgTest )
     BOOST_REQUIRE(fDecl != nullptr);
     BOOST_REQUIRE_EQUAL(fDecl->GetFunctionName(), "MyFunc");
 
-    const ParamVarDecls* pVDecls = fDecl->GetArguments();
+    const ParamVarDecls* pVDecls = fDecl->GetParametersDecl();
     BOOST_REQUIRE(pVDecls != nullptr);
     auto& params = pVDecls->GetParameters();
     BOOST_REQUIRE_EQUAL(params.size(), 1);
@@ -114,7 +114,7 @@ BOOST_AUTO_TEST_CASE( ParseFuncMultiArgsTest )
     BOOST_REQUIRE(fDecl != nullptr);
     BOOST_REQUIRE_EQUAL(fDecl->GetFunctionName(), "MyFunc");
 
-    const ParamVarDecls* pVDecls = fDecl->GetArguments();
+    const ParamVarDecls* pVDecls = fDecl->GetParametersDecl();
     BOOST_REQUIRE(pVDecls != nullptr);
     auto& params = pVDecls->GetParameters();
     BOOST_REQUIRE_EQUAL(params.size(), 3);
