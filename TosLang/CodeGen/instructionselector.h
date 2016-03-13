@@ -1,6 +1,7 @@
 #ifndef INSTRUCTION_SELECTOR_H__TOSTITOS
 #define INSTRUCTION_SELECTOR_H__TOSTITOS
 
+#include "activationrecord.h"
 #include "../CFG/module.h"
 #include "../Sema/symboltable.h"
 
@@ -30,8 +31,9 @@ namespace TosLang
                   mCurrentCFG{ nullptr }, mCurrentBlock{ nullptr }, mSymTable{ nullptr } { }
 
         public:
-            std::unique_ptr<Module> Run(const std::unique_ptr<FrontEnd::ASTNode>& root, 
-                                        const std::shared_ptr<FrontEnd::SymbolTable>& symTab);
+            std::unique_ptr<Module> Run(const std::unique_ptr<FrontEnd::ASTNode>& root,
+                                        const std::shared_ptr<FrontEnd::SymbolTable>& symTab,
+                                        FuncRecords&& fRecs);
 
         protected:  // Declarations
             void HandleFunctionDecl(const FrontEnd::ASTNode* decl);
@@ -75,6 +77,7 @@ namespace TosLang
             ControlFlowGraph* mCurrentCFG;                                      /*!< Current function (CFG version being written) */
             BasicBlock* mCurrentBlock;                                          /*!< Current basic block being written to */
             std::shared_ptr<FrontEnd::SymbolTable> mSymTable;                   /*!< Symbols associated with the AST being traversed */
+            FuncRecords mRecords;                                               /*!< Activation recrod of all the functions in a program */
         };
     }
 }

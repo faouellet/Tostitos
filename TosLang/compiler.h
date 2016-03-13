@@ -18,6 +18,7 @@ namespace TosLang
 
     namespace BackEnd
     {
+        class ActivationRecorder;
         class InstructionSelector;
     }
 
@@ -48,6 +49,7 @@ namespace TosLang
         std::unique_ptr<FrontEnd::SymbolCollector> mSymCollector;
         std::unique_ptr<FrontEnd::ScopeChecker> mSChecker;
         std::unique_ptr<FrontEnd::TypeChecker> mTChecker;
+        std::unique_ptr<BackEnd::ActivationRecorder> mRecorder;
         std::unique_ptr<BackEnd::InstructionSelector> mISel;
     };
 }

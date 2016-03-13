@@ -1,5 +1,6 @@
 #include "compiler.h"
 
+#include "CodeGen/activationrecorder.h"
 #include "CodeGen/instructionselector.h"
 #include "CFG/module.h"
 #include "Parse/parser.h"
@@ -25,6 +26,7 @@ Compiler::Compiler()
     mSChecker.reset(new ScopeChecker{});
     mTChecker.reset(new TypeChecker{});
 
+    mRecorder.reset(new BackEnd::ActivationRecorder{});
     mISel.reset(new BackEnd::InstructionSelector{});
 }
 
@@ -66,7 +68,9 @@ void Compiler::DumpCFG(const std::string& programFile)
     if (errorCount != 0)
         return;
 
-    std::unique_ptr<Module> module = mISel->Run(programAST, mSymTable);
+    FuncRecords records = mRecorder->Run(programAST, mSymTable);
+
+    std::unique_ptr<Module> module = mISel->Run(programAST, mSymTable, std::move(records));
     if (module == nullptr)
         return;
 

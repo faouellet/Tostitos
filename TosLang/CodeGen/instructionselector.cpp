@@ -9,7 +9,7 @@ using namespace TosLang::FrontEnd;
 using namespace TosLang::BackEnd;
 using namespace MachineEngine::ProcessorSpace;
 
-std::unique_ptr<Module> InstructionSelector::Run(const std::unique_ptr<ASTNode>& root, const std::shared_ptr<SymbolTable>& symTab)
+std::unique_ptr<Module> InstructionSelector::Run(const std::unique_ptr<ASTNode>& root, const std::shared_ptr<SymbolTable>& symTab, FuncRecords&& fRecs)
 {
     // Reset the state of the instruction selector
     mNextRegister = 0;

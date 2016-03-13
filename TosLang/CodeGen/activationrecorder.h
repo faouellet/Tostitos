@@ -1,10 +1,9 @@
 #ifndef ACTIVATION_RECORDER_H__TOSTITOS
 #define ACTIVATION_RECORDER_H__TOSTITOS
 
+#include "../CodeGen/activationrecord.h"
 #include "../Common/astvisitor.h"
 #include "../Sema/symboltable.h"
-
-#include <map>
 
 namespace TosLang
 {
@@ -17,29 +16,6 @@ namespace TosLang
 
     namespace BackEnd
     {
-        /*
-        * \class ActivationRecord
-        * \brief
-        */
-        class ActivationRecord
-        {
-        public:
-            ActivationRecord(size_t argSize = 0) 
-                : mArgsSize{ argSize } { }
-
-        public:
-            void AddLocalVar(const FrontEnd::ASTNode* node) { mLocalVars.push_back(node); }
-            const std::vector<const FrontEnd::ASTNode*>& GetLocalVar() const { return mLocalVars; }
-
-        private:
-            size_t mArgsSize;                                   /*!< Size of the memory occupied by the function's arguments */
-            std::vector<const FrontEnd::ASTNode*> mLocalVars;   /*!< Local variables ordered by creation order. 
-                                                                     This will allow fast computation of the local variables' memory location */
-        };
-
-        using RecordPtr = std::unique_ptr<ActivationRecord>;
-        using FuncRecords = std::map<std::string, RecordPtr>;
-
         /*
         * \class ActivationRecorder 
         * \brief AST pass that collects activation information on all the functions of a program. It is assumed 
