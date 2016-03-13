@@ -1,5 +1,6 @@
 #include "scopechecker.h"
 
+#include "../AST/declarations.h"
 #include "../Utils/errorlogger.h"
 
 using namespace TosLang::FrontEnd;

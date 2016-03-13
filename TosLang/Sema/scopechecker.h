@@ -1,7 +1,6 @@
 #ifndef SCOPE_CHECKER_H__TOSTITOS
 #define SCOPE_CHECKER_H__TOSTITOS
 
-#include "../AST/declarations.h"
 #include "../Common/astvisitor.h"
 #include "symboltable.h"
 
@@ -9,6 +8,8 @@ namespace TosLang
 {
     namespace FrontEnd
     {
+        class FunctionDecl;
+
         /*
         * \class ScopeChecker
         * \brief AST pass that verifies when a variable is used or a function is called it is accessible in the current scope.
