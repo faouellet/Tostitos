@@ -17,10 +17,14 @@ namespace TosLang
         {
             void Execute(const BackEnd::BlockPtr block)
             {
+                std::cout << block->GetName() << std::endl;
+
                 for (auto instIt = block->inst_begin(), instEnd = block->inst_end(); instIt != instEnd; ++instIt)
                 {
-                    std::cout << *instIt << std::endl;;
+                    std::cout << "\t" << *instIt << std::endl;;
                 }
+             
+                std::cout << std::endl;
             }
         };
 
