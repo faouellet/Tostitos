@@ -7,7 +7,7 @@
 
 using namespace TosLang::BackEnd;
 
-static const std::string GetOpCodeName(const Instruction::InstructionOpCode& opcode);
+static const std::string GetOpCodeName(const VirtualInstruction::Opcode& opcode);
 
 //////////////////// VirtualOperand ////////////////////
 
@@ -85,47 +85,45 @@ std::ostream& TosLang::BackEnd::operator<<(std::ostream& stream, const VirtualIn
     return stream;
 }
 
-static const std::string GetOpCodeName(const Instruction::InstructionOpCode& opcode)
+static const std::string GetOpCodeName(const VirtualInstruction::Opcode& opcode)
 {
     switch (opcode)
     {
-    case Instruction::InstructionOpCode::NO_OP:         return "NOP";
-    case Instruction::InstructionOpCode::JUMP:          return "JMP";
-    case Instruction::InstructionOpCode::CALL:          return "CALL";
-    case Instruction::InstructionOpCode::RET:           return "RET";
-    case Instruction::InstructionOpCode::LOAD_IMM:      return "LDI";
-    case Instruction::InstructionOpCode::MOV:           return "MOV";
-    case Instruction::InstructionOpCode::STORE:         return "STM";
-    case Instruction::InstructionOpCode::PUSH:          return "PUSH";
-    case Instruction::InstructionOpCode::POP:           return "POP";
-    case Instruction::InstructionOpCode::PUSHALL:       return "PUSHALL";
-    case Instruction::InstructionOpCode::POPALL:        return "POPALL";
-    case Instruction::InstructionOpCode::ADD_IMM:       return "ADDI";
-    case Instruction::InstructionOpCode::ADD:           return "ADD";
-    case Instruction::InstructionOpCode::SUB_IMM:       return "SUBI";
-    case Instruction::InstructionOpCode::SUB:           return "SUB";
-    case Instruction::InstructionOpCode::CMP_IMM:       return "CMPI";
-    case Instruction::InstructionOpCode::CMP:           return "CMP";
-    case Instruction::InstructionOpCode::AND_IMM:       return "ANDI";
-    case Instruction::InstructionOpCode::AND:           return "AND";
-    case Instruction::InstructionOpCode::TST:           return "TST";
-    case Instruction::InstructionOpCode::OR_IMM:        return "ORI";
-    case Instruction::InstructionOpCode::OR:            return "OR";
-    case Instruction::InstructionOpCode::XOR_IMM:       return "XORI";
-    case Instruction::InstructionOpCode::XOR:           return "XOR";
-    case Instruction::InstructionOpCode::MUL_IMM:       return "MULI";
-    case Instruction::InstructionOpCode::MUL:           return "MUL";
-    case Instruction::InstructionOpCode::DIV_IMM:       return "DIVI";
-    case Instruction::InstructionOpCode::DIV:           return "DIV";
-    case Instruction::InstructionOpCode::SHIFT:         return "SHIFT";
-    case Instruction::InstructionOpCode::MOD_IMM:       return "MODI";
-    case Instruction::InstructionOpCode::MOD:           return "MOD";
-    case Instruction::InstructionOpCode::NOT_IMM:       return "NOTI";
-    case Instruction::InstructionOpCode::NOT:           return "NOT";
-    case Instruction::InstructionOpCode::NEG_IMM:       return "NEGI";
-    case Instruction::InstructionOpCode::NEG:           return "NEG";
-    case Instruction::InstructionOpCode::UNKNOWN:       return "UNKNOWN";
-    default:
-        break;
+    case VirtualInstruction::Opcode::NO_OP:         return "NOP";
+    case VirtualInstruction::Opcode::ALLOCA:        return "ALLOCA";
+    case VirtualInstruction::Opcode::JUMP:          return "JMP";
+    case VirtualInstruction::Opcode::CALL:          return "CALL";
+    case VirtualInstruction::Opcode::RET:           return "RET";
+    case VirtualInstruction::Opcode::LOAD_IMM:      return "LDI";
+    case VirtualInstruction::Opcode::MOV:           return "MOV";
+    case VirtualInstruction::Opcode::STORE:         return "STM";
+    case VirtualInstruction::Opcode::PUSH:          return "PUSH";
+    case VirtualInstruction::Opcode::POP:           return "POP";
+    case VirtualInstruction::Opcode::ADD_IMM:       return "ADDI";
+    case VirtualInstruction::Opcode::ADD:           return "ADD";
+    case VirtualInstruction::Opcode::SUB_IMM:       return "SUBI";
+    case VirtualInstruction::Opcode::SUB:           return "SUB";
+    case VirtualInstruction::Opcode::LT:            return "LT";
+    case VirtualInstruction::Opcode::GT:            return "GT";
+    case VirtualInstruction::Opcode::AND_IMM:       return "ANDI";
+    case VirtualInstruction::Opcode::AND:           return "AND";
+    case VirtualInstruction::Opcode::OR_IMM:        return "ORI";
+    case VirtualInstruction::Opcode::OR:            return "OR";
+    case VirtualInstruction::Opcode::XOR_IMM:       return "XORI";
+    case VirtualInstruction::Opcode::XOR:           return "XOR";
+    case VirtualInstruction::Opcode::MUL_IMM:       return "MULI";
+    case VirtualInstruction::Opcode::MUL:           return "MUL";
+    case VirtualInstruction::Opcode::DIV_IMM:       return "DIVI";
+    case VirtualInstruction::Opcode::DIV:           return "DIV";
+    case VirtualInstruction::Opcode::LSHIFT:        return "LSHIFT";
+    case VirtualInstruction::Opcode::RSHIFT:        return "RSHIFT";
+    case VirtualInstruction::Opcode::MOD_IMM:       return "MODI";
+    case VirtualInstruction::Opcode::MOD:           return "MOD";
+    case VirtualInstruction::Opcode::NOT_IMM:       return "NOTI";
+    case VirtualInstruction::Opcode::NOT:           return "NOT";
+    case VirtualInstruction::Opcode::NEG_IMM:       return "NEGI";
+    case VirtualInstruction::Opcode::NEG:           return "NEG";
+    case VirtualInstruction::Opcode::UNKNOWN:       return "UNKNOWN";
+    default:                                        return "";       
     }
 }

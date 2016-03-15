@@ -19,51 +19,6 @@ namespace MachineEngine
         {
         public:
             /**
-            * \enum     InstructionType
-            * \brief    Leading byte for the different types of instruction
-            */
-            enum InstructionOpCode
-            {
-                NO_OP       = 0x00,
-                JUMP        = 0x10,
-                CALL        = 0x14,
-                RET         = 0x15,
-                LOAD_IMM    = 0x20,
-                MOV         = 0x24,
-                STORE       = 0x30,
-                PUSH        = 0x40,
-                POP         = 0x41,
-                PUSHALL     = 0x42,
-                POPALL      = 0x43,
-                ADD_IMM     = 0x50,
-                ADD         = 0x52,
-                SUB_IMM     = 0x60,
-                SUB         = 0x62,
-                CMP_IMM     = 0x63,
-                CMP         = 0x64,
-                AND_IMM     = 0x70,
-                AND         = 0x72,
-                TST         = 0x74,
-                OR_IMM      = 0x80,
-                OR          = 0x82,
-                XOR_IMM     = 0x90,
-                XOR         = 0x92,
-                MUL_IMM     = 0xA0,
-                MUL         = 0xA2,
-                DIV_IMM     = 0xB0,
-                DIV         = 0xB2,
-                SHIFT       = 0xC0,
-                MOD_IMM     = 0xD0,
-                MOD         = 0xD2,
-                NOT_IMM     = 0xE0,
-                NOT         = 0xE2,
-                NEG_IMM     = 0xF0,
-                NEG         = 0xF2,
-                UNKNOWN     = 0xFF,
-            };
-
-        public:
-            /**
             * \fn           Instruction
             * \brief        Default constructor
             * \param value  Value of the instruction. 0 by default.
@@ -75,7 +30,7 @@ namespace MachineEngine
             * \brief        Constructor
             * \param value  Value of the instruction. 0 by default.
             */
-			explicit Instruction(InstructionOpCode iType);
+			//explicit Instruction(InstructionOpCode iType);
 
             /**
             * \fn       Instruction

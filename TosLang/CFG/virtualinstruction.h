@@ -58,7 +58,47 @@ namespace TosLang
         class VirtualInstruction
         {
         public:
-            explicit VirtualInstruction(Instruction::InstructionOpCode opcode) : mOpCode{ opcode }, mNumOperands { 0 } { }
+            enum class Opcode
+            {
+                NO_OP,
+                ALLOCA,
+                JUMP,
+                CALL,
+                RET,
+                LOAD_IMM,
+                MOV,
+                STORE,
+                PUSH,
+                POP,
+                ADD_IMM,
+                ADD,
+                SUB_IMM,
+                SUB,
+                GT,
+                LT,
+                AND_IMM,
+                AND,
+                OR_IMM,
+                OR,
+                XOR_IMM,
+                XOR,
+                MUL_IMM,
+                MUL,
+                DIV_IMM,
+                DIV,
+                LSHIFT,
+                RSHIFT,
+                MOD_IMM,
+                MOD,
+                NOT_IMM,
+                NOT,
+                NEG_IMM,
+                NEG,
+                UNKNOWN,
+            };
+
+        public:
+            explicit VirtualInstruction(Opcode opcode) : mOpCode{ opcode }, mNumOperands { 0 } { }
 
         public:
             VirtualInstruction& AddImmOperand(unsigned op);
@@ -70,7 +110,7 @@ namespace TosLang
             friend std::ostream& operator<<(std::ostream& stream, const VirtualInstruction& inst);
 
         private:
-            Instruction::InstructionOpCode mOpCode;
+            Opcode mOpCode;
             std::array<VirtualOperand, 3> mOperands;
             unsigned short mNumOperands;
         };     

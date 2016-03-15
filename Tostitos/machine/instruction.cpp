@@ -6,10 +6,10 @@ using namespace MachineEngine::ProcessorSpace;
 
 Instruction::Instruction(const Utils::UInt32 value) : mValue{ value } { }
 
-Instruction::Instruction(Instruction::InstructionOpCode iType)
+/*Instruction::Instruction(Instruction::InstructionOpCode iType)
 {
     mValue = static_cast<UInt32>(iType) << 24;
-}
+}*/
 
 UInt8 Instruction::GetOpcode() const
 {
@@ -36,10 +36,10 @@ UInt16 Instruction::GetImmediateValue() const
     return ((mValue << 8) & 0xFF00) | ((mValue >> 8) & 0xFF);
 }
 
-UInt8 Instruction::GetType() const
+/*UInt8 Instruction::GetType() const
 {
     return static_cast<InstructionOpCode>(mValue >> 24);
-}
+}*/
 
 // TODO: The setters are good for now, but they might need to change in the long term. I see 2 possibles options:
 //       1- Find a way to set only part of an integer

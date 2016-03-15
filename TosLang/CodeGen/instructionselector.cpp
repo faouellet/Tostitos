@@ -31,7 +31,7 @@ void InstructionSelector::HandleProgramDecl(const std::unique_ptr<ASTNode>& root
         else if (stmt->GetKind() == ASTNode::NodeKind::VAR_DECL)
             HandleVarDecl(stmt.get());
         else
-            assert(false);  // Shouldn't happen
+            assert(false && "Unknown declaration in program");  // Shouldn't happen
     }
 }
 
@@ -42,8 +42,8 @@ void InstructionSelector::HandleFunctionDecl(const ASTNode* decl)
 
     // New function declaration so we need to build a new control flow graph
     CFGPtr pCFG = std::make_shared<ControlFlowGraph>();
-    mCurrentCFG = pCFG.get();
-    mCurrentBlock = mCurrentCFG->CreateNewBlock().get();
+    mCurrentFunc = pCFG.get();
+    mCurrentBlock = mCurrentFunc->CreateNewBlock().get();
 
     mMod->InsertFunction(fDecl->GetFunctionName(), pCFG);
 
@@ -53,7 +53,7 @@ void InstructionSelector::HandleFunctionDecl(const ASTNode* decl)
 
     // Removing ties to the function
     mCurrentBlock = nullptr;
-    mCurrentCFG = nullptr;
+    mCurrentFunc = nullptr;
 }
 
 void InstructionSelector::HandleVarDecl(const ASTNode* decl) 
@@ -67,10 +67,11 @@ void InstructionSelector::HandleVarDecl(const ASTNode* decl)
     if (initExpr != nullptr)
     {
         mNodeRegister[decl] = mNextRegister++;
+
         HandleExpr(initExpr);
 
         // Generate a load instruction into the variable's register
-        VirtualInstruction vInst = VirtualInstruction{ Instruction::LOAD_IMM }
+        VirtualInstruction vInst = VirtualInstruction{ VirtualInstruction::Opcode::LOAD_IMM }
                                    .AddRegOperand(mNodeRegister[decl])
                                    .AddRegOperand(mNodeRegister[initExpr]);
 
@@ -96,7 +97,7 @@ void InstructionSelector::HandleExpr(const Expr* expr)
         const BooleanExpr* bExpr = dynamic_cast<const BooleanExpr*>(expr);
         assert(bExpr != nullptr);
 
-        auto vInst = VirtualInstruction{ Instruction::LOAD_IMM }
+        auto vInst = VirtualInstruction{ VirtualInstruction::Opcode::LOAD_IMM }
                      .AddRegOperand(mNodeRegister[expr])
                      .AddImmOperand(bExpr->GetValue());
 
@@ -114,7 +115,7 @@ void InstructionSelector::HandleExpr(const Expr* expr)
         const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(expr);
         assert(iExpr != nullptr);
 
-        auto vInst = VirtualInstruction{ Instruction::LOAD_IMM }
+        auto vInst = VirtualInstruction{ VirtualInstruction::Opcode::LOAD_IMM }
                      .AddRegOperand(mNodeRegister[expr])
                      .AddRegOperand(mNodeRegister[iExpr]);
 
@@ -129,7 +130,7 @@ void InstructionSelector::HandleExpr(const Expr* expr)
         const NumberExpr* nExpr = dynamic_cast<const NumberExpr*>(expr);
         assert(nExpr != nullptr);
 
-        auto vInst = VirtualInstruction{ Instruction::LOAD_IMM }
+        auto vInst = VirtualInstruction{ VirtualInstruction::Opcode::LOAD_IMM }
                      .AddRegOperand(mNodeRegister[expr])
                      .AddImmOperand(nExpr->GetValue());
 
@@ -148,7 +149,7 @@ void InstructionSelector::HandleExpr(const Expr* expr)
         unsigned memSlot = mMod->InsertArrayVariable(sExpr->GetName(), sExpr->GetName()); // Name and value are the same for simplicity
 
         // We generate a load of the string literal address
-        auto vInst = VirtualInstruction{ Instruction::LOAD_IMM }
+        auto vInst = VirtualInstruction{ VirtualInstruction::Opcode::LOAD_IMM }
                      .AddRegOperand(mNodeRegister[expr])
                      .AddMemSlotOperand(memSlot);
 
@@ -170,52 +171,52 @@ void InstructionSelector::HandleBinaryExpr(const ASTNode* expr)
     assert(bExpr != nullptr);
 
     // Choose the correct opcode
-    Instruction::InstructionOpCode opcode = Instruction::UNKNOWN;
+    VirtualInstruction::Opcode opcode = VirtualInstruction::Opcode::UNKNOWN;
     switch (bExpr->GetOperation())
     {
     case Common::Opcode::AND_BOOL:
     case Common::Opcode::AND_INT:
-        opcode = Instruction::AND;
+        opcode = VirtualInstruction::Opcode::AND;
         break;
     case Common::Opcode::DIVIDE:
-        opcode = Instruction::DIV;
+        opcode = VirtualInstruction::Opcode::DIV;
         break;
     case Common::Opcode::GREATER_THAN:
-        opcode = Instruction::CMP; // TODO
+        opcode = VirtualInstruction::Opcode::GT;
         break;
     case Common::Opcode::LEFT_SHIFT:
-        opcode = Instruction::SHIFT; // TODO: More precision
+        opcode = VirtualInstruction::Opcode::LSHIFT;
         break;
     case Common::Opcode::LESS_THAN:
-        opcode = Instruction::CMP; // TODO
+        opcode = VirtualInstruction::Opcode::LT;
         break;
     case Common::Opcode::MINUS:
-        opcode = Instruction::SUB;
+        opcode = VirtualInstruction::Opcode::SUB;
         break;
     case Common::Opcode::MODULO:
-        opcode = Instruction::MOD;
+        opcode = VirtualInstruction::Opcode::MOD;
         break;
     case Common::Opcode::MULT:
-        opcode = Instruction::MUL;
+        opcode = VirtualInstruction::Opcode::MUL;
         break;
     case Common::Opcode::NOT:
-        opcode = Instruction::NOT;
+        opcode = VirtualInstruction::Opcode::NOT;
         break;
     case Common::Opcode::OR_BOOL:
     case Common::Opcode::OR_INT:
-        opcode = Instruction::OR;
+        opcode = VirtualInstruction::Opcode::OR;
         break;
     case Common::Opcode::PLUS:
-        opcode = Instruction::ADD;
+        opcode = VirtualInstruction::Opcode::ADD;
         break;
     case Common::Opcode::RIGHT_SHIFT:
-        opcode = Instruction::SHIFT; // TODO: More precision
+        opcode = VirtualInstruction::Opcode::RSHIFT;
         break;
     default:
         break;
     }
 
-    assert(opcode != Instruction::UNKNOWN);
+    assert(opcode != VirtualInstruction::Opcode::UNKNOWN);
 
     // Handle the expression's operands
     HandleExpr(bExpr->GetLHS());
@@ -245,7 +246,7 @@ void InstructionSelector::HandleCallExpr(const ASTNode* expr)
     // TODO: what to do with the function arguments?
 
     // We generate a call instruction. This will take care of the stack pointer.
-    mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::CALL }
+    mCurrentBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::CALL }
                                      // TODO: Quite a mouthful
                                      .AddTargetOperand(mMod->GetFunction(cExpr->GetCalleeName())->GetEntryBlock().get()));
 }
@@ -311,23 +312,15 @@ void InstructionSelector::HandleIfStmt(const ASTNode* stmt)
 
     // Creating the exit block
     CreateNewCurrentBlock();
-
-    // Generating a comparison instruction to prepare the flag register
-    // before the branch
-    condBlock->InsertInstruction(VirtualInstruction{ Instruction::TST }
+    
+    // Generating a branch instruction that goes from the condition block to the then (body) begin block
+    condBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::JUMP }
                                  .AddRegOperand(mNodeRegister[iStmt->GetCondExpr()])
-                                 .AddImmOperand(1));
-
-    // Generating a branch instruction from the condition block to the then begin block
-    condBlock->InsertInstruction(VirtualInstruction{ Instruction::JUMP }
-                                 .AddTargetOperand(thenBeginBlock.get()));
-
-    // Generating a branch instruction from the condition block to the exit block
-    condBlock->InsertInstruction(VirtualInstruction{ Instruction::JUMP }
+                                 .AddTargetOperand(thenBeginBlock.get())
                                  .AddTargetOperand(mCurrentBlock));
 
-    // Generating a branch instruction from the then end block to the exit block
-    thenEndBlock->InsertInstruction(VirtualInstruction{ Instruction::JUMP }
+    // Generating a branch instruction from the then (body) end block to the exit block
+    thenEndBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::JUMP }
                                     .AddTargetOperand(mCurrentBlock));
 }
 
@@ -350,7 +343,7 @@ void InstructionSelector::HandleReturnStmt(const ASTNode* stmt)
     }
 
     // We generate a return opcode. This will take care of dealing with the stack pointer.
-    mCurrentBlock->InsertInstruction(VirtualInstruction{ Instruction::RET });
+    mCurrentBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::RET });
 }
 
 void InstructionSelector::HandleScanStmt(const ASTNode* stmt)
@@ -384,28 +377,20 @@ void InstructionSelector::HandleWhileStmt(const ASTNode* stmt)
     // Creating the exit block
     CreateNewCurrentBlock();
 
-    // Generating a comparison instruction to prepare the flag register
-    // before the branch
-    headerBlock->InsertInstruction(VirtualInstruction{ Instruction::TST }
-                                  .AddRegOperand(mNodeRegister[wStmt->GetCondExpr()])
-                                  .AddImmOperand(1));
-
-    // Generating a branch instruction from the header block to the body begin block
-    headerBlock->InsertInstruction(VirtualInstruction{ Instruction::JUMP }
-                                   .AddTargetOperand(bodyBeginBlock.get()));
-
-    // Generating a branch instruction from the header block to the exit block
-    headerBlock->InsertInstruction(VirtualInstruction{ Instruction::JUMP }
+    // Generating a branch instruction that goes from the header block to either the body begin block or the exit block
+    headerBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::JUMP }
+                                   .AddRegOperand(mNodeRegister[wStmt->GetCondExpr()])
+                                   .AddTargetOperand(bodyBeginBlock.get())
                                    .AddTargetOperand(mCurrentBlock));
 
     // Generating a branch instruction from the body end block to the header block
-    bodyEndBlock->InsertInstruction(VirtualInstruction{ Instruction::JUMP }
+    bodyEndBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::JUMP }
                                     .AddTargetOperand(headerBlock));
 }
 
 void TosLang::BackEnd::InstructionSelector::CreateNewCurrentBlock(std::vector<VirtualInstruction>&& insts)
 {
-    BlockPtr newBlock = mCurrentCFG->CreateNewBlock(std::move(insts));
+    BlockPtr newBlock = mCurrentFunc->CreateNewBlock(std::move(insts));
     mCurrentBlock->InsertBranch(newBlock);
     mCurrentBlock = newBlock.get();
 }

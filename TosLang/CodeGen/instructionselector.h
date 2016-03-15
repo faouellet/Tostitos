@@ -28,7 +28,7 @@ namespace TosLang
         public:
             InstructionSelector() 
                 : mNextRegister{ 0 }, mNodeRegister{ }, mMod{ nullptr }, 
-                  mCurrentCFG{ nullptr }, mCurrentBlock{ nullptr }, mSymTable{ nullptr } { }
+                  mCurrentFunc{ nullptr }, mCurrentBlock{ nullptr }, mSymTable{ nullptr } { }
 
         public:
             std::unique_ptr<Module> Run(const std::unique_ptr<FrontEnd::ASTNode>& root,
@@ -74,7 +74,7 @@ namespace TosLang
             unsigned mNextRegister;                                             /*!< Next register number to give out */
             std::map<const FrontEnd::ASTNode*, unsigned> mNodeRegister;         /*!< Mapping indicating in which register an AST node value lives */
             std::unique_ptr<Module> mMod;                                       /*!< Translation unit being built out of the AST */
-            ControlFlowGraph* mCurrentCFG;                                      /*!< Current function (CFG version being written) */
+            ControlFlowGraph* mCurrentFunc;                                     /*!< Current machine function being written */
             BasicBlock* mCurrentBlock;                                          /*!< Current basic block being written to */
             std::shared_ptr<FrontEnd::SymbolTable> mSymTable;                   /*!< Symbols associated with the AST being traversed */
             FuncRecords mRecords;                                               /*!< Activation recrod of all the functions in a program */
