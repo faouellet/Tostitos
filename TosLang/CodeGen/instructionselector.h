@@ -1,7 +1,6 @@
 #ifndef INSTRUCTION_SELECTOR_H__TOSTITOS
 #define INSTRUCTION_SELECTOR_H__TOSTITOS
 
-#include "activationrecord.h"
 #include "../CFG/module.h"
 #include "../Sema/symboltable.h"
 
@@ -27,13 +26,12 @@ namespace TosLang
         {
         public:
             InstructionSelector() 
-                : mNextRegister{ 0 }, mNodeRegister{ }, mMod{ nullptr }, 
+                : mNextRegister{ 0 }, mLocalMemSlot{ 0 }, mNodeRegister{}, mMod{ nullptr },
                   mCurrentFunc{ nullptr }, mCurrentBlock{ nullptr }, mSymTable{ nullptr } { }
 
         public:
             std::unique_ptr<Module> Run(const std::unique_ptr<FrontEnd::ASTNode>& root,
-                                        const std::shared_ptr<FrontEnd::SymbolTable>& symTab,
-                                        FuncRecords&& fRecs);
+                                        const std::shared_ptr<FrontEnd::SymbolTable>& symTab);
 
         protected:  // Declarations
             void HandleFunctionDecl(const FrontEnd::ASTNode* decl);
@@ -72,12 +70,12 @@ namespace TosLang
 
         private:
             unsigned mNextRegister;                                             /*!< Next register number to give out */
+            unsigned mLocalMemSlot;                                             /*!< Next memory slot to give to a local variable */
             std::map<const FrontEnd::ASTNode*, unsigned> mNodeRegister;         /*!< Mapping indicating in which register an AST node value lives */
             std::unique_ptr<Module> mMod;                                       /*!< Translation unit being built out of the AST */
             ControlFlowGraph* mCurrentFunc;                                     /*!< Current machine function being written */
             BasicBlock* mCurrentBlock;                                          /*!< Current basic block being written to */
             std::shared_ptr<FrontEnd::SymbolTable> mSymTable;                   /*!< Symbols associated with the AST being traversed */
-            FuncRecords mRecords;                                               /*!< Activation recrod of all the functions in a program */
         };
     }
 }

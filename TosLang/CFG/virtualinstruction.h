@@ -66,6 +66,7 @@ namespace TosLang
                 CALL,
                 RET,
                 LOAD_IMM,
+                LOAD,
                 MOV,
                 STORE,
                 PUSH,
@@ -98,6 +99,7 @@ namespace TosLang
             };
 
         public:
+            VirtualInstruction() : mOpCode{ Opcode::UNKNOWN }, mNumOperands{ 0 } { }
             explicit VirtualInstruction(Opcode opcode) : mOpCode{ opcode }, mNumOperands { 0 } { }
 
         public:

@@ -9,7 +9,7 @@ using namespace TosLang::FrontEnd;
 using namespace TosLang::BackEnd;
 using namespace MachineEngine::ProcessorSpace;
 
-std::unique_ptr<Module> InstructionSelector::Run(const std::unique_ptr<ASTNode>& root, const std::shared_ptr<SymbolTable>& symTab, FuncRecords&& fRecs)
+std::unique_ptr<Module> InstructionSelector::Run(const std::unique_ptr<ASTNode>& root, const std::shared_ptr<SymbolTable>& symTab)
 {
     // Reset the state of the instruction selector
     mNextRegister = 0;
@@ -40,6 +40,9 @@ void InstructionSelector::HandleFunctionDecl(const ASTNode* decl)
     const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(decl);
     assert(fDecl != nullptr);
 
+    // Resetting the memory slot index for local variables
+    mLocalMemSlot = 0;
+
     // New function declaration so we need to build a new control flow graph
     CFGPtr pCFG = std::make_shared<ControlFlowGraph>();
     mCurrentFunc = pCFG.get();
@@ -61,25 +64,54 @@ void InstructionSelector::HandleVarDecl(const ASTNode* decl)
     const VarDecl* vDecl = dynamic_cast<const VarDecl*>(decl);
     assert(vDecl != nullptr);
 
+    mNodeRegister[decl] = mNextRegister++;
+    const bool isGlobalVar = mSymTable->IsGlobalVariable(vDecl->GetName());
+
+    // If we have a local variable (function parameters are also local variables), we generate instructions for the stack frame
+    if (vDecl->IsFunctionParameter() || !isGlobalVar)
+    {
+        // Generate an allocation in the stack frame
+        mCurrentBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::ALLOCA }
+                                         .AddMemSlotOperand(mLocalMemSlot++));
+
+        // Store the variable in the space allocated
+        mCurrentBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::STORE }
+                                         .AddRegOperand(mNodeRegister[decl])
+                                         .AddMemSlotOperand(mLocalMemSlot));
+    
+        // For a function parameter nothing else needs to be done
+        if (vDecl->IsFunctionParameter())
+            return;
+    }
+
     const Expr* initExpr = vDecl->GetInitExpr();
 
-    // Instructions are only generated for variable with initialization expression
+    VirtualInstruction vInst;
+
+    // Generate an instruction to load the initialization expression into the variable
     if (initExpr != nullptr)
     {
-        mNodeRegister[decl] = mNextRegister++;
-
         HandleExpr(initExpr);
 
         // Generate a load instruction into the variable's register
-        VirtualInstruction vInst = VirtualInstruction{ VirtualInstruction::Opcode::LOAD_IMM }
-                                   .AddRegOperand(mNodeRegister[decl])
-                                   .AddRegOperand(mNodeRegister[initExpr]);
-
-        if (mSymTable->IsGlobalVariable(vDecl->GetName()))
-            mMod->InsertGlobalVar(vInst);
-        else
-            mCurrentBlock->InsertInstruction(vInst);
+        vInst = VirtualInstruction{ VirtualInstruction::Opcode::LOAD }
+                                    .AddRegOperand(mNodeRegister[decl])
+                                    .AddRegOperand(mNodeRegister[initExpr]);
     }
+    // If there's no initialization expression, the variable will be default initialized
+    else
+    {
+        // TODO: Handle StringExpr
+
+        vInst = VirtualInstruction{ VirtualInstruction::Opcode::LOAD }
+                                    .AddRegOperand(mNodeRegister[decl])
+                                    .AddImmOperand(0);
+    }
+    
+    if (isGlobalVar)
+        mMod->InsertGlobalVar(vInst);
+    else
+        mCurrentBlock->InsertInstruction(vInst);
 }
 
 // Expressions
@@ -169,6 +201,8 @@ void InstructionSelector::HandleBinaryExpr(const ASTNode* expr)
 {
     const BinaryOpExpr* bExpr = dynamic_cast<const BinaryOpExpr*>(expr);
     assert(bExpr != nullptr);
+
+    // TODO: Assignment
 
     // Choose the correct opcode
     VirtualInstruction::Opcode opcode = VirtualInstruction::Opcode::UNKNOWN;
