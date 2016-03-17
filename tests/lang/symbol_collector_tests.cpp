@@ -22,19 +22,19 @@ BOOST_AUTO_TEST_CASE( CollectSymbolVar )
 
     Symbol varSymbol;
 
-    BOOST_REQUIRE(symbolTable->GetSymbol("", "MyIntVar", std::stack<int>{}, varSymbol));
+    BOOST_REQUIRE(symbolTable->GetGlobalSymbol("MyIntVar", varSymbol));
     BOOST_REQUIRE(!varSymbol.IsFunction());
     BOOST_REQUIRE(varSymbol.GetName() == "MyIntVar");
     BOOST_REQUIRE(varSymbol.GetScopeID() == 0); // At global scope
     BOOST_REQUIRE(varSymbol.GetVariableType() == TosLang::Common::Type::NUMBER);
 
-    BOOST_REQUIRE(symbolTable->GetSymbol("", "MyBoolVar", std::stack<int>{}, varSymbol));
+    BOOST_REQUIRE(symbolTable->GetGlobalSymbol("MyBoolVar", varSymbol));
     BOOST_REQUIRE(!varSymbol.IsFunction());
     BOOST_REQUIRE(varSymbol.GetName() == "MyBoolVar");
     BOOST_REQUIRE(varSymbol.GetScopeID() == 0); // At global scope
     BOOST_REQUIRE(varSymbol.GetVariableType() == TosLang::Common::Type::BOOL);
 
-    BOOST_REQUIRE(symbolTable->GetSymbol("", "MyStringVar", std::stack<int>{}, varSymbol));
+    BOOST_REQUIRE(symbolTable->GetGlobalSymbol("MyStringVar", varSymbol));
     BOOST_REQUIRE(!varSymbol.IsFunction());
     BOOST_REQUIRE(varSymbol.GetName() == "MyStringVar");
     BOOST_REQUIRE(varSymbol.GetScopeID() == 0); // At global scope
@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionNoParam )
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 
     Symbol fnSymbol;
-    BOOST_REQUIRE(symbolTable->GetSymbol("", "MyFunc", std::stack<int>{}, fnSymbol));
+    BOOST_REQUIRE(symbolTable->GetGlobalSymbol("MyFunc", fnSymbol));
     
     BOOST_REQUIRE(fnSymbol.IsFunction());
     BOOST_REQUIRE(fnSymbol.GetName() == "MyFunc");
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionMultiParam )
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 
     Symbol fnSymbol;
-    BOOST_REQUIRE(symbolTable->GetSymbol("", "MyFunc", std::stack<int>{}, fnSymbol));
+    BOOST_REQUIRE(symbolTable->GetGlobalSymbol("MyFunc", fnSymbol));
 
     BOOST_REQUIRE(fnSymbol.IsFunction());
     BOOST_REQUIRE(fnSymbol.GetName() == "MyFunc");
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionMultiParam )
         std::stringstream sStream;
         sStream << "arg";
         sStream << i + 1;
-        BOOST_REQUIRE(symbolTable->GetSymbol("MyFunc", sStream.str(), scopeStack, paramSym));
+        BOOST_REQUIRE(symbolTable->GetLocalSymbol("MyFunc", sStream.str(), scopeStack, paramSym));
         
         BOOST_REQUIRE(!paramSym.IsFunction());
         BOOST_REQUIRE(paramSym.GetName() == sStream.str());
@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionWithLocalVar )
     Symbol fnSymbol;
     
     // Validate the identity function symbol
-    BOOST_REQUIRE(symbolTable->GetSymbol("", "identity", std::stack<int>{}, fnSymbol));
+    BOOST_REQUIRE(symbolTable->GetGlobalSymbol("identity", fnSymbol));
     BOOST_REQUIRE(fnSymbol.IsFunction());
     BOOST_REQUIRE(fnSymbol.GetName() == "identity");
     BOOST_REQUIRE(fnSymbol.GetScopeID() == 0); // At global scope
@@ -116,14 +116,14 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionWithLocalVar )
     scopeStack.push(1); // First defined function scope ID
 
     // Validate the identity function parameter
-    BOOST_REQUIRE(symbolTable->GetSymbol("identity", "i", scopeStack, paramSym));
+    BOOST_REQUIRE(symbolTable->GetLocalSymbol("identity", "i", scopeStack, paramSym));
     BOOST_REQUIRE(!paramSym.IsFunction());
     BOOST_REQUIRE(paramSym.GetName() == "i");
     BOOST_REQUIRE(paramSym.GetScopeID() == 1); // At function scope
     BOOST_REQUIRE(paramSym.GetVariableType() == TosLang::Common::Type::NUMBER);
 
     // Validate the main function symbol
-    BOOST_REQUIRE(symbolTable->GetSymbol("", "main", std::stack<int>{}, fnSymbol));
+    BOOST_REQUIRE(symbolTable->GetGlobalSymbol("main", fnSymbol));
     BOOST_REQUIRE(fnSymbol.IsFunction());
     BOOST_REQUIRE(fnSymbol.GetName() == "main");
     BOOST_REQUIRE(fnSymbol.GetScopeID() == 0); // At global scope
@@ -134,7 +134,7 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionWithLocalVar )
     scopeStack.push(2); // Main function scope ID
 
     // Validate main's local variable
-    BOOST_REQUIRE(symbolTable->GetSymbol("main", "MyInt", scopeStack, paramSym));
+    BOOST_REQUIRE(symbolTable->GetLocalSymbol("main", "MyInt", scopeStack, paramSym));
     BOOST_REQUIRE(!paramSym.IsFunction());
     BOOST_REQUIRE(paramSym.GetName() == "MyInt");
     BOOST_REQUIRE(paramSym.GetScopeID() == 2); // At function scope

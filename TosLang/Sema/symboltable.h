@@ -81,16 +81,24 @@ namespace TosLang
             void Clear();
 
             /*
-            * \fn                       GetSymbol
+            * \fn                       GetGlobalSymbol
             * \brief                    Gets the symbol associated to a name
-            * \param fnName             Name of the function in which the symbol is defined. Will be empty in case of a global symbol.
-            *                           (All functions are global symbols as are variable declared at global scope)
+            * \param symName            Name of the symbol (either a function or variable)
+            * \param sym                Symbol to be added to the symbol table
+            * \return                   True if the symbol was found.
+            */
+            bool GetGlobalSymbol(const std::string& symName, Symbol& sym);
+
+            /*
+            * \fn                       GetLocalSymbol
+            * \brief                    Gets the symbol associated to a name
+            * \param fnName             Name of the function in which the symbol is defined.
             * \param symName            Name of the symbol (either a function or variable)
             * \param scopesToSearch     Scopes in which the symbol might be defined
             * \param sym                Symbol to be added to the symbol table
             * \return                   True if the symbol was found.
             */
-            bool GetSymbol(const std::string& fnName, const std::string& symName, const std::stack<int>& scopesToSearch, Symbol& sym);
+            bool GetLocalSymbol(const std::string& fnName, const std::string& symName, const std::stack<int>& scopesToSearch, Symbol& sym);
 
             /*
             * \fn               IsGlobalVariable

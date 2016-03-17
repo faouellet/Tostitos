@@ -67,7 +67,7 @@ bool TypeChecker::CheckExprEvaluateToType(const Expr* expr, Type type)
         // Get the called function symbol. 
         // The first argument is an empty string because we want to fetch a global symbol (all functions are global symbols).
         // It is assumed that the scope checker has been run before the type checker
-        assert(mSymbolTable->GetSymbol(std::string{}, cExpr->GetName(), mCurrentScopesTraversed, callSym));
+        assert(mSymbolTable->GetGlobalSymbol(cExpr->GetName(), callSym));
         
         return callSym.GetFunctionReturnType() == type;
     }
@@ -75,10 +75,15 @@ bool TypeChecker::CheckExprEvaluateToType(const Expr* expr, Type type)
     {
         const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(expr);
         Symbol varSym;
-        std::string fnName = mCurrentFunc == nullptr ? "" : mCurrentFunc->GetName();
+        bool symFound = false;
+
+        if (mCurrentFunc == nullptr)
+            symFound = mSymbolTable->GetGlobalSymbol(iExpr->GetName(), varSym);
+        else
+            symFound = mSymbolTable->GetLocalSymbol(mCurrentFunc->GetName(), iExpr->GetName(), mCurrentScopesTraversed, varSym);
 
         // It is assumed that the scope checker has been run before the type checker
-        assert(mSymbolTable->GetSymbol(fnName, iExpr->GetName(), mCurrentScopesTraversed, varSym));
+        assert(symFound);
 
         return varSym.GetVariableType() == type;
     }
@@ -103,9 +108,14 @@ void TypeChecker::HandleVarDecl()
     if (initExpr != nullptr)
     {
         Symbol varSymbol;
-        // Get the name of the function currently traversed. An empty name means that we're not in a function, we're in the global scope
-        std::string fnName = mCurrentFunc == nullptr ? "" : mCurrentFunc->GetName();
-        assert(mSymbolTable->GetSymbol(fnName, vDecl->GetName(), mCurrentScopesTraversed, varSymbol));
+        bool symFound = false;
+
+        if (mCurrentFunc == nullptr)
+            symFound = mSymbolTable->GetGlobalSymbol(vDecl->GetName(), varSymbol);
+        else
+            symFound = mSymbolTable->GetLocalSymbol(mCurrentFunc->GetName(), vDecl->GetName(), mCurrentScopesTraversed, varSymbol);
+
+        assert(symFound);
 
         if (!CheckExprEvaluateToType(initExpr, varSymbol.GetVariableType()))
         {
@@ -162,7 +172,7 @@ void TypeChecker::HandleBinaryExpr()
             const CallExpr* cExpr = dynamic_cast<const CallExpr*>(children[i].get());
             // It is assumed that the scope checker has been run before the type checker
             Symbol callSym;
-            assert(mSymbolTable->GetSymbol(mCurrentFunc->GetName(), cExpr->GetName(), mCurrentScopesTraversed, callSym));
+            assert(mSymbolTable->GetLocalSymbol(mCurrentFunc->GetName(), cExpr->GetName(), mCurrentScopesTraversed, callSym));
             operandTypes[i] = callSym.GetFunctionReturnType();
         }
             break;
@@ -171,7 +181,7 @@ void TypeChecker::HandleBinaryExpr()
             const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(children[i].get());
             // It is assumed that the scope checker has been run before the type checker
             Symbol varSym;
-            assert(mSymbolTable->GetSymbol(mCurrentFunc->GetName(), iExpr->GetName(), mCurrentScopesTraversed, varSym));
+            assert(mSymbolTable->GetLocalSymbol(mCurrentFunc->GetName(), iExpr->GetName(), mCurrentScopesTraversed, varSym));
             operandTypes[i] = varSym.GetVariableType();
         }
             break;
@@ -204,7 +214,7 @@ void TypeChecker::HandleCallExpr()
 
     // It is assumed that the scope checker has been run before the type checker
     Symbol fnSymbol;
-    assert(mSymbolTable->GetSymbol("", cExpr->GetCalleeName(), mCurrentScopesTraversed, fnSymbol));
+    assert(mSymbolTable->GetGlobalSymbol(cExpr->GetCalleeName(), fnSymbol));
 
     std::vector<Type> expectedArgTypes = fnSymbol.GetFunctionParamTypes();
     const std::vector<std::unique_ptr<ASTNode>>& args = cExpr->GetArgs();
@@ -266,7 +276,7 @@ void TosLang::FrontEnd::TypeChecker::HandleReturnStmt()
     assert(rStmt != nullptr);
 
     Symbol fnSymbol;
-    assert(mSymbolTable->GetSymbol("", mCurrentFunc->GetName(), mCurrentScopesTraversed, fnSymbol));
+    assert(mSymbolTable->GetGlobalSymbol(mCurrentFunc->GetName(), fnSymbol));
 
     Type fnType = fnSymbol.GetFunctionReturnType();
     if (fnType == Type::VOID)

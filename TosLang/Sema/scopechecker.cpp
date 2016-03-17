@@ -55,7 +55,7 @@ void TosLang::FrontEnd::ScopeChecker::HandleCallExpr()
 
     // Get the called function symbol. 
     // The first argument is an empty string because we want to fetch a global symbol (all functions are global symbols).
-    if (!mSymbolTable->GetSymbol(std::string{}, cExpr->GetName(), mCurrentScopesTraversed, callSym))
+    if (!mSymbolTable->GetGlobalSymbol(cExpr->GetName(), callSym))
     {
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::FN_UNDECLARED, cExpr->GetSourceLocation());
         ++mErrorCount;
@@ -68,8 +68,15 @@ void ScopeChecker::HandleIdentifierExpr()
     assert(iExpr != nullptr);
 
     Symbol varSym;
-    std::string fnName = mCurrentFunc == nullptr ? "" : mCurrentFunc->GetName();
-    if (!mSymbolTable->GetSymbol(fnName, iExpr->GetName(), mCurrentScopesTraversed, varSym))
+    bool foundSym = false;
+
+    // Call the correct method for accessing the identifier symbol
+    if (mCurrentFunc == nullptr)
+        foundSym = mSymbolTable->GetGlobalSymbol(iExpr->GetName(), varSym);
+    else
+        foundSym = mSymbolTable->GetLocalSymbol(mCurrentFunc->GetName(), iExpr->GetName(), mCurrentScopesTraversed, varSym);
+
+    if (!foundSym)
     {
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_UNDECLARED_IDENTIFIER, iExpr->GetSourceLocation());
         ++mErrorCount;
