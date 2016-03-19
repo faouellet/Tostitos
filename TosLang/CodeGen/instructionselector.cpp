@@ -277,8 +277,15 @@ void InstructionSelector::HandleCallExpr(const ASTNode* expr)
     const CallExpr* cExpr = dynamic_cast<const CallExpr*>(expr);
     assert(cExpr != nullptr);
 
-    // TODO: what to do with the function arguments?
-
+    // Push the arguments on the stack in the function declaration order
+    for (const auto& arg : cExpr->GetArgs())
+    {
+        const Expr* argExpr = dynamic_cast<const Expr*>(arg.get());
+        HandleExpr(argExpr);
+        mCurrentBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::PUSH }
+                                         .AddRegOperand(mNodeRegister[arg.get()]));
+    }
+    
     // We generate a call instruction. This will take care of the stack pointer.
     mCurrentBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::CALL }
                                      // TODO: Quite a mouthful
