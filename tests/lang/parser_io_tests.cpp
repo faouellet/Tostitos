@@ -167,7 +167,6 @@ BOOST_AUTO_TEST_CASE( ParseBadIOTest )
     BOOST_REQUIRE_EQUAL(bStmts.size(), 4);
 
     // Check that we have only error nodes.
-    // TODO: Commented out for now, it should be decommented once I fully figure out what should be the PRINT syntax
     BOOST_REQUIRE(std::all_of(bStmts.begin(), bStmts.end(), [](const std::unique_ptr<ASTNode>& node) { return node->GetKind() == ASTNode::NodeKind::ERROR; }));
 
     // Check if the correct error messages got printed

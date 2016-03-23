@@ -72,6 +72,9 @@ VirtualInstruction& VirtualInstruction::AddRegOperand(unsigned op)
 
 VirtualInstruction& VirtualInstruction::AddTargetOperand(BasicBlock* bb)
 {
+    // Only jump instructions are allowed to add a target operand
+    assert(mOpCode == Opcode::JUMP);
+
     mOperands[mNumOperands++] = VirtualOperand(bb);
     return *this;
 }

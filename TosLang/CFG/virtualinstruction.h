@@ -15,7 +15,7 @@ namespace TosLang
 
         /*
         * \class VirtualOperand
-        * \brief TODO
+        * \brief Abstraction over a Chip16 instruction operand.
         */
         class VirtualOperand
         {
@@ -58,6 +58,10 @@ namespace TosLang
         class VirtualInstruction
         {
         public:
+            /*
+            * \enum Opcode
+            * \brief Possible opcodes for a VirtualInstruction
+            */
             enum class Opcode
             {
                 NO_OP,
@@ -99,22 +103,55 @@ namespace TosLang
             };
 
         public:
+            /*
+            * \fn VirtualInstruction
+            * \brief Default ctor
+            */
             VirtualInstruction() : mOpCode{ Opcode::UNKNOWN }, mNumOperands{ 0 } { }
+
+            /*
+            * \fn           VirtualInstruction
+            * \brief        Ctor
+            * \param opcode Opcode of the instruction
+            */
             explicit VirtualInstruction(Opcode opcode) : mOpCode{ opcode }, mNumOperands { 0 } { }
 
         public:
+            /*
+            * \fn       AddImmOperand
+            * \brief    Adds an immediate operand (i.e. a literal value) to the instruction
+            * \param op Immediate operand
+            */
             VirtualInstruction& AddImmOperand(unsigned op);
+
+            /*
+            * \fn       AddMemSlotOperand
+            * \brief    Adds a memory slot number as an operand to the instruction
+            * \param op Memory slot number
+            */
             VirtualInstruction& AddMemSlotOperand(unsigned op);
+
+            /*
+            * \fn       AddRegOperand
+            * \brief    Adds a register as an operand to the instruction
+            * \param op Register number
+            */
             VirtualInstruction& AddRegOperand(unsigned op);
+
+            /*
+            * \fn       AddTargetOperand
+            * \brief    Adds a basic block as a target to a jump instruction
+            * \param op Target basic block
+            */
             VirtualInstruction& AddTargetOperand(BasicBlock* bb);
 
         public:
             friend std::ostream& operator<<(std::ostream& stream, const VirtualInstruction& inst);
 
         private:
-            Opcode mOpCode;
-            std::array<VirtualOperand, 3> mOperands;
-            unsigned short mNumOperands;
+            Opcode mOpCode;                             /*!< Instruction opcode */
+            std::array<VirtualOperand, 3> mOperands;    /*!< Instruction operands (can have up to 3) */
+            unsigned short mNumOperands;                /*!< Number of operands the instruction currently has */
         };     
     }
 }
