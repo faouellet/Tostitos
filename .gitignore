@@ -6,6 +6,9 @@
 *.user
 *.sln.docstates
 
+# Project folders
+html/
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
