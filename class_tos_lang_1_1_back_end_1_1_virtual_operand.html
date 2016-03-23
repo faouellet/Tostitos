@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.7"/>
-<title>Tostitos: Main Page</title>
+<title>Tostitos: TosLang::BackEnd::VirtualOperand Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -43,10 +43,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li class="current"><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
-      <li><a href="annotated.html"><span>Classes</span></a></li>
+      <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -66,6 +66,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </li>
     </ul>
   </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="annotated.html"><span>Class&#160;List</span></a></li>
+      <li><a href="classes.html"><span>Class&#160;Index</span></a></li>
+      <li><a href="hierarchy.html"><span>Class&#160;Hierarchy</span></a></li>
+      <li><a href="functions.html"><span>Class&#160;Members</span></a></li>
+    </ul>
+  </div>
 </div><!-- top -->
 <div id="side-nav" class="ui-resizable side-nav-resizable">
   <div id="nav-tree">
@@ -78,7 +86,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <script type="text/javascript">
-$(document).ready(function(){initNavTree('index.html','');});
+$(document).ready(function(){initNavTree('class_tos_lang_1_1_back_end_1_1_virtual_operand.html','');});
 </script>
 <div id="doc-content">
 <!-- window showing the filter options -->
@@ -96,16 +104,55 @@ $(document).ready(function(){initNavTree('index.html','');});
 </div>
 
 <div class="header">
+  <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#friends">Friends</a> &#124;
+<a href="class_tos_lang_1_1_back_end_1_1_virtual_operand-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">Tostitos Documentation</div>  </div>
+<div class="title">TosLang::BackEnd::VirtualOperand Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a8106bdc1fb72143a17a389222291ac68"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8106bdc1fb72143a17a389222291ac68"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>OperandKind</b> { <br />
+&#160;&#160;<b>IMMEDIATE</b>, 
+<b>MEM_SLOT</b>, 
+<b>REGISTER</b>, 
+<b>TARGET</b>, 
+<br />
+&#160;&#160;<b>UNKNOWN</b>
+<br />
+ }</td></tr>
+<tr class="separator:a8106bdc1fb72143a17a389222291ac68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:ab88bbdc5db0ae3362842e36877e22cef"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab88bbdc5db0ae3362842e36877e22cef"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>VirtualOperand</b> (unsigned op, OperandKind kind)</td></tr>
+<tr class="separator:ab88bbdc5db0ae3362842e36877e22cef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e5be1cad06fe09732cc0aa017cd9c91"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5e5be1cad06fe09732cc0aa017cd9c91"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>VirtualOperand</b> (<a class="el" href="class_tos_lang_1_1_back_end_1_1_basic_block.html">BasicBlock</a> *bb)</td></tr>
+<tr class="separator:a5e5be1cad06fe09732cc0aa017cd9c91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
+Friends</h2></td></tr>
+<tr class="memitem:a4524ff1c82935ea463545fed632afc82"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4524ff1c82935ea463545fed632afc82"></a>
+std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;&lt;</b> (std::ostream &amp;stream, const <a class="el" href="class_tos_lang_1_1_back_end_1_1_virtual_operand.html">VirtualOperand</a> &amp;op)</td></tr>
+<tr class="separator:a4524ff1c82935ea463545fed632afc82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>TosLang/CFG/<a class="el" href="virtualinstruction_8h_source.html">virtualinstruction.h</a></li>
+<li>TosLang/CFG/virtualinstruction.cpp</li>
+</ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Wed Mar 23 2016 19:37:51 for Tostitos by
+    <li class="navelem"><b>TosLang</b></li><li class="navelem"><b>BackEnd</b></li><li class="navelem"><a class="el" href="class_tos_lang_1_1_back_end_1_1_virtual_operand.html">VirtualOperand</a></li>
+    <li class="footer">Generated on Wed Mar 23 2016 19:37:50 for Tostitos by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>
