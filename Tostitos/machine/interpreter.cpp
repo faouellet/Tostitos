@@ -520,7 +520,7 @@ void Interpreter::POPALL(const Instruction &)
     for(int i = 15; i > -1; --i)
     {
         mErrorCode |= mCPU.Pop(val);
-        mErrorCode |= mCPU.SetRegister(i, val);
+        mErrorCode |= mCPU.SetRegister(static_cast<UInt8>(i), val);
     }
 }
 

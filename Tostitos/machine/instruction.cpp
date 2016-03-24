@@ -1,5 +1,6 @@
 #include "instruction.h"
 
+#include <cassert>
 #include <cstring>
 
 using namespace MachineEngine::ProcessorSpace;
@@ -47,6 +48,9 @@ UInt16 Instruction::GetImmediateValue() const
 
 void Instruction::SetFirstOperand(UInt8 value)
 {
+    // Assuming that the operand is four bits long
+    assert(!(value & 0x1000));
+
     mValue |= static_cast<UInt32>(value) << 16;
 
     // mValue &= static_cast<UInt32>(value) << 16;
@@ -54,6 +58,9 @@ void Instruction::SetFirstOperand(UInt8 value)
 
 void Instruction::SetSecondOperand(UInt8 value)
 {
+    // Assuming that the operand is four bits long
+    assert(!(value & 0x1000));
+
     if (!UseImmediateValue())
     {
         mValue |= static_cast<UInt32>(value) << 20;
@@ -63,6 +70,8 @@ void Instruction::SetSecondOperand(UInt8 value)
 
 void Instruction::SetThirdOperand(UInt8 value)
 {
+    // Assuming that the operand is four bits long
+    assert(!(value & 0x1000));
     if (!UseImmediateValue() && !IsInplace())
     {
         mValue |= static_cast<UInt32>(value) << 8;
@@ -78,8 +87,6 @@ void Instruction::SetImmediateValue(UInt16 value)
         // mValue &= (((value << 8) & 0xFF00) & ((value >> 8) & 0xFF));
     }
 }
-
-// TODO: Lack of precondition checking UseImmediateValue and IsInplace
 
 bool Instruction::UseImmediateValue() const
 {
