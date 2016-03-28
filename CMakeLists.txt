@@ -3,6 +3,13 @@ project (Tostitos)
 
 enable_testing()
 
+if(${BUILD_LLVM_BACKEND})
+	find_package(LLVM REQUIRED CONFIG)
+	
+	include_directories(${LLVM_INCLUDE_DIRS})
+	add_definitions(${LLVM_DEFINITIONS})
+endif()
+
 if(MSVC)
 	# Set flags for exception handling
 	SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")

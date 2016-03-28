@@ -7,8 +7,8 @@ file(GLOB COMMON_SOURCES	"Common/*")
 file(GLOB PARSE_SOURCES		"Parse/*")
 file(GLOB SEMA_SOURCES		"Sema/*")
 file(GLOB UTILS_SOURCES		"Utils/*")
-if($ENV{BUILD_LLVM_BACKEND})
-    file(GLOB LLVM_SOURCES  "LLVMBackend/*")
+if(${BUILD_LLVM_BACKEND})
+	file(GLOB LLVM_BACKEND_SOURCES  "LLVMBackend/*")
 endif()
 
 SOURCE_GROUP(lang\\AST FILES ${AST_SOURCES})
@@ -18,8 +18,8 @@ SOURCE_GROUP(lang\\Common FILES ${COMMON_SOURCES})
 SOURCE_GROUP(lang\\Parse FILES ${PARSE_SOURCES})
 SOURCE_GROUP(lang\\Sema FILES ${SEMA_SOURCES})
 SOURCE_GROUP(lang\\Utils FILES ${UTILS_SOURCES})
-if($ENV{BUILD_LLVM_BACKEND})
-    SOURCE_GROUP(lang\\LLVMBackend FILES ${LLVM_SOURCES})
+if(${BUILD_LLVM_BACKEND})
+    SOURCE_GROUP(lang\\LLVMBackend FILES ${LLVM_BACKEND_SOURCES})
 endif()
 
 add_library( lang STATIC
@@ -30,9 +30,16 @@ add_library( lang STATIC
 		${PARSE_SOURCES}
 		${SEMA_SOURCES}
 		${UTILS_SOURCES}
+		${LLVM_BACKEND_SOURCES}
 		)
-		
+				
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 		
 add_executable (TosLang compiler.h compiler.cpp driver.cpp)
-target_link_libraries(TosLang lang)
+if(${BUILD_LLVM_BACKEND})
+	llvm_map_components_to_libnames(llvm_libs support core)
+	target_link_libraries(TosLang lang ${llvm_libs})    
+else()
+	target_link_libraries(TosLang lang)
+endif()
+
