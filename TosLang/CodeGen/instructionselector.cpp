@@ -50,7 +50,19 @@ void InstructionSelector::HandleFunctionDecl(const ASTNode* decl)
 
     mMod->InsertFunction(fDecl->GetFunctionName(), pCFG);
 
-    // TODO: Insert instructions to fetch the arguements
+    // Allocating the function arguments on on the stack frame
+    const ParamVarDecls* paramsDecl = fDecl->GetParametersDecl();
+    for (auto& param : paramsDecl->GetParameters())
+    {
+        // Generate an allocation in the stack frame
+        mCurrentBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::ALLOCA }
+                                                             .AddMemSlotOperand(mLocalMemSlot++));
+
+        // Store the variable in the space allocated
+        mCurrentBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::STORE }
+                                                             .AddRegOperand(mNodeRegister[param.get()])
+                                                             .AddMemSlotOperand(mLocalMemSlot));
+    }
 
     HandleCompoundStmt(fDecl->GetBody());
 
@@ -64,26 +76,13 @@ void InstructionSelector::HandleVarDecl(const ASTNode* decl)
     const VarDecl* vDecl = dynamic_cast<const VarDecl*>(decl);
     assert(vDecl != nullptr);
 
+    // For a function parameter nothing needs to be done, everything was handled in the function handling
+    if (vDecl->IsFunctionParameter())
+        return;
+
     mNodeRegister[decl] = mNextRegister++;
     const bool isGlobalVar = mSymTable->IsGlobalVariable(vDecl->GetName());
-
-    // If we have a local variable (function parameters are also local variables), we generate instructions for the stack frame
-    if (vDecl->IsFunctionParameter() || !isGlobalVar)
-    {
-        // Generate an allocation in the stack frame
-        mCurrentBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::ALLOCA }
-                                         .AddMemSlotOperand(mLocalMemSlot++));
-
-        // Store the variable in the space allocated
-        mCurrentBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::STORE }
-                                         .AddRegOperand(mNodeRegister[decl])
-                                         .AddMemSlotOperand(mLocalMemSlot));
     
-        // For a function parameter nothing else needs to be done
-        if (vDecl->IsFunctionParameter())
-            return;
-    }
-
     const Expr* initExpr = vDecl->GetInitExpr();
 
     VirtualInstruction vInst;
@@ -233,7 +232,7 @@ void InstructionSelector::HandleBinaryExpr(const ASTNode* expr)
     case Common::Opcode::MULT:
         opcode = VirtualInstruction::Opcode::MUL;
         break;
-    case Common::Opcode::NOT:
+    case Common::Opcode::NOT:   // TODO: This is a unary op
         opcode = VirtualInstruction::Opcode::NOT;
         break;
     case Common::Opcode::OR_BOOL:
@@ -378,10 +377,10 @@ void InstructionSelector::HandleReturnStmt(const ASTNode* stmt)
     const ReturnStmt* rStmt = dynamic_cast<const ReturnStmt*>(stmt);
     assert(rStmt != nullptr);
 
-    if (rStmt->GetReturnExpr())
-    {
-        // TODO: What to do with the returned value (when there is one)?
-    }
+    const Expr* rExpr = rStmt->GetReturnExpr();
+
+    if (rExpr != nullptr)
+        HandleExpr(rExpr);
 
     // We generate a return opcode. This will take care of dealing with the stack pointer.
     mCurrentBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::RET });
