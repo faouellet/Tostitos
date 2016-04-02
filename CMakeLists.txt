@@ -3,11 +3,12 @@ project (Tostitos)
 
 enable_testing()
 
-if(${BUILD_LLVM_BACKEND})
+if(${USE_LLVM_BACKEND})
 	find_package(LLVM REQUIRED CONFIG)
 	
 	include_directories(${LLVM_INCLUDE_DIRS})
 	add_definitions(${LLVM_DEFINITIONS})
+	add_definitions("-DUSE_LLVM_BACKEND")
 endif()
 
 if(MSVC)

@@ -9,6 +9,10 @@
 #include "Sema/typechecker.h"
 #include "Utils/astprinter.h"
 
+#ifdef USE_LLVM_BACKEND
+#include "LLVMBackend/llvmgenerator.h"
+#endif
+
 #include <iostream>
 
 using namespace TosLang;
@@ -72,6 +76,23 @@ void Compiler::DumpCFG(const std::string& programFile)
 
     module->Print();
 }
+
+#ifdef USE_LLVM_BACKEND
+void Compiler::DumpLLVMIR(const std::string& programFile)
+{
+    auto programAST = ParseProgram(programFile);
+    if (programAST == nullptr)
+        return;
+
+    size_t errorCount = mSymCollector->Run(programAST);
+    if (errorCount != 0)
+        return;
+
+    auto llvmModule = mLLVMGen->Run(programAST, mSymTable);
+
+    llvmModule->dump();
+}
+#endif
 
 std::unique_ptr<ASTNode> TosLang::Compiler::ParseProgram(const std::string & programFile)
 {

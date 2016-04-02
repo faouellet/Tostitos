@@ -19,6 +19,7 @@ namespace TosLang
     namespace BackEnd
     {
         class InstructionSelector;
+        class LLVMGenerator;
     }
 
     /*
@@ -50,18 +51,27 @@ namespace TosLang
 
     public:
         /*
-        * \fn                   DumpCFG
-        * \brief                Dumps the program's CFG to stdout
-        * \param programFile    Name (including path) of the .tos file to compile
-        */
-        void DumpCFG(const std::string& programFile);
-
-        /*
         * \fn                   DumpAST
         * \brief                Dumps the program's AST to stdout
         * \param programFile    Name (including path) of the .tos file to compile
         */
         void DumpAST(const std::string& programFile);
+
+        /*
+        * \fn                   DumpCFG
+        * \brief                Dumps the program's CFG to stdout
+        * \param programFile    Name (including path) of the .tos file to compile
+        */
+        void DumpCFG(const std::string& programFile);
+        
+#ifdef USE_LLVM_BACKEND
+        /*
+        * \fn                   DumpLLVMIR
+        * \brief                Dumps the LLVM IR corresponding to the program to stdout
+        * \param programFile    Name (including path) of the .tos file to compile
+        */
+        void DumpLLVMIR(const std::string& programFile);
+#endif
 
     private:
         /*
@@ -80,6 +90,10 @@ namespace TosLang
         std::unique_ptr<FrontEnd::ScopeChecker> mSChecker;          /*!< Scope Checker */
         std::unique_ptr<FrontEnd::TypeChecker> mTChecker;           /*!< Type checker */
         std::unique_ptr<BackEnd::InstructionSelector> mISel;        /*!< Instruction selector */
+
+#ifdef USE_LLVM_BACKEND
+        std::unique_ptr<BackEnd::LLVMGenerator> mLLVMGen;           /*!< LLVM IR Generator */
+#endif
     };
 }
 
