@@ -3,6 +3,8 @@
 
 #include "controlflowgraph.h"
 
+#include "../Utils/cfgprinter.h"
+
 #include <unordered_map>
 
 namespace TosLang
@@ -35,7 +37,27 @@ namespace TosLang
             const CFGPtr& GetFunction(const std::string& name) const;
 
         public:
-            void Print() const;
+            /*
+            * \fn           Print
+            * \brief        Prints the module to a stream
+            * \param name   Output stream
+            */
+            template <typename OS>
+            void Print(OS& stream) const
+            {
+                // Print global variables
+                for (auto gVarIt = mGlobalBlock->inst_begin(), gVarEnd = mGlobalBlock->inst_end(); gVarIt != gVarEnd; ++gVarIt)
+                    stream << *gVarIt << std::endl;
+
+                // Print the CFGs
+                Utils::CFGPrinter<std::ostream> printer{ stream };
+                for (auto& funcCFG : mFuncCFGs)
+                {
+                    stream << "CFG for " << funcCFG.first << ":\n";
+                    printer.Visit(funcCFG.second, /*postOrderVisit=*/false);
+                    stream << std::endl;
+                }
+            }
 
         public:
             /*

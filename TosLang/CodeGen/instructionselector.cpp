@@ -7,7 +7,6 @@
 
 using namespace TosLang::FrontEnd;
 using namespace TosLang::BackEnd;
-using namespace MachineEngine::ProcessorSpace;
 
 std::unique_ptr<Module> InstructionSelector::Run(const std::unique_ptr<ASTNode>& root, const std::shared_ptr<SymbolTable>& symTab)
 {
@@ -88,21 +87,20 @@ void InstructionSelector::HandleVarDecl(const ASTNode* decl)
     VirtualInstruction vInst;
 
     // Generate an instruction to load the initialization expression into the variable
+    // TODO: Handle String and arrays
     if (initExpr != nullptr)
     {
         HandleExpr(initExpr);
 
         // Generate a load instruction into the variable's register
-        vInst = VirtualInstruction{ VirtualInstruction::Opcode::LOAD }
+        vInst = VirtualInstruction{ VirtualInstruction::Opcode::MOV }
                                     .AddRegOperand(mNodeRegister[decl])
                                     .AddRegOperand(mNodeRegister[initExpr]);
     }
     // If there's no initialization expression, the variable will be default initialized
     else
     {
-        // TODO: Handle StringExpr
-
-        vInst = VirtualInstruction{ VirtualInstruction::Opcode::LOAD }
+        vInst = VirtualInstruction{ VirtualInstruction::Opcode::MOV }
                                     .AddRegOperand(mNodeRegister[decl])
                                     .AddImmOperand(0);
     }
@@ -266,7 +264,8 @@ void InstructionSelector::HandleBinaryExpr(const ASTNode* expr)
     {
         mMod->InsertGlobalVar(VirtualInstruction{ opcode }
                               .AddRegOperand(mNodeRegister[bExpr->GetLHS()])
-                              .AddRegOperand(mNodeRegister[bExpr->GetRHS()]));
+                              .AddRegOperand(mNodeRegister[bExpr->GetRHS()])
+                              .AddRegOperand(mNodeRegister[bExpr]));
     }
     
 }

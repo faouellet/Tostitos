@@ -17,7 +17,9 @@ namespace TosLang
         class CFGVisitor
         {
         public:
-            CFGVisitor() = default;
+            template <typename... Args>
+            CFGVisitor(Args&&... args) : mAction(std::forward<Args>(args)...) { }
+
             ~CFGVisitor() = default;
 
         public:

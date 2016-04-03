@@ -63,7 +63,7 @@ struct TosLangSemaFixture
     /*
     * \fn               GetProgramSymbolTable
     * \brief            Parse a TosLang program and collect the symbols contained in the resulting AST
-    * \param filename   Name of a file containing a TosLang program
+    * \param filename   Name of a file containing a TosLang AST
     * \param symTable   The symbol table to be filled
     * \return           The number of errors that happened during symbols collection
     */
@@ -79,7 +79,7 @@ struct TosLangSemaFixture
     /*
     * \fn               GetAccessibilityErrors
     * \brief            Parse a TosLang program and check the resulting AST for accessibility (scope) errors
-    * \param filename   Name of a file containing a TosLang program
+    * \param filename   Name of a file containing a TosLang AST
     * \return           The number of errors that happened during scope checking
     */
     const size_t GetAccessibilityErrors(const std::string& filename)
@@ -95,7 +95,7 @@ struct TosLangSemaFixture
     /*
     * \fn               GetTypeErrors
     * \brief            Parse a TosLang program and check the resulting AST for type errors
-    * \param filename   Name of a file containing a TosLang program
+    * \param filename   Name of a file containing a TosLang AST
     * \return           The number of errors that happened during type checking
     */
     const size_t GetTypeErrors(const std::string& filename)

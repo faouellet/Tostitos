@@ -30,6 +30,10 @@ Compiler::Compiler()
     mTChecker.reset(new TypeChecker{});
 
     mISel.reset(new BackEnd::InstructionSelector{});
+
+#ifdef USE_LLVM_BACKEND
+    mLLVNGen.reset(new BackEnd::LLVMGenerator{})
+#endif
 }
 
 Compiler::~Compiler() { }   // Required because of the forward declarations used in the header for our member pointers
@@ -74,7 +78,7 @@ void Compiler::DumpCFG(const std::string& programFile)
     if (module == nullptr)
         return;
 
-    module->Print();
+    module->Print(std::cout);
 }
 
 #ifdef USE_LLVM_BACKEND

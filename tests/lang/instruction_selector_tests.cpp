@@ -8,25 +8,25 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "toslang_sema_fixture.h"
+#include "toslang_codegen_fixture.h"
 
 #include "CodeGen/instructionselector.h"
 
 using namespace TosLang::BackEnd;
 
-BOOST_FIXTURE_TEST_SUITE( BackEndTestSuite, TosLangSemaFixture )
+BOOST_FIXTURE_TEST_SUITE( BackEndTestSuite, TosLangCodegenFixture )
 
 //////////////////// CORRECT USE CASES ////////////////////
 
-BOOST_AUTO_TEST_CASE( VarInitSelectTest )
+BOOST_AUTO_TEST_CASE( ISelVarInitBinOpIntTest )
 {
-    BOOST_REQUIRE(true);
-    /*auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
-    size_t errorCount = GetProgramSymbolTable("../programs/var/var_decl.tos", symbolTable);
-    BOOST_REQUIRE_EQUAL(errorCount, 0);
+    const std::string expectedFile = "../cfgs/var/binary_op_int.cfg";
+    const std::string inputFile = "../asts/var/binary_op_int.ast";
+    const std::string testFile = "test.cfg";
 
-    InstructionSelector iSel{ symbolTable };
-    InstructionSelector::FunctionGraph fg = iSel.Run(programAST);*/
+    GenerateProgramCFG(inputFile, testFile);
+    // TODO: Generate CFG files
+    CompareFiles(testFile, testFile);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

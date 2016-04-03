@@ -10,22 +10,24 @@ namespace TosLang
     namespace Utils
     {
         template <typename OS>
-        struct PrintAction;
-
-        template <>
-        struct PrintAction<std::ostream>
+        struct PrintAction
         {
+            explicit PrintAction(OS& stream) : mStream{ stream } { }
+
             void Execute(const BackEnd::BlockPtr block)
             {
-                std::cout << block->GetName() << std::endl;
+                mStream << block->GetName() << std::endl;
 
                 for (auto instIt = block->inst_begin(), instEnd = block->inst_end(); instIt != instEnd; ++instIt)
                 {
-                    std::cout << "\t" << *instIt << std::endl;;
+                    mStream << "\t" << *instIt << std::endl;;
                 }
-             
-                std::cout << std::endl;
+
+                mStream << std::endl;
             }
+
+        private:
+            OS& mStream;
         };
 
         template <typename OS>
