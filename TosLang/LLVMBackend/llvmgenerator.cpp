@@ -11,6 +11,8 @@
 using namespace TosLang::FrontEnd;
 using namespace TosLang::BackEnd;
 
+static llvm::Type* ConvertToLLVMType(const TosLang::Common::Type type);
+
 std::unique_ptr<llvm::Module> LLVMGenerator::Run(const std::unique_ptr<ASTNode>& root, const std::shared_ptr<SymbolTable>& symTab)
 {
     // Reset the state of the instruction selector
@@ -22,7 +24,7 @@ std::unique_ptr<llvm::Module> LLVMGenerator::Run(const std::unique_ptr<ASTNode>&
 }
 
 // Declarations
-void LLVMGenerator::HandleProgramDecl(const std::unique_ptr<ASTNode>& root)
+std::unique_ptr<llvm::Module> LLVMGenerator::HandleProgramDecl(const std::unique_ptr<ASTNode>& root)
 {
     for (auto& stmt : root->GetChildrenNodes())
     {
@@ -33,22 +35,58 @@ void LLVMGenerator::HandleProgramDecl(const std::unique_ptr<ASTNode>& root)
         else
             assert(false && "Unknown declaration in program");  // Shouldn't happen
     }
+
+    return std::move(mMod);
 }
 
-void LLVMGenerator::HandleFunctionDecl(const ASTNode* decl)
+llvm::Function* LLVMGenerator::HandleFunctionDecl(const ASTNode* decl)
 {
     const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(decl);
     assert(fDecl != nullptr);
 
-    mMod->InsertFunction(fDecl->GetFunctionName(), pCFG);
+    // Generate code for the function declaration
+    const ParamVarDecls* paramsDecl = fDecl->GetParametersDecl();
+    std::vector<llvm::Type*> argTypes;
+    argTypes.reserve(paramsDecl->GetParameters().size());
 
-    // TODO: Insert instructions to fetch the arguements
+    for (auto& param : paramsDecl->GetParameters())
+    {
+        const VarDecl* vDecl = dynamic_cast<const VarDecl*>(param.get());
+        argTypes.emplace_back(ConvertToLLVMType(vDecl->GetVarType()));
+    }
 
-    HandleCompoundStmt(fDecl->GetBody());
+    llvm::Type* returnType = ConvertToLLVMType(fDecl->GetReturnType());
 
-    // Removing ties to the function
-    mCurrentBlock = nullptr;
-    mCurrentFunc = nullptr;
+    llvm::FunctionType* fType = llvm::FunctionType::get(returnType, argTypes, false);
+    llvm::Function* func = llvm::Function::Create(fType, llvm::Function::ExternalLinkage, fDecl->GetName(), mMod.get());
+
+    // Create a basic block to start inserting into
+    llvm::BasicBlock* bb = llvm::BasicBlock::Create(llvm::getGlobalContext(), "entry", func);
+    mBuilder.SetInsertPoint(bb);
+
+    // Handle the function arguments
+    mNamedValues.clear();
+    for (auto& arg : func->args())
+    {
+        // Allocate space on the function stack frame
+        llvm::AllocaInst* allocaInst = mBuilder.CreateAlloca(arg.getType(), nullptr, arg.getName());
+
+        // Store the argument into the alloca
+        mBuilder.CreateStore(&arg, allocaInst);
+
+        // Add argument to the generator symbol table
+        mNamedValues[arg.getName()] = allocaInst;
+    }
+
+    llvm::Value* retVal = HandleCompoundStmt(fDecl->GetBody());
+
+    // Error generating body, erase the function from the module
+    if (retVal == nullptr)
+        func->eraseFromParent();
+
+    mBuilder.CreateRet(retVal);
+
+    return func;
 }
 
 void LLVMGenerator::HandleVarDecl(const ASTNode* decl) 
@@ -107,33 +145,25 @@ void LLVMGenerator::HandleVarDecl(const ASTNode* decl)
 }
 
 // Expressions
-void LLVMGenerator::HandleExpr(const Expr* expr)
+llvm::Value* LLVMGenerator::HandleExpr(const Expr* expr)
 {
-    mNodeRegister[expr] = mNextRegister++;
-
     switch (expr->GetKind())
     {
     case ASTNode::NodeKind::BINARY_EXPR:
-        HandleBinaryExpr(expr);
-        break;
+    {
+        return HandleBinaryExpr(expr);
+    }
     case ASTNode::NodeKind::BOOLEAN_EXPR:
     {
         const BooleanExpr* bExpr = dynamic_cast<const BooleanExpr*>(expr);
         assert(bExpr != nullptr);
 
-        auto vInst = VirtualInstruction{ VirtualInstruction::Opcode::LOAD_IMM }
-                     .AddRegOperand(mNodeRegister[expr])
-                     .AddImmOperand(bExpr->GetValue());
-
-        if (mCurrentBlock != nullptr)
-            mCurrentBlock->InsertInstruction(vInst);
-        else
-            mMod->InsertGlobalVar(vInst);
+        return llvm::ConstantInt::get(llvm::getGlobalContext(), llvm::APInt(8, bExpr->GetValue()));
     }
-        break;
     case ASTNode::NodeKind::CALL_EXPR:
-        HandleCallExpr(expr);
-        break;
+    {
+        return HandleCallExpr(expr);
+    }
     case ASTNode::NodeKind::IDENTIFIER_EXPR:
     {
         const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(expr);
@@ -154,20 +184,14 @@ void LLVMGenerator::HandleExpr(const Expr* expr)
         const NumberExpr* nExpr = dynamic_cast<const NumberExpr*>(expr);
         assert(nExpr != nullptr);
 
-        auto vInst = VirtualInstruction{ VirtualInstruction::Opcode::LOAD_IMM }
-                     .AddRegOperand(mNodeRegister[expr])
-                     .AddImmOperand(nExpr->GetValue());
-
-        if (mCurrentBlock != nullptr)
-            mCurrentBlock->InsertInstruction(vInst);
-        else
-            mMod->InsertGlobalVar(vInst);
+        return llvm::ConstantInt::get(llvm::getGlobalContext(), llvm::APInt(16, nExpr->GetValue()));
     }
-        break;
     case ASTNode::NodeKind::STRING_EXPR:
     {
         const StringExpr* sExpr = dynamic_cast<const StringExpr*>(expr);
         assert(sExpr != nullptr);
+
+        return llvm::constant
 
         // We add the string literal to the module
         unsigned memSlot = mMod->InsertArrayVariable(sExpr->GetName(), sExpr->GetName()); // Name and value are the same for simplicity
@@ -189,107 +213,71 @@ void LLVMGenerator::HandleExpr(const Expr* expr)
     }
 }
 
-void LLVMGenerator::HandleBinaryExpr(const ASTNode* expr)
+llvm::Value* LLVMGenerator::HandleBinaryExpr(const ASTNode* expr)
 {
     const BinaryOpExpr* bExpr = dynamic_cast<const BinaryOpExpr*>(expr);
     assert(bExpr != nullptr);
 
+    // Handle the expression's operands
+    llvm::Value* lhsExpr = HandleExpr(bExpr->GetLHS());
+    llvm::Value* rhsExpr = HandleExpr(bExpr->GetRHS());
+
     // TODO: Assignment
 
     // Choose the correct opcode
-    VirtualInstruction::Opcode opcode = VirtualInstruction::Opcode::UNKNOWN;
     switch (bExpr->GetOperation())
     {
     case Common::Opcode::AND_BOOL:
     case Common::Opcode::AND_INT:
-        opcode = VirtualInstruction::Opcode::AND;
-        break;
+        return mBuilder.CreateAnd(lhsExpr, rhsExpr, "andtmp");
     case Common::Opcode::DIVIDE:
-        opcode = VirtualInstruction::Opcode::DIV;
-        break;
+        return mBuilder.CreateUDiv(lhsExpr, rhsExpr, "divtmp");
     case Common::Opcode::GREATER_THAN:
-        opcode = VirtualInstruction::Opcode::GT;
-        break;
+        return mBuilder.CreateICmpUGT(lhsExpr, rhsExpr, "gttmp");
     case Common::Opcode::LEFT_SHIFT:
-        opcode = VirtualInstruction::Opcode::LSHIFT;
-        break;
+        return mBuilder.CreateShl(lhsExpr, rhsExpr, "shltmp");
     case Common::Opcode::LESS_THAN:
-        opcode = VirtualInstruction::Opcode::LT;
-        break;
+        return mBuilder.CreateICmpULE(lhsExpr, rhsExpr, "lttmp");
     case Common::Opcode::MINUS:
-        opcode = VirtualInstruction::Opcode::SUB;
-        break;
+        return mBuilder.CreateSub(lhsExpr, rhsExpr, "subtmp");
     case Common::Opcode::MODULO:
-        opcode = VirtualInstruction::Opcode::MOD;
-        break;
+        return mBuilder.CreateSRem(lhsExpr, rhsExpr, "remtmp");
     case Common::Opcode::MULT:
-        opcode = VirtualInstruction::Opcode::MUL;
-        break;
+        return mBuilder.CreateMul(lhsExpr, rhsExpr, "multmp");
     case Common::Opcode::NOT:
-        opcode = VirtualInstruction::Opcode::NOT;
+        // TODO
         break;
     case Common::Opcode::OR_BOOL:
     case Common::Opcode::OR_INT:
-        opcode = VirtualInstruction::Opcode::OR;
-        break;
+        return mBuilder.CreateOr(lhsExpr, rhsExpr, "ortmp");
     case Common::Opcode::PLUS:
-        opcode = VirtualInstruction::Opcode::ADD;
-        break;
+        return mBuilder.CreateAdd(lhsExpr, rhsExpr, "addtmp");
     case Common::Opcode::RIGHT_SHIFT:
-        opcode = VirtualInstruction::Opcode::RSHIFT;
-        break;
+        return mBuilder.CreateAShr(lhsExpr, rhsExpr, "shrtmp");
     default:
         break;
-    }
-
-    assert(opcode != VirtualInstruction::Opcode::UNKNOWN);
-
-    // Handle the expression's operands
-    HandleExpr(bExpr->GetLHS());
-    HandleExpr(bExpr->GetRHS());
-
-    // Generate the virtual instruction
-    if (mCurrentBlock != nullptr)
-    {
-        mCurrentBlock->InsertInstruction(VirtualInstruction{ opcode }
-                                         .AddRegOperand(mNodeRegister[bExpr->GetLHS()])
-                                         .AddRegOperand(mNodeRegister[bExpr->GetRHS()]));
-    }
-    else
-    {
-        mMod->InsertGlobalVar(VirtualInstruction{ opcode }
-                              .AddRegOperand(mNodeRegister[bExpr->GetLHS()])
-                              .AddRegOperand(mNodeRegister[bExpr->GetRHS()]));
-    }
-    
+    }    
 }
 
-void LLVMGenerator::HandleCallExpr(const ASTNode* expr) 
+llvm::Value* LLVMGenerator::HandleCallExpr(const ASTNode* expr) 
 { 
     const CallExpr* cExpr = dynamic_cast<const CallExpr*>(expr);
     assert(cExpr != nullptr);
 
-    // Push the arguments on the stack in the function declaration order
+    // Generate the list of values to be passed to the called function
+    std::vector<llvm::Value*> argsValue;
     for (const auto& arg : cExpr->GetArgs())
     {
         const Expr* argExpr = dynamic_cast<const Expr*>(arg.get());
-        HandleExpr(argExpr);
-        mCurrentBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::PUSH }
-                                         .AddRegOperand(mNodeRegister[arg.get()]));
+        argsValue.emplace_back(HandleExpr(argExpr));
     }
     
-    // We generate a call instruction. This will take care of the stack pointer.
-    mCurrentBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::CALL }
-                                     // TODO: Quite a mouthful
-                                     .AddTargetOperand(mMod->GetFunction(cExpr->GetCalleeName())->GetEntryBlock().get()));
+    return mBuilder.CreateCall(mMod->getFunction(cExpr->GetCalleeName()), argsValue, "calltmp");
 }
 
 // Statements
-BlockPtr LLVMGenerator::HandleCompoundStmt(const CompoundStmt* cStmt)
+llvm::Value* LLVMGenerator::HandleCompoundStmt(const CompoundStmt* cStmt)
 {
-    CreateNewCurrentBlock();
-    BlockPtr entryBlock{ mCurrentBlock };
-
     for (auto& stmt : cStmt->GetStatements())
     {
         switch (stmt->GetKind())
@@ -322,39 +310,45 @@ BlockPtr LLVMGenerator::HandleCompoundStmt(const CompoundStmt* cStmt)
             break;
         }
     }
-
-    return entryBlock;
 }
 
-void LLVMGenerator::HandleIfStmt(const ASTNode* stmt)
+llvm::Value* LLVMGenerator::HandleIfStmt(const ASTNode* stmt)
 {
     const IfStmt* iStmt = dynamic_cast<const IfStmt*>(stmt);
     assert(iStmt != nullptr);
 
     // Generating instructions for the condition expression
-    HandleExpr(iStmt->GetCondExpr());
+    llvm::Value* condVal = HandleExpr(iStmt->GetCondExpr());
 
-    // Keeping a pointer to the condition block for later
-    BasicBlock* condBlock = mCurrentBlock;
-    
+    // Convert condition value to bool by comparing it to 0
+    mBuilder.CreateICmpNE(condVal, llvm::ConstantInt::get(llvm::getGlobalContext(), llvm::APInt(16, 0)), "ifcond");
+
+    llvm::Function* currentFunc = mBuilder.GetInsertBlock()->getParent();
+
+    // Create blocks for the then compound statement and for if continuation
+    llvm::BasicBlock* thenBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "then", currentFunc);
+    llvm::BasicBlock* contBB = llvm::BasicBlock::Create(llvm::getGlobalContext(), "ifcont");
+
+    // Create the branching
+    mBuilder.CreateCondBr(condVal, thenBB, contBB);
+
     // Generating instructions for the if body
-    BlockPtr thenBeginBlock = HandleCompoundStmt(iStmt->GetBody());
-    
-    // Keep a pointer to the current block which correspond to the end of the if body
-    BasicBlock* thenEndBlock = mCurrentBlock;
+    mBuilder.SetInsertPoint(thenBB);
+    llvm::Value* thenVal = HandleCompoundStmt(iStmt->GetBody());
+    mBuilder.CreateBr(contBB);
 
-    // Creating the exit block
-    CreateNewCurrentBlock();
-    
-    // Generating a branch instruction that goes from the condition block to the then (body) begin block
-    condBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::JUMP }
-                                 .AddRegOperand(mNodeRegister[iStmt->GetCondExpr()])
-                                 .AddTargetOperand(thenBeginBlock.get())
-                                 .AddTargetOperand(mCurrentBlock));
+    thenBB = mBuilder.GetInsertBlock(); // Compound statement code generation can change the current basic block
 
-    // Generating a branch instruction from the then (body) end block to the exit block
-    thenEndBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::JUMP }
-                                    .AddTargetOperand(mCurrentBlock));
+    // Insert the continuation block in the function
+    currentFunc->getBasicBlockList().push_back(contBB);
+    
+    // Emit PHI nodes in the continuation block
+    mBuilder.SetInsertPoint(contBB);
+    llvm::PHINode* pNode = mBuilder.CreatePHI(llvm::Type::getInt16Ty(llvm::getGlobalContext()), 1, "iftmp");
+
+    pNode->addIncoming(thenVal, thenBB);
+
+    return pNode;
 }
 
 void LLVMGenerator::HandlePrintStmt(const ASTNode* stmt)
@@ -387,7 +381,7 @@ void LLVMGenerator::HandleScanStmt(const ASTNode* stmt)
     // TODO
 }
 
-void LLVMGenerator::HandleWhileStmt(const ASTNode* stmt)
+llvm::Value* LLVMGenerator::HandleWhileStmt(const ASTNode* stmt)
 {
     const WhileStmt* wStmt = dynamic_cast<const WhileStmt*>(stmt);
     assert(wStmt != nullptr);
@@ -421,3 +415,16 @@ void LLVMGenerator::HandleWhileStmt(const ASTNode* stmt)
                                     .AddTargetOperand(headerBlock));
 }
 
+llvm::Type* ConvertToLLVMType(const TosLang::Common::Type type)
+{
+    switch (type)
+    {
+    case TosLang::Common::Type::BOOL:
+        return llvm::Type::getInt8Ty(llvm::getGlobalContext());
+    case TosLang::Common::Type::NUMBER:
+        return llvm::Type::getInt16Ty(llvm::getGlobalContext());
+    default:
+        // TODO: Deal with arrays and strings
+        return nullptr;
+    }
+}

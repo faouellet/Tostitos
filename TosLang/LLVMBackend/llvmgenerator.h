@@ -34,15 +34,15 @@ namespace TosLang
         {
         public:
             LLVMGenerator() 
-                : mMod{ nullptr }, mBuilder{}, mSymTable{ nullptr } { }
+                : mMod{ nullptr }, mBuilder{ llvm::getGlobalContext() }, mNamedValues{}, mSymTable{ nullptr } { }
 
         public:
-            std::unique_ptr<Module> Run(const std::unique_ptr<FrontEnd::ASTNode>& root,
+            std::unique_ptr<llvm::Module> Run(const std::unique_ptr<FrontEnd::ASTNode>& root,
                                         const std::shared_ptr<FrontEnd::SymbolTable>& symTab);
 
         protected:  // Declarations
             llvm::Function* HandleFunctionDecl(const FrontEnd::ASTNode* decl);
-            void HandleProgramDecl(const std::unique_ptr<FrontEnd::ASTNode>& root);
+            std::unique_ptr<llvm::Module> HandleProgramDecl(const std::unique_ptr<FrontEnd::ASTNode>& root);
             void HandleVarDecl(const FrontEnd::ASTNode* decl);
 
         protected:  // Expressions
@@ -51,16 +51,17 @@ namespace TosLang
             llvm::Value* HandleCallExpr(const FrontEnd::ASTNode* expr);
 
         protected:  // Statements
-            void HandleCompoundStmt(const FrontEnd::CompoundStmt* cStmt);
-            void HandleIfStmt(const FrontEnd::ASTNode* stmt);
+            llvm::Value* HandleCompoundStmt(const FrontEnd::CompoundStmt* cStmt);
+            llvm::Value* HandleIfStmt(const FrontEnd::ASTNode* stmt);
             void HandlePrintStmt(const FrontEnd::ASTNode* stmt);
             void HandleReturnStmt(const FrontEnd::ASTNode* stmt);
             void HandleScanStmt(const FrontEnd::ASTNode* stmt);
-            void HandleWhileStmt(const FrontEnd::ASTNode* stmt);
+            llvm::Value* HandleWhileStmt(const FrontEnd::ASTNode* stmt);
 
         private:
-            std::unique_ptr<Module> mMod;                                       /*!< Translation unit being built out of the AST */
-            IRBuilder<> mBuilder;
+            std::unique_ptr<llvm::Module> mMod;                                 /*!< Translation unit being built out of the AST */
+            llvm::IRBuilder<> mBuilder;
+            std::map<std::string, llvm::Value*> mNamedValues;
             std::shared_ptr<FrontEnd::SymbolTable> mSymTable;                   /*!< Symbols associated with the AST being traversed */
         };
     }
