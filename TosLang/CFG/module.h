@@ -48,6 +48,7 @@ namespace TosLang
                 // Print global variables
                 for (auto gVarIt = mGlobalBlock->inst_begin(), gVarEnd = mGlobalBlock->inst_end(); gVarIt != gVarEnd; ++gVarIt)
                     stream << *gVarIt << std::endl;
+                std::cout << std::endl;
 
                 // Print the CFGs
                 Utils::CFGPrinter<std::ostream> printer{ stream };

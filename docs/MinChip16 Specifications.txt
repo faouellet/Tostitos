@@ -4,7 +4,7 @@
 
 MinChip16 is a minimalist version of the Chip16 architecture developped for the Tostitos operating system.
 The text below reproduce the relevant parts of the official Chip16 specifications.
-For informations about the Chip16 architecture, go to https://github.com/chip16/chip16.
+For more information about the Chip16 architecture, go to https://github.com/chip16/chip16.
 
 File Format:
 -----------

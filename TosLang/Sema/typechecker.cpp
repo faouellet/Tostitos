@@ -153,6 +153,7 @@ void TypeChecker::HandleBinaryExpr()
     assert(bExpr != nullptr);
 
     const ChildrenNodes& children = bExpr->GetChildrenNodes();
+    assert(children.size() == 2);
     Type operandTypes[2];
     for (int i = 0; i < 2; ++i)
     {
