@@ -51,7 +51,7 @@ namespace TosLang
             * \param cStmt  Compound statement AST node
             * \return       Pointer to the first block of the statement
             */
-            BlockPtr HandleCompoundStmt(const FrontEnd::CompoundStmt* cStmt);
+            BasicBlock* HandleCompoundStmt(const FrontEnd::CompoundStmt* cStmt);
             
             void HandleIfStmt(const FrontEnd::ASTNode* stmt);
             void HandlePrintStmt(const FrontEnd::ASTNode* stmt);

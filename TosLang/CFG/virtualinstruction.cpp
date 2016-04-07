@@ -9,49 +9,6 @@ using namespace TosLang::BackEnd;
 
 static const std::string GetOpCodeName(const VirtualInstruction::Opcode& opcode);
 
-//////////////////// VirtualOperand ////////////////////
-
-VirtualOperand::VirtualOperand(unsigned op, VirtualOperand::OperandKind kind)
-{
-    assert((kind == VirtualOperand::OperandKind::IMMEDIATE) 
-            || (kind == VirtualOperand::OperandKind::MEM_SLOT)
-            || (kind == VirtualOperand::OperandKind::REGISTER));
-    mKind = kind;
-
-    if (kind == VirtualOperand::OperandKind::IMMEDIATE)
-    {
-        mOperand.imm = op;
-    }
-    else if (kind == VirtualOperand::OperandKind::REGISTER)
-    {
-        mOperand.reg = op;
-    }
-}
-
-VirtualOperand::VirtualOperand(BasicBlock* bb) : mKind{ VirtualOperand::OperandKind::TARGET }
-{
-    mOperand.target = bb;
-}
-
-std::ostream& TosLang::BackEnd::operator<<(std::ostream& stream, const VirtualOperand& op)
-{
-    switch (op.mKind)
-    {
-    case VirtualOperand::OperandKind::IMMEDIATE:
-        return stream << op.mOperand.imm;
-    case VirtualOperand::OperandKind::MEM_SLOT:
-        return stream << "M" << op.mOperand.memslot;
-    case VirtualOperand::OperandKind::REGISTER:
-        return stream << "R" << op.mOperand.reg;
-    case VirtualOperand::OperandKind::TARGET:
-        return stream << op.mOperand.target->GetName();
-    default:
-        return stream;
-    }
-}
-
-//////////////////// VirtualInstruction ////////////////////
-
 VirtualInstruction& VirtualInstruction::AddImmOperand(unsigned op)
 {
     mOperands[mNumOperands++] = VirtualOperand(op, VirtualOperand::OperandKind::IMMEDIATE);
@@ -60,7 +17,7 @@ VirtualInstruction& VirtualInstruction::AddImmOperand(unsigned op)
 
 VirtualInstruction& VirtualInstruction::AddMemSlotOperand(unsigned op)
 {
-    mOperands[mNumOperands++] = VirtualOperand(op, VirtualOperand::OperandKind::MEM_SLOT);
+    mOperands[mNumOperands++] = VirtualOperand(op, VirtualOperand::OperandKind::STACK_SLOT);
     return *this;
 }
 
@@ -72,10 +29,19 @@ VirtualInstruction& VirtualInstruction::AddRegOperand(unsigned op)
 
 VirtualInstruction& VirtualInstruction::AddTargetOperand(BasicBlock* bb)
 {
-    // Only jump instructions are allowed to add a target operand
+    // Only jump instructions are allowed to add a target block
     assert(mOpCode == Opcode::JUMP);
 
     mOperands[mNumOperands++] = VirtualOperand(bb);
+    return *this;
+}
+
+VirtualInstruction& VirtualInstruction::AddTargetOperand(const std::string& funcName)
+{
+    // Only call instructions are allowed to add a target function
+    assert(mOpCode == Opcode::CALL);
+
+    mOperands[mNumOperands++] = VirtualOperand(funcName);
     return *this;
 }
 

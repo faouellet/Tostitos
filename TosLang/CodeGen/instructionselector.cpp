@@ -55,12 +55,16 @@ void InstructionSelector::HandleFunctionDecl(const ASTNode* decl)
     {
         // Generate an allocation in the stack frame
         mCurrentBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::ALLOCA }
-                                                             .AddMemSlotOperand(mLocalMemSlot++));
+                                                             .AddMemSlotOperand(mLocalMemSlot));
+
 
         // Store the variable in the space allocated
+        mNodeRegister[param.get()] = mNextRegister++;
         mCurrentBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::STORE }
                                                              .AddRegOperand(mNodeRegister[param.get()])
                                                              .AddMemSlotOperand(mLocalMemSlot));
+
+        ++mLocalMemSlot;
     }
 
     HandleCompoundStmt(fDecl->GetBody());
@@ -144,9 +148,9 @@ void InstructionSelector::HandleExpr(const Expr* expr)
         const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(expr);
         assert(iExpr != nullptr);
 
-        auto vInst = VirtualInstruction{ VirtualInstruction::Opcode::LOAD_IMM }
-                     .AddRegOperand(mNodeRegister[expr])
-                     .AddRegOperand(mNodeRegister[iExpr]);
+        auto vInst = VirtualInstruction{ VirtualInstruction::Opcode::MOV }
+                     .AddRegOperand(mNodeRegister[iExpr])
+                     .AddRegOperand(mNextRegister - 2);     // TODO: Validate
 
         if (mCurrentBlock != nullptr)
             mCurrentBlock->InsertInstruction(vInst);
@@ -286,15 +290,17 @@ void InstructionSelector::HandleCallExpr(const ASTNode* expr)
     
     // We generate a call instruction. This will take care of the stack pointer.
     mCurrentBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::CALL }
-                                     // TODO: Quite a mouthful
-                                     .AddTargetOperand(mMod->GetFunction(cExpr->GetCalleeName())->GetEntryBlock().get()));
+                                     .AddTargetOperand(cExpr->GetCalleeName()));
 }
 
 // Statements
-BlockPtr InstructionSelector::HandleCompoundStmt(const CompoundStmt* cStmt)
+BasicBlock* InstructionSelector::HandleCompoundStmt(const CompoundStmt* cStmt)
 {
     CreateNewCurrentBlock();
-    BlockPtr entryBlock{ mCurrentBlock };
+
+    // Keeping a pointer to the first block of the compound statement.
+    // This will be helpful for any caller that wants to link the compound statement with a control structure
+    BasicBlock* entryBlock = mCurrentBlock;
 
     for (auto& stmt : cStmt->GetStatements())
     {
@@ -344,7 +350,7 @@ void InstructionSelector::HandleIfStmt(const ASTNode* stmt)
     BasicBlock* condBlock = mCurrentBlock;
     
     // Generating instructions for the if body
-    BlockPtr thenBeginBlock = HandleCompoundStmt(iStmt->GetBody());
+    BasicBlock* thenBeginBlock = HandleCompoundStmt(iStmt->GetBody());
     
     // Keep a pointer to the current block which correspond to the end of the if body
     BasicBlock* thenEndBlock = mCurrentBlock;
@@ -355,7 +361,7 @@ void InstructionSelector::HandleIfStmt(const ASTNode* stmt)
     // Generating a branch instruction that goes from the condition block to the then (body) begin block
     condBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::JUMP }
                                  .AddRegOperand(mNodeRegister[iStmt->GetCondExpr()])
-                                 .AddTargetOperand(thenBeginBlock.get())
+                                 .AddTargetOperand(thenBeginBlock)
                                  .AddTargetOperand(mCurrentBlock));
 
     // Generating a branch instruction from the then (body) end block to the exit block
@@ -379,7 +385,13 @@ void InstructionSelector::HandleReturnStmt(const ASTNode* stmt)
     const Expr* rExpr = rStmt->GetReturnExpr();
 
     if (rExpr != nullptr)
+    {
         HandleExpr(rExpr);
+
+        // A return value is transmitted to the caller through the stack
+        mCurrentBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::PUSH }
+                                         .AddRegOperand(mNextRegister - 1));
+    }
 
     // We generate a return opcode. This will take care of dealing with the stack pointer.
     mCurrentBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::RET });
@@ -408,7 +420,7 @@ void InstructionSelector::HandleWhileStmt(const ASTNode* stmt)
     BasicBlock* headerBlock = mCurrentBlock;
 
     // Generating instructions for the while body
-    BlockPtr bodyBeginBlock = HandleCompoundStmt(wStmt->GetBody());
+    BasicBlock* bodyBeginBlock = HandleCompoundStmt(wStmt->GetBody());
 
     // Keep a pointer to the current block which correspond to the end of the if body
     BasicBlock* bodyEndBlock = mCurrentBlock;
@@ -419,7 +431,7 @@ void InstructionSelector::HandleWhileStmt(const ASTNode* stmt)
     // Generating a branch instruction that goes from the header block to either the body begin block or the exit block
     headerBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::JUMP }
                                    .AddRegOperand(mNodeRegister[wStmt->GetCondExpr()])
-                                   .AddTargetOperand(bodyBeginBlock.get())
+                                   .AddTargetOperand(bodyBeginBlock)
                                    .AddTargetOperand(mCurrentBlock));
 
     // Generating a branch instruction from the body end block to the header block

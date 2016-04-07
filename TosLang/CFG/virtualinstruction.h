@@ -1,55 +1,14 @@
 #ifndef VIRTUAL_INSTRUCTION__TOSTITOS
 #define VIRTUAL_INSTRUCTION__TOSTITOS
 
-#include "../../Tostitos/machine/instruction.h"
+#include "virtualoperand.h"
 
 #include <array>
-
-using MachineEngine::ProcessorSpace::Instruction;
 
 namespace TosLang
 {
     namespace BackEnd
     {
-        class BasicBlock;
-
-        /*
-        * \class VirtualOperand
-        * \brief Abstraction over a Chip16 instruction operand.
-        */
-        class VirtualOperand
-        {
-        public:
-            enum class OperandKind
-            {
-                IMMEDIATE,  // Immediate value folded into the operand
-                MEM_SLOT,
-                REGISTER,   // Value is inside a register
-                TARGET,     // Basic block to which we will jump
-                UNKNOWN     // I am error
-            };
-
-        public:
-            VirtualOperand() : mKind{ OperandKind::UNKNOWN } { }
-
-            VirtualOperand(unsigned op, OperandKind kind);
-            explicit VirtualOperand(BasicBlock* bb);
-
-        public:
-            friend std::ostream& operator<<(std::ostream& stream, const VirtualOperand& op);
-
-        private:
-            union 
-            {
-                unsigned imm;
-                unsigned memslot;
-                unsigned reg;
-                BasicBlock* target;
-            } mOperand;
-
-            OperandKind mKind;
-        };
-
         /*
         * \class VirtualInstruction
         * \brief Abstraction over a Chip16 instruction. While its opcode is representative of what will be generated, 
@@ -141,9 +100,16 @@ namespace TosLang
             /*
             * \fn       AddTargetOperand
             * \brief    Adds a basic block as a target to a jump instruction
-            * \param op Target basic block
+            * \param bb Target basic block
             */
             VirtualInstruction& AddTargetOperand(BasicBlock* bb);
+
+            /*
+            * \fn               AddTargetOperand
+            * \brief            Adds a function as a target to a call instruction
+            * \param funcName   Name of the function to called
+            */
+            VirtualInstruction& AddTargetOperand(const std::string& funcName);
 
         public:
             friend std::ostream& operator<<(std::ostream& stream, const VirtualInstruction& inst);
