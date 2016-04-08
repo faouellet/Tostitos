@@ -36,12 +36,23 @@ namespace TosLang
     {
         /*
         * \class ASTReader
-        * \brief TODO
+        * \brief Utility class to create an AST from the contents of an .ast file
         */
         class ASTReader
         {
         public:
+            /*
+            * \fn       ASTReader
+            * \brief    Ctor
+            */
             ASTReader();
+
+            /*
+            * \fn               Run
+            * \brief            Creates an AST from the contents of an .ast file
+            * \param filename   Name of an .ast file
+            * \return           Root node of the generated AST
+            */
             std::unique_ptr<FrontEnd::ASTNode> Run(const std::string& filename);
 
         private:
@@ -65,11 +76,11 @@ namespace TosLang
             std::unique_ptr<FrontEnd::Stmt> ReadStmt();
 
         private:
-            std::ifstream mStream;
-            std::string mCurrentLine;
-            std::smatch mCurrentMatch;
-            std::unordered_map<FrontEnd::ASTNode::NodeKind, std::regex> mNodeKindRegexes;
-            std::regex mSrcLocRegex;
+            std::ifstream mStream;                                                          /*!< Entry stream */
+            std::string mCurrentLine;                                                       /*!< Current line being parsed */
+            std::smatch mCurrentMatch;                                                      /*!< Current match result */
+            std::unordered_map<FrontEnd::ASTNode::NodeKind, std::regex> mNodeKindRegexes;   /*!< Mapping between node kind and regexes */
+            std::regex mSrcLocRegex;                                                        /*!< Regex used to get source location */
         };
     }
 }

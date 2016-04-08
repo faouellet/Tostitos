@@ -18,11 +18,21 @@ namespace TosLang
 
         /*
         * \class BasicBlock
-        * \brief TODO
+        * \brief A basic block is a list of instructions having the following properties:
+        *        - If one instruction in the basic block is executed, all other instructions 
+        *          in the basic block are guaranteed to be executed
+        *        - Instructions will be executed sequentially
+        *        - The last instruction in a basic block is either a jump or a return
         */
         class BasicBlock
         {
         public:
+            /*
+            * \fn           BasicBlock
+            * \brief        Ctor
+            * \param name   Name of the basic block. If none is given, the block will be named 'BlockN' 
+            *               where N is a monotonically increasing number
+            */
             BasicBlock(const std::string& name = "") : mInstructions{}
             {
                 // OK since we won't create multiple blocks in parallel
@@ -53,12 +63,41 @@ namespace TosLang
             bb_const_iterator bb_end() const { return mAdjacentBlocks.end(); }
             
         public:
+            /*
+            * \fn           InsertBranch
+            * \brief        Adds a branch to a basic block. Note that this function 
+            *               is not responsible for adding machine instructions to the basic block.
+            * \param block  Basic block to branch to 
+            */
             void InsertBranch(const BasicBlock* block);
+
+            /*
+            * \fn           InsertBranch
+            * \brief        Adds a branch to a basic block. Note that this function 
+            *               is not responsible for adding machine instructions to the basic block.
+            * \param block  Basic block to branch to
+            */
             void InsertBranch(const BlockPtr& block);
+
+            /*
+            * \fn           InsertInstruction
+            * \brief        Appends a virtual instruction to the basic block
+            * \param inst   Instruction to be added
+            */
             void InsertInstruction(VirtualInstruction&& inst);
+
+            /*
+            * \fn           InsertInstruction
+            * \brief        Appends a virtual instruction to the basic block
+            * \param inst   Instruction to be added
+            */
             void InsertInstruction(const VirtualInstruction& inst);
 
         public:
+            /*
+            * \fn       GetName
+            * \brief    Gives access to the name of the basic block
+            */
             const std::string& GetName() const { return mName; }
 
         private:

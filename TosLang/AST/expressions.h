@@ -153,8 +153,6 @@ namespace TosLang
             NumberExpr(int value, const Utils::SourceLocation& srcLoc)
                 : Expr{ NodeKind::NUMBER_EXPR }, mValue{ value } 
             { 
-                // TODO: This most likely won't guarantee a unique name for every number expression in a program.
-                //       This will cause problem during the symbol collection
                 mName = std::to_string(value); 
                 mSrcLoc = srcLoc;
             }

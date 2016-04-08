@@ -77,7 +77,7 @@ VirtualOperand::~VirtualOperand()
 
 VirtualOperand& VirtualOperand::operator=(const VirtualOperand& op)
 {
-    // TODO: Refactor
+    // TODO: Refactor to use copy-and-swap
     if (this != &op)
     {
         mKind = op.mKind;

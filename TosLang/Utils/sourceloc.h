@@ -58,8 +58,6 @@ namespace TosLang
         private:
             unsigned mCurrentLine;      /*!< Current line in the file the lexer is at */
             unsigned mCurrentColumn;    /*!< Current column in the file the lexer is at */
-
-            // TODO: std::string mFilename ??
         };
     }
 }

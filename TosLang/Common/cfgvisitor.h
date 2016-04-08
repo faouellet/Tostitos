@@ -11,12 +11,17 @@ namespace TosLang
     {
         /*
         * \class CFGVisitor
-        * \brief TODO
+        * \brief Utility class that encapsulates the notion of visiting a control flow graph
         */
         template <typename NodeAction>
         class CFGVisitor
         {
         public:
+            /*
+            * \fn           CFGVisitor
+            * \brief        Ctor
+            * \param args   Arguments to be given to the action to be applied to each node in the CFG
+            */
             template <typename... Args>
             CFGVisitor(Args&&... args) : mAction(std::forward<Args>(args)...) { }
 
@@ -24,8 +29,10 @@ namespace TosLang
 
         public:
             /*
-            * \fn Visit
-            * \brief TODO
+            * \fn                   Visit
+            * \brief                Visit each node of the CFG (once) and applies an action each times it visit a node
+            * \param cfg            Graph to be visited
+            * \param postOrderVisit Perform a post-order or a pre-order visit of the CFG?
             */
             void Visit(const std::shared_ptr<BackEnd::ControlFlowGraph> cfg, bool postOrderVisit)
             {
@@ -38,8 +45,9 @@ namespace TosLang
 
         private:
             /*
-            * \fn RecursiveDFSVisitPostOrder
-            * \brief TODO
+            * \fn           RecursiveDFSVisitPostOrder
+            * \brief        Recursively perform a DFS visit of a sub-graph in a post-order fashion
+            * \param block  Block at the beginning of the sub-graph we want to visit
             */
             void RecursiveDFSVisitPostOrder(const BackEnd::BlockPtr block)
             {
@@ -57,8 +65,9 @@ namespace TosLang
             }
 
             /*
-            * \fn RecursiveDFSVisitPreOrder
-            * \brief TODO
+            * \fn           RecursiveDFSVisitPreOrder
+            * \brief        Recursively perform a DFS visit of a sub-graph in a pre-order fashion
+            * \param block  Block at the beginning of the sub-graph we want to visit
             */
             void RecursiveDFSVisitPreOrder(const BackEnd::BlockPtr block)
             {
@@ -76,8 +85,8 @@ namespace TosLang
             }
 
         private:
-            std::vector<BackEnd::BlockPtr> mBlocksVisited;
-            NodeAction mAction;
+            std::vector<BackEnd::BlockPtr> mBlocksVisited;  /*!< Blocks having been visited so far */
+            NodeAction mAction;                             /*!< Action to be performed at each node */
         };
     }
 }
