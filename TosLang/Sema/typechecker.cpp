@@ -232,6 +232,8 @@ void TypeChecker::HandleCallExpr()
         auto& arg = args[i];
         Type expectedArgTy = expectedArgTypes[i];
         const Expr* argExpr = dynamic_cast<const Expr*>(arg.get());
+        assert(argExpr != nullptr);
+
         if (!CheckExprEvaluateToType(argExpr, expectedArgTy))
         {
             ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::CALL_WRONG_ARG_TYPE, argExpr->GetSourceLocation());

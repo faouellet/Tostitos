@@ -121,8 +121,12 @@ UInt8 CPU::SetStackPointer(const UInt16 value)
     
     if(value < STACK_START || value > STACK_END)
     {
+        std::ios::fmtflags f(std::cout.flags());
+
         std::cout << "Not a valid value for the SP: " << std::hex << value << std::endl;
         return MEMORY_ERROR;
+
+        std::cout.flags(f);
     }
     else
     {

@@ -49,7 +49,7 @@ UInt16 Instruction::GetImmediateValue() const
 void Instruction::SetFirstOperand(UInt8 value)
 {
     // Assuming that the operand is four bits long
-    assert(!(value & 0x1000));
+    assert(!(value & 0xF0));
 
     mValue |= static_cast<UInt32>(value) << 16;
 
@@ -59,7 +59,7 @@ void Instruction::SetFirstOperand(UInt8 value)
 void Instruction::SetSecondOperand(UInt8 value)
 {
     // Assuming that the operand is four bits long
-    assert(!(value & 0x1000));
+    assert(!(value & 0xF0));
 
     if (!UseImmediateValue())
     {
@@ -71,7 +71,7 @@ void Instruction::SetSecondOperand(UInt8 value)
 void Instruction::SetThirdOperand(UInt8 value)
 {
     // Assuming that the operand is four bits long
-    assert(!(value & 0x1000));
+    assert(!(value & 0xF0));
     if (!UseImmediateValue() && !IsInplace())
     {
         mValue |= static_cast<UInt32>(value) << 8;
