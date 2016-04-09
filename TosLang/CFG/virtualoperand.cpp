@@ -72,7 +72,10 @@ VirtualOperand::VirtualOperand(const VirtualOperand& op)
 VirtualOperand::~VirtualOperand()
 {
     if (mKind == OperandKind::FUNCTION)
-        fName.std::string::~string();
+    {
+        using std::string;
+        fName.~string();
+    }
 }
 
 VirtualOperand& VirtualOperand::operator=(const VirtualOperand& op)
