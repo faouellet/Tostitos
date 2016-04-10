@@ -77,7 +77,7 @@ bool SymbolTable::GetGlobalSymbol(const std::string& symName, Symbol& sym)
 }
 
 // TODO: This could probably be refactored into something more elegant
-bool SymbolTable::GetLocalSymbol(const std::string& fnName, const std::string& symName, const std::stack<int>& scopesToSearch, Symbol& sym)
+bool SymbolTable::GetLocalSymbol(const std::string& fnName, const std::string& symName, const std::stack<size_t>& scopesToSearch, Symbol& sym)
 {
     // Checking that we are indeed inside, at the very least, a function scope
     assert(scopesToSearch.size() > 1);
@@ -90,7 +90,7 @@ bool SymbolTable::GetLocalSymbol(const std::string& fnName, const std::string& s
 
     // Starting at the most nested scope, we search outward for the symbol associated with symName.
     // We thus traverse all the scopes inside the function associated with fnName
-    std::stack<int> scopes{ scopesToSearch };
+    std::stack<size_t> scopes{ scopesToSearch };
     while (scopes.size() > 1)
     {
         int scopeID = scopes.top();
@@ -123,6 +123,6 @@ bool SymbolTable::GetLocalSymbol(const std::string& fnName, const std::string& s
 
 const bool SymbolTable::IsGlobalVariable(const std::string & varName) const
 {
-    return mGlobalTable.find(varName) == mGlobalTable.end();
+    return mGlobalTable.find(varName) != mGlobalTable.end();
 }
 

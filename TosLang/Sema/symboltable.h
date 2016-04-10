@@ -21,9 +21,9 @@ namespace TosLang
         class Symbol
         {
         public:
-            Symbol() : mType{ Common::Type::UNKNOWN }, mScopeID{ -1 }, mIsFunction{ false } { };
-            Symbol(Common::Type t, int scopeID, const std::string& name) : mType{ t }, mScopeID{ scopeID }, mIsFunction{ false }, mName{ name } { }
-            Symbol(std::vector<Common::Type> ts, int scopeID, const std::string& name) : mType{ ts }, mScopeID{ scopeID }, mIsFunction{ true }, mName{ name } { }
+            Symbol() : mType{ Common::Type::ERROR }, mScopeID{ 0 }, mIsFunction{ false } { };
+            Symbol(Common::Type t, size_t scopeID, const std::string& name) : mType{ t }, mScopeID{ scopeID }, mIsFunction{ false }, mName{ name } { }
+            Symbol(std::vector<Common::Type> ts, size_t scopeID, const std::string& name) : mType{ ts }, mScopeID{ scopeID }, mIsFunction{ true }, mName{ name } { }
 
             const Common::Type GetVariableType() const { assert(!mIsFunction);  return mType[0]; }
             const Common::Type GetFunctionReturnType() const { assert(mIsFunction);  return mType[0]; }
@@ -33,15 +33,15 @@ namespace TosLang
                 return std::vector<Common::Type>{mType.begin() + 1, mType.end()};
             }
 
-            const int GetScopeID() const { return mScopeID; }
-            const bool IsFunction() const { return mIsFunction; }
-            const std::string& GetName() const { return mName; }
+            const size_t GetScopeID() const { assert(mType.front() != Common::Type::ERROR); return mScopeID; }
+            const bool IsFunction() const { assert(mType.front() != Common::Type::ERROR); return mIsFunction; }
+            const std::string& GetName() const { assert(mType.front() != Common::Type::ERROR); return mName; }
 
         private:
             std::vector<Common::Type> mType;    /*!< Type of the symbol
-                                                For variable, it is simply the variable type
-                                                For function, the first type is the return type and the others are its parameters types*/
-            int mScopeID;                       /*!< Scope in which the symbol was declared */
+                                                     For variable, it is simply the variable type
+                                                     For function, the first type is the return type and the others are its parameters types */
+            size_t mScopeID;                    /*!< Scope in which the symbol was declared */
             bool mIsFunction;                   /*!< Is the symbol representing a function */
             std::string mName;                  /*!< Name of the symbol in the source code */
         };
@@ -98,7 +98,7 @@ namespace TosLang
             * \param sym                Symbol to be added to the symbol table
             * \return                   True if the symbol was found.
             */
-            bool GetLocalSymbol(const std::string& fnName, const std::string& symName, const std::stack<int>& scopesToSearch, Symbol& sym);
+            bool GetLocalSymbol(const std::string& fnName, const std::string& symName, const std::stack<size_t>& scopesToSearch, Symbol& sym);
 
             /*
             * \fn               IsGlobalVariable

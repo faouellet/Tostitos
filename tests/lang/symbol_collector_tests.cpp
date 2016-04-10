@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionMultiParam )
     BOOST_REQUIRE(paramTypes.size() == 3);
     BOOST_REQUIRE(std::all_of(paramTypes.begin(), paramTypes.end(), [](const TosLang::Common::Type& t) { return t == TosLang::Common::Type::NUMBER; }));
 
-    std::stack<int> scopeStack;
+    std::stack<size_t> scopeStack;
     scopeStack.push(0);
     scopeStack.push(1);
 
@@ -111,7 +111,7 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionWithLocalVar )
     BOOST_REQUIRE(fnSymbol.GetFunctionReturnType() == TosLang::Common::Type::NUMBER);
 
     Symbol paramSym;
-    std::stack<int> scopeStack;
+    std::stack<size_t> scopeStack;
     scopeStack.push(0); // Global scope ID
     scopeStack.push(1); // First defined function scope ID
 

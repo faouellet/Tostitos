@@ -58,9 +58,9 @@ namespace TosLang
 
         private:
             size_t mErrorCount;                                         /*!< Number of errors found by the type checker */
-            int mCurrentScopeID;                                        /*!< Current scope identifier */
+            size_t mCurrentScopeID;                                     /*!< Current scope identifier */
             FunctionDecl* mCurrentFunc;                                 /*!< Current traversed function */
-            std::stack<int> mCurrentScopesTraversed;                    /*!< Path from the current scope to the global scopes */
+            std::stack<size_t> mCurrentScopesTraversed;                 /*!< Path from the current scope to the global scopes */
             std::shared_ptr<SymbolTable> mSymbolTable;                  /*!< Symbol table to be used by the type checker */
             std::map<const BinaryOpExpr*, Common::Type> mBinOpTypes;    /*!< Type of the value produced by a binary expression */
         };

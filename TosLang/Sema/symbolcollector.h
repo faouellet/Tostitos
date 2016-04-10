@@ -53,7 +53,7 @@ namespace TosLang
 
         private:
             size_t mCurrentScopeLevel;                  /*!< Current scope nesting level */
-            int mCurrentScopeID;                        /*!< Current scope identifier */
+            size_t mCurrentScopeID;                     /*!< Current scope identifier */
             size_t mErrorCount;                         /*!< Number of errors found by the symbol collector */
             FunctionDecl* mCurrentFunc;                 /*!< Current traversed function */
             std::shared_ptr<SymbolTable> mSymbolTable;  /*!< Symbol table to be filled by the symbol collector */
