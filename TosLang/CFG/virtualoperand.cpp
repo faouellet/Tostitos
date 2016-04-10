@@ -73,6 +73,8 @@ VirtualOperand::~VirtualOperand()
 {
     if (mKind == OperandKind::FUNCTION)
     {
+        // The using statement is needed because of a bug in Clang 3.8.
+        // This will probably be removed at a later time.
         using std::string;
         fName.~string();
     }
