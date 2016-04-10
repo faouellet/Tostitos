@@ -192,6 +192,13 @@ namespace TosLang
             const ParamVarDecls* GetParametersDecl() const { assert(mChildren.size() == 2); return GetChildNodeAs<ParamVarDecls>(0); }
 
             /*
+            * \fn       GetParametersSize
+            * \brief    Gets the number of parammeters declarations of the function
+            * \return   Number of arguments of the function
+            */
+            size_t GetParametersSize() const { assert(mChildren.size() == 2); return GetChildNodeAs<ParamVarDecls>(0)->GetChildrenNodes().size(); }
+
+            /*
             * \fn       GetBody
             * \brief    Gets the body of the function
             * \return   Body of the function
