@@ -97,8 +97,23 @@ namespace TosLang
             /*
             * \fn       GetName
             * \brief    Gives access to the name of the basic block
+            * \return   Name of the basic block
             */
             const std::string& GetName() const { return mName; }
+
+            /*
+            * \fn       GetNbInstructions
+            * \brief    Indicates the number of instructions in the basic block
+            * \return   The number of instructions in the basic block
+            */
+            size_t GetNbInstructions() const { return mInstructions.size(); }
+
+            /*
+            * \fn       IsProperlyTerminated
+            * \brief    Indicates if the basic block is properly terminated i.e. it ends with either a JUMP or a RET instruction
+            * \return   True if the basic block is properly terminated, if not false
+            */
+            bool IsProperlyTerminated() const;
 
         private:
             std::vector<VirtualInstruction> mInstructions;  /*!< Instructions making up the basic block */

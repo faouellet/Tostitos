@@ -21,3 +21,12 @@ void BasicBlock::InsertInstruction(const VirtualInstruction& inst)
 {
     mInstructions.push_back(inst);
 }
+
+bool BasicBlock::IsProperlyTerminated() const
+{
+    if (mInstructions.empty())
+        return false;
+
+    const VirtualInstruction::Opcode opcode = mInstructions.back().GetOpcode();
+    return (opcode == VirtualInstruction::Opcode::JUMP) || (opcode == VirtualInstruction::Opcode::RET);
+}
