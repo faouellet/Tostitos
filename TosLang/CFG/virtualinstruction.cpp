@@ -15,7 +15,7 @@ VirtualInstruction& VirtualInstruction::AddImmOperand(unsigned op)
     return *this;
 }
 
-VirtualInstruction& VirtualInstruction::AddMemSlotOperand(unsigned op)
+VirtualInstruction& VirtualInstruction::AddStackSlotOperand(unsigned op)
 {
     mOperands[mNumOperands++] = VirtualOperand(op, VirtualOperand::OperandKind::STACK_SLOT);
     return *this;
@@ -64,6 +64,8 @@ static const std::string GetOpCodeName(const VirtualInstruction::Opcode& opcode)
     case VirtualInstruction::Opcode::CALL:          return "CALL";
     case VirtualInstruction::Opcode::RET:           return "RET";
     case VirtualInstruction::Opcode::LOAD_IMM:      return "LDI";
+    case VirtualInstruction::Opcode::LOAD_SP:       return "LDI_SP";
+    case VirtualInstruction::Opcode::LOAD:          return "LOAD";
     case VirtualInstruction::Opcode::MOV:           return "MOV";
     case VirtualInstruction::Opcode::STORE:         return "STM";
     case VirtualInstruction::Opcode::PUSH:          return "PUSH";

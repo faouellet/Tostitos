@@ -38,39 +38,36 @@ void InstructionSelector::HandleFunctionDecl(const ASTNode* decl)
 {
     const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(decl);
     assert(fDecl != nullptr);
-
-    // Resetting the memory slot index for local variables
-    mLocalMemSlot = 0;
-
+    mCurrentFunc = fDecl;
+    
     // New function declaration so we need to build a new control flow graph
     CFGPtr pCFG = std::make_shared<ControlFlowGraph>();
-    mCurrentFunc = pCFG.get();
-    mCurrentBlock = mCurrentFunc->CreateNewBlock().get();
+    mCurrentCFG = pCFG.get();
+    mCurrentBlock = mCurrentCFG->CreateNewBlock().get();
 
     mMod->InsertFunction(fDecl->GetFunctionName(), pCFG);
 
-    // Allocating the function arguments on on the stack frame
+    // Function arguments were previously pushed on the stack during the call.
+    // What we need to do now is associate each variable in the stack frame to registers
+    size_t stackSlotsUsed = fDecl->GetParametersSize();
+    unsigned currentStackSlot = 0;
     const ParamVarDecls* paramsDecl = fDecl->GetParametersDecl();
     for (auto& param : paramsDecl->GetParameters())
     {
-        // Generate an allocation in the stack frame
-        mCurrentBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::ALLOCA }
-                                                             .AddMemSlotOperand(mLocalMemSlot));
-
-
-        // Store the variable in the space allocated
-        mNodeRegister[param.get()] = mNextRegister++;
-        mCurrentBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::STORE }
-                                                             .AddRegOperand(mNodeRegister[param.get()])
-                                                             .AddMemSlotOperand(mLocalMemSlot));
-
-        ++mLocalMemSlot;
+        // TODO: This won't work When dealing with arrays and Strings because the info stored about them is an offset
+        mCurrentBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::LOAD }
+                                         .AddRegOperand(GetOrInsertNodeRegister(param.get()))
+                                         .AddStackSlotOperand(currentStackSlot++));
     }
+    
+    // Just being sure that every argument is correctly matched
+    assert(currentStackSlot == stackSlotsUsed);
 
     HandleCompoundStmt(fDecl->GetBody());
 
     // Removing ties to the function
     mCurrentBlock = nullptr;
+    mCurrentCFG = nullptr;
     mCurrentFunc = nullptr;
 }
 
@@ -83,9 +80,7 @@ void InstructionSelector::HandleVarDecl(const ASTNode* decl)
     if (vDecl->IsFunctionParameter())
         return;
 
-    mNodeRegister[decl] = mNextRegister++;
     const bool isGlobalVar = mSymTable->IsGlobalVariable(vDecl->GetName());
-    
     const Expr* initExpr = vDecl->GetInitExpr();
 
     VirtualInstruction vInst;
@@ -98,14 +93,14 @@ void InstructionSelector::HandleVarDecl(const ASTNode* decl)
 
         // Generate a load instruction into the variable's register
         vInst = VirtualInstruction{ VirtualInstruction::Opcode::MOV }
-                                    .AddRegOperand(mNodeRegister[decl])
-                                    .AddRegOperand(mNodeRegister[initExpr]);
+                                    .AddRegOperand(GetOrInsertNodeRegister(decl))
+                                    .AddRegOperand(GetOrInsertNodeRegister(initExpr));
     }
     // If there's no initialization expression, the variable will be default initialized
     else
     {
         vInst = VirtualInstruction{ VirtualInstruction::Opcode::MOV }
-                                    .AddRegOperand(mNodeRegister[decl])
+                                    .AddRegOperand(GetOrInsertNodeRegister(decl))
                                     .AddImmOperand(0);
     }
     
@@ -118,8 +113,6 @@ void InstructionSelector::HandleVarDecl(const ASTNode* decl)
 // Expressions
 void InstructionSelector::HandleExpr(const Expr* expr)
 {
-    mNodeRegister[expr] = mNextRegister++;
-
     switch (expr->GetKind())
     {
     case ASTNode::NodeKind::BINARY_EXPR:
@@ -131,7 +124,7 @@ void InstructionSelector::HandleExpr(const Expr* expr)
         assert(bExpr != nullptr);
 
         auto vInst = VirtualInstruction{ VirtualInstruction::Opcode::LOAD_IMM }
-                     .AddRegOperand(mNodeRegister[expr])
+                     .AddRegOperand(GetOrInsertNodeRegister(expr))
                      .AddImmOperand(bExpr->GetValue());
 
         if (mCurrentBlock != nullptr)
@@ -143,14 +136,17 @@ void InstructionSelector::HandleExpr(const Expr* expr)
     case ASTNode::NodeKind::CALL_EXPR:
         HandleCallExpr(expr);
         break;
-    case ASTNode::NodeKind::IDENTIFIER_EXPR:
+    case ASTNode::NodeKind::IDENTIFIER_EXPR:    // TODO: Is this useful?
     {
         const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(expr);
         assert(iExpr != nullptr);
 
+        Symbol sym;
+        mSymTable->GetLocalSymbol(mCurrentFunc->GetFunctionName(), iExpr->GetName(), mCurrentScopesTraversed, sym);
+
         auto vInst = VirtualInstruction{ VirtualInstruction::Opcode::MOV }
-                     .AddRegOperand(mNodeRegister[iExpr])
-                     .AddRegOperand(mNextRegister - 2);     // TODO: Validate
+                     .AddRegOperand(GetOrInsertNodeRegister(iExpr))
+                     .AddRegOperand(1);     // TODO: Validate
 
         if (mCurrentBlock != nullptr)
             mCurrentBlock->InsertInstruction(vInst);
@@ -164,7 +160,7 @@ void InstructionSelector::HandleExpr(const Expr* expr)
         assert(nExpr != nullptr);
 
         auto vInst = VirtualInstruction{ VirtualInstruction::Opcode::LOAD_IMM }
-                     .AddRegOperand(mNodeRegister[expr])
+                     .AddRegOperand(GetOrInsertNodeRegister(expr))
                      .AddImmOperand(nExpr->GetValue());
 
         if (mCurrentBlock != nullptr)
@@ -183,8 +179,8 @@ void InstructionSelector::HandleExpr(const Expr* expr)
 
         // We generate a load of the string literal address
         auto vInst = VirtualInstruction{ VirtualInstruction::Opcode::LOAD_IMM }
-                     .AddRegOperand(mNodeRegister[expr])
-                     .AddMemSlotOperand(memSlot);
+                     .AddRegOperand(GetOrInsertNodeRegister(expr))
+                     .AddStackSlotOperand(memSlot);
 
         if (mCurrentBlock != nullptr)
             mCurrentBlock->InsertInstruction(vInst);
@@ -261,15 +257,15 @@ void InstructionSelector::HandleBinaryExpr(const ASTNode* expr)
     if (mCurrentBlock != nullptr)
     {
         mCurrentBlock->InsertInstruction(VirtualInstruction{ opcode }
-                                         .AddRegOperand(mNodeRegister[bExpr->GetLHS()])
-                                         .AddRegOperand(mNodeRegister[bExpr->GetRHS()]));
+                                         .AddRegOperand(GetOrInsertNodeRegister(bExpr->GetLHS()))
+                                         .AddRegOperand(GetOrInsertNodeRegister(bExpr->GetRHS())));
     }
     else
     {
         mMod->InsertGlobalVar(VirtualInstruction{ opcode }
-                              .AddRegOperand(mNodeRegister[bExpr->GetLHS()])
-                              .AddRegOperand(mNodeRegister[bExpr->GetRHS()])
-                              .AddRegOperand(mNodeRegister[bExpr]));
+                              .AddRegOperand(GetOrInsertNodeRegister(bExpr->GetLHS()))
+                              .AddRegOperand(GetOrInsertNodeRegister(bExpr->GetRHS()))
+                              .AddRegOperand(GetOrInsertNodeRegister(bExpr)));
     }
     
 }
@@ -278,6 +274,7 @@ void InstructionSelector::HandleCallExpr(const ASTNode* expr)
 { 
     const CallExpr* cExpr = dynamic_cast<const CallExpr*>(expr);
     assert(cExpr != nullptr);
+    unsigned nextStackSlot = 0;
 
     // Push the arguments on the stack in the function declaration order
     for (const auto& arg : cExpr->GetArgs())
@@ -285,12 +282,29 @@ void InstructionSelector::HandleCallExpr(const ASTNode* expr)
         const Expr* argExpr = dynamic_cast<const Expr*>(arg.get());
         HandleExpr(argExpr);
         mCurrentBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::PUSH }
-                                         .AddRegOperand(mNodeRegister[arg.get()]));
+                                         .AddRegOperand(GetOrInsertNodeRegister(arg.get())));
+        nextStackSlot++;
     }
     
+    // If the function produce a value, we allocate some space on the stack for it
+    Symbol fnSym;
+    assert(mSymTable->GetGlobalSymbol(cExpr->GetCalleeName(), fnSym));
+    if (fnSym.GetFunctionReturnType() != Common::Type::VOID)
+    {
+        mCurrentBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::LOAD_SP }
+                                         .AddImmOperand(nextStackSlot++));
+    }
+
     // We generate a call instruction. This will take care of the stack pointer.
     mCurrentBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::CALL }
                                      .AddTargetOperand(cExpr->GetCalleeName()));
+
+    // We then pop the return value in a register if necessary
+    if (fnSym.GetFunctionReturnType() != Common::Type::VOID)
+    {
+        mCurrentBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::POP }
+                                         .AddRegOperand(GetOrInsertNodeRegister(expr)));
+    }
 }
 
 // Statements
@@ -360,7 +374,7 @@ void InstructionSelector::HandleIfStmt(const ASTNode* stmt)
     
     // Generating a branch instruction that goes from the condition block to the then (body) begin block
     condBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::JUMP }
-                                 .AddRegOperand(mNodeRegister[iStmt->GetCondExpr()])
+                                 .AddRegOperand(GetOrInsertNodeRegister(iStmt->GetCondExpr()))
                                  .AddTargetOperand(thenBeginBlock)
                                  .AddTargetOperand(mCurrentBlock));
 
@@ -430,7 +444,7 @@ void InstructionSelector::HandleWhileStmt(const ASTNode* stmt)
 
     // Generating a branch instruction that goes from the header block to either the body begin block or the exit block
     headerBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::JUMP }
-                                   .AddRegOperand(mNodeRegister[wStmt->GetCondExpr()])
+                                   .AddRegOperand(GetOrInsertNodeRegister(wStmt->GetCondExpr()))
                                    .AddTargetOperand(bodyBeginBlock)
                                    .AddTargetOperand(mCurrentBlock));
 
@@ -439,10 +453,27 @@ void InstructionSelector::HandleWhileStmt(const ASTNode* stmt)
                                     .AddTargetOperand(headerBlock));
 }
 
-void TosLang::BackEnd::InstructionSelector::CreateNewCurrentBlock(std::vector<VirtualInstruction>&& insts)
+void InstructionSelector::CreateNewCurrentBlock(std::vector<VirtualInstruction>&& insts)
 {
-    BlockPtr newBlock = mCurrentFunc->CreateNewBlock(std::move(insts));
+    // Don't create a new block when the current one isn't properly terminated
+    if (!mCurrentBlock->IsProperlyTerminated())
+        return;
+
+    BlockPtr newBlock = mCurrentCFG->CreateNewBlock(std::move(insts));
     mCurrentBlock->InsertBranch(newBlock);
     mCurrentBlock = newBlock.get();
 }
 
+unsigned InstructionSelector::GetOrInsertNodeRegister(const ASTNode* node)
+{
+    auto regIt = mNodeRegister.find(node);
+    if (regIt == mNodeRegister.end())
+    {
+        auto nodeReg = mNodeRegister.insert({ node, mNextRegister++ });
+        return nodeReg.first->second;
+    }
+    else
+    {
+        return regIt->second;
+    }
+}

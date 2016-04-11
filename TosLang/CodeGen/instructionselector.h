@@ -13,6 +13,7 @@ namespace TosLang
         class ASTNode;
         class CompoundStmt;
         class Expr;
+        class FunctionDecl;
         class SymbolTable;
     }
 
@@ -26,8 +27,9 @@ namespace TosLang
         {
         public:
             InstructionSelector() 
-                : mNextRegister{ 0 }, mLocalMemSlot{ 0 }, mNodeRegister{}, mMod{ nullptr },
-                  mCurrentFunc{ nullptr }, mCurrentBlock{ nullptr }, mSymTable{ nullptr } { }
+                : mNextRegister{ 0 }, mNextStackSlot{ 0 }, mNodeRegister{}, mNodeStackSlot{ }, 
+                  mMod{ nullptr }, mCurrentCFG{ nullptr }, mCurrentBlock{ nullptr }, 
+                  mCurrentFunc{ nullptr }, mCurrentScope{ 0 }, mCurrentScopesTraversed{}, mSymTable { nullptr } { }
 
         public:
             std::unique_ptr<Module> Run(const std::unique_ptr<FrontEnd::ASTNode>& root,
@@ -68,13 +70,29 @@ namespace TosLang
             */
             void CreateNewCurrentBlock(std::vector<VirtualInstruction>&& insts = std::vector<VirtualInstruction>{});
 
+            /*
+            * \fn           GetOrInsertNodeRegister
+            * \brief        Gets the register associated with a given AST node. This will allocate a new virtual 
+            *               register for the AST node if none were previously allocated for it.
+            * \param node   AST node
+            * \return       Register associated with the AST node
+            */
+            unsigned GetOrInsertNodeRegister(const FrontEnd::ASTNode* node);
+
         private:
             unsigned mNextRegister;                                             /*!< Next register number to give out */
-            unsigned mLocalMemSlot;                                             /*!< Next memory slot to give to a local variable */
+            unsigned mNextStackSlot;                                            /*!< Next stack slot number to give out */
             std::map<const FrontEnd::ASTNode*, unsigned> mNodeRegister;         /*!< Mapping indicating in which register an AST node value lives */
+            std::map<const FrontEnd::ASTNode*, unsigned> mNodeStackSlot;        /*!< Mapping indicating in which stack slot an AST node value lives. 
+                                                                                     This is to be used only when entering and exiting functions. */
+            
             std::unique_ptr<Module> mMod;                                       /*!< Translation unit being built out of the AST */
-            ControlFlowGraph* mCurrentFunc;                                     /*!< Current machine function being written */
+            ControlFlowGraph* mCurrentCFG;                                      /*!< Current machine function being written */
             BasicBlock* mCurrentBlock;                                          /*!< Current basic block being written to */
+
+            const FrontEnd::FunctionDecl* mCurrentFunc;                         /*!< Current function being traversed */
+            size_t mCurrentScope;                                               /*!< ID of the current scope */
+            std::stack<size_t> mCurrentScopesTraversed;                         /*!< IDs of the scopes currently traversed */
             std::shared_ptr<FrontEnd::SymbolTable> mSymTable;                   /*!< Symbols associated with the AST being traversed */
         };
     }

@@ -29,6 +29,7 @@ namespace TosLang
                 CALL,
                 RET,
                 LOAD_IMM,
+                LOAD_SP,
                 LOAD,
                 MOV,
                 STORE,
@@ -77,6 +78,15 @@ namespace TosLang
 
         public:
             /*
+            * \fn               AddTargetOperand
+            * \brief            Adds a function as a target to a call instruction
+            * \param funcName   Name of the function to called
+            */
+            Opcode GetOpcode() const { return mOpCode; }
+
+
+        public:
+            /*
             * \fn       AddImmOperand
             * \brief    Adds an immediate operand (i.e. a literal value) to the instruction
             * \param op Immediate operand
@@ -84,11 +94,11 @@ namespace TosLang
             VirtualInstruction& AddImmOperand(unsigned op);
 
             /*
-            * \fn       AddMemSlotOperand
-            * \brief    Adds a memory slot number as an operand to the instruction
-            * \param op Memory slot number
+            * \fn       AddStackSlotOperand
+            * \brief    Adds a stack slot number as an operand to the instruction
+            * \param op Stack slot number
             */
-            VirtualInstruction& AddMemSlotOperand(unsigned op);
+            VirtualInstruction& AddStackSlotOperand(unsigned op);
 
             /*
             * \fn       AddRegOperand
