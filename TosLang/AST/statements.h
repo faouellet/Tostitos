@@ -16,7 +16,7 @@ namespace TosLang
         {
         public:
             explicit Stmt(NodeKind kind) : ASTNode{ kind } { }
-            virtual ~Stmt() { }
+            virtual ~Stmt() = default;
         };
 
         /*
@@ -28,7 +28,7 @@ namespace TosLang
         {
         public:
             CompoundStmt() : Stmt{ NodeKind::COMPOUND_STMT } {}
-            virtual ~CompoundStmt() { }
+            virtual ~CompoundStmt() = default;
 
         public:
             /*
@@ -66,7 +66,7 @@ namespace TosLang
                 AddChildNode(std::move(thenStmt));
             }
 
-            virtual ~IfStmt() { }
+            virtual ~IfStmt() = default;
 
         public:
             /*
@@ -98,7 +98,7 @@ namespace TosLang
                 mSrcLoc = srcLoc; 
             }
 
-            virtual ~PrintStmt() { }
+            virtual ~PrintStmt() = default;
 
         public:
             /*
@@ -130,7 +130,7 @@ namespace TosLang
         {
         public:
             ReturnStmt(const Utils::SourceLocation& srcLoc) : Stmt{ NodeKind::RETURN_STMT } { mSrcLoc = srcLoc; }
-            virtual ~ReturnStmt() { }
+            virtual ~ReturnStmt() = default;
 
         public:
             /*
@@ -174,7 +174,7 @@ namespace TosLang
                 mSrcLoc = srcLoc;
                 AddChildNode(std::move(message)); 
             }
-            virtual ~ScanStmt() { }
+            virtual ~ScanStmt() = default;
 
         public:
             /*
@@ -205,7 +205,7 @@ namespace TosLang
                 AddChildNode(std::move(body));
             }
 
-            virtual ~WhileStmt() { }
+            virtual ~WhileStmt() = default;
 
         public:
             /*

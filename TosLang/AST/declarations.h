@@ -22,7 +22,7 @@ namespace TosLang
         public:
             explicit Decl() : ASTNode{ NodeKind::ERROR } { }
             explicit Decl(NodeKind kind) : ASTNode{ kind } { }
-            virtual ~Decl() { }
+            virtual ~Decl() = default;
         };
 
         /*
@@ -33,7 +33,7 @@ namespace TosLang
         {
         public:
             ProgramDecl() : Decl{ NodeKind::PROGRAM_DECL } { }
-            virtual ~ProgramDecl() { }
+            virtual ~ProgramDecl() = default;
 
         public:
             /*
@@ -66,7 +66,7 @@ namespace TosLang
                 mName = varName; 
                 mSrcLoc = srcLoc;
             }
-            virtual ~VarDecl() { }
+            virtual ~VarDecl() = default;
 
 		public:
             /*
@@ -129,7 +129,7 @@ namespace TosLang
         {
         public:
             ParamVarDecls() : Decl{ NodeKind::PARAM_VAR_DECL } { }
-            virtual ~ParamVarDecls() { }
+            virtual ~ParamVarDecls() = default;
 
         public:
             /*
@@ -167,7 +167,7 @@ namespace TosLang
                 AddChildNode(std::move(body));
             }
 
-            virtual ~FunctionDecl() { }
+            virtual ~FunctionDecl() = default;
 
         public:
             /*

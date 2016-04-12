@@ -24,7 +24,7 @@ namespace TosLang
             * \param line   Line number in the source file (1-based)
             * \param column Column number in the source file (1-based)
             */
-            SourceLocation(const unsigned line, const unsigned column) : mCurrentLine{ line }, mCurrentColumn { column } { }
+            SourceLocation(const size_t line, const size_t column) : mCurrentLine{ line }, mCurrentColumn { column } { }
 
         public:
             /*
@@ -46,18 +46,18 @@ namespace TosLang
             * \brief    Gives the current number
             * \return   The current column
             */
-            const unsigned GetCurrentColumn() const { return mCurrentColumn; }
+            const size_t GetCurrentColumn() const { return mCurrentColumn; }
 
             /*
             * \fn       GetCurrentLine
             * \brief    Gives the current number
             * \return   The current line
             */
-            const unsigned GetCurrentLine() const { return mCurrentLine; }
+            const size_t GetCurrentLine() const { return mCurrentLine; }
 
         private:
-            unsigned mCurrentLine;      /*!< Current line in the file the lexer is at */
-            unsigned mCurrentColumn;    /*!< Current column in the file the lexer is at */
+            size_t mCurrentLine;      /*!< Current line in the file the lexer is at */
+            size_t mCurrentColumn;    /*!< Current column in the file the lexer is at */
         };
     }
 }

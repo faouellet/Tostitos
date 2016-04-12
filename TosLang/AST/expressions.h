@@ -16,7 +16,7 @@ namespace TosLang
         {
         public:
             explicit Expr(NodeKind kind) : ASTNode{ kind } { }
-            virtual ~Expr() { }
+            virtual ~Expr() = default;
         };
 
 		/*
@@ -39,7 +39,7 @@ namespace TosLang
                 AddChildNode(std::move(rhs));
             }
 
-			virtual ~BinaryOpExpr() { }
+            virtual ~BinaryOpExpr() = default;
 
         public:
             /*
@@ -80,7 +80,7 @@ namespace TosLang
                 mSrcLoc = srcLoc;
             }
 
-            virtual ~BooleanExpr() { }
+            virtual ~BooleanExpr() = default;
 
         public:
             /*
@@ -109,7 +109,7 @@ namespace TosLang
                 mChildren.insert(mChildren.end(), std::make_move_iterator(args.begin()), std::make_move_iterator(args.end()));
             }
             
-            virtual ~CallExpr() { }
+            virtual ~CallExpr() = default;
 
         public:
             /*
@@ -140,7 +140,7 @@ namespace TosLang
                 mName = value; 
                 mSrcLoc = srcLoc;
             }
-            virtual ~IdentifierExpr() { }
+            virtual ~IdentifierExpr() = default;
         };
 
         /*
@@ -183,7 +183,7 @@ namespace TosLang
                 mName = value;
                 mSrcLoc = srcLoc;
             }
-            virtual ~StringExpr() { }
+            virtual ~StringExpr() = default;
         };
     }
 }
