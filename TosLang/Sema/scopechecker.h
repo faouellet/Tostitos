@@ -41,7 +41,7 @@ namespace TosLang
             size_t mErrorCount;                         /*!< Number of errors found by the type checker */
             size_t mCurrentScopeID;                        /*!< Current scope identifier */
             FunctionDecl* mCurrentFunc;                 /*!< Current traversed function */
-            std::stack<size_t> mCurrentScopesTraversed; /*!< Path from the current scope to the global scopes */
+            std::deque<size_t> mCurrentScopesTraversed; /*!< Path from the current scope to the global scopes */
             std::shared_ptr<SymbolTable> mSymbolTable;  /*!< Symbol table to be used by the type checker */
         };
     }

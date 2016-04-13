@@ -11,13 +11,13 @@ using namespace TosLang::Utils;
 TypeChecker::TypeChecker() 
     : mErrorCount{ 0 }, mCurrentScopeID{ 0 }, mCurrentFunc{ nullptr }
 {
-    mCurrentScopesTraversed.push(mCurrentScopeID);
+    mCurrentScopesTraversed.push_front(mCurrentScopeID);
 
     this->mPrologueFtr = [this]()
     {
         if (mCurrentNode->GetKind() == ASTNode::NodeKind::COMPOUND_STMT)
         {   
-            mCurrentScopesTraversed.push(++mCurrentScopeID);
+            mCurrentScopesTraversed.push_front(++mCurrentScopeID);
         }
         else if (mCurrentNode->GetKind() == ASTNode::NodeKind::FUNCTION_DECL)
         {
@@ -30,7 +30,7 @@ TypeChecker::TypeChecker()
     {
         if (mCurrentNode->GetKind() == ASTNode::NodeKind::COMPOUND_STMT)
         {
-            mCurrentScopesTraversed.pop();
+            mCurrentScopesTraversed.pop_front();
         }
         else if (mCurrentNode->GetKind() == ASTNode::NodeKind::FUNCTION_DECL)
         {

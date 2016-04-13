@@ -75,9 +75,9 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionMultiParam )
     BOOST_REQUIRE(paramTypes.size() == 3);
     BOOST_REQUIRE(std::all_of(paramTypes.begin(), paramTypes.end(), [](const TosLang::Common::Type& t) { return t == TosLang::Common::Type::NUMBER; }));
 
-    std::stack<size_t> scopeStack;
-    scopeStack.push(0);
-    scopeStack.push(1);
+    std::deque<size_t> scopeStack;
+    scopeStack.push_front(0);
+    scopeStack.push_front(1);
 
     for (size_t i = 0; i < 3; ++i)
     {
@@ -111,9 +111,9 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionWithLocalVar )
     BOOST_REQUIRE(fnSymbol.GetFunctionReturnType() == TosLang::Common::Type::NUMBER);
 
     Symbol paramSym;
-    std::stack<size_t> scopeStack;
-    scopeStack.push(0); // Global scope ID
-    scopeStack.push(1); // First defined function scope ID
+    std::deque<size_t> scopeStack;
+    scopeStack.push_front(0); // Global scope ID
+    scopeStack.push_front(1); // First defined function scope ID
 
     // Validate the identity function parameter
     BOOST_REQUIRE(symbolTable->GetLocalSymbol("identity", "i", scopeStack, paramSym));
@@ -130,8 +130,8 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionWithLocalVar )
     BOOST_REQUIRE(fnSymbol.GetFunctionParamTypes().size() == 0);
     BOOST_REQUIRE(fnSymbol.GetFunctionReturnType() == TosLang::Common::Type::VOID);
 
-    scopeStack.pop();   // Getting out of the identity function
-    scopeStack.push(2); // Main function scope ID
+    scopeStack.pop_front();   // Getting out of the identity function
+    scopeStack.push_front(2); // Main function scope ID
 
     // Validate main's local variable
     BOOST_REQUIRE(symbolTable->GetLocalSymbol("main", "MyInt", scopeStack, paramSym));

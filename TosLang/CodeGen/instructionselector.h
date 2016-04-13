@@ -92,7 +92,7 @@ namespace TosLang
 
             const FrontEnd::FunctionDecl* mCurrentFunc;                         /*!< Current function being traversed */
             size_t mCurrentScope;                                               /*!< ID of the current scope */
-            std::stack<size_t> mCurrentScopesTraversed;                         /*!< IDs of the scopes currently traversed */
+            std::deque<size_t> mCurrentScopesTraversed;                         /*!< IDs of the scopes currently traversed */
             std::shared_ptr<FrontEnd::SymbolTable> mSymTable;                   /*!< Symbols associated with the AST being traversed */
         };
     }

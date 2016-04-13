@@ -4,8 +4,8 @@
 #include "../Common/type.h"
 
 #include <cassert>
+#include <deque>
 #include <string>
-#include <stack>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -98,7 +98,7 @@ namespace TosLang
             * \param sym                Symbol to be added to the symbol table
             * \return                   True if the symbol was found.
             */
-            bool GetLocalSymbol(const std::string& fnName, const std::string& symName, const std::stack<size_t>& scopesToSearch, Symbol& sym);
+            bool GetLocalSymbol(const std::string& fnName, const std::string& symName, const std::deque<size_t>& scopesToSearch, Symbol& sym);
 
             /*
             * \fn               IsGlobalVariable
