@@ -52,12 +52,17 @@ void InstructionSelector::HandleFunctionDecl(const ASTNode* decl)
     size_t stackSlotsUsed = fDecl->GetParametersSize();
     unsigned currentStackSlot = 0;
     const ParamVarDecls* paramsDecl = fDecl->GetParametersDecl();
+    mAvailableDecls.emplace_front();
     for (auto& param : paramsDecl->GetParameters())
     {
         // TODO: This won't work When dealing with arrays and Strings because the info stored about them is an offset
         mCurrentBlock->InsertInstruction(VirtualInstruction{ VirtualInstruction::Opcode::LOAD }
                                          .AddRegOperand(GetOrInsertNodeRegister(param.get()))
                                          .AddStackSlotOperand(currentStackSlot++));
+
+        const VarDecl* paramVDecl = dynamic_cast<const VarDecl*>(param.get());
+        assert(paramVDecl != nullptr);
+        mAvailableDecls.front().push_back(paramVDecl);
     }
     
     // Just being sure that every argument is correctly matched
@@ -105,9 +110,15 @@ void InstructionSelector::HandleVarDecl(const ASTNode* decl)
     }
     
     if (isGlobalVar)
+    {
         mMod->InsertGlobalVar(vInst);
+        mAvailableDecls.back().push_back(vDecl);
+    }
     else
+    {
         mCurrentBlock->InsertInstruction(vInst);
+        mAvailableDecls.front().push_back(vDecl);
+    }
 }
 
 // Expressions
@@ -136,17 +147,25 @@ void InstructionSelector::HandleExpr(const Expr* expr)
     case ASTNode::NodeKind::CALL_EXPR:
         HandleCallExpr(expr);
         break;
-    case ASTNode::NodeKind::IDENTIFIER_EXPR:    // TODO: Is this useful?
+    case ASTNode::NodeKind::IDENTIFIER_EXPR:
     {
         const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(expr);
         assert(iExpr != nullptr);
 
-        Symbol sym;
-        mSymTable->GetLocalSymbol(mCurrentFunc->GetFunctionName(), iExpr->GetName(), mCurrentScopesTraversed, sym);
+        const std::string& varName = iExpr->GetName();
+        std::vector<const VarDecl*>::const_iterator varIt;
+        for (const auto& scopeVariables : mAvailableDecls)
+        {
+            varIt = std::find_if(scopeVariables.begin(), scopeVariables.end(), 
+                                 [varName](const VarDecl* vDecl) { return vDecl->GetName() == varName; });
+
+            if (varIt != scopeVariables.end())
+                break;
+        }
 
         auto vInst = VirtualInstruction{ VirtualInstruction::Opcode::MOV }
                      .AddRegOperand(GetOrInsertNodeRegister(iExpr))
-                     .AddRegOperand(1);     // TODO: Validate
+                     .AddRegOperand(mNodeRegister[*varIt]);
 
         if (mCurrentBlock != nullptr)
             mCurrentBlock->InsertInstruction(vInst);
@@ -349,6 +368,8 @@ BasicBlock* InstructionSelector::HandleCompoundStmt(const CompoundStmt* cStmt)
         }
     }
 
+    mAvailableDecls.pop_front();
+
     return entryBlock;
 }
 
@@ -364,6 +385,7 @@ void InstructionSelector::HandleIfStmt(const ASTNode* stmt)
     BasicBlock* condBlock = mCurrentBlock;
     
     // Generating instructions for the if body
+    mAvailableDecls.emplace_front();
     BasicBlock* thenBeginBlock = HandleCompoundStmt(iStmt->GetBody());
     
     // Keep a pointer to the current block which correspond to the end of the if body
@@ -434,6 +456,7 @@ void InstructionSelector::HandleWhileStmt(const ASTNode* stmt)
     BasicBlock* headerBlock = mCurrentBlock;
 
     // Generating instructions for the while body
+    mAvailableDecls.emplace_front();
     BasicBlock* bodyBeginBlock = HandleCompoundStmt(wStmt->GetBody());
 
     // Keep a pointer to the current block which correspond to the end of the if body

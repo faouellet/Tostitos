@@ -15,6 +15,7 @@ namespace TosLang
         class Expr;
         class FunctionDecl;
         class SymbolTable;
+        class VarDecl;
     }
 
     namespace BackEnd
@@ -29,7 +30,7 @@ namespace TosLang
             InstructionSelector() 
                 : mNextRegister{ 0 }, mNextStackSlot{ 0 }, mNodeRegister{}, mNodeStackSlot{ }, 
                   mMod{ nullptr }, mCurrentCFG{ nullptr }, mCurrentBlock{ nullptr }, 
-                  mCurrentFunc{ nullptr }, mCurrentScope{ 0 }, mCurrentScopesTraversed{}, mSymTable { nullptr } { }
+                  mCurrentFunc{ nullptr }, mCurrentScope{ 0 }, mCurrentScopesTraversed{}, mSymTable{ nullptr }, mAvailableDecls{ } { }
 
         public:
             std::unique_ptr<Module> Run(const std::unique_ptr<FrontEnd::ASTNode>& root,
@@ -94,6 +95,7 @@ namespace TosLang
             size_t mCurrentScope;                                               /*!< ID of the current scope */
             std::deque<size_t> mCurrentScopesTraversed;                         /*!< IDs of the scopes currently traversed */
             std::shared_ptr<FrontEnd::SymbolTable> mSymTable;                   /*!< Symbols associated with the AST being traversed */
+            std::deque<std::vector<const FrontEnd::VarDecl*>> mAvailableDecls;  /*!< Variables accessible in a given scope */
         };
     }
 }
