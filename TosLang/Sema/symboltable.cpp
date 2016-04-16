@@ -76,7 +76,6 @@ bool SymbolTable::GetGlobalSymbol(const std::string& symName, Symbol& sym)
     return true;
 }
 
-// TODO: This could probably be refactored into something more elegant
 bool SymbolTable::GetLocalSymbol(const std::string& fnName, const std::string& symName, const std::deque<size_t>& scopesToSearch, Symbol& sym)
 {
     // Checking that we are indeed inside, at the very least, a function scope
