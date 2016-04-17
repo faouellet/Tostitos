@@ -59,7 +59,7 @@ static const std::string GetOpCodeName(const VirtualInstruction::Opcode& opcode)
     switch (opcode)
     {
     case VirtualInstruction::Opcode::NO_OP:         return "NOP";
-    case VirtualInstruction::Opcode::ALLOCA:        return "ALLOCA";
+    //case VirtualInstruction::Opcode::ALLOCA:        return "ALLOCA";
     case VirtualInstruction::Opcode::JUMP:          return "JMP";
     case VirtualInstruction::Opcode::CALL:          return "CALL";
     case VirtualInstruction::Opcode::RET:           return "RET";

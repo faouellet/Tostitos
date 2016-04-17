@@ -18,7 +18,7 @@ namespace TosLang
 
     namespace BackEnd
     {
-        class InstructionSelector;
+        //class InstructionSelector;
         class LLVMGenerator;
     }
 
@@ -89,7 +89,7 @@ namespace TosLang
         std::unique_ptr<FrontEnd::SymbolCollector> mSymCollector;   /*!< Symbol collector */
         std::unique_ptr<FrontEnd::ScopeChecker> mSChecker;          /*!< Scope Checker */
         std::unique_ptr<FrontEnd::TypeChecker> mTChecker;           /*!< Type checker */
-        std::unique_ptr<BackEnd::InstructionSelector> mISel;        /*!< Instruction selector */
+        //std::unique_ptr<BackEnd::InstructionSelector> mISel;        /*!< Instruction selector */
 
 #ifdef USE_LLVM_BACKEND
         std::unique_ptr<BackEnd::LLVMGenerator> mLLVMGen;           /*!< LLVM IR Generator */

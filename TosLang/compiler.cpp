@@ -29,7 +29,7 @@ Compiler::Compiler()
     mSChecker.reset(new ScopeChecker{});
     mTChecker.reset(new TypeChecker{});
 
-    mISel.reset(new BackEnd::InstructionSelector{});
+    //mISel.reset(new BackEnd::InstructionSelector{});
 
 #ifdef USE_LLVM_BACKEND
     mLLVNGen.reset(new BackEnd::LLVMGenerator{})
@@ -74,11 +74,11 @@ void Compiler::DumpCFG(const std::string& programFile)
     if (errorCount != 0)
         return;
 
-    std::unique_ptr<Module> module = mISel->Run(programAST, mSymTable);
+    /*std::unique_ptr<Module> module = mISel->Run(programAST, mSymTable);
     if (module == nullptr)
         return;
 
-    module->Print(std::cout);
+    module->Print(std::cout);*/
 }
 
 #ifdef USE_LLVM_BACKEND

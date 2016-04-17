@@ -24,7 +24,7 @@ namespace TosLang
             enum class Opcode
             {
                 NO_OP,
-                ALLOCA,
+                PHI,
                 JUMP,
                 CALL,
                 RET,
