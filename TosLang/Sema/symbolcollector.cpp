@@ -1,5 +1,7 @@
 #include "symbolcollector.h"
 
+#include "../AST/declarations.h"
+#include "../AST/expressions.h"
 #include "../Utils/errorlogger.h"
 
 #include <sstream>
@@ -10,7 +12,7 @@ using namespace TosLang::Common;
 using namespace TosLang::Utils;
 
 SymbolCollector::SymbolCollector(const std::shared_ptr<SymbolTable>& symTab) 
-    : mCurrentScopeLevel{ 0 }, mCurrentScopeID{ 0 }, mErrorCount{ 0 }, mCurrentFunc{ nullptr }, mSymbolTable{ symTab }
+    : mCurrentScopeID{ 0 }, mErrorCount{ 0 }, mCurrentFunc{ nullptr }, mSymbolTable{ symTab }
 {
     // TODO: This probably needs some refactoring since the same code is also present in the type checker
     this->mPrologueFtr = [this]()
@@ -20,7 +22,7 @@ SymbolCollector::SymbolCollector(const std::shared_ptr<SymbolTable>& symTab)
             if (mCurrentNode->GetKind() == ASTNode::NodeKind::COMPOUND_STMT)
             {
                 ++mCurrentScopeID;
-                ++mCurrentScopeLevel;
+                mCurrentScopesPath.push_front(mCurrentScopeID);
             }
             else if (mCurrentNode->GetKind() == ASTNode::NodeKind::FUNCTION_DECL)
             {
@@ -36,7 +38,7 @@ SymbolCollector::SymbolCollector(const std::shared_ptr<SymbolTable>& symTab)
         {
             if (mCurrentNode->GetKind() == ASTNode::NodeKind::COMPOUND_STMT)
             {
-                --mCurrentScopeLevel;
+                mCurrentScopesPath.pop_front();
             }
             else if (mCurrentNode->GetKind() == ASTNode::NodeKind::FUNCTION_DECL)
             {
@@ -56,7 +58,6 @@ size_t SymbolCollector::Run(const std::unique_ptr<ASTNode>& root)
     this->VisitPreOrder(root);
 
     assert(mCurrentFunc == nullptr);
-    assert(mCurrentScopeLevel == M_GLOBAL_SCOPE_LEVEL);
 
     return mErrorCount;
 }
@@ -88,7 +89,7 @@ void SymbolCollector::HandleFunctionDecl()
     }
 
     // Add the function symbol to the table
-    if (!mSymbolTable->AddGlobalSymbol(sStream.str(), { fnType, 0, fnDecl->GetName() }))
+    if (!mSymbolTable->AddSymbol(fnDecl, { fnType, 0, fnDecl->GetName() }))
     {
         // Couldn't insert the function in the symbol table because it's trying to redefine another function
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::FN_REDEFINITION, fnDecl->GetSourceLocation());
@@ -110,7 +111,7 @@ void SymbolCollector::HandleParamVarDecl()
         paramTypes.push_back(paramVar->GetVarType());
 
         // Add the parameter to the symbols defined in the scope of the current function
-        if (!mSymbolTable->AddLocalSymbol(mCurrentFunc->GetName(), paramVar->GetVarName(), { paramVar->GetVarType(), mCurrentScopeID + 1, paramVar->GetName() }))
+        if (!mSymbolTable->AddSymbol(param.get(), { paramVar->GetVarType(), mCurrentScopeID + 1, paramVar->GetName() }))
         {
             // Couldn't insert the param in the symbol table because it's trying to redefine another param
             ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::PARAM_REDEFINITION, paramVar->GetSourceLocation());
@@ -132,15 +133,23 @@ void SymbolCollector::HandleVarDecl()
     if (varDecl->IsFunctionParameter())
         return;
 
-    bool isNotAlreadyDefined = false;
-    if (mCurrentScopeLevel == M_GLOBAL_SCOPE_LEVEL)
-        isNotAlreadyDefined  = mSymbolTable->AddGlobalSymbol(varDecl->GetName(), { varDecl->GetVarType(), 0, varDecl->GetName() });
-    else
-        isNotAlreadyDefined = mSymbolTable->AddLocalSymbol(mCurrentFunc->GetName(), varDecl->GetName(), { varDecl->GetVarType(), mCurrentScopeID, varDecl->GetName() });
+    bool isNotAlreadyDefined  = mSymbolTable->AddSymbol(varDecl, { varDecl->GetVarType(), 0, varDecl->GetName() });
 
     if (!isNotAlreadyDefined)
     {
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_REDEFINITION, varDecl->GetSourceLocation());
+        ++mErrorCount;
+    }
+}
+
+void SymbolCollector::HandleIdentifierExpr()
+{
+    const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(this->mCurrentNode);
+    assert(iExpr != nullptr);
+
+    if (!mSymbolTable->AddVariableUse(iExpr, mCurrentScopesPath))
+    {
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_UNDECLARED_IDENTIFIER, iExpr->GetSourceLocation());
         ++mErrorCount;
     }
 }

@@ -9,12 +9,12 @@ namespace TosLang
 {
     namespace Utils
     {
-        template <typename OS>
+        template <class InstT, class OS>
         struct PrintAction
         {
             explicit PrintAction(OS& stream) : mStream{ stream } { }
 
-            void Execute(const BackEnd::BlockPtr block)
+            void Execute(const BackEnd::BlockPtr<InstT> block)
             {
                 mStream << block->GetName() << std::endl;
 
@@ -30,8 +30,8 @@ namespace TosLang
             OS& mStream;
         };
 
-        template <typename OS>
-        using CFGPrinter = Common::CFGVisitor<PrintAction<OS>>;
+        template <class InstT, class OS>
+        using CFGPrinter = Common::CFGVisitor<InstT, PrintAction<InstT, OS>>;
     }
 }
 

@@ -13,7 +13,7 @@ namespace TosLang
         * \class CFGVisitor
         * \brief Utility class that encapsulates the notion of visiting a control flow graph
         */
-        template <typename NodeAction>
+        template <class InstT, class NodeAction>
         class CFGVisitor
         {
         public:
@@ -34,7 +34,7 @@ namespace TosLang
             * \param cfg            Graph to be visited
             * \param postOrderVisit Perform a post-order or a pre-order visit of the CFG?
             */
-            void Visit(const std::shared_ptr<BackEnd::ControlFlowGraph> cfg, bool postOrderVisit)
+            void Visit(const std::shared_ptr<BackEnd::ControlFlowGraph<InstT>> cfg, bool postOrderVisit)
             {
                 BackEnd::BlockPtr entry = cfg->GetEntryBlock();
                 if (postOrderVisit)
@@ -49,7 +49,7 @@ namespace TosLang
             * \brief        Recursively perform a DFS visit of a sub-graph in a post-order fashion
             * \param block  Block at the beginning of the sub-graph we want to visit
             */
-            void RecursiveDFSVisitPostOrder(const BackEnd::BlockPtr block)
+            void RecursiveDFSVisitPostOrder(const BackEnd::BlockPtr<InstT> block)
             {
                 mBlocksVisited.push_back(block);
 
@@ -69,7 +69,7 @@ namespace TosLang
             * \brief        Recursively perform a DFS visit of a sub-graph in a pre-order fashion
             * \param block  Block at the beginning of the sub-graph we want to visit
             */
-            void RecursiveDFSVisitPreOrder(const BackEnd::BlockPtr block)
+            void RecursiveDFSVisitPreOrder(const BackEnd::BlockPtr<InstT> block)
             {
                 mBlocksVisited.push_back(block);
 
@@ -85,8 +85,8 @@ namespace TosLang
             }
 
         private:
-            std::vector<BackEnd::BlockPtr> mBlocksVisited;  /*!< Blocks having been visited so far */
-            NodeAction mAction;                             /*!< Action to be performed at each node */
+            std::vector<BackEnd::BlockPtr<InstT>> mBlocksVisited;   /*!< Blocks having been visited so far */
+            NodeAction mAction;                                     /*!< Action to be performed at each node */
         };
     }
 }

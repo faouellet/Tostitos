@@ -20,25 +20,14 @@ BOOST_AUTO_TEST_CASE( CollectSymbolVar )
     size_t errorCount = GetProgramSymbolTable("../asts/var/var_decl.ast", symbolTable);
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 
-    Symbol varSymbol;
+    Symbol intVarSymbol{ TosLang::Common::Type::NUMBER, 0, "MyIntVar" };
+    BOOST_REQUIRE(symbolTable->IsVariableSymbolValid(intVarSymbol));
 
-    BOOST_REQUIRE(symbolTable->GetGlobalSymbol("MyIntVar", varSymbol));
-    BOOST_REQUIRE(!varSymbol.IsFunction());
-    BOOST_REQUIRE(varSymbol.GetName() == "MyIntVar");
-    BOOST_REQUIRE(varSymbol.GetScopeID() == 0); // At global scope
-    BOOST_REQUIRE(varSymbol.GetVariableType() == TosLang::Common::Type::NUMBER);
+    Symbol boolVarSymbol{ TosLang::Common::Type::BOOL, 0, "MyBoolVar" };
+    BOOST_REQUIRE(symbolTable->IsVariableSymbolValid(boolVarSymbol));
 
-    BOOST_REQUIRE(symbolTable->GetGlobalSymbol("MyBoolVar", varSymbol));
-    BOOST_REQUIRE(!varSymbol.IsFunction());
-    BOOST_REQUIRE(varSymbol.GetName() == "MyBoolVar");
-    BOOST_REQUIRE(varSymbol.GetScopeID() == 0); // At global scope
-    BOOST_REQUIRE(varSymbol.GetVariableType() == TosLang::Common::Type::BOOL);
-
-    BOOST_REQUIRE(symbolTable->GetGlobalSymbol("MyStringVar", varSymbol));
-    BOOST_REQUIRE(!varSymbol.IsFunction());
-    BOOST_REQUIRE(varSymbol.GetName() == "MyStringVar");
-    BOOST_REQUIRE(varSymbol.GetScopeID() == 0); // At global scope
-    BOOST_REQUIRE(varSymbol.GetVariableType() == TosLang::Common::Type::STRING);
+    Symbol strVarSymbol{ TosLang::Common::Type::STRING, 0, "MyStringVar" };
+    BOOST_REQUIRE(symbolTable->IsVariableSymbolValid(strVarSymbol));
 }
 
 BOOST_AUTO_TEST_CASE( CollectSymbolFunctionNoParam )
@@ -47,14 +36,8 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionNoParam )
     size_t errorCount = GetProgramSymbolTable("../asts/function/fn_def_void.ast", symbolTable);
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 
-    Symbol fnSymbol;
-    BOOST_REQUIRE(symbolTable->GetGlobalSymbol("MyFunc", fnSymbol));
-    
-    BOOST_REQUIRE(fnSymbol.IsFunction());
-    BOOST_REQUIRE(fnSymbol.GetName() == "MyFunc");
-    BOOST_REQUIRE(fnSymbol.GetScopeID() == 0); // At global scope
-    BOOST_REQUIRE(fnSymbol.GetFunctionParamTypes().size() == 0);
-    BOOST_REQUIRE(fnSymbol.GetFunctionReturnType() == TosLang::Common::Type::VOID);
+    Symbol fnSymbol{ TosLang::Common::Type::VOID, 0, "MyFunc" };
+    BOOST_REQUIRE(symbolTable->IsFunctionSymbolValid(fnSymbol));
 }
 
 BOOST_AUTO_TEST_CASE( CollectSymbolFunctionMultiParam )
@@ -63,13 +46,8 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionMultiParam )
     size_t errorCount = GetProgramSymbolTable("../asts/function/fn_def_multi_args.ast", symbolTable);
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 
-    Symbol fnSymbol;
-    BOOST_REQUIRE(symbolTable->GetGlobalSymbol("MyFunc", fnSymbol));
-
-    BOOST_REQUIRE(fnSymbol.IsFunction());
-    BOOST_REQUIRE(fnSymbol.GetName() == "MyFunc");
-    BOOST_REQUIRE(fnSymbol.GetScopeID() == 0); // At global scope
-    BOOST_REQUIRE(fnSymbol.GetFunctionReturnType() == TosLang::Common::Type::NUMBER);
+    Symbol fnSymbol{ TosLang::Common::Type::NUMBER, 0, "MyFunc" };
+    BOOST_REQUIRE(symbolTable->IsFunctionSymbolValid(fnSymbol));
 
     auto paramTypes = fnSymbol.GetFunctionParamTypes();
     BOOST_REQUIRE(paramTypes.size() == 3);
@@ -81,16 +59,11 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionMultiParam )
 
     for (size_t i = 0; i < 3; ++i)
     {
-        Symbol paramSym;
         std::stringstream sStream;
         sStream << "arg";
         sStream << i + 1;
-        BOOST_REQUIRE(symbolTable->GetLocalSymbol("MyFunc", sStream.str(), scopeStack, paramSym));
-        
-        BOOST_REQUIRE(!paramSym.IsFunction());
-        BOOST_REQUIRE(paramSym.GetName() == sStream.str());
-        BOOST_REQUIRE(paramSym.GetScopeID() == 1); // At function scope
-        BOOST_REQUIRE(paramSym.GetVariableType() == TosLang::Common::Type::NUMBER);
+        Symbol paramSym{ TosLang::Common::Type::NUMBER, 1, sStream.str() };
+        BOOST_REQUIRE(symbolTable->IsVariableSymbolValid(paramSym));
     }
 }
 
@@ -100,45 +73,23 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionWithLocalVar )
     size_t errorCount = GetProgramSymbolTable("../asts/call/call_one_arg_var.ast", symbolTable);
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 
-    Symbol fnSymbol;
-    
     // Validate the identity function symbol
-    BOOST_REQUIRE(symbolTable->GetGlobalSymbol("identity", fnSymbol));
-    BOOST_REQUIRE(fnSymbol.IsFunction());
-    BOOST_REQUIRE(fnSymbol.GetName() == "identity");
-    BOOST_REQUIRE(fnSymbol.GetScopeID() == 0); // At global scope
-    BOOST_REQUIRE(fnSymbol.GetFunctionParamTypes().size() == 1);
-    BOOST_REQUIRE(fnSymbol.GetFunctionReturnType() == TosLang::Common::Type::NUMBER);
-
-    Symbol paramSym;
-    std::deque<size_t> scopeStack;
-    scopeStack.push_front(0); // Global scope ID
-    scopeStack.push_front(1); // First defined function scope ID
-
+    std::vector<TosLang::Common::Type> identityTypes{ TosLang::Common::Type::NUMBER };
+    Symbol identityFnSymbol{ identityTypes, 0, "identity" };
+    BOOST_REQUIRE(symbolTable->IsFunctionSymbolValid(identityFnSymbol));
+    
     // Validate the identity function parameter
-    BOOST_REQUIRE(symbolTable->GetLocalSymbol("identity", "i", scopeStack, paramSym));
-    BOOST_REQUIRE(!paramSym.IsFunction());
-    BOOST_REQUIRE(paramSym.GetName() == "i");
-    BOOST_REQUIRE(paramSym.GetScopeID() == 1); // At function scope
-    BOOST_REQUIRE(paramSym.GetVariableType() == TosLang::Common::Type::NUMBER);
-
+    Symbol paramSym{ TosLang::Common::Type::NUMBER, 1, "i" };
+    BOOST_REQUIRE(symbolTable->IsVariableSymbolValid(paramSym));
+    
     // Validate the main function symbol
-    BOOST_REQUIRE(symbolTable->GetGlobalSymbol("main", fnSymbol));
-    BOOST_REQUIRE(fnSymbol.IsFunction());
-    BOOST_REQUIRE(fnSymbol.GetName() == "main");
-    BOOST_REQUIRE(fnSymbol.GetScopeID() == 0); // At global scope
-    BOOST_REQUIRE(fnSymbol.GetFunctionParamTypes().size() == 0);
-    BOOST_REQUIRE(fnSymbol.GetFunctionReturnType() == TosLang::Common::Type::VOID);
-
-    scopeStack.pop_front();   // Getting out of the identity function
-    scopeStack.push_front(2); // Main function scope ID
-
+    std::vector<TosLang::Common::Type> mainTypes{ TosLang::Common::Type::VOID };
+    Symbol mainFnSymbol{ mainTypes, 0, "main" };
+    BOOST_REQUIRE(symbolTable->IsFunctionSymbolValid(mainFnSymbol));
+    
     // Validate main's local variable
-    BOOST_REQUIRE(symbolTable->GetLocalSymbol("main", "MyInt", scopeStack, paramSym));
-    BOOST_REQUIRE(!paramSym.IsFunction());
-    BOOST_REQUIRE(paramSym.GetName() == "MyInt");
-    BOOST_REQUIRE(paramSym.GetScopeID() == 2); // At function scope
-    BOOST_REQUIRE(paramSym.GetVariableType() == TosLang::Common::Type::NUMBER);
+    Symbol mainVarSymbol{ TosLang::Common::Type::NUMBER, 2, "MyInt" };
+    BOOST_REQUIRE(symbolTable->IsVariableSymbolValid(mainVarSymbol));
 }
 
 BOOST_AUTO_TEST_CASE( CollectSymbolNoErrorAccumulation )

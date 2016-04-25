@@ -1,123 +1,192 @@
 #include "symboltable.h"
 
+#include "../AST/declarations.h"
+
 #include <algorithm>
 #include <sstream>
 
 using namespace TosLang::FrontEnd;
 using namespace TosLang::Common;
 
-bool SymbolTable::AddLocalSymbol(const std::string& fnName, const std::string& varName, Symbol&& sym)
+bool SymbolTable::AddSymbol(const ASTNode* node, Symbol&& sym)
 {
-    // We suffix the symbol name with the scope level to allow for multiple definitions of the same variable in 
-    // different scopes inside the function
-    std::stringstream sStream;
-    sStream << varName << sym.GetScopeID();
-    std::string realSymName = sStream.str();
+    if (node == nullptr)
+        return false;
 
-    auto fnIt = mLocalTables.find(fnName);
-    if (fnIt == mLocalTables.end()) // First time we encounter this function name
+    const ASTNode::NodeKind kind = node->GetKind();
+
+    assert(kind == ASTNode::NodeKind::FUNCTION_DECL
+           || kind == ASTNode::NodeKind::VAR_DECL);
+
+    auto symIt = std::find_if(mTable.begin(), mTable.end(), 
+                              [&sym](const std::pair<const ASTNode*, Symbol>& nodeSym)
+                              {
+                                  const Symbol& symbol = nodeSym.second;
+
+                                  if (symbol.IsFunction() && sym.IsFunction())
+                                  {
+                                      // Check for every aspects of a function
+                                      return symbol.GetFunctionParamTypes() == sym.GetFunctionParamTypes()
+                                          && symbol.GetFunctionReturnType() == sym.GetFunctionReturnType()
+                                          && symbol.GetName() == sym.GetName();
+                                  }
+                                  else if (!symbol.IsFunction() && !sym.IsFunction())
+                                  {
+                                      // Check only for the scope and the name to disallow declaring 
+                                      // the same variable with another type
+                                      return symbol.GetScopeID() == sym.GetScopeID()
+                                          && symbol.GetName() == sym.GetName();
+                                  }
+                                  else
+                                  {
+                                      return false;
+                                  }
+                              });
+
+    // Symbol was already defined
+    if (symIt != mTable.end())
+        return false;
+
+    mTable[node] = sym;
+
+    return true;
+}
+
+void SymbolTable::AddFunctionUse(const CallExpr* cExpr, const Symbol& fnSym)
+{
+    auto symIt = std::find_if(mTable.begin(), mTable.end(), 
+                              [&fnSym](const std::pair<const ASTNode*, Symbol>& nodeSym) 
+                              {
+                                  return nodeSym.second == fnSym;
+                              });
+
+    // Since this method should only be use after overload resolution, 
+    // there should be a function corresponding to the given symbol
+    assert(symIt != mTable.end());
+
+    mUseDefs[symIt->first] = cExpr;
+}
+
+bool SymbolTable::AddVariableUse(const IdentifierExpr* iExpr, const std::deque<size_t> scopePath)
+{
+    for (const auto& scopeID : scopePath)
     {
-        mLocalTables[fnName][realSymName] = sym;
-        return true;
-    }
-    else
-    {
-        auto symIt = fnIt->second.find(realSymName);
-        
-        if (symIt == fnIt->second.end()) // First time we encounter this variable name
+        auto varIt = std::find_if(mTable.begin(), mTable.end(), 
+                     [&scopeID, &iExpr](const std::pair<const ASTNode*, Symbol>& nodeSym) 
+                     {
+                         return nodeSym.second.GetScopeID() == scopeID
+                             && nodeSym.second.GetName() == iExpr->GetName();
+                     });
+
+        if (varIt != mTable.end())
         {
-            mLocalTables[fnName][realSymName] = sym;
+            mUseDefs[iExpr] = varIt->first;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool SymbolTable::GetSymbol(const ASTNode* node, const Symbol* sym) const
+{
+    if (node == nullptr)
+        return false;
+
+    const ASTNode* nodeForLookup = node;
+    ASTNode::NodeKind nodeKind = nodeForLookup->GetKind();
+
+    // An identifier or a call is a use. Since the symbol table only contains information
+    // about definitions, we need to find the corresponding definition to this use
+    if (( nodeKind== ASTNode::NodeKind::IDENTIFIER_EXPR)
+        || (nodeKind == ASTNode::NodeKind::CALL_EXPR))
+    {
+        auto udIt = mUseDefs.find(node);
+        if (udIt != mUseDefs.end())
+            nodeForLookup = udIt->second;
+        else
+            return false;
+    }
+    
+    nodeKind = nodeForLookup->GetKind();
+
+    if ((nodeKind == ASTNode::NodeKind::FUNCTION_DECL)
+        || (nodeKind == ASTNode::NodeKind::VAR_DECL))
+    {
+        auto symIt = mTable.find(nodeForLookup);
+        if (symIt != mTable.end())
+        {
+            sym = &symIt->second;
             return true;
         }
         else
         {
-            // Exact same symbol already present in the local table, can't insert it again
             return false;
         }
     }
-}
-
-bool SymbolTable::AddGlobalSymbol(const std::string& symName, Symbol&& sym)
-{
-    // We suffix the symbol name with the scope level (0) to be coherent with the local symbols
-    std::stringstream sStream;
-    sStream << symName << 0;
-    std::string realSymName = sStream.str();
-
-    auto it = mGlobalTable.find(realSymName);
-    if (it == mGlobalTable.end()) // First time we encounter this symbol name
-    {
-        mGlobalTable[realSymName] = sym;
-        return true;
-    }
-    else
-    {
-        // Exact same symbol already present in the global table, can't insert it again
-        return false;
-    }
-}
-
-void SymbolTable::Clear()
-{
-    mLocalTables.clear();
-    mGlobalTable.clear();
-}
-
-bool SymbolTable::GetGlobalSymbol(const std::string& symName, Symbol& sym)
-{
-    auto symIt = std::find_if(mGlobalTable.begin(), mGlobalTable.end(), 
-                              [symName](const SymTable::value_type& sym) { return sym.second.GetName() == symName; });
-
-    // Symbol name is not in the global table
-    if (symIt == mGlobalTable.end())
-        return false;
-
-    sym = symIt->second;
-    return true;
-}
-
-bool SymbolTable::GetLocalSymbol(const std::string& fnName, const std::string& symName, const std::deque<size_t>& scopesToSearch, Symbol& sym)
-{
-    // Checking that we are indeed inside, at the very least, a function scope
-    assert(scopesToSearch.size() > 1);
-
-    auto fnIt = mLocalTables.find(fnName);
-
-    // Function name is not in the global table
-    if (fnIt == mLocalTables.end())
-        return false;
-
-    // Starting at the most nested scope, we search outward for the symbol associated with symName.
-    // We thus traverse all the scopes inside the function associated with fnName
-    for (auto scopeID : scopesToSearch)
-    {
-        std::stringstream sStream;
-        sStream << symName << scopeID;
-
-        auto it = fnIt->second.find(sStream.str());
-        if (it != fnIt->second.end())
-        {
-            // We got it
-            sym = it->second;
-            return true;
-        }
-    }
-
-    // Last chance. It must be a global symbol or it is undeclared.
-    std::stringstream sStream;
-    sStream << symName << "0";
-
-    auto symIt = std::find_if(mGlobalTable.begin(), mGlobalTable.end(), [symName](const SymTable::value_type& sym) { return sym.second.GetName() == symName; });
     
-    if (symIt == mGlobalTable.end())
-        return false;
-
-    sym = symIt->second;
-    return true;
+    // Unhandled node type
+    return false;
 }
 
-const bool SymbolTable::IsGlobalVariable(const std::string & varName) const
+bool SymbolTable::IsFunctionSymbolValid(const Symbol & fnSym) const
 {
-    return mGlobalTable.find(varName) != mGlobalTable.end();
+    auto fnIt = std::find_if(mTable.begin(), mTable.end(), 
+                             [&fnSym](const std::pair<const ASTNode*, Symbol> nodeSym)
+                             {
+                                 return nodeSym.first->GetKind() == ASTNode::NodeKind::FUNCTION_DECL
+                                     && nodeSym.second == fnSym;
+                             });
+
+    return fnIt != mTable.end();
 }
 
+bool SymbolTable::IsVariableSymbolValid(const Symbol & varSym) const
+{
+    auto fnIt = std::find_if(mTable.begin(), mTable.end(),
+                             [&varSym](const std::pair<const ASTNode*, Symbol> nodeSym)
+                             {
+                                 return nodeSym.first->GetKind() == ASTNode::NodeKind::VAR_DECL
+                                     && nodeSym.second == varSym;
+                             });
+
+    return fnIt != mTable.end();
+}
+
+bool SymbolTable::IsGlobalVariable(const ASTNode* node) const
+{
+    assert(node != nullptr);
+
+    ASTNode::NodeKind nodeKind = node->GetKind();
+    assert((nodeKind == ASTNode::NodeKind::IDENTIFIER_EXPR)
+        || (nodeKind == ASTNode::NodeKind::VAR_DECL));
+
+    const ASTNode* nodeForLookup = node;
+
+    if (nodeKind == ASTNode::NodeKind::IDENTIFIER_EXPR)
+    {
+        auto udIt = mUseDefs.find(node);
+        assert(udIt != mUseDefs.end());
+        nodeForLookup = udIt->second;
+    }
+
+    auto symIt = mTable.find(nodeForLookup);
+    assert(symIt != mTable.end());
+
+    return symIt->second.GetScopeID() == 0;
+}
+
+const ASTNode* SymbolTable::FindVarDecl(const ASTNode* identExpr, const size_t scopeID) const
+{
+    auto identIt = std::find_if(mTable.begin(), mTable.end(), [&](const std::pair<const ASTNode*, Symbol> nodeSym) 
+    { 
+        return nodeSym.first->GetKind() == ASTNode::NodeKind::VAR_DECL
+               && nodeSym.first->GetName() == identExpr->GetName()
+               && nodeSym.second.GetScopeID() == scopeID;
+    });
+
+    if (identIt != mTable.end())
+        return identIt->first;
+    else
+        return nullptr;
+}

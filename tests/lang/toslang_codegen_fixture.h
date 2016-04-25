@@ -2,7 +2,7 @@
 #define TOSLANG_CODEGEN_FIXTURE_H__TOSTITOS
 
 #include "AST/ast.h"
-#include "CodeGen/instructionselector.h"
+//#include "CodeGen/instructionselector.h"
 #include "Sema/symbolcollector.h"
 #include "Utils/astreader.h"
 #include "Utils/cfgprinter.h"
@@ -46,11 +46,11 @@ struct TosLangCodegenFixture
         size_t errorCount = GetProgramSymbolTable(inputFile, symTable);
         BOOST_REQUIRE_EQUAL(errorCount, 0);
 
-        TosLang::BackEnd::InstructionSelector iSel;
+        /*TosLang::BackEnd::InstructionSelector iSel;
         auto module = iSel.Run(programAST, symTable);
 
         std::ofstream printStream(outputFile);
-        module->Print(printStream);
+        module->Print(printStream);*/
     }
 
     std::unique_ptr<ASTNode> programAST;    /*!< Program abstract syntax tree */

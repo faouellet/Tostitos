@@ -2,7 +2,7 @@
 #define TOSLANG_SEMA_FIXTURE_H__TOSTITOS
 
 #include "AST/ast.h"
-#include "Sema/scopechecker.h"
+#include "Sema/overloadsolver.h"
 #include "Sema/symbolcollector.h"
 #include "Sema/typechecker.h"
 #include "Utils/astreader.h"
@@ -77,19 +77,19 @@ struct TosLangSemaFixture
     }
 
     /*
-    * \fn               GetAccessibilityErrors
-    * \brief            Parse a TosLang program and check the resulting AST for accessibility (scope) errors
+    * \fn               GetOverloadResolutionErrors
+    * \brief            Parse a TosLang program and check the resulting AST for overload resolution errors
     * \param filename   Name of a file containing a TosLang AST
-    * \return           The number of errors that happened during scope checking
+    * \return           The number of errors that happened during overload resolution
     */
-    const size_t GetAccessibilityErrors(const std::string& filename)
+    const size_t GetOverloadResolutionErrors(const std::string& filename)
     {
         auto symTable = std::make_shared<SymbolTable>();
-        size_t errorCount = GetProgramSymbolTable(filename, symTable);
+        size_t errorCount = GetTypeErrors(filename);
         BOOST_REQUIRE_EQUAL(errorCount, 0);
 
-        ScopeChecker sChecker;
-        return sChecker.Run(programAST, symTable);
+        OverloadSolver oSolver;
+        return oSolver.Run(programAST, symTable, tChecker.GetNodeTypeMapping());
     }
 
     /*
@@ -104,7 +104,6 @@ struct TosLangSemaFixture
         size_t errorCount = GetProgramSymbolTable(filename, symTable);
         BOOST_REQUIRE_EQUAL(errorCount, 0);
 
-        TypeChecker tChecker;
         return tChecker.Run(programAST, symTable);
     }
 
@@ -112,6 +111,7 @@ struct TosLangSemaFixture
     std::stringstream buffer;               /*!< Buffer in which to put error messages during testing */
     std::streambuf* oldBuffer;              /*!< Original stderr buffer */
     TosLang::Utils::ASTReader reader;       /*!< Use to acquire ASTs stored in files */
+    TypeChecker tChecker;                   /*!< Type checker */
 };
 
 

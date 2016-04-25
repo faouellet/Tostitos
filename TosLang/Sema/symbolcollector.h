@@ -1,14 +1,17 @@
 #ifndef SYMBOL_COLLECTOR_H__TOSTITOS
 #define SYMBOL_COLLECTOR_H__TOSTITOS
 
-#include "../AST/declarations.h"
 #include "../Common/astvisitor.h"
 #include "symboltable.h"
+
+#include <deque>
 
 namespace TosLang
 {
     namespace FrontEnd
     {
+        class FunctionDecl;
+
         /*
         * \class SymbolCollector
         * \brief AST pass that fills the program's symbol table with informations on variables and functions
@@ -48,15 +51,24 @@ namespace TosLang
             */
             void HandleVarDecl();
 
+        protected:  // Expression
+            
+            /*
+            * \fn       HandleIdentifierExpr
+            * \brief    Associates a variable use with a variable definition
+            */
+            void HandleIdentifierExpr();
+
+
         private:
             constexpr static int M_GLOBAL_SCOPE_LEVEL = 0;
 
         private:
-            size_t mCurrentScopeLevel;                  /*!< Current scope nesting level */
             size_t mCurrentScopeID;                     /*!< Current scope identifier */
             size_t mErrorCount;                         /*!< Number of errors found by the symbol collector */
             FunctionDecl* mCurrentFunc;                 /*!< Current traversed function */
             std::shared_ptr<SymbolTable> mSymbolTable;  /*!< Symbol table to be filled by the symbol collector */
+            std::deque<size_t> mCurrentScopesPath;      /*<! Path from the current scope to the global scope */
         };
     }
 }

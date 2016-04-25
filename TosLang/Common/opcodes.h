@@ -5,7 +5,7 @@ namespace TosLang
 {
     namespace Common
     {
-        enum class Opcode : unsigned int
+        enum class Operation : unsigned int
         {
             AND_BOOL,
             AND_INT,

@@ -17,6 +17,7 @@ namespace TosLang
         public:
             explicit Expr(NodeKind kind) : ASTNode{ kind } { }
             virtual ~Expr() = default;
+            virtual bool IsLiteral() const { return false; }
         };
 
 		/*
@@ -26,7 +27,7 @@ namespace TosLang
 		class BinaryOpExpr : public Expr
 		{
 		public:
-            BinaryOpExpr(Common::Opcode op, std::unique_ptr<Expr>&& lhs, std::unique_ptr<Expr>&& rhs,
+            BinaryOpExpr(Common::Operation op, std::unique_ptr<Expr>&& lhs, std::unique_ptr<Expr>&& rhs,
                 const Utils::SourceLocation& srcLoc) :
                 Expr{ NodeKind::BINARY_EXPR }, mOp{ op }
             {
@@ -54,7 +55,7 @@ namespace TosLang
             * \brief    Gets the operation applied in the binary expression
             * \return   Operation to be applied in the binary expression
             */
-            const Common::Opcode GetOperation() const { return mOp; }
+            const Common::Operation GetOperation() const { return mOp; }
 
             /*
             * \fn       GetRHS
@@ -64,7 +65,7 @@ namespace TosLang
             const Expr* GetRHS() const { assert(mChildren.size() == 2); return GetChildNodeAs<Expr>(1); }
 
 		private:
-			Common::Opcode mOp;     /*!< Operation applied in the binary expression */
+			Common::Operation mOp;     /*!< Operation applied in the binary expression */
 		};
 
         /*
@@ -81,6 +82,8 @@ namespace TosLang
             }
 
             virtual ~BooleanExpr() = default;
+
+            virtual bool IsLiteral() const override { return true; }
 
         public:
             /*
@@ -158,6 +161,8 @@ namespace TosLang
             }
             virtual ~NumberExpr() { }
 
+            virtual bool IsLiteral() const override { return true; }
+        
         public:
             /*
             * \fn       GetValue

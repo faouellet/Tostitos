@@ -1,20 +1,23 @@
 #ifndef VIRTUAL_INSTRUCTION__TOSTITOS
 #define VIRTUAL_INSTRUCTION__TOSTITOS
 
-#include "virtualoperand.h"
+#include "MachineOperand.h"
 
 #include <array>
+#include <vector>
 
 namespace TosLang
 {
     namespace BackEnd
     {
+        template <class InstT>
+        class BasicBlock;
+
         /*
-        * \class VirtualInstruction
-        * \brief Abstraction over a Chip16 instruction. While its opcode is representative of what will be generated, 
-        *        its operand are either refering to virtual registers (which are infinite in number) or a basic block.
+        * \class MachineInstruction
+        * \brief Abstraction over a machine (Chip16) instruction.
         */
-        class VirtualInstruction
+        class MachineInstruction
         {
         public:
             /*
@@ -24,7 +27,6 @@ namespace TosLang
             enum class Opcode
             {
                 NO_OP,
-                PHI,
                 JUMP,
                 CALL,
                 RET,
@@ -67,14 +69,15 @@ namespace TosLang
             * \fn VirtualInstruction
             * \brief Default ctor
             */
-            VirtualInstruction() : mOpCode{ Opcode::UNKNOWN }, mNumOperands{ 0 } { }
+            MachineInstruction() : mOpCode{ Opcode::UNKNOWN }, mNumOperands{ 0 }, mBlock{ nullptr }, mUsers{ } { }
 
             /*
             * \fn           VirtualInstruction
             * \brief        Ctor
             * \param opcode Opcode of the instruction
+            * \param TODO
             */
-            explicit VirtualInstruction(Opcode opcode) : mOpCode{ opcode }, mNumOperands { 0 } { }
+            MachineInstruction(Opcode opcode, const BasicBlock<MachineInstruction>* block) : mOpCode{ opcode }, mNumOperands{ 0 }, mBlock{ block }, mUsers{ } { }
 
         public:
             /*
@@ -84,50 +87,51 @@ namespace TosLang
             */
             Opcode GetOpcode() const { return mOpCode; }
 
-
         public:
             /*
             * \fn       AddImmOperand
             * \brief    Adds an immediate operand (i.e. a literal value) to the instruction
             * \param op Immediate operand
             */
-            VirtualInstruction& AddImmOperand(unsigned op);
+            MachineInstruction& AddImmOperand(unsigned op);
 
             /*
             * \fn       AddStackSlotOperand
             * \brief    Adds a stack slot number as an operand to the instruction
             * \param op Stack slot number
             */
-            VirtualInstruction& AddStackSlotOperand(unsigned op);
+            MachineInstruction& AddStackSlotOperand(unsigned op);
 
             /*
             * \fn       AddRegOperand
             * \brief    Adds a register as an operand to the instruction
             * \param op Register number
             */
-            VirtualInstruction& AddRegOperand(unsigned op);
+            MachineInstruction& AddRegOperand(unsigned op);
 
             /*
             * \fn       AddTargetOperand
             * \brief    Adds a basic block as a target to a jump instruction
             * \param bb Target basic block
             */
-            VirtualInstruction& AddTargetOperand(BasicBlock* bb);
+            MachineInstruction& AddTargetOperand(BasicBlock<MachineOperand>* bb);
 
             /*
             * \fn               AddTargetOperand
             * \brief            Adds a function as a target to a call instruction
             * \param funcName   Name of the function to called
             */
-            VirtualInstruction& AddTargetOperand(const std::string& funcName);
+            MachineInstruction& AddTargetOperand(const std::string& funcName);
 
         public:
-            friend std::ostream& operator<<(std::ostream& stream, const VirtualInstruction& inst);
+            friend std::ostream& operator<<(std::ostream& stream, const MachineInstruction& inst);
 
         private:
             Opcode mOpCode;                             /*!< Instruction opcode */
-            std::array<VirtualOperand, 3> mOperands;    /*!< Instruction operands (can have up to 3) */
+            std::array<MachineOperand, 3> mOperands;    /*!< Instruction operands (can have up to 3) */
             unsigned short mNumOperands;                /*!< Number of operands the instruction currently has */
+            const BasicBlock<MachineInstruction>* mBlock;   /*!< Block containing the instruction */
+            std::vector<const MachineInstruction*> mUsers; /*!< TODO */
         };     
     }
 }

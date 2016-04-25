@@ -10,7 +10,7 @@
 
 #include "toslang_codegen_fixture.h"
 
-#include "CodeGen/instructionselector.h"
+//#include "CodeGen/instructionselector.h"
 
 using namespace TosLang::BackEnd;
 

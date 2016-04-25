@@ -96,7 +96,7 @@ namespace TosLang
 
                 Indent();
                 mStream << "BinaryOpExpr: " 
-                        << static_cast<std::underlying_type<Common::Opcode>::type>(bExpr->GetOperation())
+                        << static_cast<std::underlying_type<Common::Operation>::type>(bExpr->GetOperation())
                         << " ";
                 PrintSourceLocation(bExpr->GetSourceLocation());
             }

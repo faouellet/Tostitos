@@ -16,19 +16,22 @@ BOOST_FIXTURE_TEST_SUITE( SemaTestSuite, TosLangSemaFixture )
 
 BOOST_AUTO_TEST_CASE( GlobalVarUsedInGlobalScopeCheck )
 {
-    size_t errorCount = GetAccessibilityErrors("../asts/var/var_init_identifier.ast");
+    auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
+    size_t errorCount = GetProgramSymbolTable("../asts/var/var_init_identifier.ast", symbolTable);
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( GlobalVarUsedInLocalScopeCheck )
 {
-    size_t errorCount = GetAccessibilityErrors("../asts/var/var_init_identifier_from_global.ast");
+    auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
+    size_t errorCount = GetProgramSymbolTable("../asts/var/var_init_identifier_from_global.ast", symbolTable);
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
 BOOST_AUTO_TEST_CASE( LocalVarUsedInLocalScopeCheck )
 {
-    size_t errorCount = GetAccessibilityErrors("../asts/var/var_init_identifier_local.ast");
+    auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
+    size_t errorCount = GetProgramSymbolTable("../asts/var/var_init_identifier_local.ast", symbolTable);
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 }
 
@@ -36,7 +39,9 @@ BOOST_AUTO_TEST_CASE( LocalVarUsedInLocalScopeCheck )
 
 BOOST_AUTO_TEST_CASE( UneclaredGlobalVarUsedInGlobalScopeCheck )
 {
-    size_t errorCount = GetAccessibilityErrors("../asts/var/var_init_identifier_undeclared.ast");
+
+    auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
+    size_t errorCount = GetProgramSymbolTable("../asts/var/var_init_identifier_undeclared.ast", symbolTable);
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed
@@ -47,7 +52,8 @@ BOOST_AUTO_TEST_CASE( UneclaredGlobalVarUsedInGlobalScopeCheck )
 
 BOOST_AUTO_TEST_CASE( UndeclaredVarUsedInLocalScopeCheck )
 {
-    size_t errorCount = GetAccessibilityErrors("../asts/var/var_init_identifier_local_undeclared.ast");
+    auto symbolTable = std::make_shared<TosLang::FrontEnd::SymbolTable>();
+    size_t errorCount = GetProgramSymbolTable("../asts/var/var_init_identifier_local_undeclared.ast", symbolTable);
     BOOST_REQUIRE_EQUAL(errorCount, 1);
 
     // Check if the correct error message got printed

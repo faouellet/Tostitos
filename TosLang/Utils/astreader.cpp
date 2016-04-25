@@ -141,7 +141,7 @@ std::unique_ptr<Expr> ASTReader::ReadExpr()
         auto lhs = ReadExpr();
         auto rhs = ReadExpr();
 
-        return std::make_unique<BinaryOpExpr>(static_cast<Common::Opcode>(std::stoi(binOpStr)), std::move(lhs), std::move(rhs), srcLoc);
+        return std::make_unique<BinaryOpExpr>(static_cast<Common::Operation>(std::stoi(binOpStr)), std::move(lhs), std::move(rhs), srcLoc);
 
     }
     else if (std::regex_match(mCurrentLine, mCurrentMatch, mNodeKindRegexes[ASTNode::NodeKind::BOOLEAN_EXPR]))

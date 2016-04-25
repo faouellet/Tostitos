@@ -1,9 +1,9 @@
 #include "compiler.h"
 
-#include "CodeGen/instructionselector.h"
+//#include "CodeGen/instructionselector.h"
 #include "CFG/module.h"
 #include "Parse/parser.h"
-#include "Sema/scopechecker.h"
+#include "Sema/overloadsolver.h"
 #include "Sema/symbolcollector.h"
 #include "Sema/symboltable.h"
 #include "Sema/typechecker.h"
@@ -26,7 +26,7 @@ Compiler::Compiler()
     mSymTable.reset(new SymbolTable{});
 
     mSymCollector.reset(new SymbolCollector{ mSymTable });
-    mSChecker.reset(new ScopeChecker{});
+    mOSolover.reset(new OverloadSolver{});
     mTChecker.reset(new TypeChecker{});
 
     //mISel.reset(new BackEnd::InstructionSelector{});
@@ -49,6 +49,10 @@ void Compiler::Compile(const std::string& programFile)
         return;
 
     errorCount = mTChecker->Run(programAST, mSymTable);
+    if (errorCount != 0)
+        return;
+
+    errorCount = mOSolover->Run(programAST, mSymTable, mTChecker->GetNodeTypeMapping());
     if (errorCount != 0)
         return;
 }

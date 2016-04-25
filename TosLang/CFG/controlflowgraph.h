@@ -12,15 +12,22 @@ namespace TosLang
         * \brief Representation of a function in a way that encodes information about 
         *        the control flow (branches that can be taken during execution) within it.
         */
+        template <class InstT>
         class ControlFlowGraph
         {
+        public:
+            virtual ~ControlFlowGraph() = default;
+
         public:
             /*
             * \fn GetEntryBlock
             * \brief Gives access to the entry block in the graph
             * \return Graph entry block
             */
-            const BlockPtr& GetEntryBlock() const;
+            const BlockPtr<InstT>& GetEntryBlock() const
+            {
+                return mBlocks.front();
+            }
 
             /*
             * \fn       CreateNewBlock
@@ -28,7 +35,12 @@ namespace TosLang
             *           to correctly link the new block with the others in the CFG
             * \return   Newly created block
             */
-            BlockPtr CreateNewBlock();
+            BlockPtr<InstT> CreateNewBlock()
+            {
+                BlockPtr<InstT> newBlock = std::make_shared<BasicBlock<InstT>>();
+                mBlocks.push_back(newBlock);
+                return newBlock;
+            }
 
             /*
             * \fn           CreateNewBlock
@@ -37,10 +49,19 @@ namespace TosLang
             * \param insts  Instructions to be inserted in the block to create
             * \return       Newly created block
             */
-            BlockPtr CreateNewBlock(std::vector<VirtualInstruction>&& insts);
+            BlockPtr<InstT> CreateNewBlock(std::vector<InstT>&& insts)
+            {
+                BlockPtr<InstT> newBlock = std::make_shared<BasicBlock<InstT>>();
 
-        private:
-            BlockList mBlocks;  /*!< Blocks contained in the CFG */
+                for (auto& inst : insts)
+                    newBlock->InsertInstruction(inst);
+
+                mBlocks.push_back(newBlock);
+                return newBlock;
+            }
+
+        protected:
+            BlockList<InstT> mBlocks;  /*!< Blocks contained in the CFG */
         };
     }
 }

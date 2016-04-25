@@ -11,21 +11,22 @@ namespace TosLang
 {
     namespace BackEnd
     {
-        using CFGPtr = std::shared_ptr<ControlFlowGraph>;
-        using FunctionCFGs = std::unordered_map<std::string, CFGPtr>;
+        template <class InstT>
+        using CFGPtr = std::shared_ptr<ControlFlowGraph<InstT>>;
+
+        template <class InstT>
+        using FunctionCFGs = std::unordered_map<std::string, CFGPtr<InstT>>;
         
         /*
         * \class Module
         * \brief TODO
         */
+        template <class InstT>
         class Module
         {
         public:
-            Module();
-
-        public:
-            using iterator = FunctionCFGs::iterator;
-            using const_iterator = FunctionCFGs::const_iterator;
+            using iterator = typename FunctionCFGs<InstT>::iterator;
+            using const_iterator = typename FunctionCFGs<InstT>::const_iterator;
 
         public:
             iterator begin() { return mFuncCFGs.begin(); }
@@ -34,7 +35,14 @@ namespace TosLang
             const_iterator end() const { return mFuncCFGs.end(); }
             
         public:
-            const CFGPtr& GetFunction(const std::string& name) const;
+            const CFGPtr<InstT>& GetFunction(const std::string& name) const
+            {
+                auto cfgIt = mFuncCFGs.find(name);
+                if (cfgIt != mFuncCFGs.end())
+                    return cfgIt->second;
+                else
+                    return nullptr;
+            }
 
         public:
             /*
@@ -62,74 +70,29 @@ namespace TosLang
 
         public:
             /*
-            * \fn           InsertArrayVariable
-            * \brief        Insert string variable in the Module
-            * \param name   Name of the string
-            * \param value  Value of the string
-            * \return       Memory slot that the string was assigned
-            */
-            unsigned InsertArrayVariable(const std::string& name, const std::string& value);
-
-            /*
             * \fn           InsertFunction
             * \brief        Inserts a function in the module
             * \param name   The name of the function
             * \param cfg    The control flow graph associated with the function
             */
-            void InsertFunction(const std::string& name, const CFGPtr& cfg);
+            void InsertFunction(const std::string& name, const CFGPtr<InstT>& cfg)
+            {
+                mFuncCFGs[name] = cfg;
+            }
 
             /*
             * \fn           InsertGlobalVar
             * \brief        Inserts a global variable in the module
             * \param name   The name of the variable
             */
-            void InsertGlobalVar(const VirtualInstruction& inst);
+            void InsertGlobalVar(const InstT& inst)
+            {
+                //mFuncCFGs.begin()->
+            }
 
         private:
-            /*
-            * \class IArrayVar
-            * \brief Interface of array variable used as a facade by the Module
-            */
-            class IArrayVar
-            {
-            public:
-                virtual ~IArrayVar() { }
-            };
-
-            /*
-            * \class ArrayVar
-            * \brief Encapsulate a a variable of array or string type. Since those can't be 
-            *        put into a register, we need to identify them for the later stages of 
-            *        code generation when we'll do the memory layout of the program.
-            */
-            template <typename T>
-            class ArrayVar : public IArrayVar
-            {
-            public:
-                using array_type = T;
-
-            public:
-                explicit ArrayVar(const std::string& value);
-                explicit ArrayVar(const std::vector<T>& value);
-                virtual ~ArrayVar() { }
-
-            private:
-                std::vector<T> mValues;
-            };
-
-        private:
-            unsigned mCurrentMemorySlot;
-            FunctionCFGs mFuncCFGs;
-            BlockPtr mGlobalBlock;  /*!< Basic block used to hold all the global variables */
-            std::unordered_map<std::string, std::unique_ptr<IArrayVar>> mArrayVars;
+            FunctionCFGs<InstT> mFuncCFGs;  /*!< Functions in the translation unit. TODO: First == globals container? */
         };
-
-
-        template<typename T>
-        inline Module::ArrayVar<T>::ArrayVar(const std::string & value) : mValues(value.begin(), value.end()) { }
-
-        template<typename T>
-        inline Module::ArrayVar<T>::ArrayVar(const std::vector<T>& value) : mValues{ value } { }
     }
 }
 

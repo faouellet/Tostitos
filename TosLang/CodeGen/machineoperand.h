@@ -7,13 +7,11 @@ namespace TosLang
 {
     namespace BackEnd
     {
-        class BasicBlock;
-
         /*
-        * \class VirtualOperand
+        * \class MachineOperand
         * \brief Abstraction over a Chip16 instruction operand.
         */
-        class VirtualOperand
+        class MachineOperand
         {
         public:
             enum class OperandKind
@@ -23,34 +21,21 @@ namespace TosLang
                 IMMEDIATE,  // Immediate value folded into the operand
                 STACK_SLOT, // Value is on the stack
                 REGISTER,   // Value is inside a register
-                TARGET,     // Basic block to which we will jump
             };
 
         public:
-            VirtualOperand();
-            VirtualOperand(unsigned op, OperandKind kind);
-            explicit VirtualOperand(BasicBlock* bb);
-            explicit VirtualOperand(const std::string& funcName);
-
-            VirtualOperand(const VirtualOperand& op);
-
-            ~VirtualOperand();
+            MachineOperand();
+            MachineOperand(const unsigned op, const OperandKind kind);
 
         public:
-            VirtualOperand& operator=(const VirtualOperand& op);
-            friend std::ostream& operator<<(std::ostream& stream, const VirtualOperand& op);
+            friend std::ostream& operator<<(std::ostream& stream, const MachineOperand& op);
             
-        private:
-            void Swap(VirtualOperand& op);
-
         private:
             union
             {
                 unsigned imm;
-                unsigned memslot;
+                unsigned stackslot;
                 unsigned reg;
-                BasicBlock* target;
-                std::string fName;
             };
             OperandKind mKind;
         };

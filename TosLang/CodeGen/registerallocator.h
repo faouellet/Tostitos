@@ -1,7 +1,7 @@
 #ifndef REGISTER_ALLOCATOR_H__TOSTITOS
 #define REGISTER_ALLOCATOR_H__TOSTITOS
 
-#include "../../Tostitos/machine/instruction.h"
+#include "../Common/cfgvisitor.h"
 
 #include <vector>
 
@@ -11,11 +11,13 @@ namespace TosLang
     {
         /*
         * \class    RegisterAllocator
-        * \brief    Last step of the compilation process, this class encapsulate the logic to allocate 
-        *           physical registers for every instruction in a program.
+        * \brief    TODO
         */
-        class RegisterAllocator
+        class RegisterAllocation
         {
+		public:
+            RegisterAllocation(unsigned nbPhysRegs, unsigned nbSpillRegs) : mNbPhysRegs{ nbPhysRegs }, mNbSpillRegs{ nbSpillRegs } { }
+
         public:
             /*
             * \fn               Allocate
@@ -26,8 +28,14 @@ namespace TosLang
             *                   to spill variables.
             *                   The current version of this algorithm is a simple local top-down allocator.
             */
-            void Allocate(std::vector<MachineEngine::ProcessorSpace::Instruction>& program) const;
+            //void Allocate(std::vector<MachineEngine::ProcessorSpace::Instruction>& program) const;
+			
+		private:
+			unsigned mNbPhysRegs;
+			unsigned mNbSpillRegs;
         };
+
+        //using RegisterAllocator = Common::CFGVisitor<RegisterAllocation>;
     }
 }
 

@@ -11,7 +11,7 @@ using namespace TosLang::FrontEnd;
 using namespace TosLang::Common;
 using namespace TosLang::Utils;
 
-static Opcode TokenToOpcode(Lexer::Token tok);
+static Operation TokenToOpcode(Lexer::Token tok);
 
 std::unique_ptr<ASTNode> Parser::ParseProgram(const std::string& filename)
 {
@@ -491,41 +491,41 @@ std::unique_ptr<WhileStmt> Parser::ParseWhileStmt()
 }
 
 //////////////////// Static functions ////////////////////
-static Opcode TokenToOpcode(Lexer::Token tok)
+static Operation TokenToOpcode(Lexer::Token tok)
 {
     switch (tok)
     {
     case TosLang::FrontEnd::Lexer::Token::AND_BOOL:
-        return Opcode::AND_BOOL;
+        return Operation::AND_BOOL;
     case TosLang::FrontEnd::Lexer::Token::AND_INT:
-        return Opcode::AND_INT;
+        return Operation::AND_INT;
     case TosLang::FrontEnd::Lexer::Token::DIVIDE:
-        return Opcode::DIVIDE;
+        return Operation::DIVIDE;
     case TosLang::FrontEnd::Lexer::Token::EQUAL:
-        return Opcode::EQUAL;
+        return Operation::EQUAL;
     case TosLang::FrontEnd::Lexer::Token::GREATER_THAN:
-        return Opcode::GREATER_THAN;
+        return Operation::GREATER_THAN;
     case TosLang::FrontEnd::Lexer::Token::LEFT_SHIFT:
-        return Opcode::LEFT_SHIFT;
+        return Operation::LEFT_SHIFT;
     case TosLang::FrontEnd::Lexer::Token::LESS_THAN:
-        return Opcode::LESS_THAN;
+        return Operation::LESS_THAN;
     case TosLang::FrontEnd::Lexer::Token::MINUS:
-        return Opcode::MINUS;
+        return Operation::MINUS;
     case TosLang::FrontEnd::Lexer::Token::MODULO:
-        return Opcode::MODULO;
+        return Operation::MODULO;
     case TosLang::FrontEnd::Lexer::Token::MULT:
-        return Opcode::MULT;
+        return Operation::MULT;
     case TosLang::FrontEnd::Lexer::Token::NOT:
-        return Opcode::NOT;
+        return Operation::NOT;
     case TosLang::FrontEnd::Lexer::Token::OR_BOOL:
-        return Opcode::OR_BOOL;
+        return Operation::OR_BOOL;
     case TosLang::FrontEnd::Lexer::Token::OR_INT:
-        return Opcode::OR_INT;
+        return Operation::OR_INT;
     case TosLang::FrontEnd::Lexer::Token::PLUS:
-        return Opcode::PLUS;
+        return Operation::PLUS;
     case TosLang::FrontEnd::Lexer::Token::RIGHT_SHIFT:
-        return Opcode::RIGHT_SHIFT;
+        return Operation::RIGHT_SHIFT;
     default:
-        return Opcode::UNKNOWN_OP;
+        return Operation::UNKNOWN_OP;
     }
 }

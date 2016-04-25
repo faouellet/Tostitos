@@ -1,8 +1,6 @@
 #ifndef BASIC_BLOCK__TOSTITOS
 #define BASIC_BLOCK__TOSTITOS
 
-#include "virtualinstruction.h"
-
 #include <memory>
 #include <string>
 #include <vector>
@@ -11,10 +9,14 @@ namespace TosLang
 {
     namespace BackEnd
     {
+        template <class InstT>
         class BasicBlock;
 
-        using BlockPtr = std::shared_ptr<BasicBlock>;
-        using BlockList = std::vector<BlockPtr>;
+        template <class InstT>
+        using BlockPtr = std::shared_ptr<BasicBlock<InstT>>;
+        
+        template <class InstT>
+        using BlockList = std::vector<BlockPtr<InstT>>;
 
         /*
         * \class BasicBlock
@@ -24,6 +26,7 @@ namespace TosLang
         *        - Instructions will be executed sequentially
         *        - The last instruction in a basic block is either a jump or a return
         */
+        template <class InstT>
         class BasicBlock
         {
         public:
@@ -45,11 +48,11 @@ namespace TosLang
             }
 
         public:
-            using inst_iterator = std::vector<VirtualInstruction>::iterator;
-            using inst_const_iterator = std::vector<VirtualInstruction>::const_iterator;
+            using inst_iterator = typename std::vector<InstT>::iterator;
+            using inst_const_iterator = typename std::vector<InstT>::const_iterator;
 
-            using bb_iterator = BlockList::iterator;
-            using bb_const_iterator = BlockList::const_iterator;
+            using bb_iterator = typename BlockList<InstT>::iterator;
+            using bb_const_iterator = typename BlockList<InstT>::const_iterator;
 
         public:
             inst_iterator inst_begin() { return mInstructions.begin(); }
@@ -57,10 +60,15 @@ namespace TosLang
             inst_const_iterator inst_begin() const { return mInstructions.begin(); }
             inst_const_iterator inst_end() const { return mInstructions.end(); }
 
-            bb_iterator bb_begin() { return mAdjacentBlocks.begin(); }
-            bb_iterator bb_end() { return mAdjacentBlocks.end(); }
-            bb_const_iterator bb_begin() const { return mAdjacentBlocks.begin(); }
-            bb_const_iterator bb_end() const { return mAdjacentBlocks.end(); }
+            bb_iterator succ_begin() { return mSuccBlocks.begin(); }
+            bb_iterator succ_end() { return mSuccBlocks.end(); }
+            bb_const_iterator succ_begin() const { return mSuccBlocks.begin(); }
+            bb_const_iterator succ_end() const { return mSuccBlocks.end(); }
+
+            bb_iterator pred_begin() { return mPredBlocks.begin(); }
+            bb_iterator pred_end() { return mPredBlocks.end(); }
+            bb_const_iterator pred_begin() const { return mPredBlocks.begin(); }
+            bb_const_iterator pred_end() const { return mPredBlocks.end(); }
             
         public:
             /*
@@ -69,7 +77,7 @@ namespace TosLang
             *               is not responsible for adding machine instructions to the basic block.
             * \param block  Basic block to branch to 
             */
-            void InsertBranch(const BasicBlock* block);
+            void InsertBranch(const BasicBlock<InstT>* block) { mSuccBlocks.push_back(std::make_shared<BasicBlock<InstT>>(*block)); }
 
             /*
             * \fn           InsertBranch
@@ -77,21 +85,37 @@ namespace TosLang
             *               is not responsible for adding machine instructions to the basic block.
             * \param block  Basic block to branch to
             */
-            void InsertBranch(const BlockPtr& block);
+            void InsertBranch(const BlockPtr<InstT>& block) { mSuccBlocks.push_back(block); }
 
             /*
             * \fn           InsertInstruction
             * \brief        Appends a virtual instruction to the basic block
             * \param inst   Instruction to be added
             */
-            void InsertInstruction(VirtualInstruction&& inst);
+            void InsertInstruction(InstT&& inst) { mInstructions.push_back(inst); }
 
             /*
             * \fn           InsertInstruction
             * \brief        Appends a virtual instruction to the basic block
             * \param inst   Instruction to be added
             */
-            void InsertInstruction(const VirtualInstruction& inst);
+            void InsertInstruction(const InstT& inst) { mInstructions.push_back(inst); }
+
+            /*
+            * \fn               ReplaceInstruction
+            * \brief            Replaces an instruction in the block
+            * \param oldInst    Old instruction
+            * \param newInst    Instruction to replace to old one
+            */
+            void ReplaceInstruction(const InstT& oldInst,  const InstT& newInst) 
+            {
+                auto instIt = std::find(mInstructions.begin(), mInstructions.end(), oldInst);
+                if (instIt != mInstructions.end())
+                {
+                    const size_t instIdx = std::distance(mInstructions.begin(), instIt);
+                    mInstructions[instIdx] = newInst;
+                }
+            }
 
         public:
             /*
@@ -109,16 +133,24 @@ namespace TosLang
             size_t GetNbInstructions() const { return mInstructions.size(); }
 
             /*
-            * \fn       IsProperlyTerminated
-            * \brief    Indicates if the basic block is properly terminated i.e. it ends with either a JUMP or a RET instruction
-            * \return   True if the basic block is properly terminated, if not false
+            * \fn       GetSuccessors
+            * \brief    Gives access to the block's successors
+            * \return   The block's successors
             */
-            bool IsProperlyTerminated() const;
+            const BlockList<InstT>& GetSuccessors() const { return mSuccBlocks; }
+
+            /*
+            * \fn       GetPredecessors
+            * \brief    Gives access to the block's predecessors
+            * \return   The block's predecessors
+            */
+            const BlockList<InstT>& GetPredecessors() const { return mPredBlocks; }
 
         private:
-            std::vector<VirtualInstruction> mInstructions;  /*!< Instructions making up the basic block */
-            BlockList mAdjacentBlocks;                      /*!< List of blocks pointed to by the outgoing edges of the block */
-            std::string mName;                              /*<! Name of the basic block. For printing and debugginf purposes */
+            std::vector<InstT> mInstructions;   /*!< Instructions making up the basic block */
+            BlockList<InstT> mSuccBlocks;       /*!< List of blocks pointed to by the outgoing edges of the block */
+            BlockList<InstT> mPredBlocks;       /*!< List of blocks that points to the block */
+            std::string mName;                  /*<! Name of the basic block. For printing and debugginf purposes */
         };
     }
 }

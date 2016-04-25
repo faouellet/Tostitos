@@ -119,12 +119,12 @@ BOOST_AUTO_TEST_CASE( ParseVarInitBoolBinOpTest )
     const size_t childExpectedSize = 4;
     BOOST_REQUIRE_EQUAL(cNodes.size(), childExpectedSize);
 
-    TosLang::Common::Opcode operations[] =
+    TosLang::Common::Operation operations[] =
     {
-        TosLang::Common::Opcode::AND_BOOL,
-        TosLang::Common::Opcode::OR_BOOL,
-        TosLang::Common::Opcode::GREATER_THAN,
-        TosLang::Common::Opcode::LESS_THAN,
+        TosLang::Common::Operation::AND_BOOL,
+        TosLang::Common::Operation::OR_BOOL,
+        TosLang::Common::Operation::GREATER_THAN,
+        TosLang::Common::Operation::LESS_THAN,
     };
 
     size_t i = 0;
@@ -177,17 +177,17 @@ BOOST_AUTO_TEST_CASE( ParseVarInitIntBinOpTest )
     const size_t childExpectedSize = 9;
     BOOST_REQUIRE_EQUAL(cNodes.size(), childExpectedSize);
 
-    TosLang::Common::Opcode operations[] =
+    TosLang::Common::Operation operations[] =
     { 
-        TosLang::Common::Opcode::PLUS,
-        TosLang::Common::Opcode::MINUS,
-        TosLang::Common::Opcode::MULT,
-        TosLang::Common::Opcode::DIVIDE,
-        TosLang::Common::Opcode::MODULO,
-        TosLang::Common::Opcode::AND_INT,
-        TosLang::Common::Opcode::OR_INT,
-        TosLang::Common::Opcode::RIGHT_SHIFT,
-        TosLang::Common::Opcode::LEFT_SHIFT,
+        TosLang::Common::Operation::PLUS,
+        TosLang::Common::Operation::MINUS,
+        TosLang::Common::Operation::MULT,
+        TosLang::Common::Operation::DIVIDE,
+        TosLang::Common::Operation::MODULO,
+        TosLang::Common::Operation::AND_INT,
+        TosLang::Common::Operation::OR_INT,
+        TosLang::Common::Operation::RIGHT_SHIFT,
+        TosLang::Common::Operation::LEFT_SHIFT,
     };
 
     for (size_t i = 0; i < childExpectedSize; ++i)

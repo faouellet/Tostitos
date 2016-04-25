@@ -14,6 +14,11 @@ namespace TosLang
 {
     namespace FrontEnd
     {
+        class ASTNode;
+        class CallExpr;
+        class IdentifierExpr;
+        class VarDecl;
+
         /*
         * \struct Symbol
         * \brief A symbol is a collection of informations about an AST node as it appears in the source code
@@ -37,6 +42,15 @@ namespace TosLang
             const bool IsFunction() const { assert(mType.front() != Common::Type::ERROR); return mIsFunction; }
             const std::string& GetName() const { assert(mType.front() != Common::Type::ERROR); return mName; }
 
+        public:
+            friend bool operator==(const Symbol& lhsSym, const Symbol& rhsSym)
+            {
+                return (lhsSym.mType == rhsSym.mType) 
+                    && (lhsSym.mScopeID == rhsSym.mScopeID) 
+                    && (lhsSym.mIsFunction == rhsSym.mIsFunction) 
+                    && (lhsSym.mName == rhsSym.mName);
+            }
+
         private:
             std::vector<Common::Type> mType;    /*!< Type of the symbol
                                                      For variable, it is simply the variable type
@@ -56,65 +70,81 @@ namespace TosLang
         {
         public:
             /*
-            * \fn               AddLocalSymbol
-            * \brief            Add symbol local to a function to the symbol table
-            * \param fnName     Name of the function in which the symbol is defined
-            * \param varName    Name of the variable associated with the symbol
-            * \param sym        Symbol to be added to the symbol table
-            * \return           True if the symbol was successfully added
+            * \fn           AddSymbol
+            * \brief        Add a symbol to the symbol table
+            * \param node   Node producing the symbol (either a function or variable declaration)
+            * \param sym    Symbol to be added to the symbol table
+            * \return       True if the symbol was successfully added
             */
-            bool AddLocalSymbol(const std::string& fnName, const std::string& varName, Symbol&& sym);
+            bool AddSymbol(const ASTNode* node, Symbol&& sym);
+            
+            /*
+            * \fn               AddFunctionUse
+            * \brief            Add a usage for a function
+            * \param cExpr      Call expression
+            * \param scopePath  Path from the call's scope to the global scope
+            * \return           True if the use could be added, else false
+            */
+            void AddFunctionUse(const CallExpr* cExpr, const Symbol& fnSym);
 
             /*
-            * \fn               AddGlobalSymbol
-            * \brief            Add symbol global to the program to the symbol table
-            * \param symName    Name of the symbol (either a function or variable)
-            * \param sym        Symbol to be added to the symbol table
-            * \return           True if the symbol was successfully added
+            * \fn               AddVariableUse
+            * \brief            Add a usage for a variable
+            * \param cExpr      Identifier expression
+            * \param scopePath  Path from the identifier's scope to the global scope
+            * \return           True if the use could be added, else false
             */
-            bool AddGlobalSymbol(const std::string& symName, Symbol&& sym);
-            
+            bool AddVariableUse(const IdentifierExpr* iExpr, const std::deque<size_t> scopePath);
+
             /*
             * \fn       Clear
             * \brief    Clears all the internal structures maintained by the symbol table
             */
-            void Clear();
+            void Clear() { mTable.clear(); }
 
             /*
-            * \fn                       GetGlobalSymbol
-            * \brief                    Gets the symbol associated to a name
-            * \param symName            Name of the symbol (either a function or variable)
-            * \param sym                Symbol to be added to the symbol table
-            * \return                   True if the symbol was found.
+            * \fn           GetSymbol
+            * \brief        Gets the symbol associated to a node
+            * \param node   Node of the symbol (either a function or variable declaration)
+            * \param sym    Symbol to fetch
+            * \return       True if the symbol was found.
             */
-            bool GetGlobalSymbol(const std::string& symName, Symbol& sym);
+            bool GetSymbol(const ASTNode* node, const Symbol* sym) const;
+            
+            /*
+            * \fn           IsFunctionSymbolValid
+            * \brief        Checks if the symbol is present in the symbol table
+            * \param sym    Function symbol to verify
+            * \return       True if the symbol was found.
+            */
+            bool IsFunctionSymbolValid(const Symbol& fnSym) const;
 
             /*
-            * \fn                       GetLocalSymbol
-            * \brief                    Gets the symbol associated to a name
-            * \param fnName             Name of the function in which the symbol is defined.
-            * \param symName            Name of the symbol (either a function or variable)
-            * \param scopesToSearch     Scopes in which the symbol might be defined
-            * \param sym                Symbol to be added to the symbol table
-            * \return                   True if the symbol was found.
+            * \fn           IsVariableSymbolValid
+            * \brief        Checks if the symbol is present in the symbol table
+            * \param sym    Variable symbol to verify
+            * \return       True if the symbol was found.
             */
-            bool GetLocalSymbol(const std::string& fnName, const std::string& symName, const std::deque<size_t>& scopesToSearch, Symbol& sym);
+            bool IsVariableSymbolValid(const Symbol & varSym) const;
 
             /*
-            * \fn               IsGlobalVariable
-            * \brief            Indicates if the variable was declared at global scope
-            * \param varName    Name of the variable
-            * \return           True if the variable was declared at global scope, else false
+            * \fn           IsGlobalVariable
+            * \brief        Indicates if the variable was declared at global scope
+            * \param node   Node of the variable (either an identifier expression or variable declaration)
+            * \return       True if the variable was declared at global scope, else false
             */
-            const bool IsGlobalVariable(const std::string& varName) const;
+            bool IsGlobalVariable(const ASTNode* var) const;
 
         private:
-            using SymTable = std::unordered_map<std::string, Symbol>;
-            using LocalSymTables = std::unordered_map<std::string, SymTable>;
+            const ASTNode* FindVarDecl(const ASTNode* identExpr, const size_t scopeID) const;
+
+        private:
+            using SymTable = std::unordered_map<const ASTNode*, Symbol>;
+            using UseDefMap = std::unordered_map<const ASTNode*, const ASTNode*>;
             
         private:
-            SymTable mGlobalTable;          /*!< Table containing all symbol defined in the global scope */
-            LocalSymTables mLocalTables;    /*!< Tables containing symbols defined in a given local scope i.e. in a function */
+            SymTable mTable;    /*!< Table containing all symbol defined in the program */
+            UseDefMap mUseDefs; /*!< Mapping between the uses and the definition of a variable */
         };
     }
 }
