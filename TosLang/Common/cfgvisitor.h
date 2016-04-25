@@ -36,7 +36,7 @@ namespace TosLang
             */
             void Visit(const std::shared_ptr<BackEnd::ControlFlowGraph<InstT>> cfg, bool postOrderVisit)
             {
-                BackEnd::BlockPtr entry = cfg->GetEntryBlock();
+                BackEnd::BlockPtr<InstT> entry = cfg->GetEntryBlock();
                 if (postOrderVisit)
                     RecursiveDFSVisitPostOrder(entry);
                 else

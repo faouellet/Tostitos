@@ -39,6 +39,9 @@ namespace TosLang
             int mLitVal;
             SSAInstruction* mDef;
         };
+        
+        std::ostream& operator<<(std::ostream& stream, const SSAValue& ssaVal);
+        bool operator==(const SSAValue& lhsVal, const SSAValue& rhsVal);
     }
 }
 

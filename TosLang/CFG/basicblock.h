@@ -1,6 +1,7 @@
 #ifndef BASIC_BLOCK__TOSTITOS
 #define BASIC_BLOCK__TOSTITOS
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>

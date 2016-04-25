@@ -53,13 +53,10 @@ namespace TosLang
             template <typename OS>
             void Print(OS& stream) const
             {
-                // Print global variables
-                for (auto gVarIt = mGlobalBlock->inst_begin(), gVarEnd = mGlobalBlock->inst_end(); gVarIt != gVarEnd; ++gVarIt)
-                    stream << *gVarIt << std::endl;
-                std::cout << std::endl;
+                // TODO: Print global variables
 
                 // Print the CFGs
-                Utils::CFGPrinter<std::ostream> printer{ stream };
+                Utils::CFGPrinter<std::ostream, InstT> printer{ stream };
                 for (auto& funcCFG : mFuncCFGs)
                 {
                     stream << "CFG for " << funcCFG.first << ":\n";

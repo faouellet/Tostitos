@@ -58,7 +58,7 @@ namespace TosLang
             /*
             * TODO
             */
-            const Operation GetOperation() const { return mOp; }
+            Operation GetOperation() const { return mOp; }
 
             /*
             * TODO
@@ -97,6 +97,9 @@ namespace TosLang
             std::vector<SSAInstruction*> mUsers;    /*!< Others instructions using the value produced by this instruction */
             SSAValue mVal;                          /*!< Value produced by the instruction */
         };
+    
+        std::ostream& operator<<(std::ostream& stream, const SSAInstruction& op);
+        bool operator==(const SSAInstruction& lhsInst, const SSAInstruction& rhsInst);
     }
 }
 
