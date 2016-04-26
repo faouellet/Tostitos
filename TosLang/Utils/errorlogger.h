@@ -32,8 +32,7 @@ namespace TosLang
                 // Call
                 CALL_ARG_ERROR,
                 CALL_MISSING_PAREN,
-                CALL_WRONG_ARG_NB,
-                CALL_WRONG_ARG_TYPE,
+                CALL_NO_OVERLOAD,
 
                 // File
                 WRONG_FILE_TYPE,

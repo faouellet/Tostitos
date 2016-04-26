@@ -57,8 +57,10 @@ void CFGBuilder::HandleFunctionDecl(const ASTNode* decl)
     for (auto& param : paramsDecl->GetParameters())
     {
         // Fetch the parameter's symbol
-        Symbol* paramSymbol;
-        assert(mSymTable->GetSymbol(param.get(), paramSymbol));
+        const Symbol* paramSymbol;
+        bool symFound;
+        std::tie(symFound, paramSymbol) = mSymTable->TryGetSymbol(param.get());
+        assert(symFound);
 
         // TODO: Add type info to the SSA argument
         SSAValue ssaVal{ mNextID++ };
@@ -93,8 +95,10 @@ void CFGBuilder::HandleVarDecl(const ASTNode* decl)
     {
         HandleExpr(initExpr);
 
-        Symbol* varSym;
-        mSymTable->GetSymbol(vDecl, varSym);
+        const Symbol* varSym;
+        bool symFound;
+        std::tie(symFound, varSym) = mSymTable->TryGetSymbol(vDecl);
+        assert(symFound);
 
         SSAValue varVal{};
         WriteVariable(varSym, mCurrentBlock, &varVal);
@@ -230,8 +234,10 @@ void CFGBuilder::HandleCallExpr(const ASTNode* expr)
     // Add the values of its parameters
     for (const auto& arg : cExpr->GetArgs())
     {
-        Symbol* argSym;
-        assert(mSymTable->GetSymbol(arg.get(), argSym));
+        const Symbol* argSym;
+        bool symFound;
+        std::tie(symFound, argSym) = mSymTable->TryGetSymbol(arg.get());
+        assert(symFound);
         callInst.AddOperand(ReadVariable(argSym, mCurrentBlock));
     }
 

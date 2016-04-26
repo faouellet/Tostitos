@@ -16,8 +16,7 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
     // Call
     { ErrorType::CALL_MISSING_PAREN,          "CALL ERROR: Function call is missing a closing parenthesis" },
     { ErrorType::CALL_ARG_ERROR,              "CALL ERROR: Incorrect function call arguments" },
-    { ErrorType::CALL_WRONG_ARG_NB,           "CALL ERROR: Trying to call a function with the wrong number of arguments" },
-    { ErrorType::CALL_WRONG_ARG_TYPE,         "CALL ERROR: Trying to call a function with a parameter of the wrong type" },
+    { ErrorType::CALL_NO_OVERLOAD,            "CALL ERROR: No matching function has been found" },
 
     // File
     { ErrorType::WRONG_FILE_TYPE,              "FILE ERROR: Wrong file type" },

@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionNoParam )
     size_t errorCount = GetProgramSymbolTable("../asts/function/fn_def_void.ast", symbolTable);
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 
-    Symbol fnSymbol{ TosLang::Common::Type::VOID, 0, "MyFunc" };
+    Symbol fnSymbol{ std::vector<TosLang::Common::Type>{ TosLang::Common::Type::VOID }, 0, "MyFunc" };
     BOOST_REQUIRE(symbolTable->IsFunctionSymbolValid(fnSymbol));
 }
 
@@ -46,17 +46,19 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionMultiParam )
     size_t errorCount = GetProgramSymbolTable("../asts/function/fn_def_multi_args.ast", symbolTable);
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 
-    Symbol fnSymbol{ TosLang::Common::Type::NUMBER, 0, "MyFunc" };
+    std::vector<TosLang::Common::Type> myFuncTypes = { 
+                                                        TosLang::Common::Type::NUMBER, 
+                                                        TosLang::Common::Type::NUMBER, 
+                                                        TosLang::Common::Type::NUMBER, 
+                                                        TosLang::Common::Type::NUMBER 
+                                                     };
+    Symbol fnSymbol{ myFuncTypes, 0, "MyFunc" };
     BOOST_REQUIRE(symbolTable->IsFunctionSymbolValid(fnSymbol));
 
     auto paramTypes = fnSymbol.GetFunctionParamTypes();
     BOOST_REQUIRE(paramTypes.size() == 3);
     BOOST_REQUIRE(std::all_of(paramTypes.begin(), paramTypes.end(), [](const TosLang::Common::Type& t) { return t == TosLang::Common::Type::NUMBER; }));
-
-    std::deque<size_t> scopeStack;
-    scopeStack.push_front(0);
-    scopeStack.push_front(1);
-
+    
     for (size_t i = 0; i < 3; ++i)
     {
         std::stringstream sStream;
@@ -74,7 +76,7 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionWithLocalVar )
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 
     // Validate the identity function symbol
-    std::vector<TosLang::Common::Type> identityTypes{ TosLang::Common::Type::NUMBER };
+    std::vector<TosLang::Common::Type> identityTypes{ TosLang::Common::Type::NUMBER, TosLang::Common::Type::NUMBER };
     Symbol identityFnSymbol{ identityTypes, 0, "identity" };
     BOOST_REQUIRE(symbolTable->IsFunctionSymbolValid(identityFnSymbol));
     

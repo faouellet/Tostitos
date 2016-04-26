@@ -14,6 +14,8 @@ using namespace TosLang::Utils;
 SymbolCollector::SymbolCollector(const std::shared_ptr<SymbolTable>& symTab) 
     : mCurrentScopeID{ 0 }, mErrorCount{ 0 }, mCurrentFunc{ nullptr }, mSymbolTable{ symTab }
 {
+    mCurrentScopesPath.push_front(mCurrentScopeID);
+
     // TODO: This probably needs some refactoring since the same code is also present in the type checker
     this->mPrologueFtr = [this]()
     { 
@@ -133,7 +135,7 @@ void SymbolCollector::HandleVarDecl()
     if (varDecl->IsFunctionParameter())
         return;
 
-    bool isNotAlreadyDefined  = mSymbolTable->AddSymbol(varDecl, { varDecl->GetVarType(), 0, varDecl->GetName() });
+    bool isNotAlreadyDefined  = mSymbolTable->AddSymbol(varDecl, { varDecl->GetVarType(), mCurrentScopeID, varDecl->GetName() });
 
     if (!isNotAlreadyDefined)
     {

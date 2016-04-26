@@ -2,9 +2,11 @@
 #define TYPE_CHECKER_H__TOSTITOS
 
 #include "../Common/astvisitor.h"
-#include "utils.h"
+#include "../Common/type.h"
 
+#include <memory>
 #include <stack>
+#include <unordered_map>
 
 namespace TosLang
 {
@@ -14,6 +16,8 @@ namespace TosLang
         class Expr;
         class FunctionDecl;
         class SymbolTable;
+
+        using NodeTypeMap = std::unordered_map<const ASTNode*, Common::Type>;
         
         /*
         * \class TypeChecker
@@ -35,15 +39,7 @@ namespace TosLang
             * \return       Number of errors encountered during type checking
             */
             size_t Run(const std::unique_ptr<ASTNode>& root, const std::shared_ptr<SymbolTable>& symTab);
-
-        public:
-            /*
-            * \fn       GetNodeTypeMapping
-            * \brief    Gets access to the types given to each node by the type checker
-            * \return   AST node - type mapping
-            */
-            const std::shared_ptr<NodeTypeMap>& GetNodeTypeMapping() const { return mNodeTypes; }
-
+            
         private:
             /*
             * \fn               CheckCondExprEvaluateToBool
@@ -59,6 +55,7 @@ namespace TosLang
 
         protected:  // Expressions
             void HandleBinaryExpr();
+            void HandleCallExpr();
 
         protected:  // Statements
             void HandleIfStmt();

@@ -2,7 +2,6 @@
 #define TOSLANG_SEMA_FIXTURE_H__TOSTITOS
 
 #include "AST/ast.h"
-#include "Sema/overloadsolver.h"
 #include "Sema/symbolcollector.h"
 #include "Sema/typechecker.h"
 #include "Utils/astreader.h"
@@ -74,22 +73,6 @@ struct TosLangSemaFixture
 
         TosLang::FrontEnd::SymbolCollector sCollector{ symTable };
         return sCollector.Run(programAST);
-    }
-
-    /*
-    * \fn               GetOverloadResolutionErrors
-    * \brief            Parse a TosLang program and check the resulting AST for overload resolution errors
-    * \param filename   Name of a file containing a TosLang AST
-    * \return           The number of errors that happened during overload resolution
-    */
-    const size_t GetOverloadResolutionErrors(const std::string& filename)
-    {
-        auto symTable = std::make_shared<SymbolTable>();
-        size_t errorCount = GetTypeErrors(filename);
-        BOOST_REQUIRE_EQUAL(errorCount, 0);
-
-        OverloadSolver oSolver;
-        return oSolver.Run(programAST, symTable, tChecker.GetNodeTypeMapping());
     }
 
     /*

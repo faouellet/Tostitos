@@ -4,7 +4,9 @@
 #include "../Sema/symboltable.h"
 #include "../Utils/errorlogger.h"
 
+#include <algorithm>
 #include <cassert>
+#include <iterator>
 
 using namespace TosLang::FrontEnd;
 using namespace TosLang::Common;
@@ -46,6 +48,7 @@ size_t TypeChecker::Run(const std::unique_ptr<ASTNode>& root, const std::shared_
 {
     mErrorCount = 0;
     mSymbolTable = symTab;
+    mNodeTypes.reset(new NodeTypeMap{});
     this->VisitPostOrder(root);
     return mErrorCount;
 }
@@ -61,14 +64,18 @@ bool TypeChecker::CheckExprEvaluateToType(const Expr* expr, Type type)
     }
     case ASTNode::NodeKind::BINARY_EXPR:
     {
-        const BinaryOpExpr* bExpr = dynamic_cast<const BinaryOpExpr*>(expr);
-        return (*mNodeTypes)[bExpr] == type;
+        return (*mNodeTypes)[expr] == type;
+    }
+    case ASTNode::NodeKind::CALL_EXPR:
+    {
+        return (*mNodeTypes)[expr] == type;
     }
     case ASTNode::NodeKind::IDENTIFIER_EXPR:
     {
         const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(expr);
-        Symbol* varSym;
-        bool symFound = symFound = mSymbolTable->GetSymbol(iExpr, varSym);
+        const Symbol* varSym;
+        bool symFound;
+        std::tie(symFound, varSym) = mSymbolTable->TryGetSymbol(iExpr);
 
         // It is assumed that the symbol has been declared
         assert(symFound);
@@ -103,8 +110,9 @@ void TypeChecker::HandleVarDecl()
     const Expr* initExpr = dynamic_cast<const Expr*>(vDecl->GetInitExpr());
     if (initExpr != nullptr)
     {
-        Symbol* varSymbol;
-        bool symFound = mSymbolTable->GetSymbol(vDecl, varSymbol);
+        const Symbol* varSymbol;
+        bool symFound;
+        std::tie(symFound, varSymbol) = mSymbolTable->TryGetSymbol(vDecl);
 
         assert(symFound);
 
@@ -153,7 +161,7 @@ void TypeChecker::HandleBinaryExpr()
         case ASTNode::NodeKind::BINARY_EXPR:
         {
             const BinaryOpExpr* innerBExpr = dynamic_cast<const BinaryOpExpr*>(children[i].get());
-            operandTypes[i] = (*mNodeTypes)[innerBExpr];
+            operandTypes[i] = mNodeTypes->at(innerBExpr);
         }
             break;
         case ASTNode::NodeKind::BOOLEAN_EXPR:
@@ -163,8 +171,10 @@ void TypeChecker::HandleBinaryExpr()
         {
             const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(children[i].get());
             // It is assumed that the scope checker has been run before the type checker
-            Symbol* varSym;
-            assert(mSymbolTable->GetSymbol(iExpr, varSym));
+            const Symbol* varSym;
+            bool symFound;
+            std::tie(symFound, varSym) = mSymbolTable->TryGetSymbol(iExpr);
+            assert(symFound);
             operandTypes[i] = varSym->GetVariableType();
         }
             break;
@@ -188,6 +198,31 @@ void TypeChecker::HandleBinaryExpr()
         (*mNodeTypes)[bExpr] = Type::BOOL;
     else
         (*mNodeTypes)[bExpr] = operandTypes[0];
+}
+
+void TypeChecker::HandleCallExpr()
+{
+    const CallExpr* cExpr = dynamic_cast<const CallExpr*>(this->mCurrentNode);
+    assert(cExpr != nullptr);
+
+    // Build the expected symbol for the function being called
+    std::vector<Common::Type> argTypes{ /*type*/ };
+    std::transform(cExpr->GetArgs().begin(), cExpr->GetArgs().end(), std::back_inserter(argTypes),
+        [this](const std::unique_ptr<ASTNode>& node)
+    {
+        return mNodeTypes->at(node.get());
+    });
+
+    Symbol expectedSym{ argTypes, 0, cExpr->GetCalleeName() };
+
+    if (!mSymbolTable->IsFunctionSymbolValid(expectedSym))
+    {
+        ++mErrorCount;
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::CALL_NO_OVERLOAD, mCurrentNode->GetSourceLocation());
+        return;
+    }
+
+    //(*mNodeTypes)[cExpr] = type;
 }
 
 void TypeChecker::HandleIfStmt()
@@ -225,8 +260,10 @@ void TosLang::FrontEnd::TypeChecker::HandleReturnStmt()
     const ReturnStmt* rStmt = dynamic_cast<const ReturnStmt*>(this->mCurrentNode);
     assert(rStmt != nullptr);
 
-    Symbol* fnSymbol;
-    assert(mSymbolTable->GetSymbol(mCurrentFunc, fnSymbol));
+    const Symbol* fnSymbol;
+    bool symFound;
+    std::tie(symFound, fnSymbol) = mSymbolTable->TryGetSymbol(mCurrentFunc);
+    assert(symFound);
 
     Type fnType = fnSymbol->GetFunctionReturnType();
     if (fnType == Type::VOID)

@@ -106,10 +106,9 @@ namespace TosLang
             * \fn           GetSymbol
             * \brief        Gets the symbol associated to a node
             * \param node   Node of the symbol (either a function or variable declaration)
-            * \param sym    Symbol to fetch
-            * \return       True if the symbol was found.
+            * \return       True and a pointer to the symbol if the symbol was found.
             */
-            bool GetSymbol(const ASTNode* node, const Symbol* sym) const;
+            std::pair<bool, const Symbol*> TryGetSymbol(const ASTNode* node) const;
             
             /*
             * \fn           IsFunctionSymbolValid
@@ -136,6 +135,9 @@ namespace TosLang
             bool IsGlobalVariable(const ASTNode* var) const;
 
         private:
+            /*
+            * TODO
+            */
             const ASTNode* FindVarDecl(const ASTNode* identExpr, const size_t scopeID) const;
 
         private:

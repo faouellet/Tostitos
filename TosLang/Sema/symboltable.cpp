@@ -88,10 +88,10 @@ bool SymbolTable::AddVariableUse(const IdentifierExpr* iExpr, const std::deque<s
     return false;
 }
 
-bool SymbolTable::GetSymbol(const ASTNode* node, const Symbol* sym) const
+std::pair<bool, const Symbol*> SymbolTable::TryGetSymbol(const ASTNode* node) const
 {
     if (node == nullptr)
-        return false;
+        return{ false, nullptr };
 
     const ASTNode* nodeForLookup = node;
     ASTNode::NodeKind nodeKind = nodeForLookup->GetKind();
@@ -105,7 +105,7 @@ bool SymbolTable::GetSymbol(const ASTNode* node, const Symbol* sym) const
         if (udIt != mUseDefs.end())
             nodeForLookup = udIt->second;
         else
-            return false;
+            return{ false, nullptr };
     }
     
     nodeKind = nodeForLookup->GetKind();
@@ -116,17 +116,16 @@ bool SymbolTable::GetSymbol(const ASTNode* node, const Symbol* sym) const
         auto symIt = mTable.find(nodeForLookup);
         if (symIt != mTable.end())
         {
-            sym = &symIt->second;
-            return true;
+            return{ true, &symIt->second };
         }
         else
         {
-            return false;
+            return{ false, nullptr };
         }
     }
     
     // Unhandled node type
-    return false;
+    return{ false, nullptr };
 }
 
 bool SymbolTable::IsFunctionSymbolValid(const Symbol & fnSym) const
