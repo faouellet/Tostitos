@@ -32,10 +32,15 @@ namespace TosLang
 
             const Common::Type GetVariableType() const { assert(!mIsFunction);  return mType[0]; }
             const Common::Type GetFunctionReturnType() const { assert(mIsFunction);  return mType[0]; }
-            const std::vector<Common::Type> GetFunctionParamTypes() const 
+            std::vector<Common::Type> GetFunctionParamTypes() const 
             {
                 assert(mIsFunction);
-                return std::vector<Common::Type>{mType.begin() + 1, mType.end()};
+
+                if (mType.size() == 1)
+                    // No parameters, only a return type
+                    return{};
+                else
+                    return { ++mType.begin(), mType.end() };
             }
 
             const size_t GetScopeID() const { assert(mType.front() != Common::Type::ERROR); return mScopeID; }
@@ -79,15 +84,6 @@ namespace TosLang
             bool AddSymbol(const ASTNode* node, Symbol&& sym);
             
             /*
-            * \fn               AddFunctionUse
-            * \brief            Add a usage for a function
-            * \param cExpr      Call expression
-            * \param scopePath  Path from the call's scope to the global scope
-            * \return           True if the use could be added, else false
-            */
-            void AddFunctionUse(const CallExpr* cExpr, const Symbol& fnSym);
-
-            /*
             * \fn               AddVariableUse
             * \brief            Add a usage for a variable
             * \param cExpr      Identifier expression
@@ -95,6 +91,15 @@ namespace TosLang
             * \return           True if the use could be added, else false
             */
             bool AddVariableUse(const IdentifierExpr* iExpr, const std::deque<size_t> scopePath);
+            
+            /*
+            * \fn           AddFunctionUse
+            * \brief        Add a usage for a function
+            * \param cExpr  Function call expression
+            * \param fnSym  Symbol of the function being called
+            * \return       True if the use could be added, else false
+            */
+            bool AddFunctionUse(const CallExpr* cExpr, const Symbol& fnSym);
 
             /*
             * \fn       Clear
@@ -109,6 +114,24 @@ namespace TosLang
             * \return       True and a pointer to the symbol if the symbol was found.
             */
             std::pair<bool, const Symbol*> TryGetSymbol(const ASTNode* node) const;
+
+            /*
+            * \fn               GetOverloadSet
+            * \brief            Gets the symbols that could resolve a function call
+            * \param fnName     Name of the function called
+            * \param fnTypes    Types of the arguments of the function called
+            * \return           Overload set for the function call
+            */
+            std::vector<const Symbol*> GetOverloadSet(const std::string& fnName, std::vector<Common::Type> fnTypes) const;
+
+
+            /*
+            * \fn           FindFunctionDecl
+            * \brief        Gets the function declaration which matches the given symbol
+            * \param fnSym  Symbol of the desired function
+            * \return       Pointer to the function AST node. Nullptr if no matching declaration is found
+            */
+            const ASTNode* FindFunctionDecl(const Symbol& fnSym) const;
             
             /*
             * \fn           IsFunctionSymbolValid
@@ -124,7 +147,7 @@ namespace TosLang
             * \param sym    Variable symbol to verify
             * \return       True if the symbol was found.
             */
-            bool IsVariableSymbolValid(const Symbol & varSym) const;
+            bool IsVariableSymbolValid(const Symbol& varSym) const;
 
             /*
             * \fn           IsGlobalVariable
@@ -133,7 +156,7 @@ namespace TosLang
             * \return       True if the variable was declared at global scope, else false
             */
             bool IsGlobalVariable(const ASTNode* var) const;
-
+                        
         private:
             /*
             * TODO
@@ -145,8 +168,8 @@ namespace TosLang
             using UseDefMap = std::unordered_map<const ASTNode*, const ASTNode*>;
             
         private:
-            SymTable mTable;    /*!< Table containing all symbol defined in the program */
-            UseDefMap mUseDefs; /*!< Mapping between the uses and the definition of a variable */
+            SymTable mTable;            /*!< Table containing all symbol defined in the program */
+            UseDefMap mUseDefs;         /*!< Mapping between the uses and the definition of a variable */
         };
     }
 }

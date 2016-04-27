@@ -48,7 +48,8 @@ size_t TypeChecker::Run(const std::unique_ptr<ASTNode>& root, const std::shared_
 {
     mErrorCount = 0;
     mSymbolTable = symTab;
-    mNodeTypes.reset(new NodeTypeMap{});
+    mNodeTypes.clear();
+    mOverloadMap.clear();
     this->VisitPostOrder(root);
     return mErrorCount;
 }
@@ -59,39 +60,50 @@ bool TypeChecker::CheckExprEvaluateToType(const Expr* expr, Type type)
     {
     case ASTNode::NodeKind::BOOLEAN_EXPR:
     {
-        (*mNodeTypes)[expr] = Type::BOOL;
+        mNodeTypes[expr] = Type::BOOL;
         return type == Type::BOOL;
     }
     case ASTNode::NodeKind::BINARY_EXPR:
     {
-        return (*mNodeTypes)[expr] == type;
+        return mNodeTypes[expr] == type;
     }
     case ASTNode::NodeKind::CALL_EXPR:
     {
-        return (*mNodeTypes)[expr] == type;
+        const CallExpr* cExpr = dynamic_cast<const CallExpr*>(expr);
+        assert(cExpr != nullptr);
+     
+        // The overload set contains all functions that have matching parameters.
+        // Now, we need to complete the overload resolution of the function call 
+        // by finding a function that also has a matching return type.
+        const std::vector<const Symbol*>& overloadSet = mOverloadMap.at(cExpr);
+        auto matchIt = std::find_if(overloadSet.begin(), overloadSet.end(), 
+                                    [&type](const Symbol* sym) 
+                                    { 
+                                        return sym->GetFunctionReturnType() == type; 
+                                    });
+
+        if (matchIt != overloadSet.end())
+        {
+            mSymbolTable->AddFunctionUse(cExpr, **matchIt);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
     case ASTNode::NodeKind::IDENTIFIER_EXPR:
     {
-        const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(expr);
-        const Symbol* varSym;
-        bool symFound;
-        std::tie(symFound, varSym) = mSymbolTable->TryGetSymbol(iExpr);
-
-        // It is assumed that the symbol has been declared
-        assert(symFound);
-
-        (*mNodeTypes)[iExpr] = varSym->GetVariableType();
-
-        return varSym->GetVariableType() == type;
+        return type == mNodeTypes[expr];
     }
     case ASTNode::NodeKind::NUMBER_EXPR:
     {
-        (*mNodeTypes)[expr] = Type::NUMBER;
+        mNodeTypes[expr] = Type::NUMBER;
         return type == Type::NUMBER;
     }
     case ASTNode::NodeKind::STRING_EXPR:
     {
-        (*mNodeTypes)[expr] = Type::STRING;
+        mNodeTypes[expr] = Type::STRING;
         return type == Type::STRING;
     }
     default:    
@@ -161,7 +173,7 @@ void TypeChecker::HandleBinaryExpr()
         case ASTNode::NodeKind::BINARY_EXPR:
         {
             const BinaryOpExpr* innerBExpr = dynamic_cast<const BinaryOpExpr*>(children[i].get());
-            operandTypes[i] = mNodeTypes->at(innerBExpr);
+            operandTypes[i] = mNodeTypes.at(innerBExpr);
         }
             break;
         case ASTNode::NodeKind::BOOLEAN_EXPR:
@@ -195,9 +207,9 @@ void TypeChecker::HandleBinaryExpr()
     if ((bExpr->GetOperation() == Operation::GREATER_THAN) || (bExpr->GetOperation() == Operation::LESS_THAN))
         // When using either '<' or '>', the resulting type will be different than the operand types.
         // It is using number expressions to produce a boolean expression.
-        (*mNodeTypes)[bExpr] = Type::BOOL;
+        mNodeTypes[bExpr] = Type::BOOL;
     else
-        (*mNodeTypes)[bExpr] = operandTypes[0];
+        mNodeTypes[bExpr] = operandTypes[0];
 }
 
 void TypeChecker::HandleCallExpr()
@@ -205,24 +217,50 @@ void TypeChecker::HandleCallExpr()
     const CallExpr* cExpr = dynamic_cast<const CallExpr*>(this->mCurrentNode);
     assert(cExpr != nullptr);
 
-    // Build the expected symbol for the function being called
-    std::vector<Common::Type> argTypes{ /*type*/ };
+    // Get the arguments' types for the function being called
+    std::vector<Common::Type> argTypes;
     std::transform(cExpr->GetArgs().begin(), cExpr->GetArgs().end(), std::back_inserter(argTypes),
-        [this](const std::unique_ptr<ASTNode>& node)
-    {
-        return mNodeTypes->at(node.get());
-    });
+                   [this](const std::unique_ptr<ASTNode>& node)
+                   {
+                       if (node->GetKind() == ASTNode::NodeKind::CALL_EXPR)
+                       {
 
-    Symbol expectedSym{ argTypes, 0, cExpr->GetCalleeName() };
+                       }
+                       return mNodeTypes.at(node.get());
+                   });
+    
+    const std::vector<const Symbol*> overloadSet = mSymbolTable->GetOverloadSet(cExpr->GetCalleeName(), argTypes);
 
-    if (!mSymbolTable->IsFunctionSymbolValid(expectedSym))
+    // This handler doesn't really perform type checking on a call expression. 
+    // Instead, it makes sure that the call has a valid overload set which will 
+    // later be resolved when type checking the node making use of this call.
+    // The fact is that without context we can't perform a type check on a function call.
+    if (overloadSet.empty())
     {
         ++mErrorCount;
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::CALL_NO_OVERLOAD, mCurrentNode->GetSourceLocation());
         return;
     }
 
-    //(*mNodeTypes)[cExpr] = type;
+    mOverloadMap[cExpr] = overloadSet;
+}
+
+void TypeChecker::HandleIdentifierExpr()
+{
+    // Performs no type checking. This method is for associating a type to an identifier
+
+    const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(this->mCurrentNode);
+    assert(iExpr != nullptr);
+
+    const Symbol* varSym;
+    bool symFound;
+    std::tie(symFound, varSym) = mSymbolTable->TryGetSymbol(iExpr);
+
+    // It is assumed that the symbol has been declared. If not, it's because 
+    // this pass is being run without having run the symbol collector properly.
+    assert(symFound);
+
+    mNodeTypes[iExpr] = varSym->GetVariableType();
 }
 
 void TypeChecker::HandleIfStmt()

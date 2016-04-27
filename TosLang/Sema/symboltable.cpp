@@ -3,6 +3,7 @@
 #include "../AST/declarations.h"
 
 #include <algorithm>
+#include <iterator>
 #include <sstream>
 
 using namespace TosLang::FrontEnd;
@@ -26,7 +27,11 @@ bool SymbolTable::AddSymbol(const ASTNode* node, Symbol&& sym)
                                   if (symbol.IsFunction() && sym.IsFunction())
                                   {
                                       // Check for every aspects of a function
-                                      return symbol.GetFunctionParamTypes() == sym.GetFunctionParamTypes()
+                                      const std::vector<Common::Type>& candidateParamTypes = symbol.GetFunctionParamTypes();
+                                      const std::vector<Common::Type>& expectedParamTypes = sym.GetFunctionParamTypes();
+
+                                      return candidateParamTypes.size() == expectedParamTypes.size()
+                                          && candidateParamTypes == expectedParamTypes
                                           && symbol.GetFunctionReturnType() == sym.GetFunctionReturnType()
                                           && symbol.GetName() == sym.GetName();
                                   }
@@ -52,21 +57,6 @@ bool SymbolTable::AddSymbol(const ASTNode* node, Symbol&& sym)
     return true;
 }
 
-void SymbolTable::AddFunctionUse(const CallExpr* cExpr, const Symbol& fnSym)
-{
-    auto symIt = std::find_if(mTable.begin(), mTable.end(), 
-                              [&fnSym](const std::pair<const ASTNode*, Symbol>& nodeSym) 
-                              {
-                                  return nodeSym.second == fnSym;
-                              });
-
-    // Since this method should only be use after overload resolution, 
-    // there should be a function corresponding to the given symbol
-    assert(symIt != mTable.end());
-
-    mUseDefs[symIt->first] = cExpr;
-}
-
 bool SymbolTable::AddVariableUse(const IdentifierExpr* iExpr, const std::deque<size_t> scopePath)
 {
     for (const auto& scopeID : scopePath)
@@ -87,6 +77,24 @@ bool SymbolTable::AddVariableUse(const IdentifierExpr* iExpr, const std::deque<s
 
     return false;
 }
+
+bool SymbolTable::AddFunctionUse(const CallExpr* cExpr, const Symbol& fnSym)
+{
+    auto fnIt = std::find_if(mTable.begin(), mTable.end(),
+                            [&fnSym, &cExpr](const std::pair<const ASTNode*, Symbol>& nodeSym)
+                            {
+                                return nodeSym.second == fnSym;
+                            });
+
+    if (fnIt != mTable.end())
+    {
+        mUseDefs[cExpr] = fnIt->first;
+        return true;
+    }
+
+    return false;
+}
+
 
 std::pair<bool, const Symbol*> SymbolTable::TryGetSymbol(const ASTNode* node) const
 {
@@ -127,6 +135,47 @@ std::pair<bool, const Symbol*> SymbolTable::TryGetSymbol(const ASTNode* node) co
     // Unhandled node type
     return{ false, nullptr };
 }
+
+std::vector<const Symbol*> SymbolTable::GetOverloadSet(const std::string& fnName, std::vector<Type> fnTypes) const
+{
+    std::vector<const Symbol*> overloadSet;
+    Symbol expectedSym{ fnTypes, 0, fnName };
+
+    for (const auto& nodeSym : mTable)
+    {
+        if ((nodeSym.first->GetKind() == ASTNode::NodeKind::FUNCTION_DECL)
+            && (nodeSym.second.GetName() == fnName))
+        {
+            const std::vector<Type>& candidateTypes = nodeSym.second.GetFunctionParamTypes();
+            
+            if (fnTypes.size() == candidateTypes.size())
+            {
+                if (fnTypes.size() == 0 
+                    || std::equal(fnTypes.begin(), fnTypes.end(), candidateTypes.begin()))
+                {
+                    overloadSet.push_back(&nodeSym.second);
+                }
+            }
+        }
+    }
+
+    return overloadSet;
+}
+
+const ASTNode* SymbolTable::FindFunctionDecl(const Symbol& fnSym) const
+{
+    auto fnIt = std::find_if(mTable.begin(), mTable.end(),
+                             [&fnSym](const std::pair<const ASTNode*, Symbol>& nodeSym)
+                             {
+                                 return nodeSym.second == fnSym;
+                             });
+
+    if (fnIt != mTable.end())
+        return fnIt->first;
+    else
+        return nullptr;
+}
+
 
 bool SymbolTable::IsFunctionSymbolValid(const Symbol & fnSym) const
 {

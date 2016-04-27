@@ -15,10 +15,9 @@ namespace TosLang
         class BinaryOpExpr;
         class Expr;
         class FunctionDecl;
+        class Symbol;
         class SymbolTable;
 
-        using NodeTypeMap = std::unordered_map<const ASTNode*, Common::Type>;
-        
         /*
         * \class TypeChecker
         * \brief AST pass that verifies if no type error occurs when a variable or a function is used
@@ -56,6 +55,7 @@ namespace TosLang
         protected:  // Expressions
             void HandleBinaryExpr();
             void HandleCallExpr();
+            void HandleIdentifierExpr();
 
         protected:  // Statements
             void HandleIfStmt();
@@ -64,12 +64,17 @@ namespace TosLang
             void HandleWhileStmt();
 
         private:
+            using NodeTypeMap = std::unordered_map<const ASTNode*, Common::Type>;
+            using OverloadMap = std::unordered_map<const ASTNode*, std::vector<const Symbol*>>;
+            
+        private:
             size_t mErrorCount;                         /*!< Number of errors found by the type checker */
             size_t mCurrentScopeID;                     /*!< Current scope identifier */
             FunctionDecl* mCurrentFunc;                 /*!< Current traversed function */
             std::deque<size_t> mCurrentScopesTraversed; /*!< Path from the current scope to the global scopes */
             std::shared_ptr<SymbolTable> mSymbolTable;  /*!< Symbol table to be used by the type checker */
-            std::shared_ptr<NodeTypeMap> mNodeTypes;    /*!< Type of the value produced by an AST node */
+            NodeTypeMap mNodeTypes;                     /*!< Type of the value produced by an AST node */
+            OverloadMap mOverloadMap;                   /*!< Mapping between a function call and its overload set */
         };
     }
 }
