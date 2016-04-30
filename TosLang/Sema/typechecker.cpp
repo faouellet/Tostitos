@@ -75,7 +75,11 @@ bool TypeChecker::CheckExprEvaluateToType(const Expr* expr, Type type)
         // The overload set contains all functions that have matching parameters.
         // Now, we need to complete the overload resolution of the function call 
         // by finding a function that also has a matching return type.
-        const std::vector<const Symbol*>& overloadSet = mOverloadMap.at(cExpr);
+        auto oSetIt = mOverloadMap.find(cExpr);
+        if (oSetIt == mOverloadMap.end())
+            return false;
+
+        const std::vector<const Symbol*>& overloadSet = oSetIt->second;
         auto matchIt = std::find_if(overloadSet.begin(), overloadSet.end(), 
                                     [&type](const Symbol* sym) 
                                     { 
@@ -222,11 +226,17 @@ void TypeChecker::HandleCallExpr()
     std::transform(cExpr->GetArgs().begin(), cExpr->GetArgs().end(), std::back_inserter(argTypes),
                    [this](const std::unique_ptr<ASTNode>& node)
                    {
-                       if (node->GetKind() == ASTNode::NodeKind::CALL_EXPR)
+                       switch (node->GetKind())
                        {
-
-                       }
-                       return mNodeTypes.at(node.get());
+                       case ASTNode::NodeKind::BOOLEAN_EXPR:
+                           return Common::Type::BOOL;
+                       case ASTNode::NodeKind::NUMBER_EXPR:
+                           return Common::Type::NUMBER;
+                       case ASTNode::NodeKind::CALL_EXPR:
+                           return Common::Type::ERROR; // TODO
+                       default:
+                           return mNodeTypes.at(node.get());
+                       }                       
                    });
     
     const std::vector<const Symbol*> overloadSet = mSymbolTable->GetOverloadSet(cExpr->GetCalleeName(), argTypes);
