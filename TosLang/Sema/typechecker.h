@@ -41,7 +41,7 @@ namespace TosLang
             
         private:
             /*
-            * \fn               CheckCondExprEvaluateToBool
+            * \fn               CheckExprEvaluateToType
             * \brief            Checks if the expression evaluates to a value of a given type
             * \param expr       The expression to be checked
             * \param type       The type to be matched
@@ -53,9 +53,12 @@ namespace TosLang
             void HandleVarDecl();
 
         protected:  // Expressions
+            void HandleBooleanExpr();
             void HandleBinaryExpr();
             void HandleCallExpr();
             void HandleIdentifierExpr();
+            void HandleNumberExpr();
+            void HandleStringExpr();
 
         protected:  // Statements
             void HandleIfStmt();

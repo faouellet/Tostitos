@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE( BadCallBinOpArgTypeCheck )
     // Check if the correct error message got printed
     std::vector<std::string> messages{ GetErrorMessages() };
     BOOST_REQUIRE_EQUAL(messages.size(), 1);
-    BOOST_REQUIRE_EQUAL(messages[0], "CALL ERROR: Trying to call a function with a parameter of the wrong type at line 9, column 21");
+    BOOST_REQUIRE_EQUAL(messages[0], "CALL ERROR: No function matches these arguments types at line 9, column 14");
 }
 
 BOOST_AUTO_TEST_CASE( BadCallCallArgTypeCheck )
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE( BadCallCallArgTypeCheck )
     // Check if the correct error message got printed
     std::vector<std::string> messages{ GetErrorMessages() };
     BOOST_REQUIRE_EQUAL(messages.size(), 1);
-    BOOST_REQUIRE_EQUAL(messages[0], "CALL ERROR: Trying to call a function with a parameter of the wrong type at line 7, column 33");
+    BOOST_REQUIRE_EQUAL(messages[0], "CALL ERROR: No function matches these arguments types at line 7, column 33");
 }
 
 BOOST_AUTO_TEST_CASE( BadCallLiteralArgTypeCheck )
@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE( BadCallLiteralArgTypeCheck )
     // Check if the correct error message got printed
     std::vector<std::string> messages{ GetErrorMessages() };
     BOOST_REQUIRE_EQUAL(messages.size(), 1);
-    BOOST_REQUIRE_EQUAL(messages[0], "CALL ERROR: Trying to call a function with a parameter of the wrong type at line 6, column 25");
+    BOOST_REQUIRE_EQUAL(messages[0], "CALL ERROR: No function matches these arguments types at line 6, column 25");
 }
 
 BOOST_AUTO_TEST_CASE( BadCallVariableArgTypeCheck )
@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE( BadCallVariableArgTypeCheck )
     // Check if the correct error message got printed
     std::vector<std::string> messages{ GetErrorMessages() };
     BOOST_REQUIRE_EQUAL(messages.size(), 1);
-    BOOST_REQUIRE_EQUAL(messages[0], "CALL ERROR: Trying to call a function with a parameter of the wrong type at line 7, column 26");
+    BOOST_REQUIRE_EQUAL(messages[0], "CALL ERROR: No function matches these arguments types at line 7, column 26");
 }
 
 BOOST_AUTO_TEST_CASE( BadCallNoArgTypeCheck )

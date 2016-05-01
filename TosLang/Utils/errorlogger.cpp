@@ -16,7 +16,10 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
     // Call
     { ErrorType::CALL_MISSING_PAREN,          "CALL ERROR: Function call is missing a closing parenthesis" },
     { ErrorType::CALL_ARG_ERROR,              "CALL ERROR: Incorrect function call arguments" },
-    { ErrorType::CALL_NO_OVERLOAD,            "CALL ERROR: No matching function has been found" },
+    { ErrorType::CALL_PARAM_TYPE_ERROR,       "CALL ERROR: No function matches these arguments types" },
+    { ErrorType::CALL_RETURN_ERROR,           "CALL ERROR: No function matches the expected return type" },
+    { ErrorType::CALL_NB_ARGS_ERROR,          "CALL ERROR: Trying to call a function with the wrong number of arguments" },
+    
 
     // File
     { ErrorType::WRONG_FILE_TYPE,              "FILE ERROR: Wrong file type" },
@@ -64,7 +67,6 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
 
     // Type
     { ErrorType::WRONG_BIN_EXPR_TYPE,          "TYPE ERROR: Mismatch between binary expression operands type" },
-    { ErrorType::WRONG_CALL_TYPE,              "TYPE ERROR: Trying to initialize a variable with the return value of a function of the wrong type" },
     { ErrorType::WRONG_COND_EXPR_TYPE,         "TYPE ERROR: Conditional expression must evaluate to a boolean value" },
     { ErrorType::WRONG_EXPR_TYPE,              "TYPE ERROR: Trying to instantiate variable with an expression of the wrong type" },
     { ErrorType::WRONG_LITERAL_TYPE,           "TYPE ERROR: Trying to instantiate variable with a literal of the wrong type" },

@@ -2,4 +2,4 @@ ProgramDecl
 	FunctionDecl: main Return Type: 4 SrcLoc: 1, 6
 		CompoundStmt
 			PrintStmt SrcLoc: 2, 6
-				IdentifierExpr: Hello World! SrcLoc: 2, 7
+				StringExpr: "Hello World!" SrcLoc: 2, 7

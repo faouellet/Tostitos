@@ -52,14 +52,18 @@ namespace TosLang
             void HandleVarDecl();
 
         protected:  // Expression
-            
+            /*
+            * \fn       HandleCallExpr
+            * \brief    Verify if the function called was declared
+            */
+            void HandleCallExpr();
+
             /*
             * \fn       HandleIdentifierExpr
             * \brief    Associates a variable use with a variable definition
             */
             void HandleIdentifierExpr();
-
-
+                        
         private:
             constexpr static int M_GLOBAL_SCOPE_LEVEL = 0;
 

@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE( BadVarInitCallTypeCheck )
     // Check if the correct error message got printed
     std::vector<std::string> messages{ GetErrorMessages() };
     BOOST_REQUIRE_EQUAL(messages.size(), 1);
-    BOOST_REQUIRE_EQUAL(messages[0], "TYPE ERROR: Trying to initialize a variable with the return value of a function of the wrong type at line 6, column 15");
+    BOOST_REQUIRE_EQUAL(messages[0], "CALL ERROR: No function matches the expected return type at line 6, column 15");
 }
 
 BOOST_AUTO_TEST_CASE( BadVarInitIdentifierTypeCheck )

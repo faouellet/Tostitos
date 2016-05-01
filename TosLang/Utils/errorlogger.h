@@ -32,7 +32,9 @@ namespace TosLang
                 // Call
                 CALL_ARG_ERROR,
                 CALL_MISSING_PAREN,
-                CALL_NO_OVERLOAD,
+                CALL_PARAM_TYPE_ERROR,
+                CALL_RETURN_ERROR,
+                CALL_NB_ARGS_ERROR,
 
                 // File
                 WRONG_FILE_TYPE,
@@ -76,7 +78,6 @@ namespace TosLang
 
                 // Type
                 WRONG_BIN_EXPR_TYPE,
-                WRONG_CALL_TYPE,
                 WRONG_COND_EXPR_TYPE,
                 WRONG_EXPR_TYPE,
                 WRONG_LITERAL_TYPE,

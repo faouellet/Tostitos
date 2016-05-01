@@ -88,12 +88,13 @@ BOOST_AUTO_TEST_CASE( BadWhileNumberBinaryExprCondTypeCheck )
 BOOST_AUTO_TEST_CASE( BadWhileCallCondTypeCheck )
 {
     size_t errorCount = GetTypeErrors("../asts/while/bad_while_call_cond.ast");
-    BOOST_REQUIRE_EQUAL(errorCount, 1);
+    BOOST_REQUIRE_EQUAL(errorCount, 2);
 
     // Check if the correct error message got printed
     std::vector<std::string> messages{ GetErrorMessages() };
-    BOOST_REQUIRE_EQUAL(messages.size(), 1);
-    BOOST_REQUIRE_EQUAL(messages[0], "TYPE ERROR: Conditional expression must evaluate to a boolean value at line 8, column 9");
+    BOOST_REQUIRE_EQUAL(messages.size(), 2);
+    BOOST_REQUIRE_EQUAL(messages[0], "CALL ERROR: No function matches the expected return type at line 8, column 9");
+    BOOST_REQUIRE_EQUAL(messages[1], "TYPE ERROR: Conditional expression must evaluate to a boolean value at line 8, column 9");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

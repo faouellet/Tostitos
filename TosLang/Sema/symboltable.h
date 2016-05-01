@@ -42,6 +42,14 @@ namespace TosLang
                 else
                     return { ++mType.begin(), mType.end() };
             }
+            
+            Common::Type GetFunctionParamTypeAt(const size_t idx) const
+            {
+                assert(mIsFunction);
+                assert(idx + 1 < mType.size());
+
+                return mType[idx + 1];
+            }
 
             const size_t GetScopeID() const { assert(mType.front() != Common::Type::ERROR); return mScopeID; }
             const bool IsFunction() const { assert(mType.front() != Common::Type::ERROR); return mIsFunction; }
@@ -116,13 +124,12 @@ namespace TosLang
             std::pair<bool, const Symbol*> TryGetSymbol(const ASTNode* node) const;
 
             /*
-            * \fn               GetOverloadSet
+            * \fn               GetOverloadCandidates
             * \brief            Gets the symbols that could resolve a function call
             * \param fnName     Name of the function called
-            * \param fnTypes    Types of the arguments of the function called
             * \return           Overload set for the function call
             */
-            std::vector<const Symbol*> GetOverloadSet(const std::string& fnName, std::vector<Common::Type> fnTypes) const;
+            std::vector<const Symbol*> GetOverloadCandidates(const std::string& fnName) const;
 
 
             /*
@@ -134,13 +141,21 @@ namespace TosLang
             const ASTNode* FindFunctionDecl(const Symbol& fnSym) const;
             
             /*
+            * \fn           IsFunctionNameValid
+            * \brief        Checks if a function with the given name is present in the symbol table
+            * \param sym    Function name
+            * \return       True if the function was found.
+            */
+            bool IsFunctionNameValid(const std::string& fnName) const;
+
+            /*
             * \fn           IsFunctionSymbolValid
             * \brief        Checks if the symbol is present in the symbol table
             * \param sym    Function symbol to verify
             * \return       True if the symbol was found.
             */
             bool IsFunctionSymbolValid(const Symbol& fnSym) const;
-
+            
             /*
             * \fn           IsVariableSymbolValid
             * \brief        Checks if the symbol is present in the symbol table

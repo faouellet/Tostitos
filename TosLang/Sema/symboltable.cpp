@@ -136,30 +136,20 @@ std::pair<bool, const Symbol*> SymbolTable::TryGetSymbol(const ASTNode* node) co
     return{ false, nullptr };
 }
 
-std::vector<const Symbol*> SymbolTable::GetOverloadSet(const std::string& fnName, std::vector<Type> fnTypes) const
+std::vector<const Symbol*> SymbolTable::GetOverloadCandidates(const std::string& fnName) const
 {
-    std::vector<const Symbol*> overloadSet;
-    Symbol expectedSym{ fnTypes, 0, fnName };
+    std::vector<const Symbol*> overloadCandidates;
 
     for (const auto& nodeSym : mTable)
     {
         if ((nodeSym.first->GetKind() == ASTNode::NodeKind::FUNCTION_DECL)
             && (nodeSym.second.GetName() == fnName))
         {
-            const std::vector<Type>& candidateTypes = nodeSym.second.GetFunctionParamTypes();
-            
-            if (fnTypes.size() == candidateTypes.size())
-            {
-                if (fnTypes.size() == 0 
-                    || std::equal(fnTypes.begin(), fnTypes.end(), candidateTypes.begin()))
-                {
-                    overloadSet.push_back(&nodeSym.second);
-                }
-            }
+            overloadCandidates.push_back(&nodeSym.second);
         }
     }
 
-    return overloadSet;
+    return overloadCandidates;
 }
 
 const ASTNode* SymbolTable::FindFunctionDecl(const Symbol& fnSym) const
@@ -177,13 +167,25 @@ const ASTNode* SymbolTable::FindFunctionDecl(const Symbol& fnSym) const
 }
 
 
-bool SymbolTable::IsFunctionSymbolValid(const Symbol & fnSym) const
+bool SymbolTable::IsFunctionSymbolValid(const Symbol& fnSym) const
 {
     auto fnIt = std::find_if(mTable.begin(), mTable.end(), 
                              [&fnSym](const std::pair<const ASTNode*, Symbol> nodeSym)
                              {
                                  return nodeSym.first->GetKind() == ASTNode::NodeKind::FUNCTION_DECL
                                      && nodeSym.second == fnSym;
+                             });
+
+    return fnIt != mTable.end();
+}
+
+bool SymbolTable::IsFunctionNameValid(const std::string& fnName) const
+{
+    auto fnIt = std::find_if(mTable.begin(), mTable.end(),
+                             [&fnName](const std::pair<const ASTNode*, Symbol> nodeSym)
+                             {
+                                 return nodeSym.first->GetKind() == ASTNode::NodeKind::FUNCTION_DECL
+                                     && nodeSym.second.GetName() == fnName;
                              });
 
     return fnIt != mTable.end();

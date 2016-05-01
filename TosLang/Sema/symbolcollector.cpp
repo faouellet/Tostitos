@@ -144,6 +144,18 @@ void SymbolCollector::HandleVarDecl()
     }
 }
 
+void SymbolCollector::HandleCallExpr()
+{
+    const CallExpr* cExpr = dynamic_cast<const CallExpr*>(this->mCurrentNode);
+    assert(cExpr != nullptr);
+
+    if (!mSymbolTable->IsFunctionNameValid(cExpr->GetCalleeName()))
+    {
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::FN_UNDECLARED, cExpr->GetSourceLocation());
+        ++mErrorCount;
+    }
+}
+
 void SymbolCollector::HandleIdentifierExpr()
 {
     const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(this->mCurrentNode);
