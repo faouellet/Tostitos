@@ -78,7 +78,7 @@ namespace TosLang
             *               is not responsible for adding machine instructions to the basic block.
             * \param block  Basic block to branch to 
             */
-            void InsertBranch(const BasicBlock<InstT>* block) { mSuccBlocks.push_back(std::make_shared<BasicBlock<InstT>>(*block)); }
+            void InsertBranch(BasicBlock<InstT>* block) { mSuccBlocks.emplace_back(std::shared_ptr<BasicBlock<InstT>>(block)); }
 
             /*
             * \fn           InsertBranch

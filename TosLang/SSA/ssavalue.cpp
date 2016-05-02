@@ -20,7 +20,7 @@ std::ostream& TosLang::BackEnd::operator<<(std::ostream& stream, const SSAValue&
     }
 }
 
-bool TosLang::BackEnd::operator==(const SSAValue & lhsVal, const SSAValue & rhsVal)
+bool TosLang::BackEnd::operator==(const SSAValue& lhsVal, const SSAValue& rhsVal)
 {
     return lhsVal.mID == rhsVal.mID
         && lhsVal.mDef == rhsVal.mDef
@@ -28,7 +28,7 @@ bool TosLang::BackEnd::operator==(const SSAValue & lhsVal, const SSAValue & rhsV
         && lhsVal.mLitVal == rhsVal.mLitVal;
 }
 
-bool TosLang::BackEnd::operator!=(const SSAValue & lhsVal, const SSAValue & rhsVal)
+bool TosLang::BackEnd::operator!=(const SSAValue& lhsVal, const SSAValue& rhsVal)
 {
     return !(lhsVal == rhsVal);
 }

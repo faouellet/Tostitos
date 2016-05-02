@@ -43,6 +43,7 @@ namespace TosLang
         
         std::ostream& operator<<(std::ostream& stream, const SSAValue& ssaVal);
         bool operator==(const SSAValue& lhsVal, const SSAValue& rhsVal);
+        bool operator!=(const SSAValue& lhsVal, const SSAValue& rhsVal);
     }
 }
 

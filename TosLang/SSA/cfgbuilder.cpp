@@ -117,7 +117,7 @@ void CFGBuilder::HandleVarDecl(const ASTNode* decl)
 // Expressions
 const SSAInstruction* CFGBuilder::HandleExpr(const Expr* expr)
 {
-    const SSAInstruction* exprInst;
+    const SSAInstruction* exprInst = nullptr;
 
     switch (expr->GetKind())
     {
@@ -171,7 +171,6 @@ const SSAInstruction* CFGBuilder::HandleExpr(const Expr* expr)
         break;
     default:
         assert(false && "Unknown expression node");
-        expr = nullptr;
         break;
     }
 
