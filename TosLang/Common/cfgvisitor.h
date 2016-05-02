@@ -34,7 +34,7 @@ namespace TosLang
             * \param cfg            Graph to be visited
             * \param postOrderVisit Perform a post-order or a pre-order visit of the CFG?
             */
-            void Visit(const std::shared_ptr<BackEnd::ControlFlowGraph<InstT>> cfg, bool postOrderVisit)
+            void Visit(const std::shared_ptr<BackEnd::ControlFlowGraph<InstT>>& cfg, bool postOrderVisit)
             {
                 BackEnd::BlockPtr<InstT> entry = cfg->GetEntryBlock();
                 if (postOrderVisit)
@@ -49,11 +49,11 @@ namespace TosLang
             * \brief        Recursively perform a DFS visit of a sub-graph in a post-order fashion
             * \param block  Block at the beginning of the sub-graph we want to visit
             */
-            void RecursiveDFSVisitPostOrder(const BackEnd::BlockPtr<InstT> block)
+            void RecursiveDFSVisitPostOrder(const BackEnd::BlockPtr<InstT>& block)
             {
                 mBlocksVisited.push_back(block);
 
-                for (auto bbIt = block->bb_begin(), bbEnd = block->bb_end(); bbIt != bbEnd; ++bbIt)
+                for (auto bbIt = block->succ_begin(), bbEnd = block->succ_end(); bbIt != bbEnd; ++bbIt)
                 {
                     if (std::find(mBlocksVisited.begin(), mBlocksVisited.end(), *bbIt) == mBlocksVisited.end())
                     {
@@ -69,13 +69,13 @@ namespace TosLang
             * \brief        Recursively perform a DFS visit of a sub-graph in a pre-order fashion
             * \param block  Block at the beginning of the sub-graph we want to visit
             */
-            void RecursiveDFSVisitPreOrder(const BackEnd::BlockPtr<InstT> block)
+            void RecursiveDFSVisitPreOrder(const BackEnd::BlockPtr<InstT>& block)
             {
                 mBlocksVisited.push_back(block);
 
                 mAction.Execute(block);
 
-                for (auto bbIt = block->bb_begin(), bbEnd = block->bb_end(); bbIt != bbEnd; ++bbIt)
+                for (auto bbIt = block->succ_begin(), bbEnd = block->succ_end(); bbIt != bbEnd; ++bbIt)
                 {
                     if (std::find(mBlocksVisited.begin(), mBlocksVisited.end(), *bbIt) == mBlocksVisited.end())
                     {

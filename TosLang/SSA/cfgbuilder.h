@@ -54,8 +54,8 @@ namespace TosLang
             void HandleVarDecl(const FrontEnd::ASTNode* decl);
 
         protected:  // Expressions
-            SSAInstruction* HandleExpr(const FrontEnd::Expr* expr);
-            void HandleBinaryExpr(const FrontEnd::ASTNode* expr);
+            const SSAInstruction* HandleExpr(const FrontEnd::Expr* expr);
+            const SSAInstruction* HandleBinaryExpr(const FrontEnd::ASTNode* expr);
             void HandleCallExpr(const FrontEnd::ASTNode* expr);
 
         protected:  // Statements
@@ -76,6 +76,11 @@ namespace TosLang
 
         private:
             /*
+            * TODO
+            */
+            const SSAInstruction* AddInstruction(const SSAInstruction& inst);
+
+            /*
             * \fn           CreateNewCurrentBlock
             * \brief        Creates a new basic block. It then adds it to the current CFG by linking it with the previous current block. 
             *               This will change mCurrentBlock so that it will now points to the newly created block.
@@ -86,16 +91,31 @@ namespace TosLang
             /*
             * TODO
             */
-            void WriteVariable(const FrontEnd::Symbol* varNode, const SSABlock* block, SSAValue* value);
+            void WriteVariable(const FrontEnd::Symbol* varNode, const SSABlock* block, const SSAValue& value);
 
-            SSAValue* ReadVariable(const FrontEnd::Symbol* variable, const SSABlock* block);
-            SSAValue* ReadVariableRecursive(const FrontEnd::Symbol* variable, const SSABlock* block);
-            SSAValue* AddPHIOperand(const FrontEnd::Symbol* variable, SSAInstruction* phi);
-            SSAValue* TryRemoveTrivialPHI(SSAInstruction* phi);
+            /*
+            * TODO
+            */
+            SSAValue ReadVariable(const FrontEnd::Symbol* variable, const SSABlock* block);
 
+            /*
+            * TODO
+            */
+            SSAValue ReadVariableRecursive(const FrontEnd::Symbol* variable, const SSABlock* block);
+
+            /*
+            * TODO
+            */
+            SSAValue AddPHIOperand(const FrontEnd::Symbol* variable, SSAInstruction* phi);
+
+            /*
+            * TODO
+            */
+            SSAValue TryRemoveTrivialPHI(SSAInstruction* phi);
+            
         private:
-            using CurrentVarDef = std::unordered_map<const FrontEnd::Symbol*, std::unordered_map<const SSABlock*, SSAValue*>>;
-            using PHIMapping = std::unordered_map<const SSABlock*, std::unordered_map<const FrontEnd::Symbol*, SSAInstruction*>>;
+            using CurrentVarDef = std::unordered_map<const FrontEnd::Symbol*, std::unordered_map<const SSABlock*, SSAValue>>;
+            using PHIMapping = std::unordered_map<const SSABlock*, std::unordered_map<const FrontEnd::Symbol*, const SSAInstruction*>>;
 
             // TODO: Once experimenting is done, use more carefully chosen data structures
         private:

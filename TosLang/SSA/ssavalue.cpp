@@ -27,3 +27,8 @@ bool TosLang::BackEnd::operator==(const SSAValue & lhsVal, const SSAValue & rhsV
         && lhsVal.mKind == rhsVal.mKind
         && lhsVal.mLitVal == rhsVal.mLitVal;
 }
+
+bool TosLang::BackEnd::operator!=(const SSAValue & lhsVal, const SSAValue & rhsVal)
+{
+    return !(lhsVal == rhsVal);
+}

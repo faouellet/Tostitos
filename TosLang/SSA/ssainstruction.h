@@ -68,17 +68,17 @@ namespace TosLang
             /*
             * TODO
             */
-            void AddOperand(SSAValue* val) { mOperands.push_back(val); }
+            void AddOperand(SSAValue val) { mOperands.push_back(val); }
 
             /*
             * TODO
             */
-            const std::vector<SSAValue*> GetOperands() const { return mOperands; }
+            const std::vector<SSAValue>& GetOperands() const { return mOperands; }
 
             /*
             * TODO
             */
-            SSAValue* GetReturnValue() const { assert(!mOperands.empty()); return mOperands.front(); }
+            SSAValue GetReturnValue() const { assert(!mOperands.empty()); return mOperands.front(); }
 
             /*
             * TODO
@@ -93,7 +93,7 @@ namespace TosLang
         private:
             Operation mOp;
             BasicBlock<SSAInstruction>* mBlock;     /*!< Block containing the instruction */
-            std::vector<SSAValue*> mOperands;       /*!< Operands of the instructions */
+            std::vector<SSAValue> mOperands;        /*!< Operands of the instructions */
             std::vector<SSAInstruction*> mUsers;    /*!< Others instructions using the value produced by this instruction */
             SSAValue mVal;                          /*!< Value produced by the instruction */
         };

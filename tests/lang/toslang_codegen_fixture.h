@@ -40,7 +40,7 @@ struct TosLangCodegenFixture
     * \param inputFile  Name of a file containing a TosLang AST
     * \param outputFile Name of the file to output the TosLang CFG
     */
-    void GenerateProgramCFG(const std::string& inputFile, const std::string& outputFile)
+    void GenerateProgramCFG(const std::string& inputFile, const std::string&)
     {
         auto symTable = std::make_shared<SymbolTable>();
         size_t errorCount = GetProgramSymbolTable(inputFile, symTable);

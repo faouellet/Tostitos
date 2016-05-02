@@ -66,7 +66,7 @@ void CFGBuilder::HandleFunctionDecl(const ASTNode* decl)
         SSAValue ssaVal{ mNextID++ };
         mCurrentFunction->AddArguments(ssaVal);
         WriteVariable(paramSymbol, mCurrentBlock, 
-                      &mCurrentFunction->GetArgument(mCurrentFunction->GetNbArguments()));
+                      mCurrentFunction->GetArgument(mCurrentFunction->GetNbArguments()));
     }
 
     HandleCompoundStmt(fDecl->GetBody());
@@ -101,28 +101,56 @@ void CFGBuilder::HandleVarDecl(const ASTNode* decl)
         assert(symFound);
 
         SSAValue varVal{};
-        WriteVariable(varSym, mCurrentBlock, &varVal);
-        SSAValue* initVal = ReadVariable(varSym, mCurrentBlock);
+        WriteVariable(varSym, mCurrentBlock, varVal);
+        SSAValue initVal = ReadVariable(varSym, mCurrentBlock);
 
         // Generate an assignment to the SSA variable
         SSAInstruction ssaInst{ SSAInstruction::Operation::MOV, mNextID++ };
         ssaInst.AddOperand(ReadVariable(varSym, mCurrentBlock));
         ssaInst.AddOperand(initVal);
     
-        mCurrentBlock->InsertInstruction(ssaInst);
+        // Add the instruction to the program
+        AddInstruction(ssaInst);
     }
 }
 
 // Expressions
-SSAInstruction* CFGBuilder::HandleExpr(const Expr* expr)
+const SSAInstruction* CFGBuilder::HandleExpr(const Expr* expr)
 {
+    const SSAInstruction* exprInst;
+
     switch (expr->GetKind())
     {
+    case ASTNode::NodeKind::BOOLEAN_EXPR:
+    {
+        const BooleanExpr* bExpr = dynamic_cast<const BooleanExpr*>(expr);
+        assert(bExpr != nullptr);
+
+        SSAInstruction ssaInst{ SSAInstruction::Operation::MOV, mNextID++ };
+        ssaInst.AddOperand(SSAValue{ mNextID++, bExpr->GetValue() });
+        
+        exprInst = AddInstruction(ssaInst);
+    }        
+        break;
     case ASTNode::NodeKind::BINARY_EXPR:
-        HandleBinaryExpr(expr);
+        exprInst = HandleBinaryExpr(expr);
         break;
     case ASTNode::NodeKind::CALL_EXPR:
         HandleCallExpr(expr);
+        // Since a function can't be called outside of another function, 
+        // it is safe to get the terminator of the current basic block
+        exprInst = mCurrentBlock->GetTerminator();
+        break;
+    case ASTNode::NodeKind::NUMBER_EXPR:
+    {
+        const NumberExpr* nExpr = dynamic_cast<const NumberExpr*>(expr);
+        assert(nExpr != nullptr);
+
+        SSAInstruction ssaInst{ SSAInstruction::Operation::MOV, mNextID++ };
+        ssaInst.AddOperand(SSAValue{ mNextID++, nExpr->GetValue() });
+        
+        exprInst = AddInstruction(ssaInst);
+    }
         break;
     case ASTNode::NodeKind::STRING_EXPR:
     {
@@ -138,21 +166,19 @@ SSAInstruction* CFGBuilder::HandleExpr(const Expr* expr)
         //             .AddRegOperand(GetOrInsertNodeRegister(expr))
         //             .AddStackSlotOperand(memSlot);
         //
-        //if (mCurrentBlock != nullptr)
-        //    mCurrentBlock->InsertInstruction(vInst);
-        //else
-        //    mMod->InsertGlobalVar(vInst);
+        //AddInstruction(ssaInst);
     }
         break;
     default:
         assert(false && "Unknown expression node");
+        expr = nullptr;
         break;
     }
 
-    return nullptr;
+    return exprInst;
 }
 
-void CFGBuilder::HandleBinaryExpr(const ASTNode* expr)
+const SSAInstruction* CFGBuilder::HandleBinaryExpr(const ASTNode* expr)
 {
     const BinaryOpExpr* bExpr = dynamic_cast<const BinaryOpExpr*>(expr);
     assert(bExpr != nullptr);
@@ -205,22 +231,19 @@ void CFGBuilder::HandleBinaryExpr(const ASTNode* expr)
         break;
     }
 
+    // A match should have been found
     assert(op != SSAInstruction::Operation::UNKNOWN);
 
     // Handle the expression's operands
-    SSAInstruction* lhsInst = HandleExpr(bExpr->GetLHS());
-    SSAInstruction* rhsInst = HandleExpr(bExpr->GetRHS());
-
+    const SSAInstruction* lhsInst = HandleExpr(bExpr->GetLHS());
+    const SSAInstruction* rhsInst = HandleExpr(bExpr->GetRHS());
+        
     SSAInstruction ssaInst{ op, mNextID++ };
     ssaInst.AddOperand(lhsInst->GetReturnValue());
     ssaInst.AddOperand(rhsInst->GetReturnValue());
 
-    // Generate the virtual instruction
-    if (mCurrentBlock != nullptr)
-        mCurrentBlock->InsertInstruction(ssaInst);
-    else
-        mMod->InsertGlobalVar(ssaInst);
-    
+    // Add the instruction to the program
+    return AddInstruction(ssaInst);    
 }
 
 void CFGBuilder::HandleCallExpr(const ASTNode* expr) 
@@ -313,7 +336,7 @@ void CFGBuilder::HandleIfStmt(const ASTNode* stmt)
     
     // Creating the branch instruction
     SSAInstruction brCondThenInst{ SSAInstruction::Operation::BR, mNextID++ };
-    brCondThenInst.AddOperand((*--condBlock->inst_end()).GetReturnValue());
+    brCondThenInst.AddOperand(condBlock->GetTerminator()->GetReturnValue());
     condBlock->InsertInstruction(brCondThenInst);
 
     // Introduce branches to the condition block
@@ -322,7 +345,7 @@ void CFGBuilder::HandleIfStmt(const ASTNode* stmt)
     
     // Generating a branch instruction from the then (body) end block to the exit block
     SSAInstruction brThenExitInst{ SSAInstruction::Operation::BR, mNextID++ };
-    brCondThenInst.AddOperand((*--thenEndBlock->inst_end()).GetReturnValue());
+    brCondThenInst.AddOperand(condBlock->GetTerminator()->GetReturnValue());
     thenEndBlock->InsertInstruction(brCondThenInst);
 
     // Unconditional branch
@@ -349,7 +372,7 @@ void CFGBuilder::HandleReturnStmt(const ASTNode* stmt)
     const Expr* rExpr = rStmt->GetReturnExpr();
     if (rExpr != nullptr)
     {
-        SSAInstruction* ssaInst = HandleExpr(rExpr);
+        const SSAInstruction* ssaInst = HandleExpr(rExpr);
         retInst.AddOperand(ssaInst->GetReturnValue());
     }
 
@@ -389,7 +412,7 @@ void CFGBuilder::HandleWhileStmt(const ASTNode* stmt)
 
     // Creating the branch instruction
     SSAInstruction brHeaderBodyInst{ SSAInstruction::Operation::BR, mNextID++ };
-    brHeaderBodyInst.AddOperand((*--headerBlock->inst_end()).GetReturnValue());
+    brHeaderBodyInst.AddOperand(headerBlock->GetTerminator()->GetReturnValue());
     headerBlock->InsertInstruction(brHeaderBodyInst);
 
     // Inserts branches going out of the condition block
@@ -400,6 +423,19 @@ void CFGBuilder::HandleWhileStmt(const ASTNode* stmt)
     bodyEndBlock->InsertBranch(headerBlock);
 }
 
+const SSAInstruction* CFGBuilder::AddInstruction(const SSAInstruction& inst)
+{
+    if (mCurrentBlock != nullptr)
+    {
+        mCurrentBlock->InsertInstruction(inst);
+        return mCurrentBlock->GetTerminator();
+    }
+    else
+    {
+        return mMod->InsertGlobalVar(inst);
+    }
+}
+
 void CFGBuilder::CreateNewCurrentBlock(SSAInstList&& insts)
 {
     // An empty block is still good to go
@@ -407,7 +443,7 @@ void CFGBuilder::CreateNewCurrentBlock(SSAInstList&& insts)
         return;
     
     // Don't create a new block when the current one isn't properly terminated i.e. there's no branch at the end
-    SSAInstruction::Operation lastInstOp = (--mCurrentBlock->inst_end())->GetOperation();
+    SSAInstruction::Operation lastInstOp = mCurrentBlock->GetTerminator()->GetOperation();
     if (lastInstOp == SSAInstruction::Operation::BR
         || lastInstOp == SSAInstruction::Operation::RET)
         return;
@@ -417,12 +453,12 @@ void CFGBuilder::CreateNewCurrentBlock(SSAInstList&& insts)
     mCurrentBlock = newBlock.get();
 }
 
-void CFGBuilder::WriteVariable(const Symbol* variable, const SSABlock* block, SSAValue* value)
+void CFGBuilder::WriteVariable(const Symbol* variable, const SSABlock* block, const SSAValue& value)
 {
     mCurrentVarDef[variable][block] = value;
 }
 
-SSAValue* CFGBuilder::ReadVariable(const Symbol* variable, const SSABlock* block)
+SSAValue CFGBuilder::ReadVariable(const Symbol* variable, const SSABlock* block)
 {
     auto varIt = mCurrentVarDef[variable].find(block);
     if (varIt != mCurrentVarDef[variable].end())
@@ -431,17 +467,17 @@ SSAValue* CFGBuilder::ReadVariable(const Symbol* variable, const SSABlock* block
         return ReadVariableRecursive(variable, block);
 }
 
-SSAValue* CFGBuilder::ReadVariableRecursive(const Symbol* variable, const SSABlock* block)
+SSAValue CFGBuilder::ReadVariableRecursive(const Symbol* variable, const SSABlock* block)
 {
     SSAInstruction* ssaInst;
-    SSAValue* ssaVal;
+    SSAValue ssaVal;
 
     auto sealedIt = mSealedBlocks.find(block);
     if (sealedIt != mSealedBlocks.end())
     {
         // Incomplete CFG
         mCurrentBlock->InsertInstruction(SSAInstruction{ SSAInstruction::Operation::PHI, mNextID++ });
-        ssaInst = &*(--mCurrentBlock->inst_end());
+        ssaInst = mCurrentBlock->GetTerminator();
         mIncompletePHIs[block][variable] = ssaInst;
     }
     else if (mCurrentBlock->GetPredecessors().size() == 1)
@@ -453,7 +489,7 @@ SSAValue* CFGBuilder::ReadVariableRecursive(const Symbol* variable, const SSABlo
     {
         // Break potential cycles with operandless PHI
         mCurrentBlock->InsertInstruction(SSAInstruction{ SSAInstruction::Operation::PHI, mNextID++ });
-        ssaInst = &*(--mCurrentBlock->inst_end());
+        ssaInst = mCurrentBlock->GetTerminator();
         WriteVariable(variable, block, ssaVal);
         ssaVal = AddPHIOperand(variable, ssaInst);
     }
@@ -463,7 +499,7 @@ SSAValue* CFGBuilder::ReadVariableRecursive(const Symbol* variable, const SSABlo
     return ssaVal;
 }
 
-SSAValue* CFGBuilder::AddPHIOperand(const Symbol* variable, SSAInstruction* phi)
+SSAValue CFGBuilder::AddPHIOperand(const Symbol* variable, SSAInstruction* phi)
 {
     for (auto predIt = phi->GetBlock()->pred_begin(), predEnd = phi->GetBlock()->pred_end(); predIt != predEnd; ++predIt)
         phi->AddOperand(ReadVariable(variable, predIt->get()));
@@ -471,15 +507,16 @@ SSAValue* CFGBuilder::AddPHIOperand(const Symbol* variable, SSAInstruction* phi)
     return TryRemoveTrivialPHI(phi);
 }
 
-SSAValue* CFGBuilder::TryRemoveTrivialPHI(SSAInstruction* phi)
+SSAValue CFGBuilder::TryRemoveTrivialPHI(SSAInstruction* phi)
 {
-    SSAValue* same = nullptr;
+    const SSAValue none{};
+    SSAValue same{};
 
     for (auto& op : phi->GetOperands())
     {
-        if (same == phi->GetReturnValue())
+        if ((op == same) || (op == phi->GetReturnValue()))
             continue;   // Unique value or self-reference
-        if (op != nullptr)
+        if (same != none)
             return phi->GetReturnValue(); // The phi merges at least two values: not trivial
         same = op;
     }

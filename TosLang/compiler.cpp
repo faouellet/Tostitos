@@ -6,6 +6,7 @@
 #include "Sema/symbolcollector.h"
 #include "Sema/symboltable.h"
 #include "Sema/typechecker.h"
+#include "SSA/cfgbuilder.h"
 #include "Utils/astprinter.h"
 
 #ifdef USE_LLVM_BACKEND
@@ -26,6 +27,8 @@ Compiler::Compiler()
 
     mSymCollector.reset(new SymbolCollector{ mSymTable });
     mTChecker.reset(new TypeChecker{});
+
+    mBuilder.reset(new CFGBuilder{});
 
     //mISel.reset(new BackEnd::InstructionSelector{});
 
@@ -72,11 +75,11 @@ void Compiler::DumpCFG(const std::string& programFile)
     if (errorCount != 0)
         return;
 
-    /*std::unique_ptr<Module> module = mISel->Run(programAST, mSymTable);
+    std::unique_ptr<SSAModule> module = mBuilder->Run(programAST, mSymTable);
     if (module == nullptr)
         return;
 
-    module->Print(std::cout);*/
+    module->Print(std::cout);
 }
 
 #ifdef USE_LLVM_BACKEND

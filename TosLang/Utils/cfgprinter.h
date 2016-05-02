@@ -20,7 +20,7 @@ namespace TosLang
 
                 for (auto instIt = block->inst_begin(), instEnd = block->inst_end(); instIt != instEnd; ++instIt)
                 {
-                    mStream << "\t" << *instIt << std::endl;;
+                    mStream << "\t" << **instIt << std::endl;;
                 }
 
                 mStream << std::endl;
@@ -30,7 +30,7 @@ namespace TosLang
             OS& mStream;
         };
 
-        template <class InstT, class OS>
+        template <class OS, class InstT>
         using CFGPrinter = Common::CFGVisitor<InstT, PrintAction<InstT, OS>>;
     }
 }

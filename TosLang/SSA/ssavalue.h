@@ -32,6 +32,7 @@ namespace TosLang
         public:
             friend std::ostream& operator<<(std::ostream& stream, const SSAValue& ssaVal);
             friend bool operator==(const SSAValue& lhsVal, const SSAValue& rhsVal);
+            friend bool operator!=(const SSAValue& lhsVal, const SSAValue& rhsVal);
 
         protected:
             ValueKind mKind;

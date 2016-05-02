@@ -17,6 +17,7 @@ namespace TosLang
 
     namespace BackEnd
     {
+        class CFGBuilder;
         //class InstructionSelector;
         class LLVMGenerator;
     }
@@ -87,6 +88,7 @@ namespace TosLang
         std::unique_ptr<FrontEnd::Parser> mParser;                  /*!< Parser */
         std::unique_ptr<FrontEnd::SymbolCollector> mSymCollector;   /*!< Symbol collector */
         std::unique_ptr<FrontEnd::TypeChecker> mTChecker;           /*!< Type checker */
+        std::unique_ptr<BackEnd::CFGBuilder> mBuilder;              /*!< CFG Builder */
         //std::unique_ptr<BackEnd::InstructionSelector> mISel;        /*!< Instruction selector */
 
 #ifdef USE_LLVM_BACKEND

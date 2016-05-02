@@ -49,8 +49,8 @@ namespace TosLang
             }
 
         public:
-            using inst_iterator = typename std::vector<InstT>::iterator;
-            using inst_const_iterator = typename std::vector<InstT>::const_iterator;
+            using inst_iterator = typename std::vector<std::unique_ptr<InstT>>::iterator;
+            using inst_const_iterator = typename std::vector<std::shared_ptr<InstT>>::const_iterator;
 
             using bb_iterator = typename BlockList<InstT>::iterator;
             using bb_const_iterator = typename BlockList<InstT>::const_iterator;
@@ -93,14 +93,14 @@ namespace TosLang
             * \brief        Appends a virtual instruction to the basic block
             * \param inst   Instruction to be added
             */
-            void InsertInstruction(InstT&& inst) { mInstructions.push_back(inst); }
+            void InsertInstruction(InstT&& inst) { mInstructions.emplace_back(std::make_unique<InstT>(inst)); }
 
             /*
             * \fn           InsertInstruction
             * \brief        Appends a virtual instruction to the basic block
             * \param inst   Instruction to be added
             */
-            void InsertInstruction(const InstT& inst) { mInstructions.push_back(inst); }
+            void InsertInstruction(const InstT& inst) { mInstructions.emplace_back(std::make_unique<InstT>(inst)); }
 
             /*
             * \fn               ReplaceInstruction
@@ -108,13 +108,18 @@ namespace TosLang
             * \param oldInst    Old instruction
             * \param newInst    Instruction to replace to old one
             */
-            void ReplaceInstruction(const InstT& oldInst,  const InstT& newInst) 
+            void ReplaceInstruction(const InstT& oldInst, const InstT& newInst)
             {
-                auto instIt = std::find(mInstructions.begin(), mInstructions.end(), oldInst);
+                auto instIt = std::find_if(mInstructions.begin(), mInstructions.end(), 
+                                           [&oldInst](const std::unique_ptr<InstT>& inst) 
+                                           { 
+                                               return *inst == oldInst;
+                                           });
+
                 if (instIt != mInstructions.end())
                 {
                     const size_t instIdx = std::distance(mInstructions.begin(), instIt);
-                    mInstructions[instIdx] = newInst;
+                    mInstructions[instIdx] = std::make_unique<InstT>(newInst);
                 }
             }
 
@@ -134,6 +139,13 @@ namespace TosLang
             size_t GetNbInstructions() const { return mInstructions.size(); }
 
             /*
+            * \fn       GetPredecessors
+            * \brief    Gives access to the block's predecessors
+            * \return   The block's predecessors
+            */
+            const BlockList<InstT>& GetPredecessors() const { return mPredBlocks; }
+
+            /*
             * \fn       GetSuccessors
             * \brief    Gives access to the block's successors
             * \return   The block's successors
@@ -141,17 +153,15 @@ namespace TosLang
             const BlockList<InstT>& GetSuccessors() const { return mSuccBlocks; }
 
             /*
-            * \fn       GetPredecessors
-            * \brief    Gives access to the block's predecessors
-            * \return   The block's predecessors
+            * TODO
             */
-            const BlockList<InstT>& GetPredecessors() const { return mPredBlocks; }
+            InstT* GetTerminator() const { return mInstructions.back().get(); }
 
         private:
-            std::vector<InstT> mInstructions;   /*!< Instructions making up the basic block */
-            BlockList<InstT> mSuccBlocks;       /*!< List of blocks pointed to by the outgoing edges of the block */
-            BlockList<InstT> mPredBlocks;       /*!< List of blocks that points to the block */
-            std::string mName;                  /*<! Name of the basic block. For printing and debugginf purposes */
+            std::vector<std::unique_ptr<InstT>> mInstructions;  /*!< Instructions making up the basic block */
+            BlockList<InstT> mSuccBlocks;                       /*!< List of blocks pointed to by the outgoing edges of the block */
+            BlockList<InstT> mPredBlocks;                       /*!< List of blocks that points to the block */
+            std::string mName;                                  /*<! Name of the basic block. For printing and debugginf purposes */
         };
     }
 }

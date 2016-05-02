@@ -33,6 +33,12 @@ namespace TosLang
             iterator end() { return mFuncCFGs.end(); }
             const_iterator begin() const  { return mFuncCFGs.begin(); }
             const_iterator end() const { return mFuncCFGs.end(); }
+
+        public:
+            Module()
+            {
+                mGlobalBlock.reset(new BasicBlock<InstT>{"Global"});
+            }
             
         public:
             const CFGPtr<InstT>& GetFunction(const std::string& name) const
@@ -54,9 +60,11 @@ namespace TosLang
             void Print(OS& stream) const
             {
                 // TODO: Print global variables
+                for (auto instIt = mGlobalBlock->inst_begin(), instEnd = mGlobalBlock->inst_end(); instIt != instEnd; ++instIt)
+                    stream << **instIt << std::endl;
 
                 // Print the CFGs
-                Utils::CFGPrinter<std::ostream, InstT> printer{ stream };
+                Utils::CFGPrinter<OS, InstT> printer{ stream };
                 for (auto& funcCFG : mFuncCFGs)
                 {
                     stream << "CFG for " << funcCFG.first << ":\n";
@@ -82,13 +90,15 @@ namespace TosLang
             * \brief        Inserts a global variable in the module
             * \param name   The name of the variable
             */
-            void InsertGlobalVar(const InstT& inst)
+            const InstT* InsertGlobalVar(const InstT& inst)
             {
-                //mFuncCFGs.begin()->
+                mGlobalBlock->InsertInstruction(inst);
+                return mGlobalBlock->GetTerminator();
             }
 
         private:
             FunctionCFGs<InstT> mFuncCFGs;  /*!< Functions in the translation unit. TODO: First == globals container? */
+            BlockPtr<InstT> mGlobalBlock;          /*!< TODO */
         };
     }
 }
