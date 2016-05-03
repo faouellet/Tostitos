@@ -78,7 +78,7 @@ namespace TosLang
             /*
             * TODO
             */
-            SSAValue GetReturnValue() const { assert(!mOperands.empty()); return mOperands.front(); }
+            SSAValue GetReturnValue() const { return mVal; }
 
             /*
             * TODO

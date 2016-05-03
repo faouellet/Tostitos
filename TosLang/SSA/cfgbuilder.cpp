@@ -93,24 +93,15 @@ void CFGBuilder::HandleVarDecl(const ASTNode* decl)
     // TODO: Handle String and arrays
     if (initExpr != nullptr)
     {
-        HandleExpr(initExpr);
+        const SSAInstruction* initInst = HandleExpr(initExpr);
 
         const Symbol* varSym;
         bool symFound;
         std::tie(symFound, varSym) = mSymTable->TryGetSymbol(vDecl);
         assert(symFound);
 
-        SSAValue varVal{};
-        WriteVariable(varSym, mCurrentBlock, varVal);
-        SSAValue initVal = ReadVariable(varSym, mCurrentBlock);
-
         // Generate an assignment to the SSA variable
-        SSAInstruction ssaInst{ SSAInstruction::Operation::MOV, mNextID++ };
-        ssaInst.AddOperand(ReadVariable(varSym, mCurrentBlock));
-        ssaInst.AddOperand(initVal);
-    
-        // Add the instruction to the program
-        AddInstruction(ssaInst);
+        WriteVariable(varSym, mCurrentBlock, initInst->GetReturnValue());
     }
 }
 

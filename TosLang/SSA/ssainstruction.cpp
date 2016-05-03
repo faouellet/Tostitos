@@ -1,5 +1,6 @@
 #include "ssainstruction.h"
 
+#include <string>
 #include <type_traits>
 
 using namespace TosLang::BackEnd;
@@ -10,6 +11,7 @@ std::string OperationToStr(const SSAInstruction::Operation& operation)
     {
     case SSAInstruction::Operation::PHI: return "PHI";
     case SSAInstruction::Operation::BR: return "BR";
+    case SSAInstruction::Operation::MOV: return "MOV";
     case SSAInstruction::Operation::CALL: return "CALL";
     case SSAInstruction::Operation::RET: return "RET";
     case SSAInstruction::Operation::ADD: return "ADD";
@@ -33,10 +35,12 @@ std::string OperationToStr(const SSAInstruction::Operation& operation)
 
 std::ostream& TosLang::BackEnd::operator<<(std::ostream& stream, const SSAInstruction& ssaInst)
 {
-    stream << static_cast<std::underlying_type_t<SSAInstruction::Operation>>(ssaInst.mOp);
+    stream << OperationToStr(ssaInst.mOp) << " ";
 
     for (const auto& operand : ssaInst.mOperands)
-        stream << ", " << operand;
+        stream << operand << ", ";
+
+    stream << ssaInst.mVal;
 
     return stream;
 }
