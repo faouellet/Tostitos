@@ -18,16 +18,16 @@ BOOST_AUTO_TEST_CASE( LexerBadInitTest )
 {
     Lexer lex;
     BOOST_REQUIRE(!lex.Init("BadFile.tos"));
-    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 0);
-    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 0);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 0U);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 0U);
 }
 
 BOOST_AUTO_TEST_CASE( LexerBadStrLitTest )
 {
     Lexer lex;
     BOOST_REQUIRE(lex.Init("../programs/var/bad_string_literal.tos"));
-    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
-    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1U);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1U);
 
     // var MyVar1: String = "Hel
     // lo";
@@ -66,8 +66,8 @@ BOOST_AUTO_TEST_CASE( LexerBadVarNameTest )
 {
     Lexer lex;
     BOOST_REQUIRE(lex.Init("../programs/var/bad_var_name.tos"));
-    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
-    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1U);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1U);
 
     // var 1Var: Int = 1;
     BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::VAR);
@@ -87,8 +87,8 @@ BOOST_AUTO_TEST_CASE( LexerBadMLCommentTest )
 {
     Lexer lex;
     BOOST_REQUIRE(lex.Init("../programs/comment/bad_ml_comment.tos"));
-    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1);
-    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentLine(), 1U);
+    BOOST_REQUIRE_EQUAL(lex.GetCurrentLocation().GetCurrentColumn(), 1U);
 
     // /* This is an unclosed multiline comment
     BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::UNKNOWN);
@@ -99,7 +99,7 @@ BOOST_AUTO_TEST_CASE( LexerBadMLCommentTest )
     std::vector<std::string> messages{ GetErrorMessages() };
 
     // Check if the correct error messages got printed
-    BOOST_REQUIRE_EQUAL(messages.size(), 1);
+    BOOST_REQUIRE_EQUAL(messages.size(), 1U);
     BOOST_REQUIRE_EQUAL(messages[0], "ERROR: Unclosed multiline comment at line 1, column 1");
 }
 
