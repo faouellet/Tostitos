@@ -11,7 +11,7 @@ using namespace TosLang::FrontEnd;
 bool Lexer::Init(const std::string& filename)
 {
     std::ifstream stream(filename);
-    if (stream.is_open())
+    if (stream)
     {
         mBuffer.assign(std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>());
         mBufferIt = mBuffer.begin();
@@ -24,7 +24,7 @@ bool Lexer::Init(const std::string& filename)
 Lexer::Token Lexer::GetNextToken()
 {
     // Skipping any whitespaces
-    while (mBufferIt != mBuffer.end() && isspace(*mBufferIt))
+    while (mBufferIt != mBuffer.end() && isspace(*mBufferIt, mLoc))
     {
         mSrcLoc.Advance(*mBufferIt == '\n');
         ++mBufferIt;
@@ -193,10 +193,10 @@ Lexer::Token Lexer::GetNextToken()
 		}
 	default:
 		// We have and identifier or a keyword
-		if (isalpha(currentChar))
+		if (isalpha(currentChar, mLoc))
 		{
 			mCurrentStr = currentChar;
-			while (++mBufferIt != mBuffer.end() && isalnum(*mBufferIt))
+			while (++mBufferIt != mBuffer.end() && isalnum(*mBufferIt, mLoc))
 			{
 				mCurrentStr += *mBufferIt;
                 mSrcLoc.Advance();
@@ -248,15 +248,15 @@ Lexer::Token Lexer::GetNextToken()
 				return Token::IDENTIFIER;
 		}
 		// We have a numeric value
-		else if (isdigit(currentChar))
+		else if (isdigit(currentChar, mLoc))
 		{
 			std::string numberStr;
 			do
 			{
 				numberStr += *mBufferIt;
-			} while (isdigit(*(++mBufferIt)));
+			} while (isdigit(*(++mBufferIt), mLoc));
 
-            if (isalpha(*mBufferIt))
+            if (isalpha(*mBufferIt, mLoc))
             {
                 // Error: letter in a number
                 Utils::ErrorLogger::PrintErrorAtLocation(Utils::ErrorLogger::ErrorType::NUMBER_BAD_SUFFIX, mSrcLoc);

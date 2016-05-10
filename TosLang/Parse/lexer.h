@@ -4,6 +4,7 @@
 #include "../Common/type.h"
 #include "../Utils/sourceloc.h"
 
+#include <locale>
 #include <string>
 
 namespace TosLang
@@ -79,8 +80,7 @@ namespace TosLang
             };
 
         public:
-            Lexer() : mCurrentType{ Common::Type::ERROR }, mCurrentNumber{ 0 } { };
-            ~Lexer() = default;
+            Lexer() : mCurrentType{ Common::Type::ERROR }, mCurrentNumber{ 0 }, mLoc{ "" } { };
 
         public:
             /*
@@ -103,7 +103,7 @@ namespace TosLang
             * \brief    Gives the current type
             * \return   The current type
             */
-            const Common::Type GetCurrentType() const { return mCurrentType; }
+            Common::Type GetCurrentType() const { return mCurrentType; }
 
             /*
             * \fn       GetCurrentLocation
@@ -117,7 +117,7 @@ namespace TosLang
             * \brief    Gives the current number
             * \return   The current number
             */
-            const int GetCurrentNumber() const { return mCurrentNumber; }
+            int GetCurrentNumber() const { return mCurrentNumber; }
 
             /*
             * \fn       GetCurrentStr
@@ -135,6 +135,7 @@ namespace TosLang
 
             std::string mBuffer;                /*!< The lexer buffer */
             std::string::iterator mBufferIt;    /*!< Iterator of the lexer buffer */
+            std::locale mLoc;                   /*!< The source locale */
         };
     }
 }
