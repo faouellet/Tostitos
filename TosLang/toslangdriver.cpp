@@ -1,4 +1,4 @@
-#include "compiler.h"
+#include "toslangdriver.h"
 
 //#include "CodeGen/instructionselector.h"
 #include "CFG/module.h"
@@ -19,7 +19,7 @@ using namespace TosLang;
 using namespace TosLang::BackEnd;
 using namespace TosLang::FrontEnd;
 
-Compiler::Compiler()
+TosLangDriver::TosLangDriver()
 {
     mParser.reset(new Parser{});
     
@@ -28,7 +28,7 @@ Compiler::Compiler()
     mSymCollector.reset(new SymbolCollector{ mSymTable });
     mTChecker.reset(new TypeChecker{});
 
-    mBuilder.reset(new CFGBuilder{});
+    //mBuilder.reset(new CFGBuilder{});
 
     //mISel.reset(new BackEnd::InstructionSelector{});
 
@@ -37,9 +37,9 @@ Compiler::Compiler()
 #endif
 }
 
-Compiler::~Compiler() { }   // Required because of the forward declarations used in the header for our member pointers
+TosLangDriver::~TosLangDriver() { }   // Required because of the forward declarations used in the header for our member pointers
 
-void Compiler::Compile(const std::string& programFile)
+void TosLangDriver::Compile(const std::string& programFile)
 {
     auto programAST = ParseProgram(programFile);
     if (programAST == nullptr)
@@ -54,7 +54,7 @@ void Compiler::Compile(const std::string& programFile)
         return;
 }
 
-void Compiler::DumpAST(const std::string& programFile)
+void TosLangDriver::DumpAST(const std::string& programFile)
 {
     auto programAST = ParseProgram(programFile);
     if (programAST == nullptr)
@@ -65,22 +65,22 @@ void Compiler::DumpAST(const std::string& programFile)
     printer.Run(programAST);
 }
 
-void Compiler::DumpCFG(const std::string& programFile)
-{
-    auto programAST = ParseProgram(programFile);
-    if (programAST == nullptr)
-        return;
-
-    size_t errorCount = mSymCollector->Run(programAST);
-    if (errorCount != 0)
-        return;
-
-    std::unique_ptr<SSAModule> module = mBuilder->Run(programAST, mSymTable);
-    if (module == nullptr)
-        return;
-
-    module->Print(std::cout);
-}
+//void TosLangDriver::DumpCFG(const std::string& programFile)
+//{
+//    auto programAST = ParseProgram(programFile);
+//    if (programAST == nullptr)
+//        return;
+//
+//    size_t errorCount = mSymCollector->Run(programAST);
+//    if (errorCount != 0)
+//        return;
+//
+//    std::unique_ptr<SSAModule> module = mBuilder->Run(programAST, mSymTable);
+//    if (module == nullptr)
+//        return;
+//
+//    module->Print(std::cout);
+//}
 
 #ifdef USE_LLVM_BACKEND
 void Compiler::DumpLLVMIR(const std::string& programFile)
@@ -99,7 +99,7 @@ void Compiler::DumpLLVMIR(const std::string& programFile)
 }
 #endif
 
-std::unique_ptr<ASTNode> TosLang::Compiler::ParseProgram(const std::string & programFile)
+std::unique_ptr<ASTNode> TosLangDriver::ParseProgram(const std::string & programFile)
 {
     return mParser->ParseProgram(programFile);
 }

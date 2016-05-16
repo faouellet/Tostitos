@@ -17,29 +17,29 @@ namespace TosLang
 
     namespace BackEnd
     {
-        class CFGBuilder;
+        //class CFGBuilder;
         //class InstructionSelector;
         class LLVMGenerator;
     }
 
     /*
-    * \class Compiler
-    * \brief The TosLang compiler
+    * \class TosLangDriver
+    * \brief The TosLang driver
     */
-    class Compiler
+    class TosLangDriver
     {
     public:
         /*
-        * \fn Compiler
+        * \fn TosLangDriver
         * \brief Ctor
         */
-        Compiler();
+        TosLangDriver();
 
         /*
-        * \fn ~Compiler
+        * \fn ~TosLangDriver
         * \brief Dtor
         */
-        ~Compiler();
+        ~TosLangDriver();
 
     public:
         /*
@@ -62,7 +62,7 @@ namespace TosLang
         * \brief                Dumps the program's CFG to stdout
         * \param programFile    Name (including path) of the .tos file to compile
         */
-        void DumpCFG(const std::string& programFile);
+        //void DumpCFG(const std::string& programFile);
         
 #ifdef USE_LLVM_BACKEND
         /*
@@ -88,7 +88,7 @@ namespace TosLang
         std::unique_ptr<FrontEnd::Parser> mParser;                  /*!< Parser */
         std::unique_ptr<FrontEnd::SymbolCollector> mSymCollector;   /*!< Symbol collector */
         std::unique_ptr<FrontEnd::TypeChecker> mTChecker;           /*!< Type checker */
-        std::unique_ptr<BackEnd::CFGBuilder> mBuilder;              /*!< CFG Builder */
+        //std::unique_ptr<BackEnd::CFGBuilder> mBuilder;              /*!< CFG Builder */
         //std::unique_ptr<BackEnd::InstructionSelector> mISel;        /*!< Instruction selector */
 
 #ifdef USE_LLVM_BACKEND
