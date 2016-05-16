@@ -47,7 +47,8 @@ namespace TosLang
             };
 
         public:
-            SSAInstruction(Operation op, size_t valID) : mOp{ op }, mVal{ valID } { }
+            SSAInstruction(Operation op, size_t valID, BasicBlock<SSAInstruction>* parentBlock) 
+                : mOp{ op }, mVal{ valID }, mBlock{ parentBlock } { }
             virtual ~SSAInstruction() = default;
 
         public:

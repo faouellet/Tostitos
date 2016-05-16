@@ -117,7 +117,7 @@ const SSAInstruction* CFGBuilder::HandleExpr(const Expr* expr)
         const BooleanExpr* bExpr = dynamic_cast<const BooleanExpr*>(expr);
         assert(bExpr != nullptr);
 
-        SSAInstruction ssaInst{ SSAInstruction::Operation::MOV, mNextID++ };
+        SSAInstruction ssaInst{ SSAInstruction::Operation::MOV, mNextID++, mCurrentBlock };
         ssaInst.AddOperand(SSAValue{ mNextID++, bExpr->GetValue() });
         
         exprInst = AddInstruction(ssaInst);
@@ -132,12 +132,25 @@ const SSAInstruction* CFGBuilder::HandleExpr(const Expr* expr)
         // it is safe to get the terminator of the current basic block
         exprInst = mCurrentBlock->GetTerminator();
         break;
+    case ASTNode::NodeKind::IDENTIFIER_EXPR:
+    {
+        bool symFound;
+        const Symbol* identSym;
+        std::tie(symFound, identSym) = mSymTable->TryGetSymbol(expr);
+        assert(symFound);
+
+        SSAInstruction ssaInst{ SSAInstruction::Operation::MOV, mNextID++, mCurrentBlock };
+        ssaInst.AddOperand(ReadVariable(identSym, mCurrentBlock));
+
+        exprInst = AddInstruction(ssaInst);
+    }
+        break;
     case ASTNode::NodeKind::NUMBER_EXPR:
     {
         const NumberExpr* nExpr = dynamic_cast<const NumberExpr*>(expr);
         assert(nExpr != nullptr);
 
-        SSAInstruction ssaInst{ SSAInstruction::Operation::MOV, mNextID++ };
+        SSAInstruction ssaInst{ SSAInstruction::Operation::MOV, mNextID++, mCurrentBlock };
         ssaInst.AddOperand(SSAValue{ mNextID++, nExpr->GetValue() });
         
         exprInst = AddInstruction(ssaInst);
@@ -182,6 +195,9 @@ const SSAInstruction* CFGBuilder::HandleBinaryExpr(const ASTNode* expr)
     case Common::Operation::AND_BOOL:
     case Common::Operation::AND_INT:
         op = SSAInstruction::Operation::AND;
+        break;
+    case Common::Operation::ASSIGNMENT:
+        op = SSAInstruction::Operation::MOV;
         break;
     case Common::Operation::DIVIDE:
         op = SSAInstruction::Operation::DIV;
@@ -228,7 +244,7 @@ const SSAInstruction* CFGBuilder::HandleBinaryExpr(const ASTNode* expr)
     const SSAInstruction* lhsInst = HandleExpr(bExpr->GetLHS());
     const SSAInstruction* rhsInst = HandleExpr(bExpr->GetRHS());
         
-    SSAInstruction ssaInst{ op, mNextID++ };
+    SSAInstruction ssaInst{ op, mNextID++, mCurrentBlock };
     ssaInst.AddOperand(lhsInst->GetReturnValue());
     ssaInst.AddOperand(rhsInst->GetReturnValue());
 
@@ -242,7 +258,7 @@ void CFGBuilder::HandleCallExpr(const ASTNode* expr)
     assert(cExpr != nullptr);
 
     // Generate a call instruction
-    SSAInstruction callInst{ SSAInstruction::Operation::CALL, mNextID++ };
+    SSAInstruction callInst{ SSAInstruction::Operation::CALL, mNextID++, mCurrentBlock };
 
     // Add the values of its parameters
     for (const auto& arg : cExpr->GetArgs())
@@ -325,7 +341,7 @@ void CFGBuilder::HandleIfStmt(const ASTNode* stmt)
     CreateNewCurrentBlock();
     
     // Creating the branch instruction
-    SSAInstruction brCondThenInst{ SSAInstruction::Operation::BR, mNextID++ };
+    SSAInstruction brCondThenInst{ SSAInstruction::Operation::BR, mNextID++, mCurrentBlock };
     brCondThenInst.AddOperand(condBlock->GetTerminator()->GetReturnValue());
     condBlock->InsertInstruction(brCondThenInst);
 
@@ -334,7 +350,7 @@ void CFGBuilder::HandleIfStmt(const ASTNode* stmt)
     condBlock->InsertBranch(mCurrentBlock);
     
     // Generating a branch instruction from the then (body) end block to the exit block
-    SSAInstruction brThenExitInst{ SSAInstruction::Operation::BR, mNextID++ };
+    SSAInstruction brThenExitInst{ SSAInstruction::Operation::BR, mNextID++, mCurrentBlock };
     brCondThenInst.AddOperand(condBlock->GetTerminator()->GetReturnValue());
     thenEndBlock->InsertInstruction(brCondThenInst);
 
@@ -357,7 +373,7 @@ void CFGBuilder::HandleReturnStmt(const ASTNode* stmt)
     const ReturnStmt* rStmt = dynamic_cast<const ReturnStmt*>(stmt);
     assert(rStmt != nullptr);
     
-    SSAInstruction retInst{ SSAInstruction::Operation::RET, mNextID++ };
+    SSAInstruction retInst{ SSAInstruction::Operation::RET, mNextID++, mCurrentBlock };
 
     const Expr* rExpr = rStmt->GetReturnExpr();
     if (rExpr != nullptr)
@@ -401,7 +417,7 @@ void CFGBuilder::HandleWhileStmt(const ASTNode* stmt)
     CreateNewCurrentBlock();
 
     // Creating the branch instruction
-    SSAInstruction brHeaderBodyInst{ SSAInstruction::Operation::BR, mNextID++ };
+    SSAInstruction brHeaderBodyInst{ SSAInstruction::Operation::BR, mNextID++, mCurrentBlock };
     brHeaderBodyInst.AddOperand(headerBlock->GetTerminator()->GetReturnValue());
     headerBlock->InsertInstruction(brHeaderBodyInst);
 
@@ -466,7 +482,7 @@ SSAValue CFGBuilder::ReadVariableRecursive(const Symbol* variable, const SSABloc
     if (sealedIt != mSealedBlocks.end())
     {
         // Incomplete CFG
-        mCurrentBlock->InsertInstruction(SSAInstruction{ SSAInstruction::Operation::PHI, mNextID++ });
+        mCurrentBlock->InsertInstruction(SSAInstruction{ SSAInstruction::Operation::PHI, mNextID++, mCurrentBlock });
         ssaInst = mCurrentBlock->GetTerminator();
         mIncompletePHIs[block][variable] = ssaInst;
     }
@@ -478,7 +494,7 @@ SSAValue CFGBuilder::ReadVariableRecursive(const Symbol* variable, const SSABloc
     else
     {
         // Break potential cycles with operandless PHI
-        mCurrentBlock->InsertInstruction(SSAInstruction{ SSAInstruction::Operation::PHI, mNextID++ });
+        mCurrentBlock->InsertInstruction(SSAInstruction{ SSAInstruction::Operation::PHI, mNextID++, mCurrentBlock });
         ssaInst = mCurrentBlock->GetTerminator();
         WriteVariable(variable, block, ssaVal);
         ssaVal = AddPHIOperand(variable, ssaInst);
@@ -513,7 +529,7 @@ SSAValue CFGBuilder::TryRemoveTrivialPHI(SSAInstruction* phi)
 
     // If we are here, it's because phi has been proven trivial and can be 
     // replaced by the one value it had to decide on
-    SSAInstruction newInst{ SSAInstruction::Operation::MOV, mNextID++ };
+    SSAInstruction newInst{ SSAInstruction::Operation::MOV, mNextID++, mCurrentBlock };
     newInst.AddOperand(phi->GetReturnValue());
     
     // Reroute all uses of phi to same 
