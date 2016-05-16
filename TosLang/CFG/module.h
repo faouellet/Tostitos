@@ -60,6 +60,7 @@ namespace TosLang
             void Print(OS& stream) const
             {
                 // TODO: Print global variables
+                stream << "Globals" << std::endl;
                 for (auto instIt = mGlobalBlock->inst_begin(), instEnd = mGlobalBlock->inst_end(); instIt != instEnd; ++instIt)
                     stream << **instIt << std::endl;
 
