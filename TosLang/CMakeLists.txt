@@ -38,7 +38,7 @@ add_library( lang STATIC
 				
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 		
-add_executable (TosLang compiler.h compiler.cpp driver.cpp)
+add_executable (TosLang toslangdriver.h toslangdriver.cpp main.cpp)
 if(${USE_LLVM_BACKEND})
 	llvm_map_components_to_libnames(llvm_libs support core)
 	target_link_libraries(TosLang lang ${llvm_libs})    
