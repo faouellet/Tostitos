@@ -9,8 +9,8 @@ namespace TosLang
         {
             AND_BOOL,
             AND_INT,
+            ASSIGNMENT,
             DIVIDE,
-            EQUAL,
             GREATER_THAN,
             LEFT_SHIFT,
             LESS_THAN,

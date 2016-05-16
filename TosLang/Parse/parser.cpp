@@ -502,7 +502,7 @@ static Operation TokenToOpcode(Lexer::Token tok)
     case TosLang::FrontEnd::Lexer::Token::DIVIDE:
         return Operation::DIVIDE;
     case TosLang::FrontEnd::Lexer::Token::EQUAL:
-        return Operation::EQUAL;
+        return Operation::ASSIGNMENT;
     case TosLang::FrontEnd::Lexer::Token::GREATER_THAN:
         return Operation::GREATER_THAN;
     case TosLang::FrontEnd::Lexer::Token::LEFT_SHIFT:
