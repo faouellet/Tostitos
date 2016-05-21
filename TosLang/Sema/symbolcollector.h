@@ -70,7 +70,7 @@ namespace TosLang
         private:
             size_t mCurrentScopeID;                     /*!< Current scope identifier */
             size_t mErrorCount;                         /*!< Number of errors found by the symbol collector */
-            FunctionDecl* mCurrentFunc;                 /*!< Current traversed function */
+            const FunctionDecl* mCurrentFunc;           /*!< Current traversed function */
             std::shared_ptr<SymbolTable> mSymbolTable;  /*!< Symbol table to be filled by the symbol collector */
             std::deque<size_t> mCurrentScopesPath;      /*<! Path from the current scope to the global scope */
         };

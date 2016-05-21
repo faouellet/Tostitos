@@ -28,7 +28,7 @@ SymbolCollector::SymbolCollector(const std::shared_ptr<SymbolTable>& symTab)
             }
             else if (mCurrentNode->GetKind() == ASTNode::NodeKind::FUNCTION_DECL)
             {
-                mCurrentFunc = dynamic_cast<FunctionDecl*>(mCurrentNode);
+                mCurrentFunc = dynamic_cast<const FunctionDecl*>(mCurrentNode);
                 assert(mCurrentFunc != nullptr);
             }
         }

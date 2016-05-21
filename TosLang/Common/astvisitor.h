@@ -12,7 +12,7 @@ namespace TosLang
         /*
         * \class ASTVisitor
         * \brief Tree visitor that does a traversal of the AST.
-        *        It is based of CRTP, so any derived class should provide itself as the template argument
+        *        It is based on CRTP, so any derived class should provide itself as the template argument
         */
         template <typename Derived>
         class ASTVisitor
@@ -242,7 +242,7 @@ namespace TosLang
             }
 
         protected:
-            FrontEnd::ASTNode* mCurrentNode;        /*!< Current node being handled in the traversal */
+            const FrontEnd::ASTNode* mCurrentNode;        /*!< Current node being handled in the traversal */
             std::function<void()> mPrologueFtr;     /*!< Functor to be called when entering a node */
             std::function<void()> mEpilogueFtr;     /*!< Functor to be called when leaving a node */
         };
