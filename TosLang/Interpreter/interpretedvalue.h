@@ -44,8 +44,11 @@ namespace TosLang
             {
                 // Cleaning up dynamically allocated member
                 if (mType == ValueType::STRING)
+                {
                     // Using statement is necessary to compile with Clang
-                    strVal.std::string::~string();
+                    using std::string;
+                    strVal.~string();
+                }
 
                 if (val.mType == ValueType::BOOLEAN)
                     boolVal = val.boolVal;
