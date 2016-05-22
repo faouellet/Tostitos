@@ -33,7 +33,7 @@ namespace TosLang
             {
                 // Using statement is necessary to compile with Clang
                 using std::string;
-                strVal.std::string::~string();
+                strVal.~string();
             }
         }
 
