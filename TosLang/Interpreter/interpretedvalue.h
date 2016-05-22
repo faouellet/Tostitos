@@ -31,6 +31,8 @@ namespace TosLang
         {
             if (mType == ValueType::STRING)
             {
+                // Using statement is necessary to compile with Clang
+                using std::string;
                 strVal.std::string::~string();
             }
         }
@@ -42,6 +44,7 @@ namespace TosLang
             {
                 // Cleaning up dynamically allocated member
                 if (mType == ValueType::STRING)
+                    // Using statement is necessary to compile with Clang
                     strVal.std::string::~string();
 
                 if (val.mType == ValueType::BOOLEAN)
