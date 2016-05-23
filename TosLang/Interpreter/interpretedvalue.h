@@ -1,6 +1,7 @@
 #ifndef INTERPRETED_VALUE_H__TOSTITOS
 #define INTERPRETED_VALUE_H__TOSTITOS
 
+#include <ostream>
 #include <string>
 
 // TODO: Comments
