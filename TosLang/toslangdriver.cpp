@@ -2,6 +2,7 @@
 
 //#include "CodeGen/instructionselector.h"
 #include "CFG/module.h"
+#include "Interpreter/interpreter.h"
 #include "Parse/parser.h"
 #include "Sema/symbolcollector.h"
 #include "Sema/symboltable.h"
@@ -24,6 +25,8 @@ TosLangDriver::TosLangDriver()
     mParser.reset(new Parser{});
     
     mSymTable.reset(new SymbolTable{});
+    
+    mInterpreter.reset(new Interpreter{});
 
     mSymCollector.reset(new SymbolCollector{ mSymTable });
     mTChecker.reset(new TypeChecker{});

@@ -6,6 +6,8 @@
 
 namespace TosLang
 {
+    class Interpreter;
+
     namespace FrontEnd
     {
         class ASTNode;
@@ -84,6 +86,8 @@ namespace TosLang
 
     private:
         std::shared_ptr<FrontEnd::SymbolTable> mSymTable;           /*!< Symbol table for a program */
+
+        std::unique_ptr<Interpreter> mInterpreter;                  /*!< Interpreter */
         
         std::unique_ptr<FrontEnd::Parser> mParser;                  /*!< Parser */
         std::unique_ptr<FrontEnd::SymbolCollector> mSymCollector;   /*!< Symbol collector */
