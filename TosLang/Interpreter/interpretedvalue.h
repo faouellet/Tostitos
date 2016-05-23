@@ -54,6 +54,25 @@ namespace TosLang
             return *this;
         }
 
+    public:
+        friend std::ostream& operator<<(std::ostream& stream, const InterpretedValue& val)
+        {
+            switch (val.mType)
+            {
+            case InterpretedValue::ValueType::BOOLEAN:
+                stream << val.boolVal;
+                break;
+            case InterpretedValue::ValueType::INTEGER:
+                stream << val.intVal;
+                break;
+            case InterpretedValue::ValueType::STRING:
+                stream << val.strVal;
+                break;
+            }
+
+            return stream;
+        }
+
     private:
         ValueType mType;
         union
