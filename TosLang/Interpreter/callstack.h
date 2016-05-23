@@ -18,15 +18,16 @@ namespace TosLang
     class StackFrame
     {
     public:
-        StackFrame(const FrontEnd::ASTNode* caller) {}
+        StackFrame() : mCaller{ nullptr }, mCurrentVals{ } { }
+        explicit StackFrame(const FrontEnd::ASTNode* caller) { }
 
     public:
-        void AddOrUpdateValue(const FrontEnd::ASTNode* node, IntepretedValue value);
-        bool TryGetNodeValue(const FrontEnd::ASTNode* node, IntepretedValue& value);
+        void AddOrUpdateValue(const FrontEnd::ASTNode* node, InterpretedValue value);
+        bool TryGetNodeValue(const FrontEnd::ASTNode* node, InterpretedValue& value);
 
     private:
         const FrontEnd::ASTNode* mCaller;
-        std::map<const FrontEnd::ASTNode*, IntepretedValue> mCurrentVals;
+        std::map<const FrontEnd::ASTNode*, InterpretedValue> mCurrentVals;
     };
     
     using CallStack = std::stack<StackFrame>;

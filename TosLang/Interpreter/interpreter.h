@@ -1,7 +1,7 @@
 #ifndef INTERPRETER_H__TOSTITOS
 #define INTERPRETER_H__TOSTITOS
 
-#include "../Common/astvisitor.h"
+#include "callstack.h"
 
 #include <memory>
 
@@ -12,41 +12,43 @@ namespace TosLang
         class ASTNode;
         class SymbolTable;
     }
-}
 
-// TODO: In a namespace?
+    class Interpreter
+    {
+    public:
+        Interpreter() { }
 
-class Interpreter : public TosLang::Common::ASTVisitor<Interpreter>
-{
-    friend class TosLang::Common::ASTVisitor<Interpreter>;
+    public:
+        void Run(const std::unique_ptr<FrontEnd::ASTNode>& root, const std::shared_ptr<FrontEnd::SymbolTable>& symTab);
     
-public:
-    void Run(const std::unique_ptr<TosLang::FrontEnd::ASTNode>& root, const std::shared_ptr<TosLang::FrontEnd::SymbolTable>& symTab);
+    protected:  // Declarations
+        void HandleFunction(const FrontEnd::ASTNode* node);
+        void HandleVarDecl(const FrontEnd::ASTNode* node);
+    
+    protected:  // Expressions
+        void HandleBinaryExpr(const FrontEnd::ASTNode* node);
+        void HandleBooleanExpr(const FrontEnd::ASTNode* node);
+        void HandleCallExpr(const FrontEnd::ASTNode* node);
+        void HandleIdentifierExpr(const FrontEnd::ASTNode* node);
+        void HandleNumberExpr(const FrontEnd::ASTNode* node);
+        void HandleStringExpr(const FrontEnd::ASTNode* node);
+    
+    protected:  // Statements
+        void HandleIfStmt(const FrontEnd::ASTNode* node);
+        void HandlePrintStmt(const FrontEnd::ASTNode* node);
+        void HandleReturnStmt(const FrontEnd::ASTNode* node);
+        void HandleScanStmt(const FrontEnd::ASTNode* node);
+        void HandleWhileStmt(const FrontEnd::ASTNode* node);
+    
+    private:
+        void DispatchNode(const FrontEnd::ASTNode* node);
 
-protected:  // Declarations
-    void HandleFunctionDecl();
-    void HandleParamVarDecl();
-    void HandleProgramDecl();
-    void HandleVarDecl();
-
-protected:  // Expressions
-    void HandleBinaryExpr();
-    void HandleBooleanExpr();
-    void HandleCallExpr();
-    void HandleIdentifierExpr();
-    void HandleNumberExpr();
-    void HandleStringExpr();
-
-protected:  // Statements
-    void HandleCompoundStmt();
-    void HandleIfStmt();
-    void HandlePrintStmt();
-    void HandleReturnStmt();
-    void HandleScanStmt();
-    void HandleWhileStmt();
-
-private:
-
-};
+    private:
+        const FrontEnd::ASTNode* mCurrentNode;
+        std::shared_ptr<FrontEnd::SymbolTable> mSymTable;
+        CallStack mCallStack;
+        StackFrame mGlobalFrame;
+    };
+}
 
 #endif // INTERPRETER_H__TOSTITOS

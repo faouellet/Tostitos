@@ -7,7 +7,7 @@
 
 namespace TosLang
 {
-    class IntepretedValue
+    class InterpretedValue
     {
     public:
         enum class ValueType
@@ -19,15 +19,25 @@ namespace TosLang
         };
 
     public:
-        IntepretedValue() : mType{ ValueType::UNKNOWN } { }
-        explicit IntepretedValue(bool val) : mType{ ValueType::BOOLEAN }, boolVal{ val } { }
-        explicit IntepretedValue(int val) : mType{ ValueType::INTEGER }, intVal{ val } { }
-        explicit IntepretedValue(const std::string& val): mType{ ValueType::STRING }, strVal{ val }
+        InterpretedValue() : mType{ ValueType::UNKNOWN } { }
+        explicit InterpretedValue(bool val) : mType{ ValueType::BOOLEAN }, boolVal{ val } { }
+        explicit InterpretedValue(int val) : mType{ ValueType::INTEGER }, intVal{ val } { }
+        explicit InterpretedValue(const std::string& val): mType{ ValueType::STRING }, strVal{ val }
         {
             new (&strVal) std::string(val);
         }
 
-        ~IntepretedValue()
+        InterpretedValue(const InterpretedValue& iVal) : mType{ iVal.mType }
+        {
+            if (iVal.mType == ValueType::BOOLEAN)
+                boolVal = iVal.boolVal;
+            if (iVal.mType == ValueType::INTEGER)
+                intVal = iVal.intVal;
+            if (iVal.mType == ValueType::STRING)
+                new (&strVal) std::string(iVal.strVal);
+        }
+
+        ~InterpretedValue()
         {
             if (mType == ValueType::STRING)
             {
@@ -38,28 +48,9 @@ namespace TosLang
         }
 
     public:
-        IntepretedValue& operator=(const IntepretedValue& val)
+        InterpretedValue& operator=(InterpretedValue val)
         {
-            if (&val != this)
-            {
-                // Cleaning up dynamically allocated member
-                if (mType == ValueType::STRING)
-                {
-                    // Using statement is necessary to compile with Clang
-                    using std::string;
-                    strVal.~string();
-                }
-
-                if (val.mType == ValueType::BOOLEAN)
-                    boolVal = val.boolVal;
-                if (val.mType == ValueType::INTEGER)
-                    intVal = val.intVal;
-                if (val.mType == ValueType::STRING)
-                    new (&strVal) std::string(val.strVal);
-
-                mType = val.mType;
-            }
-
+            std::swap(val, *this);
             return *this;
         }
 
