@@ -5,6 +5,7 @@
 #include "../Sema/symboltable.h"
 
 #include <cassert>
+#include <iostream> // TODO: Printing to standard IO for now. Should this be redirected to Tostitos later on?
 
 using namespace TosLang;
 using namespace TosLang::Common;
@@ -52,7 +53,19 @@ void Interpreter::HandleVarDecl(const FrontEnd::ASTNode* node)
     // Since we're trying to assign a value to each node in the AST, we're not interested by uninitialized variable
     if (initExpr != nullptr)
     {
-
+        DispatchNode(initExpr);
+        InterpretedValue initVal;
+        if (mCallStack.top().TryGetNodeValue(initExpr, initVal))
+        {
+            if (mSymTable->IsGlobalVariable(node))
+            {
+                mGlobalFrame.AddOrUpdateValue(node, initVal);
+            }
+            else
+            {
+                mCallStack.top().AddOrUpdateValue(node, initVal);
+            }
+        }
     }
 }
 
@@ -72,7 +85,14 @@ void Interpreter::HandleBooleanExpr(const FrontEnd::ASTNode* node)
 
 void Interpreter::HandleCallExpr(const FrontEnd::ASTNode* node) { }
 
-void Interpreter::HandleIdentifierExpr(const FrontEnd::ASTNode* node) { }
+void Interpreter::HandleIdentifierExpr(const FrontEnd::ASTNode* node) 
+{
+    auto res = mSymTable->TryGetSymbol(node);
+    if (res.first)
+    {
+        //mCallStack.top().
+    }
+}
 
 void Interpreter::HandleNumberExpr(const FrontEnd::ASTNode* node) 
 {
@@ -97,15 +117,62 @@ void Interpreter::HandleStringExpr(const FrontEnd::ASTNode* node)
 }
      
 ////////// Statements //////////
-void Interpreter::HandleIfStmt(const FrontEnd::ASTNode* node) { }
+void Interpreter::HandleIfStmt(const FrontEnd::ASTNode* node) 
+{
+    mCurrentNode = node;
 
-void Interpreter::HandlePrintStmt(const FrontEnd::ASTNode* node) { }
+    const IfStmt* iStmt = dynamic_cast<const IfStmt*>(this->mCurrentNode);
+    assert(iStmt != nullptr);
+}
 
-void Interpreter::HandleReturnStmt(const FrontEnd::ASTNode* node) { }
+void Interpreter::HandlePrintStmt(const FrontEnd::ASTNode* node) 
+{
+    mCurrentNode = node;
 
-void Interpreter::HandleScanStmt(const FrontEnd::ASTNode* node) { }
+    const PrintStmt* pStmt = dynamic_cast<const PrintStmt*>(this->mCurrentNode);
+    assert(pStmt != nullptr);
 
-void Interpreter::HandleWhileStmt(const FrontEnd::ASTNode* node) { }
+    const Expr* msgExpr = pStmt->GetMessage();
+    if (msgExpr != nullptr)
+    {
+        InterpretedValue msgVal;
+        if (mCallStack.top().TryGetNodeValue(msgExpr, msgVal))
+        {
+            std::cout << msgVal << std::endl;
+        }
+
+        // TODO: else log an error
+    }
+    else
+    {
+        // Printing a newline
+        std::cout << std::endl;
+    }
+}
+
+void Interpreter::HandleReturnStmt(const FrontEnd::ASTNode* node) 
+{
+    mCurrentNode = node;
+
+    const ReturnStmt* rStmt = dynamic_cast<const ReturnStmt*>(this->mCurrentNode);
+    assert(rStmt != nullptr);
+}
+
+void Interpreter::HandleScanStmt(const FrontEnd::ASTNode* node) 
+{
+    mCurrentNode = node;
+
+    const ScanStmt* sStmt = dynamic_cast<const ScanStmt*>(this->mCurrentNode);
+    assert(sStmt != nullptr);
+}
+
+void Interpreter::HandleWhileStmt(const FrontEnd::ASTNode* node) 
+{
+    mCurrentNode = node;
+
+    const WhileStmt* wStmt = dynamic_cast<const WhileStmt*>(this->mCurrentNode);
+    assert(wStmt != nullptr);
+}
 
 
 void Interpreter::DispatchNode(const ASTNode* node)
