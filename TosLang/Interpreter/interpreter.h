@@ -34,6 +34,7 @@ namespace TosLang
         void HandleStringExpr(const FrontEnd::ASTNode* node);
     
     protected:  // Statements
+        void HandleCompoundStmt(const FrontEnd::ASTNode* node);
         void HandleIfStmt(const FrontEnd::ASTNode* node);
         void HandlePrintStmt(const FrontEnd::ASTNode* node);
         void HandleReturnStmt(const FrontEnd::ASTNode* node);

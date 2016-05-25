@@ -37,8 +37,7 @@ void Interpreter::HandleFunction(const FrontEnd::ASTNode* node)
     const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(this->mCurrentNode);
     assert(fDecl != nullptr);
 
-    for (const auto& stmt : fDecl->GetBody()->GetStatements())
-        DispatchNode(stmt.get());
+    DispatchNode(fDecl->GetBody());
 }
 
 void Interpreter::HandleVarDecl(const FrontEnd::ASTNode* node) 
@@ -87,11 +86,22 @@ void Interpreter::HandleCallExpr(const FrontEnd::ASTNode* node) { }
 
 void Interpreter::HandleIdentifierExpr(const FrontEnd::ASTNode* node) 
 {
-    auto res = mSymTable->TryGetSymbol(node);
-    if (res.first)
-    {
-        //mCallStack.top().
-    }
+    //bool found;
+    //Symbol* identSym;
+    //std::tie(found, identSym) = mSymTable->TryGetSymbol(node);
+    //if (found)
+    //{
+    //    if (identSym->IsGlobal())
+    //    {
+    //        mSymTable->AddVariableUse
+    //
+    //        mGlobalFrame.TryGetNodeValue()
+    //    }
+    //    else
+    //    {
+    //        mCallStack.top().
+    //    }
+    //}
 }
 
 void Interpreter::HandleNumberExpr(const FrontEnd::ASTNode* node) 
@@ -117,12 +127,32 @@ void Interpreter::HandleStringExpr(const FrontEnd::ASTNode* node)
 }
      
 ////////// Statements //////////
+void Interpreter::HandleCompoundStmt(const FrontEnd::ASTNode* node)
+{
+    mCurrentNode = node;
+
+    const CompoundStmt* cStmt = dynamic_cast<const CompoundStmt*>(this->mCurrentNode);
+    assert(cStmt != nullptr);
+
+    for (const auto& stmt : cStmt->GetStatements())
+        DispatchNode(stmt.get());
+}
+
 void Interpreter::HandleIfStmt(const FrontEnd::ASTNode* node) 
 {
     mCurrentNode = node;
 
     const IfStmt* iStmt = dynamic_cast<const IfStmt*>(this->mCurrentNode);
     assert(iStmt != nullptr);
+
+    const Expr* condExpr = iStmt->GetCondExpr();
+
+    DispatchNode(condExpr);
+
+    InterpretedValue condVal;
+    assert(mCallStack.top().TryGetNodeValue(condExpr, condVal));
+    if (condVal.GetBoolVal())
+        DispatchNode(iStmt->GetBody());
 }
 
 void Interpreter::HandlePrintStmt(const FrontEnd::ASTNode* node) 
@@ -187,6 +217,9 @@ void Interpreter::DispatchNode(const ASTNode* node)
         break;
     case ASTNode::NodeKind::CALL_EXPR:
         HandleCallExpr(node);
+        break;
+    case ASTNode::NodeKind::COMPOUND_STMT:
+        HandleCompoundStmt(node);
         break;
     case ASTNode::NodeKind::FUNCTION_DECL:
         HandleFunction(node);
