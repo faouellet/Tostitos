@@ -1,6 +1,7 @@
 #ifndef INTERPRETED_VALUE_H__TOSTITOS
 #define INTERPRETED_VALUE_H__TOSTITOS
 
+#include <cassert>
 #include <ostream>
 #include <string>
 
@@ -73,6 +74,11 @@ namespace TosLang
 
             return stream;
         }
+
+    public:
+        bool GetBoolVal() const { assert(mType == ValueType::BOOLEAN); return boolVal; }
+        int GetIntVal() const { assert(mType == ValueType::INTEGER); return intVal; }
+        std::string GetStrVal() const { assert(mType == ValueType::STRING); return strVal; }
 
     private:
         ValueType mType;
