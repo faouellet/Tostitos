@@ -19,7 +19,7 @@ namespace TosLang
     {
     public:
         StackFrame() : mCaller{ nullptr }, mCurrentVals{ } { }
-        explicit StackFrame(const FrontEnd::ASTNode* caller) { }
+        explicit StackFrame(const FrontEnd::ASTNode* caller) : mCaller{ caller }, mCurrentVals{ } { }
 
     public:
         void AddOrUpdateValue(const FrontEnd::ASTNode* node, InterpretedValue value);
