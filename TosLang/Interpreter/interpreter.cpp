@@ -202,6 +202,17 @@ void Interpreter::HandleWhileStmt(const FrontEnd::ASTNode* node)
 
     const WhileStmt* wStmt = dynamic_cast<const WhileStmt*>(this->mCurrentNode);
     assert(wStmt != nullptr);
+
+    InterpretedValue condVal;
+    do
+    {
+        const Expr* condExpr = wStmt->GetCondExpr();
+        DispatchNode(condExpr);
+
+        assert(mCallStack.top().TryGetNodeValue(condExpr, condVal));
+        if (condVal.GetBoolVal())
+            DispatchNode(wStmt->GetBody());
+    } while (condVal.GetBoolVal());
 }
 
 
