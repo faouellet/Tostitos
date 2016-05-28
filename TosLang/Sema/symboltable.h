@@ -51,8 +51,9 @@ namespace TosLang
                 return mType[idx + 1];
             }
 
-            const size_t GetScopeID() const { assert(mType.front() != Common::Type::ERROR); return mScopeID; }
-            const bool IsFunction() const { assert(mType.front() != Common::Type::ERROR); return mIsFunction; }
+            size_t GetScopeID() const { assert(mType.front() != Common::Type::ERROR); return mScopeID; }
+            bool IsFunction() const { assert(mType.front() != Common::Type::ERROR); return mIsFunction; }
+            bool IsGlobal() const { return GetScopeID() == 0; }
             const std::string& GetName() const { assert(mType.front() != Common::Type::ERROR); return mName; }
 
         public:
