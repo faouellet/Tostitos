@@ -47,23 +47,52 @@ void Interpreter::HandleVarDecl(const FrontEnd::ASTNode* node)
     const VarDecl* vDecl = dynamic_cast<const VarDecl*>(this->mCurrentNode);
     assert(vDecl != nullptr);
 
+    if(vDecl->IsFunctionParameter())
+    {
+        // Function paramters are not handled here
+        return;
+    }
+
     const Expr* initExpr = vDecl->GetInitExpr();
 
-    // Since we're trying to assign a value to each node in the AST, we're not interested by uninitialized variable
+    // Initialize the variable with the value of the initialization expression if possible
     if (initExpr != nullptr)
     {
         DispatchNode(initExpr);
         InterpretedValue initVal;
-        if (mCallStack.top().TryGetNodeValue(initExpr, initVal))
+        assert(mCallStack.top().TryGetNodeValue(initExpr, initVal));
+        if (mSymTable->IsGlobalVariable(node))
         {
-            if (mSymTable->IsGlobalVariable(node))
-            {
-                mGlobalFrame.AddOrUpdateValue(node, initVal);
-            }
-            else
-            {
-                mCallStack.top().AddOrUpdateValue(node, initVal);
-            }
+            mGlobalFrame.AddOrUpdateValue(node, initVal);
+        }
+        else
+        {
+            mCallStack.top().AddOrUpdateValue(node, initVal);
+        }
+    }
+    else
+    {
+        // If there's no initialization expression, the variable will 
+        // be initialized with the default value for its type
+        const Symbol* varSym;
+        bool found;
+        std::tie(found, varSym) = mSymTable->TryGetSymbol(mCurrentNode);
+        assert(found);
+        
+        switch (varSym->GetVariableType())
+        {
+        case Type::BOOL:
+            mCallStack.top().AddOrUpdateValue(node, InterpretedValue{ false });
+            break;
+        case Type::NUMBER:
+            mCallStack.top().AddOrUpdateValue(node, InterpretedValue{ 0 });
+            break;
+        case Type::STRING:
+            mCallStack.top().AddOrUpdateValue(node, InterpretedValue{ "" });
+            break;
+        default:
+            assert(false); // What is this variable?
+            break;
         }
     }
 }
