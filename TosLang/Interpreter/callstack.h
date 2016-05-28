@@ -3,8 +3,8 @@
 
 #include "interpretedvalue.h"
 
-#include <map>
-#include <stack>
+#include <deque>
+#include <unordered_map>
 
 // TODO: Comments
 
@@ -13,6 +13,7 @@ namespace TosLang
     namespace FrontEnd
     {
         class ASTNode;
+        class Symbol;
     }
 
     class StackFrame
@@ -22,15 +23,15 @@ namespace TosLang
         explicit StackFrame(const FrontEnd::ASTNode* caller) : mCaller{ caller }, mCurrentVals{ } { }
 
     public:
-        void AddOrUpdateValue(const FrontEnd::ASTNode* node, InterpretedValue value);
-        bool TryGetNodeValue(const FrontEnd::ASTNode* node, InterpretedValue& value);
+        void AddOrUpdateValue(const FrontEnd::Symbol* sym, InterpretedValue value);
+        bool TryGetNodeValue(const FrontEnd::Symbol* sym, InterpretedValue& value);
 
     private:
         const FrontEnd::ASTNode* mCaller;
-        std::map<const FrontEnd::ASTNode*, InterpretedValue> mCurrentVals;
+        std::unordered_map<const FrontEnd::Symbol*, InterpretedValue> mCurrentVals;
     };
     
-    using CallStack = std::stack<StackFrame>;
+    using CallStack = std::deque<StackFrame>;
 }
 
 #endif // CALL_STACK_H__TOSTITOS

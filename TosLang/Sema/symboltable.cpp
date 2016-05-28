@@ -99,21 +99,21 @@ bool SymbolTable::AddFunctionUse(const CallExpr* cExpr, const Symbol& fnSym)
 std::pair<bool, const Symbol*> SymbolTable::TryGetSymbol(const ASTNode* node) const
 {
     if (node == nullptr)
-        return{ false, nullptr };
+        return { false, nullptr };
 
     const ASTNode* nodeForLookup = node;
     ASTNode::NodeKind nodeKind = nodeForLookup->GetKind();
 
     // An identifier or a call is a use. Since the symbol table only contains information
     // about definitions, we need to find the corresponding definition to this use
-    if (( nodeKind== ASTNode::NodeKind::IDENTIFIER_EXPR)
+    if (( nodeKind == ASTNode::NodeKind::IDENTIFIER_EXPR)
         || (nodeKind == ASTNode::NodeKind::CALL_EXPR))
     {
         auto udIt = mUseDefs.find(node);
         if (udIt != mUseDefs.end())
             nodeForLookup = udIt->second;
         else
-            return{ false, nullptr };
+            return { false, nullptr };
     }
     
     nodeKind = nodeForLookup->GetKind();
@@ -124,16 +124,12 @@ std::pair<bool, const Symbol*> SymbolTable::TryGetSymbol(const ASTNode* node) co
         auto symIt = mTable.find(nodeForLookup);
         if (symIt != mTable.end())
         {
-            return{ true, &symIt->second };
-        }
-        else
-        {
-            return{ false, nullptr };
+            return { true, &symIt->second };
         }
     }
     
     // Unhandled node type
-    return{ false, nullptr };
+    return { false, nullptr };
 }
 
 std::vector<const Symbol*> SymbolTable::GetOverloadCandidates(const std::string& fnName) const

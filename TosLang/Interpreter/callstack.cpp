@@ -2,14 +2,14 @@
 
 using namespace TosLang;
 
-void StackFrame::AddOrUpdateValue(const FrontEnd::ASTNode* node, InterpretedValue value)
+void StackFrame::AddOrUpdateValue(const FrontEnd::Symbol* sym, InterpretedValue value)
 {
-    mCurrentVals[node] = value;
+    mCurrentVals[sym] = value;
 }
 
-bool StackFrame::TryGetNodeValue(const FrontEnd::ASTNode* node, InterpretedValue& value)
+bool StackFrame::TryGetNodeValue(const FrontEnd::Symbol* sym, InterpretedValue& value)
 {
-    auto valIt = mCurrentVals.find(node);
+    auto valIt = mCurrentVals.find(sym);
     const bool found = valIt != mCurrentVals.end();
 
     if (found)

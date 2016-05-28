@@ -1,6 +1,7 @@
 #include "interpreter.h"
 
 #include "../AST/declarations.h"
+#include "../Common/opcodes.h"
 #include "../Common/type.h"
 #include "../Sema/symboltable.h"
 
@@ -14,6 +15,7 @@ using namespace TosLang::FrontEnd;
 void Interpreter::Run(const std::unique_ptr<ASTNode>& root, const std::shared_ptr<SymbolTable>& symTab) 
 {
     mSymTable = symTab;
+    mCallStack.clear();
     
     // Program entry is always the 'main' function
     const ASTNode* mainNode = mSymTable->FindFunctionDecl({ { Type::VOID }, 0, "main" });
@@ -23,276 +25,293 @@ void Interpreter::Run(const std::unique_ptr<ASTNode>& root, const std::shared_pt
         return;
     }
 
-    // There is no function calling 'main'
-    mCallStack.push({ });
+    // Push the global frame onto the call stack
+    // This frame will contains all global scope level informations that are available to all the functions in the program.
+    // This make it the only frame that can be accessed by any other.
+    mCallStack.push_back({ });
 
     HandleFunction(mainNode);
 }
 
 ////////// Declarations //////////
-void Interpreter::HandleFunction(const FrontEnd::ASTNode* node) 
+InterpretedValue Interpreter::HandleFunction(const FrontEnd::ASTNode* node) 
 {
-    mCurrentNode = node;
-
-    const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(this->mCurrentNode);
+    const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(node);
     assert(fDecl != nullptr);
 
-    DispatchNode(fDecl->GetBody());
+    return DispatchNode(fDecl->GetBody());
 }
 
-void Interpreter::HandleVarDecl(const FrontEnd::ASTNode* node) 
+// We are using a pull model for variable initialization. What this means is that a variable will only 
+// be initialized the first time it is encountered in the program. This will reduce the number of variables
+// we need to keep track of at any given time. It also allows us to skip global variable initialization
+// which would require another AST pass.
+InterpretedValue Interpreter::HandleVarDecl(const FrontEnd::ASTNode* node) 
 {
-    mCurrentNode = node;
-
-    const VarDecl* vDecl = dynamic_cast<const VarDecl*>(this->mCurrentNode);
+    const VarDecl* vDecl = dynamic_cast<const VarDecl*>(node);
     assert(vDecl != nullptr);
 
     if(vDecl->IsFunctionParameter())
     {
         // Function paramters are not handled here
-        return;
+        return{};
     }
 
+    const Symbol* varSym = GetSymbol(node);
     const Expr* initExpr = vDecl->GetInitExpr();
 
     // Initialize the variable with the value of the initialization expression if possible
+    InterpretedValue initVal;
     if (initExpr != nullptr)
     {
-        DispatchNode(initExpr);
-        InterpretedValue initVal;
-        assert(mCallStack.top().TryGetNodeValue(initExpr, initVal));
-        if (mSymTable->IsGlobalVariable(node))
-        {
-            mGlobalFrame.AddOrUpdateValue(node, initVal);
-        }
-        else
-        {
-            mCallStack.top().AddOrUpdateValue(node, initVal);
-        }
+        initVal = DispatchNode(initExpr);
     }
     else
     {
         // If there's no initialization expression, the variable will 
         // be initialized with the default value for its type
-        const Symbol* varSym;
-        bool found;
-        std::tie(found, varSym) = mSymTable->TryGetSymbol(mCurrentNode);
-        assert(found);
-        
         switch (varSym->GetVariableType())
         {
         case Type::BOOL:
-            mCallStack.top().AddOrUpdateValue(node, InterpretedValue{ false });
+            initVal = InterpretedValue{ false };
             break;
         case Type::NUMBER:
-            mCallStack.top().AddOrUpdateValue(node, InterpretedValue{ 0 });
+            initVal = InterpretedValue{ 0 };
             break;
         case Type::STRING:
-            mCallStack.top().AddOrUpdateValue(node, InterpretedValue{ "" });
+            initVal = InterpretedValue{ "" };
             break;
         default:
             assert(false); // What is this variable?
             break;
         }
     }
+
+    if (varSym->IsGlobal())
+        mCallStack.front().AddOrUpdateValue(varSym, initVal);
+    else
+        mCallStack.back().AddOrUpdateValue(varSym, initVal);
+
+    return{};
 }
 
 ////////// Expressions //////////
-void Interpreter::HandleBinaryExpr(const FrontEnd::ASTNode* node) { }
-
-void Interpreter::HandleBooleanExpr(const FrontEnd::ASTNode* node) 
+InterpretedValue Interpreter::HandleBinaryExpr(const FrontEnd::ASTNode* node) 
 {
-    mCurrentNode = node;
-
-    const BooleanExpr* bExpr = dynamic_cast<const BooleanExpr*>(this->mCurrentNode);
+    const BinaryOpExpr* bExpr = dynamic_cast<const BinaryOpExpr*>(node);
     assert(bExpr != nullptr);
 
-    InterpretedValue bVal{ bExpr->GetValue() };
-    mCallStack.top().AddOrUpdateValue(bExpr, bVal);
+    switch (bExpr->GetOperation())
+    {
+        case Operation::AND_BOOL:
+            break;
+        case Operation::AND_INT:
+            break;
+        case Operation::ASSIGNMENT:
+            break;
+        case Operation::DIVIDE:
+            break;
+        case Operation::GREATER_THAN:
+            break;
+        case Operation::LEFT_SHIFT:
+            break;
+        case Operation::LESS_THAN:
+            break;
+        case Operation::MINUS:
+            break;
+        case Operation::MODULO:
+            break;
+        case Operation::MULT:
+            break;
+        case Operation::NOT:
+            break;
+        case Operation::OR_BOOL:
+            break;
+        case Operation::OR_INT:
+            break;
+        case Operation::PLUS:
+            break;
+        case Operation::RIGHT_SHIFT:
+            break;
+        default:
+            break;
+    }
+
+    return{};
 }
 
-void Interpreter::HandleCallExpr(const FrontEnd::ASTNode* node) { }
+InterpretedValue Interpreter::HandleBooleanExpr(const FrontEnd::ASTNode* node) 
+{
+    const BooleanExpr* bExpr = dynamic_cast<const BooleanExpr*>(node);
+    assert(bExpr != nullptr);
 
-void Interpreter::HandleIdentifierExpr(const FrontEnd::ASTNode* node) 
+    return InterpretedValue{ bExpr->GetValue() };
+}
+
+InterpretedValue Interpreter::HandleCallExpr(const FrontEnd::ASTNode* node) { return{}; }
+
+InterpretedValue Interpreter::HandleIdentifierExpr(const FrontEnd::ASTNode* node) 
 {
     //bool found;
-    //Symbol* identSym;
+    //const Symbol* identSym;
     //std::tie(found, identSym) = mSymTable->TryGetSymbol(node);
-    //if (found)
-    //{
-    //    if (identSym->IsGlobal())
-    //    {
-    //        mSymTable->AddVariableUse
+    //assert(found);
     //
-    //        mGlobalFrame.TryGetNodeValue()
-    //    }
-    //    else
-    //    {
-    //        mCallStack.top().
-    //    }
+    //if (identSym->IsGlobal())
+    //{
+    //    mGlobalFrame.TryGetNodeValue();
     //}
+    //else
+    //{
+    //    mCallStack.top().
+    //}
+
+    return{};
 }
 
-void Interpreter::HandleNumberExpr(const FrontEnd::ASTNode* node) 
+InterpretedValue Interpreter::HandleNumberExpr(const FrontEnd::ASTNode* node) 
 {
-    mCurrentNode = node;
-
-    const NumberExpr* nExpr = dynamic_cast<const NumberExpr*>(this->mCurrentNode);
+    const NumberExpr* nExpr = dynamic_cast<const NumberExpr*>(node);
     assert(nExpr != nullptr);
 
-    InterpretedValue nVal{ nExpr->GetValue() };
-    mCallStack.top().AddOrUpdateValue(nExpr, nVal);
+    return InterpretedValue{ nExpr->GetValue() };
 }
 
-void Interpreter::HandleStringExpr(const FrontEnd::ASTNode* node) 
+InterpretedValue Interpreter::HandleStringExpr(const FrontEnd::ASTNode* node) 
 {
-    mCurrentNode = node;
-
-    const StringExpr* sExpr = dynamic_cast<const StringExpr*>(this->mCurrentNode);
+    const StringExpr* sExpr = dynamic_cast<const StringExpr*>(node);
     assert(sExpr != nullptr);
 
-    InterpretedValue sVal{ sExpr->GetName() };
-    mCallStack.top().AddOrUpdateValue(sExpr, sVal);
+    return InterpretedValue{ sExpr->GetName() };
 }
      
 ////////// Statements //////////
-void Interpreter::HandleCompoundStmt(const FrontEnd::ASTNode* node)
+InterpretedValue Interpreter::HandleCompoundStmt(const FrontEnd::ASTNode* node)
 {
-    mCurrentNode = node;
-
-    const CompoundStmt* cStmt = dynamic_cast<const CompoundStmt*>(this->mCurrentNode);
+    const CompoundStmt* cStmt = dynamic_cast<const CompoundStmt*>(node);
     assert(cStmt != nullptr);
 
     for (const auto& stmt : cStmt->GetStatements())
         DispatchNode(stmt.get());
+
+    return{};
 }
 
-void Interpreter::HandleIfStmt(const FrontEnd::ASTNode* node) 
+InterpretedValue Interpreter::HandleIfStmt(const FrontEnd::ASTNode* node) 
 {
-    mCurrentNode = node;
-
-    const IfStmt* iStmt = dynamic_cast<const IfStmt*>(this->mCurrentNode);
+    const IfStmt* iStmt = dynamic_cast<const IfStmt*>(node);
     assert(iStmt != nullptr);
 
     const Expr* condExpr = iStmt->GetCondExpr();
 
-    DispatchNode(condExpr);
+    InterpretedValue condVal{ DispatchNode(condExpr) };
 
-    InterpretedValue condVal;
-    assert(mCallStack.top().TryGetNodeValue(condExpr, condVal));
     if (condVal.GetBoolVal())
         DispatchNode(iStmt->GetBody());
+
+    return{};
 }
 
-void Interpreter::HandlePrintStmt(const FrontEnd::ASTNode* node) 
+InterpretedValue Interpreter::HandlePrintStmt(const FrontEnd::ASTNode* node) 
 {
-    mCurrentNode = node;
-
-    const PrintStmt* pStmt = dynamic_cast<const PrintStmt*>(this->mCurrentNode);
+    const PrintStmt* pStmt = dynamic_cast<const PrintStmt*>(node);
     assert(pStmt != nullptr);
 
     const Expr* msgExpr = pStmt->GetMessage();
     if (msgExpr != nullptr)
     {
-        InterpretedValue msgVal;
-        if (mCallStack.top().TryGetNodeValue(msgExpr, msgVal))
-        {
-            std::cout << msgVal << std::endl;
-        }
-
-        // TODO: else log an error
+        InterpretedValue msgVal{ DispatchNode(msgExpr) };
+        std::cout << msgVal << std::endl;
     }
     else
     {
         // Printing a newline
         std::cout << std::endl;
     }
+
+    return{};
 }
 
-void Interpreter::HandleReturnStmt(const FrontEnd::ASTNode* node) 
+InterpretedValue Interpreter::HandleReturnStmt(const FrontEnd::ASTNode* node) 
 {
-    mCurrentNode = node;
-
-    const ReturnStmt* rStmt = dynamic_cast<const ReturnStmt*>(this->mCurrentNode);
+    const ReturnStmt* rStmt = dynamic_cast<const ReturnStmt*>(node);
     assert(rStmt != nullptr);
+
+    return{};
 }
 
-void Interpreter::HandleScanStmt(const FrontEnd::ASTNode* node) 
+InterpretedValue Interpreter::HandleScanStmt(const FrontEnd::ASTNode* node) 
 {
-    mCurrentNode = node;
-
-    const ScanStmt* sStmt = dynamic_cast<const ScanStmt*>(this->mCurrentNode);
+    const ScanStmt* sStmt = dynamic_cast<const ScanStmt*>(node);
     assert(sStmt != nullptr);
+
+    return{};
 }
 
-void Interpreter::HandleWhileStmt(const FrontEnd::ASTNode* node) 
+InterpretedValue Interpreter::HandleWhileStmt(const FrontEnd::ASTNode* node) 
 {
-    mCurrentNode = node;
-
-    const WhileStmt* wStmt = dynamic_cast<const WhileStmt*>(this->mCurrentNode);
+    const WhileStmt* wStmt = dynamic_cast<const WhileStmt*>(node);
     assert(wStmt != nullptr);
 
     InterpretedValue condVal;
     do
     {
         const Expr* condExpr = wStmt->GetCondExpr();
-        DispatchNode(condExpr);
+        condVal = DispatchNode(condExpr);
 
-        assert(mCallStack.top().TryGetNodeValue(condExpr, condVal));
         if (condVal.GetBoolVal())
             DispatchNode(wStmt->GetBody());
     } while (condVal.GetBoolVal());
+
+    return{};
 }
 
 
-void Interpreter::DispatchNode(const ASTNode* node)
+InterpretedValue Interpreter::DispatchNode(const ASTNode* node)
 {
+    assert(node != nullptr);
+
     switch (node->GetKind())
     {
     case ASTNode::NodeKind::BINARY_EXPR:
-        HandleBinaryExpr(node);
-        break;
+        return HandleBinaryExpr(node);
     case ASTNode::NodeKind::BOOLEAN_EXPR:
-        HandleBooleanExpr(node);
-        break;
+        return HandleBooleanExpr(node);
     case ASTNode::NodeKind::CALL_EXPR:
-        HandleCallExpr(node);
-        break;
+        return HandleCallExpr(node);
     case ASTNode::NodeKind::COMPOUND_STMT:
-        HandleCompoundStmt(node);
-        break;
+        return HandleCompoundStmt(node);
     case ASTNode::NodeKind::FUNCTION_DECL:
-        HandleFunction(node);
-        break;
+        return HandleFunction(node);
     case ASTNode::NodeKind::IDENTIFIER_EXPR:
-        HandleIdentifierExpr(node);
-        break;
+        return HandleIdentifierExpr(node);
     case ASTNode::NodeKind::IF_STMT:
-        HandleIfStmt(node);
-        break;
+        return HandleIfStmt(node);
     case ASTNode::NodeKind::NUMBER_EXPR:
-        HandleNumberExpr(node);
-        break;
+        return HandleNumberExpr(node);
     case ASTNode::NodeKind::PRINT_STMT:
-        HandlePrintStmt(node);
-        break;
+        return HandlePrintStmt(node);
     case ASTNode::NodeKind::RETURN_STMT:
-        HandleReturnStmt(node);
-        break;
+        return HandleReturnStmt(node);
     case ASTNode::NodeKind::SCAN_STMT:
-        HandleScanStmt(node);
-        break;
+        return HandleScanStmt(node);
     case ASTNode::NodeKind::STRING_EXPR:
-        HandleStringExpr(node);
-        break;
+        return HandleStringExpr(node);
     case ASTNode::NodeKind::VAR_DECL:
-        HandleVarDecl(node);
-        break;
+        return HandleVarDecl(node);
     case ASTNode::NodeKind::WHILE_STMT:
-        HandleWhileStmt(node);
-        break;
+        return HandleWhileStmt(node);
     default:
         assert(false); // TODO: Log an error instead?
-        break;
+        return{};
     }
+}
+
+const Symbol* Interpreter::GetSymbol(const ASTNode* node) const
+{
+    const Symbol* varSym;
+    bool found;
+    std::tie(found, varSym) = mSymTable->TryGetSymbol(node);
+    assert(found);
+    return varSym;
 }

@@ -10,6 +10,7 @@ namespace TosLang
     namespace FrontEnd
     {
         class ASTNode;
+        class Symbol;
         class SymbolTable;
     }
 
@@ -22,33 +23,33 @@ namespace TosLang
         void Run(const std::unique_ptr<FrontEnd::ASTNode>& root, const std::shared_ptr<FrontEnd::SymbolTable>& symTab);
     
     protected:  // Declarations
-        void HandleFunction(const FrontEnd::ASTNode* node);
-        void HandleVarDecl(const FrontEnd::ASTNode* node);
+        InterpretedValue HandleFunction(const FrontEnd::ASTNode* node);
+        InterpretedValue HandleVarDecl(const FrontEnd::ASTNode* node);
     
     protected:  // Expressions
-        void HandleBinaryExpr(const FrontEnd::ASTNode* node);
-        void HandleBooleanExpr(const FrontEnd::ASTNode* node);
-        void HandleCallExpr(const FrontEnd::ASTNode* node);
-        void HandleIdentifierExpr(const FrontEnd::ASTNode* node);
-        void HandleNumberExpr(const FrontEnd::ASTNode* node);
-        void HandleStringExpr(const FrontEnd::ASTNode* node);
+        InterpretedValue HandleBinaryExpr(const FrontEnd::ASTNode* node);
+        InterpretedValue HandleBooleanExpr(const FrontEnd::ASTNode* node);
+        InterpretedValue HandleCallExpr(const FrontEnd::ASTNode* node);
+        InterpretedValue HandleIdentifierExpr(const FrontEnd::ASTNode* node);
+        InterpretedValue HandleNumberExpr(const FrontEnd::ASTNode* node);
+        InterpretedValue HandleStringExpr(const FrontEnd::ASTNode* node);
     
     protected:  // Statements
-        void HandleCompoundStmt(const FrontEnd::ASTNode* node);
-        void HandleIfStmt(const FrontEnd::ASTNode* node);
-        void HandlePrintStmt(const FrontEnd::ASTNode* node);
-        void HandleReturnStmt(const FrontEnd::ASTNode* node);
-        void HandleScanStmt(const FrontEnd::ASTNode* node);
-        void HandleWhileStmt(const FrontEnd::ASTNode* node);
+        InterpretedValue HandleCompoundStmt(const FrontEnd::ASTNode* node);
+        InterpretedValue HandleIfStmt(const FrontEnd::ASTNode* node);
+        InterpretedValue HandlePrintStmt(const FrontEnd::ASTNode* node);
+        InterpretedValue HandleReturnStmt(const FrontEnd::ASTNode* node);
+        InterpretedValue HandleScanStmt(const FrontEnd::ASTNode* node);
+        InterpretedValue HandleWhileStmt(const FrontEnd::ASTNode* node);
     
     private:
-        void DispatchNode(const FrontEnd::ASTNode* node);
+        InterpretedValue DispatchNode(const FrontEnd::ASTNode* node);
+        const FrontEnd::Symbol* GetSymbol(const FrontEnd::ASTNode* node) const;
 
     private:
         const FrontEnd::ASTNode* mCurrentNode;
         std::shared_ptr<FrontEnd::SymbolTable> mSymTable;
         CallStack mCallStack;
-        StackFrame mGlobalFrame;
     };
 }
 
