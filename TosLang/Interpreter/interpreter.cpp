@@ -150,9 +150,52 @@ InterpretedValue Interpreter::HandleCallExpr(const FrontEnd::ASTNode* node)
 { 
     const CallExpr* cExpr = dynamic_cast<const CallExpr*>(node);
     assert(cExpr != nullptr);
+     
+    // Evaluating all the argument expressions to find out the values the function is being called with
+    std::vector<InterpretedValue> callVals;
+    std::vector<Common::Type> fnTypes;
+    for (const auto& arg : cExpr->GetArgs())
+    {
+        InterpretedValue argVal{ DispatchNode(arg.get()) };
+
+        callVals.push_back(argVal);
+
+        // While we're at it, we also record the type of the argument.
+        // This is done to help us find the function being called later on
+        switch (argVal.GetType())
+        {
+        case InterpretedValue::ValueType::BOOLEAN:  
+            fnTypes.push_back(Common::Type::BOOL);
+            break;
+        case InterpretedValue::ValueType::INTEGER:
+            fnTypes.push_back(Common::Type::NUMBER);
+            break;
+        case InterpretedValue::ValueType::STRING:
+            fnTypes.push_back(Common::Type::STRING);
+            break;
+        default:
+            assert(false);  // Something went wrong when evaluating the argument's value
+            break;
+        }
+    }
+
+    // We need to find the function that is being called
+    Symbol expectedFnSym{ fnTypes, 0, cExpr->GetCalleeName() };
+    const ASTNode* fnNode = mSymTable->FindFunctionDecl(expectedFnSym);
+    const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(fnNode);
+    assert(fDecl != nullptr);
 
     // Pushing a new frame on the call stack for the function we're about to call
     mCallStack.push_back({});
+
+    // Initializing the function's parameters in the new stack frame
+    const ParamVarDecls* pVDecls = fDecl->GetParametersDecl();
+    assert(pVDecls->GetParameters().size() == callVals.size());
+    for (size_t iArg = 0; iArg < callVals.size(); ++iArg)
+    {
+        const Symbol* argSym = GetSymbol(pVDecls->GetParameters()[iArg].get());
+        mCallStack.back().AddOrUpdateSymbolValue(argSym, callVals[iArg]);
+    }
 
     return{}; 
 }
