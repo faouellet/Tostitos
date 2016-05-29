@@ -23,8 +23,8 @@ namespace TosLang
         explicit StackFrame(const FrontEnd::ASTNode* caller) : mCaller{ caller }, mCurrentVals{ } { }
 
     public:
-        void AddOrUpdateValue(const FrontEnd::Symbol* sym, InterpretedValue value);
-        bool TryGetNodeValue(const FrontEnd::Symbol* sym, InterpretedValue& value);
+        void AddOrUpdateSymbolValue(const FrontEnd::Symbol* sym, InterpretedValue value);
+        bool TryGetSymbolValue(const FrontEnd::Symbol* sym, InterpretedValue& value);
 
     private:
         const FrontEnd::ASTNode* mCaller;

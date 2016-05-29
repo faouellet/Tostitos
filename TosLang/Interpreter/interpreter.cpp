@@ -88,11 +88,11 @@ InterpretedValue Interpreter::HandleVarDecl(const FrontEnd::ASTNode* node)
     }
 
     if (varSym->IsGlobal())
-        mCallStack.front().AddOrUpdateValue(varSym, initVal);
+        mCallStack.front().AddOrUpdateSymbolValue(varSym, initVal);
     else
-        mCallStack.back().AddOrUpdateValue(varSym, initVal);
+        mCallStack.back().AddOrUpdateSymbolValue(varSym, initVal);
 
-    return{};
+    return initVal;
 }
 
 ////////// Expressions //////////
@@ -101,43 +101,30 @@ InterpretedValue Interpreter::HandleBinaryExpr(const FrontEnd::ASTNode* node)
     const BinaryOpExpr* bExpr = dynamic_cast<const BinaryOpExpr*>(node);
     assert(bExpr != nullptr);
 
+    InterpretedValue lhsval{ DispatchNode(bExpr->GetLHS()) };
+    InterpretedValue rhsval{ DispatchNode(bExpr->GetRHS()) };
+
+    // Since type checking has been performed beforehand, we can assume that 
+    // a certain operation only works with a certain type
     switch (bExpr->GetOperation())
     {
-        case Operation::AND_BOOL:
-            break;
-        case Operation::AND_INT:
-            break;
-        case Operation::ASSIGNMENT:
-            break;
-        case Operation::DIVIDE:
-            break;
-        case Operation::GREATER_THAN:
-            break;
-        case Operation::LEFT_SHIFT:
-            break;
-        case Operation::LESS_THAN:
-            break;
-        case Operation::MINUS:
-            break;
-        case Operation::MODULO:
-            break;
-        case Operation::MULT:
-            break;
-        case Operation::NOT:
-            break;
-        case Operation::OR_BOOL:
-            break;
-        case Operation::OR_INT:
-            break;
-        case Operation::PLUS:
-            break;
-        case Operation::RIGHT_SHIFT:
-            break;
-        default:
-            break;
+     // TODO: case Operation::ASSIGNMENT:     return InterpretedValue{ lhsval.GetBoolVal() && rhsval.GetBoolVal() };
+    case Operation::AND_BOOL:       return InterpretedValue{ lhsval.GetBoolVal() && rhsval.GetBoolVal() };
+    case Operation::AND_INT:        return InterpretedValue{ lhsval.GetIntVal() & rhsval.GetIntVal() };
+    case Operation::DIVIDE:         return InterpretedValue{ lhsval.GetIntVal() / rhsval.GetIntVal() };
+    case Operation::GREATER_THAN:   return InterpretedValue{ lhsval.GetIntVal() > rhsval.GetIntVal() };
+    case Operation::LEFT_SHIFT:     return InterpretedValue{ lhsval.GetIntVal() << rhsval.GetIntVal() };
+    case Operation::LESS_THAN:      return InterpretedValue{ lhsval.GetIntVal() < rhsval.GetIntVal() };
+    case Operation::MINUS:          return InterpretedValue{ lhsval.GetIntVal() - rhsval.GetIntVal() };
+    case Operation::MODULO:         return InterpretedValue{ lhsval.GetIntVal() % rhsval.GetIntVal() };
+    case Operation::MULT:           return InterpretedValue{ lhsval.GetIntVal() && rhsval.GetIntVal() };
+    //TODO: case Operation::NOT:            return InterpretedValue{ lhsval.GetBoolVal() && rhsval.GetBoolVal() };
+    case Operation::OR_BOOL:        return InterpretedValue{ lhsval.GetBoolVal() || rhsval.GetBoolVal() };
+    case Operation::OR_INT:         return InterpretedValue{ lhsval.GetIntVal() | rhsval.GetIntVal() };
+    case Operation::PLUS:           return InterpretedValue{ lhsval.GetIntVal() + rhsval.GetIntVal() };
+    case Operation::RIGHT_SHIFT:    return InterpretedValue{ lhsval.GetIntVal() >> rhsval.GetIntVal() };
+    default:                        return{};
     }
-
-    return{};
 }
 
 InterpretedValue Interpreter::HandleBooleanExpr(const FrontEnd::ASTNode* node) 
@@ -148,25 +135,37 @@ InterpretedValue Interpreter::HandleBooleanExpr(const FrontEnd::ASTNode* node)
     return InterpretedValue{ bExpr->GetValue() };
 }
 
-InterpretedValue Interpreter::HandleCallExpr(const FrontEnd::ASTNode* node) { return{}; }
+InterpretedValue Interpreter::HandleCallExpr(const FrontEnd::ASTNode* node) 
+{ 
+    const CallExpr* cExpr = dynamic_cast<const CallExpr*>(node);
+    assert(cExpr != nullptr);
+
+    // Pushing a new frame on the call stack for the function we're about to call
+    mCallStack.push_back({});
+
+    return{}; 
+}
 
 InterpretedValue Interpreter::HandleIdentifierExpr(const FrontEnd::ASTNode* node) 
 {
-    //bool found;
-    //const Symbol* identSym;
-    //std::tie(found, identSym) = mSymTable->TryGetSymbol(node);
-    //assert(found);
-    //
-    //if (identSym->IsGlobal())
-    //{
-    //    mGlobalFrame.TryGetNodeValue();
-    //}
-    //else
-    //{
-    //    mCallStack.top().
-    //}
+    const Symbol* identSym = GetSymbol(node);
+    InterpretedValue identVal;
+    bool foundVal = false;
 
-    return{};
+    if (identSym->IsGlobal())
+        foundVal = mCallStack.front().TryGetSymbolValue(identSym, identVal);
+    else
+        foundVal = mCallStack.back().TryGetSymbolValue(identSym, identVal);
+
+    // Since we're working with a pull model, it is possible that we had yet to encounter this variable.
+    // In that case, we just need to evaluate the associated variable declaration.
+    if (!foundVal)
+    {
+        const ASTNode* varDecl = mSymTable->FindVarDecl(node, mCurrentScope);
+        identVal = HandleVarDecl(varDecl);
+    }
+
+    return identVal;
 }
 
 InterpretedValue Interpreter::HandleNumberExpr(const FrontEnd::ASTNode* node) 
@@ -191,9 +190,13 @@ InterpretedValue Interpreter::HandleCompoundStmt(const FrontEnd::ASTNode* node)
     const CompoundStmt* cStmt = dynamic_cast<const CompoundStmt*>(node);
     assert(cStmt != nullptr);
 
+    ++mCurrentScope;
+
     for (const auto& stmt : cStmt->GetStatements())
         DispatchNode(stmt.get());
 
+    --mCurrentScope;
+    
     return{};
 }
 
@@ -237,7 +240,11 @@ InterpretedValue Interpreter::HandleReturnStmt(const FrontEnd::ASTNode* node)
     const ReturnStmt* rStmt = dynamic_cast<const ReturnStmt*>(node);
     assert(rStmt != nullptr);
 
-    return{};
+    const Expr* rExpr = rStmt->GetReturnExpr();
+    if (rExpr != nullptr)
+        return DispatchNode(rExpr);
+    else
+        return{};
 }
 
 InterpretedValue Interpreter::HandleScanStmt(const FrontEnd::ASTNode* node) 
@@ -273,34 +280,20 @@ InterpretedValue Interpreter::DispatchNode(const ASTNode* node)
 
     switch (node->GetKind())
     {
-    case ASTNode::NodeKind::BINARY_EXPR:
-        return HandleBinaryExpr(node);
-    case ASTNode::NodeKind::BOOLEAN_EXPR:
-        return HandleBooleanExpr(node);
-    case ASTNode::NodeKind::CALL_EXPR:
-        return HandleCallExpr(node);
-    case ASTNode::NodeKind::COMPOUND_STMT:
-        return HandleCompoundStmt(node);
-    case ASTNode::NodeKind::FUNCTION_DECL:
-        return HandleFunction(node);
-    case ASTNode::NodeKind::IDENTIFIER_EXPR:
-        return HandleIdentifierExpr(node);
-    case ASTNode::NodeKind::IF_STMT:
-        return HandleIfStmt(node);
-    case ASTNode::NodeKind::NUMBER_EXPR:
-        return HandleNumberExpr(node);
-    case ASTNode::NodeKind::PRINT_STMT:
-        return HandlePrintStmt(node);
-    case ASTNode::NodeKind::RETURN_STMT:
-        return HandleReturnStmt(node);
-    case ASTNode::NodeKind::SCAN_STMT:
-        return HandleScanStmt(node);
-    case ASTNode::NodeKind::STRING_EXPR:
-        return HandleStringExpr(node);
-    case ASTNode::NodeKind::VAR_DECL:
-        return HandleVarDecl(node);
-    case ASTNode::NodeKind::WHILE_STMT:
-        return HandleWhileStmt(node);
+    case ASTNode::NodeKind::BINARY_EXPR:        return HandleBinaryExpr(node);
+    case ASTNode::NodeKind::BOOLEAN_EXPR:       return HandleBooleanExpr(node);
+    case ASTNode::NodeKind::CALL_EXPR:          return HandleCallExpr(node);
+    case ASTNode::NodeKind::COMPOUND_STMT:      return HandleCompoundStmt(node);
+    case ASTNode::NodeKind::FUNCTION_DECL:      return HandleFunction(node);
+    case ASTNode::NodeKind::IDENTIFIER_EXPR:    return HandleIdentifierExpr(node);
+    case ASTNode::NodeKind::IF_STMT:            return HandleIfStmt(node);
+    case ASTNode::NodeKind::NUMBER_EXPR:        return HandleNumberExpr(node);
+    case ASTNode::NodeKind::PRINT_STMT:         return HandlePrintStmt(node);
+    case ASTNode::NodeKind::RETURN_STMT:        return HandleReturnStmt(node);
+    case ASTNode::NodeKind::SCAN_STMT:          return HandleScanStmt(node);
+    case ASTNode::NodeKind::STRING_EXPR:        return HandleStringExpr(node);
+    case ASTNode::NodeKind::VAR_DECL:           return HandleVarDecl(node);
+    case ASTNode::NodeKind::WHILE_STMT:         return HandleWhileStmt(node);
     default:
         assert(false); // TODO: Log an error instead?
         return{};

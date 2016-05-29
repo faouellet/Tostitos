@@ -76,6 +76,8 @@ namespace TosLang
         }
 
     public:
+        ValueType GetType() const { return mType; }
+
         bool GetBoolVal() const { assert(mType == ValueType::BOOLEAN); return boolVal; }
         int GetIntVal() const { assert(mType == ValueType::INTEGER); return intVal; }
         std::string GetStrVal() const { assert(mType == ValueType::STRING); return strVal; }

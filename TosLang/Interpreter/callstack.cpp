@@ -2,12 +2,12 @@
 
 using namespace TosLang;
 
-void StackFrame::AddOrUpdateValue(const FrontEnd::Symbol* sym, InterpretedValue value)
+void StackFrame::AddOrUpdateSymbolValue(const FrontEnd::Symbol* sym, InterpretedValue value)
 {
     mCurrentVals[sym] = value;
 }
 
-bool StackFrame::TryGetNodeValue(const FrontEnd::Symbol* sym, InterpretedValue& value)
+bool StackFrame::TryGetSymbolValue(const FrontEnd::Symbol* sym, InterpretedValue& value)
 {
     auto valIt = mCurrentVals.find(sym);
     const bool found = valIt != mCurrentVals.end();

@@ -17,7 +17,7 @@ namespace TosLang
     class Interpreter
     {
     public:
-        Interpreter() { }
+        Interpreter() : mCurrentScope{ 0 }, mCurrentNode{ nullptr }, mSymTable{ nullptr }, mCallStack{ } { }
 
     public:
         void Run(const std::unique_ptr<FrontEnd::ASTNode>& root, const std::shared_ptr<FrontEnd::SymbolTable>& symTab);
@@ -47,6 +47,7 @@ namespace TosLang
         const FrontEnd::Symbol* GetSymbol(const FrontEnd::ASTNode* node) const;
 
     private:
+        size_t mCurrentScope;
         const FrontEnd::ASTNode* mCurrentNode;
         std::shared_ptr<FrontEnd::SymbolTable> mSymTable;
         CallStack mCallStack;
