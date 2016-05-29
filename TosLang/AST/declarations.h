@@ -118,7 +118,7 @@ namespace TosLang
 
         private:
             Common::Type mType;         /*!< Variable type */
-            bool mIsFunctionParameter;   /*!< Is the variable a function parameter */
+            bool mIsFunctionParameter;  /*!< Is the variable a function parameter */
         };
 
         /*

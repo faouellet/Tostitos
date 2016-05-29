@@ -144,9 +144,19 @@ void TypeChecker::HandleBinaryExpr()
 {
     const BinaryOpExpr* bExpr = dynamic_cast<const BinaryOpExpr*>(this->mCurrentNode);
     assert(bExpr != nullptr);
-
+    
     const ChildrenNodes& children = bExpr->GetChildrenNodes();
     assert(children.size() == 2);
+    
+    // An assignment only makes sense when the left hand side operand is an identifier i.e. a modifiable lvalue
+    if ((children.front()->GetKind() != ASTNode::NodeKind::IDENTIFIER_EXPR) 
+        && (bExpr->GetOperation() == Operation::ASSIGNMENT))
+    {
+        // TODO: Log an error and add a unit test for it
+        ++mErrorCount;
+        return;
+    }
+
     Type operandTypes[2];
     for (int i = 0; i < 2; ++i)
     {
@@ -282,7 +292,7 @@ void TypeChecker::HandleIdentifierExpr()
 {
     // Performs no type checking. This method is for associating a type to an identifier
 
-    const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(this->mCurrentNode);
+    IdentifierExpr* iExpr = dynamic_cast<IdentifierExpr*>(this->mCurrentNode);
     assert(iExpr != nullptr);
 
     const Symbol* varSym;
@@ -294,6 +304,7 @@ void TypeChecker::HandleIdentifierExpr()
     assert(symFound);
 
     mNodeTypes[iExpr] = varSym->GetVariableType();
+    iExpr->SetType(varSym->GetVariableType());
 }
 
 void TypeChecker::HandleNumberExpr()

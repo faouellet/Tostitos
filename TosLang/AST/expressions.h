@@ -3,6 +3,7 @@
 
 #include "ast.h"
 #include "../Common/opcodes.h"
+#include "../Common/type.h"
 
 namespace TosLang
 {
@@ -144,6 +145,13 @@ namespace TosLang
                 mSrcLoc = srcLoc;
             }
             virtual ~IdentifierExpr() = default;
+
+        public:
+            void SetType(const Common::Type type) { mType = type; }
+            Common::Type GetType() const { return mType; }
+
+        private:
+            Common::Type mType; /*!< Associated variable type */
         };
 
         /*

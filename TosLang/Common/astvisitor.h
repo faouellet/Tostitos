@@ -242,7 +242,7 @@ namespace TosLang
             }
 
         protected:
-            const FrontEnd::ASTNode* mCurrentNode;        /*!< Current node being handled in the traversal */
+            FrontEnd::ASTNode* mCurrentNode;        /*!< Current node being handled in the traversal */
             std::function<void()> mPrologueFtr;     /*!< Functor to be called when entering a node */
             std::function<void()> mEpilogueFtr;     /*!< Functor to be called when leaving a node */
         };
