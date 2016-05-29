@@ -131,8 +131,7 @@ namespace TosLang
             * \return           Overload set for the function call
             */
             std::vector<const Symbol*> GetOverloadCandidates(const std::string& fnName) const;
-
-
+            
             /*
             * \fn           FindFunctionDecl
             * \brief        Gets the function declaration which matches the given symbol
@@ -140,6 +139,11 @@ namespace TosLang
             * \return       Pointer to the function AST node. Nullptr if no matching declaration is found
             */
             const ASTNode* FindFunctionDecl(const Symbol& fnSym) const;
+
+            /*
+            * TODO
+            */
+            const ASTNode* FindVarDecl(const ASTNode* identExpr, const size_t scopeID) const;
             
             /*
             * \fn           IsFunctionNameValid
@@ -172,13 +176,7 @@ namespace TosLang
             * \return       True if the variable was declared at global scope, else false
             */
             bool IsGlobalVariable(const ASTNode* var) const;
-                        
-        private:
-            /*
-            * TODO
-            */
-            const ASTNode* FindVarDecl(const ASTNode* identExpr, const size_t scopeID) const;
-
+            
         private:
             using SymTable = std::unordered_map<const ASTNode*, Symbol>;
             using UseDefMap = std::unordered_map<const ASTNode*, const ASTNode*>;
