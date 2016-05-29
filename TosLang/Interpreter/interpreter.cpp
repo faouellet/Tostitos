@@ -108,7 +108,18 @@ InterpretedValue Interpreter::HandleBinaryExpr(const FrontEnd::ASTNode* node)
     // a certain operation only works with a certain type
     switch (bExpr->GetOperation())
     {
-     // TODO: case Operation::ASSIGNMENT:     return InterpretedValue{ lhsval.GetBoolVal() && rhsval.GetBoolVal() };
+    case Operation::ASSIGNMENT:     
+    {
+        // Fetch the identifier symbol
+        const Symbol* identSym = GetSymbol(bExpr->GetLHS());;
+
+        if (identSym->IsGlobal())
+            mCallStack.front().AddOrUpdateSymbolValue(identSym, rhsval);
+        else
+            mCallStack.back().AddOrUpdateSymbolValue(identSym, rhsval);
+
+        return rhsval;
+    }
     case Operation::AND_BOOL:       return InterpretedValue{ lhsval.GetBoolVal() && rhsval.GetBoolVal() };
     case Operation::AND_INT:        return InterpretedValue{ lhsval.GetIntVal() & rhsval.GetIntVal() };
     case Operation::DIVIDE:         return InterpretedValue{ lhsval.GetIntVal() / rhsval.GetIntVal() };
