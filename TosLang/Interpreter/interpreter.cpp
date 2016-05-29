@@ -21,7 +21,7 @@ void Interpreter::Run(const std::unique_ptr<ASTNode>& root, const std::shared_pt
     const ASTNode* mainNode = mSymTable->FindFunctionDecl({ { Type::VOID }, 0, "main" });
     if (mainNode == nullptr)
     {
-        // TODO: Log error
+        // TODO: Log error and add a unit test for it
         return;
     }
 

@@ -5,12 +5,14 @@ namespace TosLang
 {
     namespace Common
     {
+        // TODO: Put them in alphabetical order and regenerate the ASTs used for testing
+
         enum class Operation : unsigned int
         {
             AND_BOOL,
             AND_INT,
-            ASSIGNMENT,
             DIVIDE,
+            ASSIGNMENT,
             GREATER_THAN,
             LEFT_SHIFT,
             LESS_THAN,
