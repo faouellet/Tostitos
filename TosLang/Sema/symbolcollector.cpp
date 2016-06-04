@@ -28,7 +28,7 @@ SymbolCollector::SymbolCollector(const std::shared_ptr<SymbolTable>& symTab)
             }
             else if (mCurrentNode->GetKind() == ASTNode::NodeKind::FUNCTION_DECL)
             {
-                mCurrentFunc = dynamic_cast<const FunctionDecl*>(mCurrentNode);
+                mCurrentFunc = static_cast<const FunctionDecl*>(mCurrentNode);
                 assert(mCurrentFunc != nullptr);
             }
         }
@@ -66,7 +66,7 @@ size_t SymbolCollector::Run(const std::unique_ptr<ASTNode>& root)
 
 void SymbolCollector::HandleFunctionDecl() 
 {
-    const FunctionDecl* fnDecl = dynamic_cast<const FunctionDecl*>(mCurrentNode);
+    const FunctionDecl* fnDecl = static_cast<const FunctionDecl*>(mCurrentNode);
     assert(fnDecl != nullptr);
 
     std::vector<Type> fnType;
@@ -77,12 +77,12 @@ void SymbolCollector::HandleFunctionDecl()
     sStream << static_cast<std::underlying_type<Common::Type>::type>(fnDecl->GetReturnType());
     fnType.push_back(fnDecl->GetReturnType());
 
-    const ParamVarDecls* paramDecl = dynamic_cast<const ParamVarDecls*>(fnDecl->GetParametersDecl());
+    const ParamVarDecls* paramDecl = static_cast<const ParamVarDecls*>(fnDecl->GetParametersDecl());
     assert(paramDecl != nullptr);
 
     for (auto& param : paramDecl->GetParameters())
     {
-        const VarDecl* paramVar = dynamic_cast<const VarDecl*>(param.get());
+        const VarDecl* paramVar = static_cast<const VarDecl*>(param.get());
         assert(paramVar != nullptr);
         // Since Common::Type is an enum class, we need to do a cast to its underlying type
         sStream << static_cast<std::underlying_type<Common::Type>::type>(paramVar->GetVarType());
@@ -101,14 +101,14 @@ void SymbolCollector::HandleFunctionDecl()
 
 void SymbolCollector::HandleParamVarDecl() 
 {
-    const ParamVarDecls* paramDecl = dynamic_cast<const ParamVarDecls*>(mCurrentNode);
+    const ParamVarDecls* paramDecl = static_cast<const ParamVarDecls*>(mCurrentNode);
     assert(paramDecl != nullptr);
 
     std::vector<Common::Type> paramTypes;
     for (auto& param : paramDecl->GetParameters())
     {
         // Add the parameter type to the list of the function's parameters' types
-        const VarDecl* paramVar = dynamic_cast<const VarDecl*>(param.get());
+        const VarDecl* paramVar = static_cast<const VarDecl*>(param.get());
         assert(paramVar != nullptr);
         paramTypes.push_back(paramVar->GetVarType());
 
@@ -124,7 +124,7 @@ void SymbolCollector::HandleParamVarDecl()
 
 void SymbolCollector::HandleVarDecl() 
 {
-    const VarDecl* varDecl = dynamic_cast<const VarDecl*>(mCurrentNode);
+    const VarDecl* varDecl = static_cast<const VarDecl*>(mCurrentNode);
     assert(varDecl != nullptr);
 
     // This method is only for handling variables that aren't function parameters
@@ -146,7 +146,7 @@ void SymbolCollector::HandleVarDecl()
 
 void SymbolCollector::HandleCallExpr()
 {
-    const CallExpr* cExpr = dynamic_cast<const CallExpr*>(this->mCurrentNode);
+    const CallExpr* cExpr = static_cast<const CallExpr*>(this->mCurrentNode);
     assert(cExpr != nullptr);
 
     if (!mSymbolTable->IsFunctionNameValid(cExpr->GetCalleeName()))
@@ -158,7 +158,7 @@ void SymbolCollector::HandleCallExpr()
 
 void SymbolCollector::HandleIdentifierExpr()
 {
-    const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(this->mCurrentNode);
+    const IdentifierExpr* iExpr = static_cast<const IdentifierExpr*>(this->mCurrentNode);
     assert(iExpr != nullptr);
 
     if (!mSymbolTable->AddVariableUse(iExpr, mCurrentScopesPath))

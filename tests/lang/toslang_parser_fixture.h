@@ -56,7 +56,7 @@ struct TosLangParserFixture
         BOOST_REQUIRE(programAST != nullptr);
 
         BOOST_REQUIRE(programAST->GetKind() == ASTNode::NodeKind::PROGRAM_DECL);
-        ProgramDecl* pDecl = dynamic_cast<ProgramDecl*>(programAST.get());
+        ProgramDecl* pDecl = static_cast<ProgramDecl*>(programAST.get());
         BOOST_REQUIRE(pDecl != nullptr);
 
         auto& cNodes = pDecl->GetProgramDecls();

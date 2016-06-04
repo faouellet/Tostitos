@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE( ParseCallZeroArgTest )
 
     BOOST_REQUIRE(cNodes[0] != nullptr);
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
-    const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(cNodes[0].get());
+    const FunctionDecl* fDecl = static_cast<const FunctionDecl*>(cNodes[0].get());
     BOOST_REQUIRE(fDecl != nullptr);
     BOOST_REQUIRE_EQUAL(fDecl->GetFunctionName(), "nothing");
 
@@ -38,14 +38,15 @@ BOOST_AUTO_TEST_CASE( ParseCallZeroArgTest )
     BOOST_REQUIRE_EQUAL(stmts.size(), 1);
 
     BOOST_REQUIRE(stmts[0] != nullptr);
-    const ReturnStmt* rStmt = dynamic_cast<const ReturnStmt*>(stmts[0].get());
+    BOOST_REQUIRE(stmts[0]->GetKind() == ASTNode::NodeKind::RETURN_STMT);
+    const ReturnStmt* rStmt = static_cast<const ReturnStmt*>(stmts[0].get());
     BOOST_REQUIRE(rStmt != nullptr);
     const Expr* rValue = rStmt->GetReturnExpr();
     BOOST_REQUIRE(rValue == nullptr);
 
     BOOST_REQUIRE(cNodes[1] != nullptr);
     BOOST_REQUIRE(cNodes[1]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
-    const FunctionDecl* mainDecl = dynamic_cast<const FunctionDecl*>(cNodes[1].get());
+    const FunctionDecl* mainDecl = static_cast<const FunctionDecl*>(cNodes[1].get());
     BOOST_REQUIRE(mainDecl != nullptr);
     BOOST_REQUIRE_EQUAL(mainDecl->GetFunctionName(), "main");
 
@@ -59,13 +60,15 @@ BOOST_AUTO_TEST_CASE( ParseCallZeroArgTest )
     BOOST_REQUIRE_EQUAL(mainStmts.size(), 2);
 
     BOOST_REQUIRE(mainStmts[0] != nullptr);
-    const CallExpr* cExpr = dynamic_cast<const CallExpr*>(mainStmts[0].get());
+    BOOST_REQUIRE(mainStmts[0]->GetKind() == ASTNode::NodeKind::CALL_EXPR);
+    const CallExpr* cExpr = static_cast<const CallExpr*>(mainStmts[0].get());
     BOOST_REQUIRE(cExpr != nullptr);
     auto& cArgs = cExpr->GetArgs();
     BOOST_REQUIRE_EQUAL(cArgs.size(), 0);
 
     BOOST_REQUIRE(mainStmts[1] != nullptr);
-    const ReturnStmt* mainRStmt = dynamic_cast<const ReturnStmt*>(mainStmts[1].get());
+    BOOST_REQUIRE(mainStmts[1]->GetKind() == ASTNode::NodeKind::RETURN_STMT);
+    const ReturnStmt* mainRStmt = static_cast<const ReturnStmt*>(mainStmts[1].get());
     BOOST_REQUIRE(mainRStmt != nullptr);
     const Expr* mainRValue = mainRStmt->GetReturnExpr();
     BOOST_REQUIRE(mainRValue == nullptr);
@@ -79,7 +82,7 @@ BOOST_AUTO_TEST_CASE( ParseCallOneArgTest )
 
     BOOST_REQUIRE(cNodes[0] != nullptr);
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
-    const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(cNodes[0].get());
+    const FunctionDecl* fDecl = static_cast<const FunctionDecl*>(cNodes[0].get());
     BOOST_REQUIRE(fDecl != nullptr);
     BOOST_REQUIRE_EQUAL(fDecl->GetFunctionName(), "identity");
 
@@ -89,7 +92,8 @@ BOOST_AUTO_TEST_CASE( ParseCallOneArgTest )
     BOOST_REQUIRE_EQUAL(params.size(), 1);
 
     BOOST_REQUIRE(params[0] != nullptr);
-    const VarDecl* arg = dynamic_cast<const VarDecl*>(params[0].get());
+    BOOST_REQUIRE(params[0]->GetKind() == ASTNode::NodeKind::VAR_DECL);
+    const VarDecl* arg = static_cast<const VarDecl*>(params[0].get());
     BOOST_REQUIRE(arg != nullptr);
     BOOST_REQUIRE_EQUAL(arg->GetName(), "i");
 
@@ -99,17 +103,19 @@ BOOST_AUTO_TEST_CASE( ParseCallOneArgTest )
     BOOST_REQUIRE_EQUAL(stmts.size(), 1);
 
     BOOST_REQUIRE(stmts[0] != nullptr);
-    const ReturnStmt* rStmt = dynamic_cast<const ReturnStmt*>(stmts[0].get());
+    BOOST_REQUIRE(stmts[0]->GetKind() == ASTNode::NodeKind::RETURN_STMT);
+    const ReturnStmt* rStmt = static_cast<const ReturnStmt*>(stmts[0].get());
     BOOST_REQUIRE(rStmt != nullptr);
     const Expr* rValue = rStmt->GetReturnExpr();
     BOOST_REQUIRE(rValue != nullptr);
-    const IdentifierExpr* iValue = dynamic_cast<const IdentifierExpr*>(rValue);
+    BOOST_REQUIRE(rValue->GetKind() == ASTNode::NodeKind::IDENTIFIER_EXPR);
+    const IdentifierExpr* iValue = static_cast<const IdentifierExpr*>(rValue);
     BOOST_REQUIRE(iValue != nullptr);
     BOOST_REQUIRE_EQUAL(iValue->GetName(), "i");
 
     BOOST_REQUIRE(cNodes[1] != nullptr);
     BOOST_REQUIRE(cNodes[1]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
-    const FunctionDecl* mainDecl = dynamic_cast<const FunctionDecl*>(cNodes[1].get());
+    const FunctionDecl* mainDecl = static_cast<const FunctionDecl*>(cNodes[1].get());
     BOOST_REQUIRE(mainDecl != nullptr);
     BOOST_REQUIRE_EQUAL(mainDecl->GetFunctionName(), "main");
 
@@ -123,31 +129,35 @@ BOOST_AUTO_TEST_CASE( ParseCallOneArgTest )
     BOOST_REQUIRE_EQUAL(mainStmts.size(), 3);
 
     BOOST_REQUIRE(mainStmts[0] != nullptr);
-    const VarDecl* vDecl = dynamic_cast<const VarDecl*>(mainStmts[0].get());
+    BOOST_REQUIRE(mainStmts[0]->GetKind() == ASTNode::NodeKind::VAR_DECL);
+    const VarDecl* vDecl = static_cast<const VarDecl*>(mainStmts[0].get());
     BOOST_REQUIRE(vDecl != nullptr);
     BOOST_REQUIRE_EQUAL(vDecl->GetVarName(), "MyInt");
     BOOST_REQUIRE(vDecl->GetInitExpr()->GetKind() == ASTNode::NodeKind::NUMBER_EXPR);
-    const NumberExpr* nExpr = dynamic_cast<const NumberExpr*>(vDecl->GetInitExpr());
+    const NumberExpr* nExpr = static_cast<const NumberExpr*>(vDecl->GetInitExpr());
     BOOST_REQUIRE(nExpr != nullptr);
     BOOST_REQUIRE_EQUAL(nExpr->GetValue(), 42);
 
     BOOST_REQUIRE(mainStmts[1] != nullptr);
-    vDecl = dynamic_cast<const VarDecl*>(mainStmts[1].get());
+    BOOST_REQUIRE(mainStmts[1]->GetKind() == ASTNode::NodeKind::VAR_DECL);
+    vDecl = static_cast<const VarDecl*>(mainStmts[1].get());
     BOOST_REQUIRE(vDecl != nullptr);
     BOOST_REQUIRE_EQUAL(vDecl->GetVarName(), "MyInt2");
     BOOST_REQUIRE(vDecl->GetInitExpr()->GetKind() == ASTNode::NodeKind::CALL_EXPR);
-    const CallExpr* cExpr = dynamic_cast<const CallExpr*>(vDecl->GetInitExpr());
+    const CallExpr* cExpr = static_cast<const CallExpr*>(vDecl->GetInitExpr());
     BOOST_REQUIRE(cExpr != nullptr);
     auto& cArgs = cExpr->GetArgs();
     BOOST_REQUIRE_EQUAL(cArgs.size(), 1);
 
     BOOST_REQUIRE(cArgs[0] != nullptr);
-    const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(cArgs[0].get());
+    BOOST_REQUIRE(cArgs[0]->GetKind() == ASTNode::NodeKind::IDENTIFIER_EXPR);
+    const IdentifierExpr* iExpr = static_cast<const IdentifierExpr*>(cArgs[0].get());
     BOOST_REQUIRE(iExpr != nullptr);
     BOOST_REQUIRE_EQUAL(iExpr->GetName(), "MyInt");
 
     BOOST_REQUIRE(mainStmts[2] != nullptr);
-    const ReturnStmt* mainRStmt = dynamic_cast<const ReturnStmt*>(mainStmts[2].get());
+    BOOST_REQUIRE(mainStmts[2]->GetKind() == ASTNode::NodeKind::RETURN_STMT);
+    const ReturnStmt* mainRStmt = static_cast<const ReturnStmt*>(mainStmts[2].get());
     BOOST_REQUIRE(mainRStmt != nullptr);
     const Expr* mainRValue = mainRStmt->GetReturnExpr();
     BOOST_REQUIRE(mainRValue == nullptr);
@@ -161,7 +171,7 @@ BOOST_AUTO_TEST_CASE( ParseCallOneArgBinopTest )
 
     BOOST_REQUIRE(cNodes[0] != nullptr);
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
-    const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(cNodes[0].get());
+    const FunctionDecl* fDecl = static_cast<const FunctionDecl*>(cNodes[0].get());
     BOOST_REQUIRE(fDecl != nullptr);
     BOOST_REQUIRE_EQUAL(fDecl->GetFunctionName(), "identity");
 
@@ -171,7 +181,8 @@ BOOST_AUTO_TEST_CASE( ParseCallOneArgBinopTest )
     BOOST_REQUIRE_EQUAL(params.size(), 1);
 
     BOOST_REQUIRE(params[0] != nullptr);
-    const VarDecl* arg = dynamic_cast<const VarDecl*>(params[0].get());
+    BOOST_REQUIRE(params[0]->GetKind() == ASTNode::NodeKind::VAR_DECL);
+    const VarDecl* arg = static_cast<const VarDecl*>(params[0].get());
     BOOST_REQUIRE(arg != nullptr);
     BOOST_REQUIRE_EQUAL(arg->GetName(), "i");
 
@@ -181,17 +192,19 @@ BOOST_AUTO_TEST_CASE( ParseCallOneArgBinopTest )
     BOOST_REQUIRE_EQUAL(stmts.size(), 1);
 
     BOOST_REQUIRE(stmts[0] != nullptr);
-    const ReturnStmt* rStmt = dynamic_cast<const ReturnStmt*>(stmts[0].get());
+    BOOST_REQUIRE(stmts[0]->GetKind() == ASTNode::NodeKind::RETURN_STMT);
+    const ReturnStmt* rStmt = static_cast<const ReturnStmt*>(stmts[0].get());
     BOOST_REQUIRE(rStmt != nullptr);
     const Expr* rValue = rStmt->GetReturnExpr();
     BOOST_REQUIRE(rValue != nullptr);
-    const IdentifierExpr* iValue = dynamic_cast<const IdentifierExpr*>(rValue);
+    BOOST_REQUIRE(rValue->GetKind() == ASTNode::NodeKind::IDENTIFIER_EXPR);
+    const IdentifierExpr* iValue = static_cast<const IdentifierExpr*>(rValue);
     BOOST_REQUIRE(iValue != nullptr);
     BOOST_REQUIRE_EQUAL(iValue->GetName(), "i");
 
     BOOST_REQUIRE(cNodes[1] != nullptr);
     BOOST_REQUIRE(cNodes[1]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
-    const FunctionDecl* mainDecl = dynamic_cast<const FunctionDecl*>(cNodes[1].get());
+    const FunctionDecl* mainDecl = static_cast<const FunctionDecl*>(cNodes[1].get());
     BOOST_REQUIRE(mainDecl != nullptr);
     BOOST_REQUIRE_EQUAL(mainDecl->GetFunctionName(), "main");
 
@@ -205,35 +218,40 @@ BOOST_AUTO_TEST_CASE( ParseCallOneArgBinopTest )
     BOOST_REQUIRE_EQUAL(mainStmts.size(), 4);
 
     BOOST_REQUIRE(mainStmts[0] != nullptr);
-    const VarDecl* vDecl = dynamic_cast<const VarDecl*>(mainStmts[0].get());
+    BOOST_REQUIRE(mainStmts[0]->GetKind() == ASTNode::NodeKind::VAR_DECL);
+    const VarDecl* vDecl = static_cast<const VarDecl*>(mainStmts[0].get());
     BOOST_REQUIRE(vDecl != nullptr);
     BOOST_REQUIRE_EQUAL(vDecl->GetVarName(), "MyInt1");
     BOOST_REQUIRE(vDecl->GetInitExpr()->GetKind() == ASTNode::NodeKind::NUMBER_EXPR);
-    const NumberExpr* nExpr = dynamic_cast<const NumberExpr*>(vDecl->GetInitExpr());
+    const NumberExpr* nExpr = static_cast<const NumberExpr*>(vDecl->GetInitExpr());
     BOOST_REQUIRE(nExpr != nullptr);
     BOOST_REQUIRE_EQUAL(nExpr->GetValue(), 1);
 
     BOOST_REQUIRE(mainStmts[1] != nullptr);
-    vDecl = dynamic_cast<const VarDecl*>(mainStmts[1].get());
+    BOOST_REQUIRE(mainStmts[1]->GetKind() == ASTNode::NodeKind::VAR_DECL);
+    vDecl = static_cast<const VarDecl*>(mainStmts[1].get());
     BOOST_REQUIRE(vDecl != nullptr);
     BOOST_REQUIRE_EQUAL(vDecl->GetVarName(), "MyInt2");
     BOOST_REQUIRE(vDecl->GetInitExpr()->GetKind() == ASTNode::NodeKind::NUMBER_EXPR);
-    nExpr = dynamic_cast<const NumberExpr*>(vDecl->GetInitExpr());
+    nExpr = static_cast<const NumberExpr*>(vDecl->GetInitExpr());
     BOOST_REQUIRE(nExpr != nullptr);
     BOOST_REQUIRE_EQUAL(nExpr->GetValue(), 2);
 
     BOOST_REQUIRE(mainStmts[2] != nullptr);
-    const CallExpr* cExpr = dynamic_cast<const CallExpr*>(mainStmts[2].get());
+    BOOST_REQUIRE(mainStmts[2]->GetKind() == ASTNode::NodeKind::CALL_EXPR);
+    const CallExpr* cExpr = static_cast<const CallExpr*>(mainStmts[2].get());
     BOOST_REQUIRE(cExpr != nullptr);
     auto& cArgs = cExpr->GetArgs();
     BOOST_REQUIRE_EQUAL(cArgs.size(), 1);
 
     BOOST_REQUIRE(cArgs[0] != nullptr);
-    const BinaryOpExpr* binExpr = dynamic_cast<const BinaryOpExpr*>(cArgs[0].get());
+    BOOST_REQUIRE(cArgs[0]->GetKind() == ASTNode::NodeKind::BINARY_EXPR);
+    const BinaryOpExpr* binExpr = static_cast<const BinaryOpExpr*>(cArgs[0].get());
     BOOST_REQUIRE(binExpr != nullptr);
 
     BOOST_REQUIRE(mainStmts[3] != nullptr);
-    const ReturnStmt* mainRStmt = dynamic_cast<const ReturnStmt*>(mainStmts[3].get());
+    BOOST_REQUIRE(mainStmts[3]->GetKind() == ASTNode::NodeKind::RETURN_STMT);
+    const ReturnStmt* mainRStmt = static_cast<const ReturnStmt*>(mainStmts[3].get());
     BOOST_REQUIRE(mainRStmt != nullptr);
     const Expr* mainRValue = mainRStmt->GetReturnExpr();
     BOOST_REQUIRE(mainRValue == nullptr);
@@ -247,7 +265,7 @@ BOOST_AUTO_TEST_CASE( ParseCallMultiArgsTest )
 
     BOOST_REQUIRE(cNodes[0] != nullptr);
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
-    const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(cNodes[0].get());
+    const FunctionDecl* fDecl = static_cast<const FunctionDecl*>(cNodes[0].get());
     BOOST_REQUIRE(fDecl != nullptr);
     BOOST_REQUIRE_EQUAL(fDecl->GetFunctionName(), "sum");
 
@@ -259,7 +277,8 @@ BOOST_AUTO_TEST_CASE( ParseCallMultiArgsTest )
     for (size_t i = 0; i < 3; i++)
     {
         BOOST_REQUIRE(params[i] != nullptr);
-        const VarDecl* arg = dynamic_cast<const VarDecl*>(params[i].get());
+        BOOST_REQUIRE(params[i]->GetKind() == ASTNode::NodeKind::VAR_DECL);
+        const VarDecl* arg = static_cast<const VarDecl*>(params[i].get());
         BOOST_REQUIRE(arg != nullptr);
         std::stringstream sStream;
         sStream << "i";
@@ -273,16 +292,18 @@ BOOST_AUTO_TEST_CASE( ParseCallMultiArgsTest )
     BOOST_REQUIRE_EQUAL(stmts.size(), 1);
 
     BOOST_REQUIRE(stmts[0] != nullptr);
-    const ReturnStmt* rStmt = dynamic_cast<const ReturnStmt*>(stmts[0].get());
+    BOOST_REQUIRE(stmts[0]->GetKind() == ASTNode::NodeKind::RETURN_STMT);
+    const ReturnStmt* rStmt = static_cast<const ReturnStmt*>(stmts[0].get());
     BOOST_REQUIRE(rStmt != nullptr);
     const Expr* rValue = rStmt->GetReturnExpr();
     BOOST_REQUIRE(rValue != nullptr);
-    const BinaryOpExpr* bValue = dynamic_cast<const BinaryOpExpr*>(rValue);
+    BOOST_REQUIRE(rValue->GetKind() == ASTNode::NodeKind::BINARY_EXPR);
+    const BinaryOpExpr* bValue = static_cast<const BinaryOpExpr*>(rValue);
     BOOST_REQUIRE(bValue != nullptr);
 
     BOOST_REQUIRE(cNodes[1] != nullptr);
     BOOST_REQUIRE(cNodes[1]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
-    const FunctionDecl* mainDecl = dynamic_cast<const FunctionDecl*>(cNodes[1].get());
+    const FunctionDecl* mainDecl = static_cast<const FunctionDecl*>(cNodes[1].get());
     BOOST_REQUIRE(mainDecl != nullptr);
     BOOST_REQUIRE_EQUAL(mainDecl->GetFunctionName(), "main");
 
@@ -301,17 +322,19 @@ BOOST_AUTO_TEST_CASE( ParseCallMultiArgsTest )
         sStream << "MyInt";
         sStream << i + 1;
         BOOST_REQUIRE(mainStmts[i] != nullptr);
-        const VarDecl* vDecl = dynamic_cast<const VarDecl*>(mainStmts[i].get());
+        BOOST_REQUIRE(mainStmts[i]->GetKind() == ASTNode::NodeKind::VAR_DECL);
+        const VarDecl* vDecl = static_cast<const VarDecl*>(mainStmts[i].get());
         BOOST_REQUIRE(vDecl != nullptr);
         BOOST_REQUIRE_EQUAL(vDecl->GetVarName(), sStream.str());
         BOOST_REQUIRE(vDecl->GetInitExpr()->GetKind() == ASTNode::NodeKind::NUMBER_EXPR);
-        const NumberExpr* nExpr = dynamic_cast<const NumberExpr*>(vDecl->GetInitExpr());
+        const NumberExpr* nExpr = static_cast<const NumberExpr*>(vDecl->GetInitExpr());
         BOOST_REQUIRE(nExpr != nullptr);
         BOOST_REQUIRE_EQUAL(nExpr->GetValue(), i + 1);
     }
 
     BOOST_REQUIRE(mainStmts[3] != nullptr);
-    const CallExpr* cExpr = dynamic_cast<const CallExpr*>(mainStmts[3].get());
+    BOOST_REQUIRE(mainStmts[3]->GetKind() == ASTNode::NodeKind::CALL_EXPR);
+    const CallExpr* cExpr = static_cast<const CallExpr*>(mainStmts[3].get());
     BOOST_REQUIRE(cExpr != nullptr);
     auto& cArgs = cExpr->GetArgs();
     BOOST_REQUIRE_EQUAL(cArgs.size(), 3);
@@ -319,7 +342,8 @@ BOOST_AUTO_TEST_CASE( ParseCallMultiArgsTest )
     for (size_t i = 0; i < 3; i++)
     {
         BOOST_REQUIRE(cArgs[i] != nullptr);
-        const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(cArgs[i].get());
+        BOOST_REQUIRE(cArgs[i]->GetKind() == ASTNode::NodeKind::IDENTIFIER_EXPR);
+        const IdentifierExpr* iExpr = static_cast<const IdentifierExpr*>(cArgs[i].get());
         BOOST_REQUIRE(iExpr != nullptr);
         std::stringstream sStream;
         sStream << "MyInt";
@@ -328,7 +352,8 @@ BOOST_AUTO_TEST_CASE( ParseCallMultiArgsTest )
     }
 
     BOOST_REQUIRE(mainStmts[4] != nullptr);
-    const ReturnStmt* mainRStmt = dynamic_cast<const ReturnStmt*>(mainStmts[4].get());
+    BOOST_REQUIRE(mainStmts[4]->GetKind() == ASTNode::NodeKind::RETURN_STMT);
+    const ReturnStmt* mainRStmt = static_cast<const ReturnStmt*>(mainStmts[4].get());
     BOOST_REQUIRE(mainRStmt != nullptr);
     const Expr* mainRValue = mainRStmt->GetReturnExpr();
     BOOST_REQUIRE(mainRValue == nullptr);
@@ -342,7 +367,7 @@ BOOST_AUTO_TEST_CASE( ParseCallMultiArgsOneBinopTest )
 
     BOOST_REQUIRE(cNodes[0] != nullptr);
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
-    const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(cNodes[0].get());
+    const FunctionDecl* fDecl = static_cast<const FunctionDecl*>(cNodes[0].get());
     BOOST_REQUIRE(fDecl != nullptr);
     BOOST_REQUIRE_EQUAL(fDecl->GetFunctionName(), "sum");
 
@@ -354,7 +379,8 @@ BOOST_AUTO_TEST_CASE( ParseCallMultiArgsOneBinopTest )
     for (size_t i = 0; i < 3; i++)
     {
         BOOST_REQUIRE(params[i] != nullptr);
-        const VarDecl* arg = dynamic_cast<const VarDecl*>(params[i].get());
+        BOOST_REQUIRE(params[i]->GetKind() == ASTNode::NodeKind::VAR_DECL);
+        const VarDecl* arg = static_cast<const VarDecl*>(params[i].get());
         BOOST_REQUIRE(arg != nullptr);
         std::stringstream sStream;
         sStream << "i";
@@ -368,16 +394,18 @@ BOOST_AUTO_TEST_CASE( ParseCallMultiArgsOneBinopTest )
     BOOST_REQUIRE_EQUAL(stmts.size(), 1);
 
     BOOST_REQUIRE(stmts[0] != nullptr);
-    const ReturnStmt* rStmt = dynamic_cast<const ReturnStmt*>(stmts[0].get());
+    BOOST_REQUIRE(stmts[0]->GetKind() == ASTNode::NodeKind::RETURN_STMT);
+    const ReturnStmt* rStmt = static_cast<const ReturnStmt*>(stmts[0].get());
     BOOST_REQUIRE(rStmt != nullptr);
     const Expr* rValue = rStmt->GetReturnExpr();
     BOOST_REQUIRE(rValue != nullptr);
-    const BinaryOpExpr* bValue = dynamic_cast<const BinaryOpExpr*>(rValue);
+    BOOST_REQUIRE(rValue->GetKind() == ASTNode::NodeKind::BINARY_EXPR);
+    const BinaryOpExpr* bValue = static_cast<const BinaryOpExpr*>(rValue);
     BOOST_REQUIRE(bValue != nullptr);
 
     BOOST_REQUIRE(cNodes[1] != nullptr);
     BOOST_REQUIRE(cNodes[1]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
-    const FunctionDecl* mainDecl = dynamic_cast<const FunctionDecl*>(cNodes[1].get());
+    const FunctionDecl* mainDecl = static_cast<const FunctionDecl*>(cNodes[1].get());
     BOOST_REQUIRE(mainDecl != nullptr);
     BOOST_REQUIRE_EQUAL(mainDecl->GetFunctionName(), "main");
 
@@ -396,29 +424,33 @@ BOOST_AUTO_TEST_CASE( ParseCallMultiArgsOneBinopTest )
         sStream << "MyInt";
         sStream << i + 1;
         BOOST_REQUIRE(mainStmts[i] != nullptr);
-        const VarDecl* vDecl = dynamic_cast<const VarDecl*>(mainStmts[i].get());
+        BOOST_REQUIRE(mainStmts[i]->GetKind() == ASTNode::NodeKind::VAR_DECL);
+        const VarDecl* vDecl = static_cast<const VarDecl*>(mainStmts[i].get());
         BOOST_REQUIRE(vDecl != nullptr);
         BOOST_REQUIRE_EQUAL(vDecl->GetVarName(), sStream.str());
         BOOST_REQUIRE(vDecl->GetInitExpr()->GetKind() == ASTNode::NodeKind::NUMBER_EXPR);
-        const NumberExpr* nExpr = dynamic_cast<const NumberExpr*>(vDecl->GetInitExpr());
+        const NumberExpr* nExpr = static_cast<const NumberExpr*>(vDecl->GetInitExpr());
         BOOST_REQUIRE(nExpr != nullptr);
         BOOST_REQUIRE_EQUAL(nExpr->GetValue(), i + 1);
     }
 
     BOOST_REQUIRE(mainStmts[3] != nullptr);
-    const CallExpr* cExpr = dynamic_cast<const CallExpr*>(mainStmts[3].get());
+    BOOST_REQUIRE(mainStmts[3]->GetKind() == ASTNode::NodeKind::CALL_EXPR);
+    const CallExpr* cExpr = static_cast<const CallExpr*>(mainStmts[3].get());
     BOOST_REQUIRE(cExpr != nullptr);
     auto& cArgs = cExpr->GetArgs();
     BOOST_REQUIRE_EQUAL(cArgs.size(), 3);
 
     BOOST_REQUIRE(cArgs[0] != nullptr);
-    const BinaryOpExpr* binExpr = dynamic_cast<const BinaryOpExpr*>(cArgs[0].get());
+    BOOST_REQUIRE(cArgs[0]->GetKind() == ASTNode::NodeKind::BINARY_EXPR);
+    const BinaryOpExpr* binExpr = static_cast<const BinaryOpExpr*>(cArgs[0].get());
     BOOST_REQUIRE(binExpr != nullptr);
 
     for (size_t i = 1; i < 3; i++)
     {
         BOOST_REQUIRE(cArgs[i] != nullptr);
-        const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(cArgs[i].get());
+        BOOST_REQUIRE(cArgs[i]->GetKind() == ASTNode::NodeKind::IDENTIFIER_EXPR);
+        const IdentifierExpr* iExpr = static_cast<const IdentifierExpr*>(cArgs[i].get());
         BOOST_REQUIRE(iExpr != nullptr);
         std::stringstream sStream;
         sStream << "MyInt";
@@ -427,7 +459,8 @@ BOOST_AUTO_TEST_CASE( ParseCallMultiArgsOneBinopTest )
     }
 
     BOOST_REQUIRE(mainStmts[4] != nullptr);
-    const ReturnStmt* mainRStmt = dynamic_cast<const ReturnStmt*>(mainStmts[4].get());
+    BOOST_REQUIRE(mainStmts[4]->GetKind() == ASTNode::NodeKind::RETURN_STMT);
+    const ReturnStmt* mainRStmt = static_cast<const ReturnStmt*>(mainStmts[4].get());
     BOOST_REQUIRE(mainRStmt != nullptr);
     const Expr* mainRValue = mainRStmt->GetReturnExpr();
     BOOST_REQUIRE(mainRValue == nullptr);
@@ -441,7 +474,7 @@ BOOST_AUTO_TEST_CASE( ParseCallMultiArgsMultiBinopsTest )
 
     BOOST_REQUIRE(cNodes[0] != nullptr);
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
-    const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(cNodes[0].get());
+    const FunctionDecl* fDecl = static_cast<const FunctionDecl*>(cNodes[0].get());
     BOOST_REQUIRE(fDecl != nullptr);
     BOOST_REQUIRE_EQUAL(fDecl->GetFunctionName(), "sum");
 
@@ -453,7 +486,8 @@ BOOST_AUTO_TEST_CASE( ParseCallMultiArgsMultiBinopsTest )
     for (size_t i = 0; i < 3; i++)
     {
         BOOST_REQUIRE(params[i] != nullptr);
-        const VarDecl* arg = dynamic_cast<const VarDecl*>(params[i].get());
+        BOOST_REQUIRE(params[i]->GetKind() == ASTNode::NodeKind::VAR_DECL);
+        const VarDecl* arg = static_cast<const VarDecl*>(params[i].get());
         BOOST_REQUIRE(arg != nullptr);
         std::stringstream sStream;
         sStream << "i";
@@ -467,16 +501,18 @@ BOOST_AUTO_TEST_CASE( ParseCallMultiArgsMultiBinopsTest )
     BOOST_REQUIRE_EQUAL(stmts.size(), 1);
 
     BOOST_REQUIRE(stmts[0] != nullptr);
-    const ReturnStmt* rStmt = dynamic_cast<const ReturnStmt*>(stmts[0].get());
+    BOOST_REQUIRE(stmts[0]->GetKind() == ASTNode::NodeKind::RETURN_STMT);
+    const ReturnStmt* rStmt = static_cast<const ReturnStmt*>(stmts[0].get());
     BOOST_REQUIRE(rStmt != nullptr);
     const Expr* rValue = rStmt->GetReturnExpr();
     BOOST_REQUIRE(rValue != nullptr);
-    const BinaryOpExpr* bValue = dynamic_cast<const BinaryOpExpr*>(rValue);
+    BOOST_REQUIRE(rValue->GetKind() == ASTNode::NodeKind::BINARY_EXPR);
+    const BinaryOpExpr* bValue = static_cast<const BinaryOpExpr*>(rValue);
     BOOST_REQUIRE(bValue != nullptr);
 
     BOOST_REQUIRE(cNodes[1] != nullptr);
     BOOST_REQUIRE(cNodes[1]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
-    const FunctionDecl* mainDecl = dynamic_cast<const FunctionDecl*>(cNodes[1].get());
+    const FunctionDecl* mainDecl = static_cast<const FunctionDecl*>(cNodes[1].get());
     BOOST_REQUIRE(mainDecl != nullptr);
     BOOST_REQUIRE_EQUAL(mainDecl->GetFunctionName(), "main");
 
@@ -495,17 +531,19 @@ BOOST_AUTO_TEST_CASE( ParseCallMultiArgsMultiBinopsTest )
         sStream << "MyInt";
         sStream << i + 1;
         BOOST_REQUIRE(mainStmts[i] != nullptr);
-        const VarDecl* vDecl = dynamic_cast<const VarDecl*>(mainStmts[i].get());
+        BOOST_REQUIRE(mainStmts[i]->GetKind() == ASTNode::NodeKind::VAR_DECL);
+        const VarDecl* vDecl = static_cast<const VarDecl*>(mainStmts[i].get());
         BOOST_REQUIRE(vDecl != nullptr);
         BOOST_REQUIRE_EQUAL(vDecl->GetVarName(), sStream.str());
         BOOST_REQUIRE(vDecl->GetInitExpr()->GetKind() == ASTNode::NodeKind::NUMBER_EXPR);
-        const NumberExpr* nExpr = dynamic_cast<const NumberExpr*>(vDecl->GetInitExpr());
+        const NumberExpr* nExpr = static_cast<const NumberExpr*>(vDecl->GetInitExpr());
         BOOST_REQUIRE(nExpr != nullptr);
         BOOST_REQUIRE_EQUAL(nExpr->GetValue(), i + 1);
     }
 
     BOOST_REQUIRE(mainStmts[3] != nullptr);
-    const CallExpr* cExpr = dynamic_cast<const CallExpr*>(mainStmts[3].get());
+    BOOST_REQUIRE(mainStmts[3]->GetKind() == ASTNode::NodeKind::CALL_EXPR);
+    const CallExpr* cExpr = static_cast<const CallExpr*>(mainStmts[3].get());
     BOOST_REQUIRE(cExpr != nullptr);
     auto& cArgs = cExpr->GetArgs();
     BOOST_REQUIRE_EQUAL(cArgs.size(), 3);
@@ -513,12 +551,14 @@ BOOST_AUTO_TEST_CASE( ParseCallMultiArgsMultiBinopsTest )
     for (size_t i = 1; i < 3; i++)
     {
         BOOST_REQUIRE(cArgs[i] != nullptr);
-        const BinaryOpExpr* binExpr = dynamic_cast<const BinaryOpExpr*>(cArgs[i].get());
+        BOOST_REQUIRE(cArgs[i]->GetKind() == ASTNode::NodeKind::BINARY_EXPR);
+        const BinaryOpExpr* binExpr = static_cast<const BinaryOpExpr*>(cArgs[i].get());
         BOOST_REQUIRE(binExpr != nullptr);
     }
 
     BOOST_REQUIRE(mainStmts[4] != nullptr);
-    const ReturnStmt* mainRStmt = dynamic_cast<const ReturnStmt*>(mainStmts[4].get());
+    BOOST_REQUIRE(mainStmts[4]->GetKind() == ASTNode::NodeKind::RETURN_STMT);
+    const ReturnStmt* mainRStmt = static_cast<const ReturnStmt*>(mainStmts[4].get());
     BOOST_REQUIRE(mainRStmt != nullptr);
     const Expr* mainRValue = mainRStmt->GetReturnExpr();
     BOOST_REQUIRE(mainRValue == nullptr);

@@ -25,7 +25,7 @@ TypeChecker::TypeChecker()
         }
         else if (mCurrentNode->GetKind() == ASTNode::NodeKind::FUNCTION_DECL)
         {
-            mCurrentFunc = dynamic_cast<const FunctionDecl*>(mCurrentNode);
+            mCurrentFunc = static_cast<const FunctionDecl*>(mCurrentNode);
             assert(mCurrentFunc != nullptr);
         }
     };
@@ -62,7 +62,7 @@ bool TypeChecker::CheckExprEvaluateToType(const Expr* expr, Type type)
     }
     else
     {
-        const CallExpr* cExpr = dynamic_cast<const CallExpr*>(expr);
+        const CallExpr* cExpr = static_cast<const CallExpr*>(expr);
         assert(cExpr != nullptr);
 
         // The overload set contains all functions that have matching parameters.
@@ -99,11 +99,11 @@ bool TypeChecker::CheckExprEvaluateToType(const Expr* expr, Type type)
 
 void TypeChecker::HandleVarDecl()
 {
-    const VarDecl* vDecl = dynamic_cast<const VarDecl*>(this->mCurrentNode);
+    const VarDecl* vDecl = static_cast<const VarDecl*>(this->mCurrentNode);
     assert(vDecl != nullptr);
         
     // We only perform a type check when a variable is declared AND initialized at the same time
-    const Expr* initExpr = dynamic_cast<const Expr*>(vDecl->GetInitExpr());
+    const Expr* initExpr = static_cast<const Expr*>(vDecl->GetInitExpr());
     if (initExpr != nullptr)
     {
         const Symbol* varSymbol;
@@ -142,7 +142,7 @@ void TypeChecker::HandleBooleanExpr()
 
 void TypeChecker::HandleBinaryExpr()
 {
-    const BinaryOpExpr* bExpr = dynamic_cast<const BinaryOpExpr*>(this->mCurrentNode);
+    const BinaryOpExpr* bExpr = static_cast<const BinaryOpExpr*>(this->mCurrentNode);
     assert(bExpr != nullptr);
     
     const ChildrenNodes& children = bExpr->GetChildrenNodes();
@@ -164,7 +164,7 @@ void TypeChecker::HandleBinaryExpr()
         {
         case ASTNode::NodeKind::BINARY_EXPR:
         {
-            const BinaryOpExpr* innerBExpr = dynamic_cast<const BinaryOpExpr*>(children[i].get());
+            const BinaryOpExpr* innerBExpr = static_cast<const BinaryOpExpr*>(children[i].get());
             operandTypes[i] = mNodeTypes.at(innerBExpr);
         }
             break;
@@ -173,7 +173,7 @@ void TypeChecker::HandleBinaryExpr()
             break;
         case ASTNode::NodeKind::IDENTIFIER_EXPR:
         {
-            const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(children[i].get());
+            const IdentifierExpr* iExpr = static_cast<const IdentifierExpr*>(children[i].get());
             // It is assumed that the scope checker has been run before the type checker
             const Symbol* varSym;
             bool symFound;
@@ -206,7 +206,7 @@ void TypeChecker::HandleBinaryExpr()
 
 void TypeChecker::HandleCallExpr()
 {
-    const CallExpr* cExpr = dynamic_cast<const CallExpr*>(this->mCurrentNode);
+    const CallExpr* cExpr = static_cast<const CallExpr*>(this->mCurrentNode);
     assert(cExpr != nullptr);
 
     std::vector<const Symbol*> overloadCandidates = mSymbolTable->GetOverloadCandidates(cExpr->GetCalleeName());
@@ -292,7 +292,7 @@ void TypeChecker::HandleIdentifierExpr()
 {
     // Performs no type checking. This method is for associating a type to an identifier
 
-    IdentifierExpr* iExpr = dynamic_cast<IdentifierExpr*>(this->mCurrentNode);
+    IdentifierExpr* iExpr = static_cast<IdentifierExpr*>(this->mCurrentNode);
     assert(iExpr != nullptr);
 
     const Symbol* varSym;
@@ -319,7 +319,7 @@ void TypeChecker::HandleStringExpr()
 
 void TypeChecker::HandleIfStmt()
 {
-    const IfStmt* ifStmt = dynamic_cast<const IfStmt*>(this->mCurrentNode);
+    const IfStmt* ifStmt = static_cast<const IfStmt*>(this->mCurrentNode);
     assert(ifStmt != nullptr);
 
     if (!CheckExprEvaluateToType(ifStmt->GetCondExpr(), Type::BOOL))
@@ -331,7 +331,7 @@ void TypeChecker::HandleIfStmt()
 
 void TypeChecker::HandlePrintStmt()
 {
-    const PrintStmt* pStmt = dynamic_cast<const PrintStmt*>(this->mCurrentNode);
+    const PrintStmt* pStmt = static_cast<const PrintStmt*>(this->mCurrentNode);
     assert(pStmt != nullptr);
 
     const Expr* msgExpr = pStmt->GetMessage();
@@ -351,7 +351,7 @@ void TypeChecker::HandlePrintStmt()
 
 void TosLang::FrontEnd::TypeChecker::HandleReturnStmt()
 {
-    const ReturnStmt* rStmt = dynamic_cast<const ReturnStmt*>(this->mCurrentNode);
+    const ReturnStmt* rStmt = static_cast<const ReturnStmt*>(this->mCurrentNode);
     assert(rStmt != nullptr);
 
     const Symbol* fnSymbol;
@@ -380,7 +380,7 @@ void TosLang::FrontEnd::TypeChecker::HandleReturnStmt()
 
 void TypeChecker::HandleWhileStmt()
 {
-    const WhileStmt* wStmt = dynamic_cast<const WhileStmt*>(this->mCurrentNode);
+    const WhileStmt* wStmt = static_cast<const WhileStmt*>(this->mCurrentNode);
     assert(wStmt != nullptr);
 
     if (!CheckExprEvaluateToType(wStmt->GetCondExpr(), Type::BOOL))

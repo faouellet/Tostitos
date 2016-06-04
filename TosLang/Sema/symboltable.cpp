@@ -224,7 +224,7 @@ bool SymbolTable::IsGlobalVariable(const ASTNode* node) const
 
 const ASTNode* SymbolTable::FindVarDecl(const ASTNode* identExpr, size_t scopeID) const
 {
-    const IdentifierExpr* iExpr = dynamic_cast<const IdentifierExpr*>(identExpr);
+    const IdentifierExpr* iExpr = static_cast<const IdentifierExpr*>(identExpr);
     assert(iExpr != nullptr);
 
     Symbol expectedSym{ iExpr->GetType(), scopeID, iExpr->GetName() };

@@ -106,7 +106,7 @@ namespace TosLang
             T* GetChildNodeAs(size_t childIdx) const
             {
                 assert(childIdx < mChildren.size()); 
-                return dynamic_cast<T*>(mChildren[childIdx].get()); 
+                return static_cast<T*>(mChildren[childIdx].get()); 
             }
 
         protected:

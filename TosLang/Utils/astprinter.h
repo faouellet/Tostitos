@@ -57,7 +57,7 @@ namespace TosLang
             */
             void HandleFunctionDecl()
             {
-                const FrontEnd::FunctionDecl* fDecl = dynamic_cast<const FrontEnd::FunctionDecl*>(this->mCurrentNode);
+                const FrontEnd::FunctionDecl* fDecl = static_cast<const FrontEnd::FunctionDecl*>(this->mCurrentNode);
                 assert(fDecl != nullptr);
 
                 Indent();
@@ -73,7 +73,7 @@ namespace TosLang
             */
             void HandleVarDecl()
             {
-                const FrontEnd::VarDecl* vDecl = dynamic_cast<const FrontEnd::VarDecl*>(this->mCurrentNode);
+                const FrontEnd::VarDecl* vDecl = static_cast<const FrontEnd::VarDecl*>(this->mCurrentNode);
                 assert(vDecl != nullptr);
                 
                 Indent();
@@ -91,7 +91,7 @@ namespace TosLang
             */
             void HandleBinaryExpr()
             {
-                const FrontEnd::BinaryOpExpr* bExpr = dynamic_cast<const FrontEnd::BinaryOpExpr*>(this->mCurrentNode);
+                const FrontEnd::BinaryOpExpr* bExpr = static_cast<const FrontEnd::BinaryOpExpr*>(this->mCurrentNode);
                 assert(bExpr != nullptr);
 
                 Indent();
@@ -107,7 +107,7 @@ namespace TosLang
             */
             void HandleBooleanExpr()
             {
-                const FrontEnd::BooleanExpr* bExpr = dynamic_cast<const FrontEnd::BooleanExpr*>(this->mCurrentNode);
+                const FrontEnd::BooleanExpr* bExpr = static_cast<const FrontEnd::BooleanExpr*>(this->mCurrentNode);
                 assert(bExpr != nullptr);
 
                 Indent();
@@ -128,7 +128,7 @@ namespace TosLang
             */
             void HandleCallExpr()
             {
-                const FrontEnd::CallExpr* cExpr = dynamic_cast<const FrontEnd::CallExpr*>(this->mCurrentNode);
+                const FrontEnd::CallExpr* cExpr = static_cast<const FrontEnd::CallExpr*>(this->mCurrentNode);
                 assert(cExpr != nullptr);
 
                 Indent();
@@ -142,7 +142,7 @@ namespace TosLang
             */
             void HandleIdentifierExpr()
             {
-                const FrontEnd::IdentifierExpr* iExpr = dynamic_cast<const FrontEnd::IdentifierExpr*>(this->mCurrentNode);
+                const FrontEnd::IdentifierExpr* iExpr = static_cast<const FrontEnd::IdentifierExpr*>(this->mCurrentNode);
                 assert(iExpr != nullptr);
 
                 Indent();
@@ -156,7 +156,7 @@ namespace TosLang
             */
             void HandleNumberExpr()
             {
-                const FrontEnd::NumberExpr* nExpr = dynamic_cast<const FrontEnd::NumberExpr*>(this->mCurrentNode);
+                const FrontEnd::NumberExpr* nExpr = static_cast<const FrontEnd::NumberExpr*>(this->mCurrentNode);
                 assert(nExpr != nullptr);
 
                 Indent();
@@ -170,7 +170,7 @@ namespace TosLang
             */
             void HandleStringExpr()
             {
-                const FrontEnd::StringExpr* sExpr = dynamic_cast<const FrontEnd::StringExpr*>(this->mCurrentNode);
+                const FrontEnd::StringExpr* sExpr = static_cast<const FrontEnd::StringExpr*>(this->mCurrentNode);
                 assert(sExpr != nullptr);
 
                 Indent();
@@ -185,7 +185,7 @@ namespace TosLang
             */
             void HandleCompoundStmt()
             {
-                const FrontEnd::CompoundStmt* cStmt = dynamic_cast<const FrontEnd::CompoundStmt*>(this->mCurrentNode);
+                const FrontEnd::CompoundStmt* cStmt = static_cast<const FrontEnd::CompoundStmt*>(this->mCurrentNode);
                 assert(cStmt != nullptr);
 
                 Indent();
@@ -198,7 +198,7 @@ namespace TosLang
             */
             void HandleIfStmt()
             {
-                const FrontEnd::IfStmt* iStmt = dynamic_cast<const FrontEnd::IfStmt*>(this->mCurrentNode);
+                const FrontEnd::IfStmt* iStmt = static_cast<const FrontEnd::IfStmt*>(this->mCurrentNode);
                 assert(iStmt != nullptr);
 
                 Indent();
@@ -212,7 +212,7 @@ namespace TosLang
             */
             void HandlePrintStmt()
             {
-                const FrontEnd::PrintStmt* pStmt = dynamic_cast<const FrontEnd::PrintStmt*>(this->mCurrentNode);
+                const FrontEnd::PrintStmt* pStmt = static_cast<const FrontEnd::PrintStmt*>(this->mCurrentNode);
                 assert(pStmt != nullptr);
 
                 Indent();
@@ -226,7 +226,7 @@ namespace TosLang
             */
             void HandleReturnStmt()
             {
-                const FrontEnd::ReturnStmt* rStmt = dynamic_cast<const FrontEnd::ReturnStmt*>(this->mCurrentNode);
+                const FrontEnd::ReturnStmt* rStmt = static_cast<const FrontEnd::ReturnStmt*>(this->mCurrentNode);
                 assert(rStmt != nullptr);
 
                 Indent();
@@ -240,7 +240,7 @@ namespace TosLang
             */
             void HandleScanStmt()
             {
-                const FrontEnd::ScanStmt* sStmt = dynamic_cast<const FrontEnd::ScanStmt*>(this->mCurrentNode);
+                const FrontEnd::ScanStmt* sStmt = static_cast<const FrontEnd::ScanStmt*>(this->mCurrentNode);
                 assert(sStmt != nullptr);
 
                 Indent();
@@ -254,7 +254,7 @@ namespace TosLang
             */
             void HandleWhileStmt()
             {
-                const FrontEnd::WhileStmt* wStmt = dynamic_cast<const FrontEnd::WhileStmt*>(this->mCurrentNode);
+                const FrontEnd::WhileStmt* wStmt = static_cast<const FrontEnd::WhileStmt*>(this->mCurrentNode);
                 assert(wStmt != nullptr);
 
                 Indent();

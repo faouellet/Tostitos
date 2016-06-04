@@ -34,7 +34,7 @@ void TosLang::FrontEnd::TypeInfer::HandleFunctionDecl()
 
 void TosLang::FrontEnd::TypeInfer::HandleVarDecl()
 {
-    const VarDecl* varDecl = dynamic_cast<const VarDecl*>(mCurrentNode);
+    const VarDecl* varDecl = static_cast<const VarDecl*>(mCurrentNode);
     assert(varDecl != nullptr);
 
     const Expr* initExpr = varDecl->GetInitExpr();
