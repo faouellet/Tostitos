@@ -34,10 +34,10 @@ addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
-      - llvm-toolchain-precise-3.6
+      - llvm-toolchain-precise-3.8
     packages:
       - g++-5
-      - clang-3.6
+      - clang-3.8
 
 before_install:
   - sudo apt-get update -qq
@@ -47,7 +47,7 @@ install:
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 50
   - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-5 50
   - if [ ${CC} == "clang" ]; then
-       export CC=/usr/bin/clang-3.6 CXX=/usr/bin/clang++-3.6; 
+       export CC=/usr/bin/clang-3.6 CXX=/usr/bin/clang++-3.8; 
     fi
     
   # Getting the latest version of Boost Unit Test Framework
