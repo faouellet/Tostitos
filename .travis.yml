@@ -13,19 +13,19 @@ os:
 
 # Listing all possible values that all the environment variables can take  
 env:
-  - CONFIG=Debug
-  - CONFIG=Release
-  #- SANITIZE=sanitize-address
-  #- SANITIZE=sanitize-leak
-  
   global:
    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
    #   via the "travis encrypt" command using the project repo's public key
    - secure: "a0oCq1Ga/3Y2dosiwmEOGGXhVWaj959zYi8GuecbKa1yjZwsHZ9rl4Q0ezeUfYndUhmFUlfACyQrky9ALNLnFiuABXdyPrzBM2oGnKs6bmUji3ZpMJVK5tVoXd1Z4uup1LsOGrOzNd/qoDUZR8/aT/w5Br/7iVpLaEc5H+Ru3/CUVbkIy2oMjyffqusmt84QDWQCwbR+NydFGuR9U46tfiZp9kplkmdike5pc7aP4FF+JsoopxhyCZJxrYm6ha1DxieCANyMwkEQhiImvDtvRM0NmpPoaX0TMP8VrdOD7kXf7cq7Jbvj3gImMBuUlcGUE+CApctqF4BVjjvBLWidUWHKsP/KcWhYREDwLIqimJWzS5+LLF7inxtWDI6dpFWBbHh90LGxMemtjTkc6ODbQO4BLF2kRyzcl1cmfLiAscONMYzWRrmLw/Y5aRDqUa+wpGd95Ct6ADG5TVN1Yl2/6kDU0MORrfWU0rqaTMNOuVkULzS1Bcd1gsMCavCjHf2HGcwXcy7zHGj9Gm94OkT0jdTpWzMPUJUEBHhxydKQM8VDJmWzxSt5y/JOcbfETv1cH8g+uNW1+io+6Rc3aILnIwyc2FlPGOCmmibbICxW5d2/vlzFRWruR77lEs02pGVVSsXaIycOgW12KqRY25Pi/WHakiqo0u8E6C5itap68ok="
-
+  matrix:
+  - CONFIG=Debug
+  - CONFIG=Release
+  #- SANITIZE=sanitize-address
+  #- SANITIZE=sanitize-leak
    
-#matrix:
-#  exclude:
+matrix:
+  allow-failures:
+    - compiler: clang
 
 
 # Addons for the Coverity static analysis service
