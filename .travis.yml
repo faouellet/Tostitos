@@ -1,10 +1,5 @@
 language: cpp
 
-
-os:
-  - linux
-  - osx
-
   
 env:
   global:
@@ -23,6 +18,7 @@ matrix:
           packages:
             - g++-5
       env: COMPILER=g++-5 CONFIG=Debug
+      os: linux
     - compiler: gcc
       addons:
         apt:
@@ -31,6 +27,7 @@ matrix:
           packages:
             - g++-5
       env: COMPILER=g++-5 CONFIG=Release
+      os: linux
     - compiler: clang
       addons:
         apt:
@@ -40,6 +37,7 @@ matrix:
           packages:
             - clang-3.7
       env: COMPILER=clang++-3.7 CONFIG=Debug
+      os: linux
     - compiler: clang
       addons:
         apt:
@@ -49,6 +47,7 @@ matrix:
           packages:
             - clang-3.7
       env: COMPILER=clang++-3.7 CONFIG=Release
+      os: linux
 
 
 # Addons for the Coverity static analysis service
