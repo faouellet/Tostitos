@@ -1,22 +1,60 @@
 language: cpp
 
+
 compiler:
   - gcc
   - clang
 
+  
 os:
   - linux
+  #- osx
 
+  
 env:
   global:
    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
    #   via the "travis encrypt" command using the project repo's public key
    - secure: "a0oCq1Ga/3Y2dosiwmEOGGXhVWaj959zYi8GuecbKa1yjZwsHZ9rl4Q0ezeUfYndUhmFUlfACyQrky9ALNLnFiuABXdyPrzBM2oGnKs6bmUji3ZpMJVK5tVoXd1Z4uup1LsOGrOzNd/qoDUZR8/aT/w5Br/7iVpLaEc5H+Ru3/CUVbkIy2oMjyffqusmt84QDWQCwbR+NydFGuR9U46tfiZp9kplkmdike5pc7aP4FF+JsoopxhyCZJxrYm6ha1DxieCANyMwkEQhiImvDtvRM0NmpPoaX0TMP8VrdOD7kXf7cq7Jbvj3gImMBuUlcGUE+CApctqF4BVjjvBLWidUWHKsP/KcWhYREDwLIqimJWzS5+LLF7inxtWDI6dpFWBbHh90LGxMemtjTkc6ODbQO4BLF2kRyzcl1cmfLiAscONMYzWRrmLw/Y5aRDqUa+wpGd95Ct6ADG5TVN1Yl2/6kDU0MORrfWU0rqaTMNOuVkULzS1Bcd1gsMCavCjHf2HGcwXcy7zHGj9Gm94OkT0jdTpWzMPUJUEBHhxydKQM8VDJmWzxSt5y/JOcbfETv1cH8g+uNW1+io+6Rc3aILnIwyc2FlPGOCmmibbICxW5d2/vlzFRWruR77lEs02pGVVSsXaIycOgW12KqRY25Pi/WHakiqo0u8E6C5itap68ok="
-  matrix:
-    -COVERAGE=0
-    -COVERAGE=1
-    -SANITIZE=0
-    -SANITIZE=1
+
+   
+matrix:
+  include:
+    - compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+      env: COMPILER=g++-5 CONFIG=Debug
+    - compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+      env: COMPILER=g++-5 CONFIG=Release
+    - compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.7
+          packages:
+            - clang-3.7
+      env: COMPILER=clang++-3.7 CONFIG=Debug
+    - compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.7
+          packages:
+            - clang-3.7
+      env: COMPILER=clang++-3.7 CONFIG=Release
+  
   
 # Addons for the Coverity static analysis service
 addons:
@@ -29,35 +67,32 @@ addons:
     build_command:   "make"
     branch_pattern: coverity_scan
 
+	
 # Addons for the latest compilers versions
 addons:
   apt:
     sources:
+      - boost-latest
       - ubuntu-toolchain-r-test
       - llvm-toolchain-precise-3.8
     packages:
       - g++-5
       - clang-3.8
+      - libboost-test-dev
 
+	  
 before_install:
-  - sudo apt-get update -qq
+  - if [["$TRAVIS_OS_NAME" == "linux"]]; then sudo apt-get update -qq; fi
+  - if [["$TRAVIS_OS_NAME" == "osx"]]; then brew update; fi
   
-install:
-  # Getting the latest compiler
-  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 50
-  - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-5 50
-  - if [ ${CC} == "clang" ]; then
-       export CC=/usr/bin/clang-3.6 CXX=/usr/bin/clang++-3.8; 
-    fi
-    
-  # Getting the latest version of Boost Unit Test Framework
-  - sudo apt-get install libboost-test-dev
+
+install:  
+  # Getting CppCheck for static analysis
+  - if [["$TRAVIS_OS_NAME" == "linux"]]; then sudo apt-get install cppcheck; fi
+  - if [["$TRAVIS_OS_NAME" == "osx"]]; then brew install cppcheck; fi
   
-  # Getting CppCheck for continuous static analysis
-  - sudo apt-get install cppcheck
-  
-  # Getting latest version of LCOV if needed
-  - if [[ ${COVERAGE} == 1 ]]; then
+  # Getting latest version of LCOV for the linux debug build
+  - if [[ ${TRAVIS_OS_NAME} == "linux" && ${CONFIG} == "Debug" && ${COVERITY_SCAN_BRANCH} != 1 ]]; then
        wget http://ftp.de.debian.org/debian/pool/main/l/lcov/lcov_1.11.orig.tar.gz &&
        tar xf lcov_1.11.orig.tar.gz &&
        sudo make -C lcov-1.11/ install &&
@@ -66,11 +101,15 @@ install:
        rvmsudo gem install coveralls-lcov;
     fi
 
+	
 before_script:
-  # init coverage to 0 (optional)
-  - cd ${TRAVIS_BUILD_DIR}
-  - lcov --directory . --zerocounters
-
+  # Initialize coverage to 0 on the Linux debug build
+  - if [[ ${TRAVIS_OS_NAME} == "linux" && ${CONFIG} == "Debug" ]]; then 
+       cd ${TRAVIS_BUILD_DIR}
+       lcov --directory . --zerocounters
+    fi
+	
+	
 script:  
   - if [[ ${COVERITY_SCAN_BRANCH} != 1 ]]; then 
         cppcheck --error-exitcode=1 --quiet .;
@@ -79,24 +118,30 @@ script:
   - mkdir build
   - cd build
   
-  # Debug code coverage Linux build
-  - if [[ ${COVERAGE} == 1 && ${COVERITY_SCAN_BRANCH} != 1 ]]; then 
+  # Debug build
+  - if [[ ${CONFIG} == "Debug" && ${COVERITY_SCAN_BRANCH} != 1 ]]; then 
        cmake .. -DCMAKE_BUILD_TYPE=DEBUG;
     fi
-  # Release Linux build
-  - if [[ ${COVERAGE} != 1 && ${COVERITY_SCAN_BRANCH} != 1 ]]; then 
+	
+  # Release build
+  - if [[ ${CONFIG} == "Release" && ${COVERITY_SCAN_BRANCH} != 1 ]]; then 
        cmake .. -DCMAKE_BUILD_TYPE=RELEASE;
     fi
-    
-  - if [[ ${COVERAGE} == 1 && ${COVERITY_SCAN_BRANCH} != 1 ]]; then 
+	
+  # The coverity branch doesn't require explicit build commands
+  - if [[ ${COVERITY_SCAN_BRANCH} != 1 ]]; then
        make &&
-       ctest --verbose;
+       ctest --verbose
     fi
 
+	
 after_success:
-  - cd ${TRAVIS_BUILD_DIR}
-  - lcov --directory . --capture --output-file coverage.info
-  - lcov --remove coverage.info 'tests/*' '/usr/*' --output-file coverage.info
-  - lcov --list coverage.info
-  - coveralls-lcov coverage.info
+  # Sending coverage info collected with the Linux debug build
+  - if [[ ${TRAVIS_OS_NAME} == "linux" && ${CONFIG} == "Debug" && ${COVERITY_SCAN_BRANCH} != 1 ]]; then 
+       cd ${TRAVIS_BUILD_DIR} &&
+       lcov --directory . --capture --output-file coverage.info &&
+       lcov --remove coverage.info 'tests/*' '/usr/*' --output-file coverage.info &&
+       lcov --list coverage.info &&
+       coveralls-lcov coverage.info &&
+    fi
   
