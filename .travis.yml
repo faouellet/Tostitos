@@ -26,6 +26,19 @@ env:
 matrix:
   allow-failures:
     - compiler: clang
+  include:
+    - compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages: g++-5
+    - compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages: clang-3.7
 
 
 # Addons for the Coverity static analysis service
@@ -45,12 +58,8 @@ addons:
   apt:
     sources:
       - boost-latest
-      - ubuntu-toolchain-r-test
-      - llvm-toolchain-precise-3.7
     packages:
-      - clang-3.7
       - libboost-test-dev
-      - g++-5
 
 
 before_install:
