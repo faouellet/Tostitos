@@ -123,6 +123,10 @@ install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install cppcheck; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install cppcheck; fi
   
+  # Getting the latest version of Boost Unit Test Framework
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install libboost-test-dev; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install libboost-test-dev; fi
+  
   # Getting latest version of LCOV for the linux debug build
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" && "$CONFIG" == "Debug" && ${COVERITY_SCAN_BRANCH} != 1 ]]; then
