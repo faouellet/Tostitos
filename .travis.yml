@@ -159,19 +159,21 @@ script:
     fi
 
   # The coverity branch doesn't require explicit build commands
-  - if [[ ${COVERITY_SCAN_BRANCH} != 1 ]]; then
-       make &&
+  - |
+    if [[ ${COVERITY_SCAN_BRANCH} != 1 ]]; then
+       make
        ctest --verbose
     fi
 
 
 after_success:
   # Sending coverage info collected with the Linux debug build
-  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CONFIG" == "Debug" && ${COVERITY_SCAN_BRANCH} != 1 ]]; then 
-       cd ${TRAVIS_BUILD_DIR} &&
-       lcov --directory . --capture --output-file coverage.info &&
-       lcov --remove coverage.info 'tests/*' '/usr/*' --output-file coverage.info &&
-       lcov --list coverage.info &&
-       coveralls-lcov coverage.info &&
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "linux" && "$CONFIG" == "Debug" && ${COVERITY_SCAN_BRANCH} != 1 ]]; then 
+       cd ${TRAVIS_BUILD_DIR}
+       lcov --directory . --capture --output-file coverage.info
+       lcov --remove coverage.info 'tests/*' '/usr/*' --output-file coverage.info
+       lcov --list coverage.info
+       coveralls-lcov coverage.info
     fi
   
