@@ -86,6 +86,10 @@ matrix:
           packages: clang-3.7
       os: osx
       env: CONFIG=Release
+##### Currently allowing Linux+Clang builds to fail because of apt repo problems #####
+    allow_failures:
+      - compiler: clang
+        os: linux
 
 
 # Addons for the Coverity static analysis service
