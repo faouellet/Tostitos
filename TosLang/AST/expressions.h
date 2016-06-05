@@ -139,7 +139,7 @@ namespace TosLang
         {
         public:
             IdentifierExpr(const std::string& value, const Utils::SourceLocation& srcLoc)
-                : Expr{ NodeKind::IDENTIFIER_EXPR } 
+                : Expr{ NodeKind::IDENTIFIER_EXPR }, mType{ }
             {
                 mName = value; 
                 mSrcLoc = srcLoc;

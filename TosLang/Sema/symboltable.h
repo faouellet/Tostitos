@@ -99,7 +99,7 @@ namespace TosLang
             * \param scopePath  Path from the identifier's scope to the global scope
             * \return           True if the use could be added, else false
             */
-            bool AddVariableUse(const IdentifierExpr* iExpr, const std::deque<size_t> scopePath);
+            bool AddVariableUse(const IdentifierExpr* iExpr, const std::deque<size_t>& scopePath);
             
             /*
             * \fn           AddFunctionUse

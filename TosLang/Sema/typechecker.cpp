@@ -259,7 +259,7 @@ void TypeChecker::HandleCallExpr()
 
             // Remove duplicates
             std::sort(possibleTypes.begin(), possibleTypes.end());
-            std::unique(possibleTypes.begin(), possibleTypes.end());
+            possibleTypes.erase(std::unique(possibleTypes.begin(), possibleTypes.end()), possibleTypes.end());
 
             // Remove candidates that don't require one of the possible types at iArg index
             overloadCandidates.erase(std::remove_if(overloadCandidates.begin(), overloadCandidates.end(),

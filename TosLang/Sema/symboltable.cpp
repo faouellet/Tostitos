@@ -57,7 +57,7 @@ bool SymbolTable::AddSymbol(const ASTNode* node, Symbol&& sym)
     return true;
 }
 
-bool SymbolTable::AddVariableUse(const IdentifierExpr* iExpr, const std::deque<size_t> scopePath)
+bool SymbolTable::AddVariableUse(const IdentifierExpr* iExpr, const std::deque<size_t>& scopePath)
 {
     for (const auto& scopeID : scopePath)
     {

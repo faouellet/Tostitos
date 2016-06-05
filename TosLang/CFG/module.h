@@ -41,14 +41,14 @@ namespace TosLang
             }
             
         public:
-            const CFGPtr<InstT>& GetFunction(const std::string& name) const
-            {
-                //auto cfgIt = mFuncCFGs.find(name);
-                //if (cfgIt != mFuncCFGs.end())
-                //    return cfgIt->second;
-                //else
-                    return nullptr;
-            }
+            //const CFGPtr<InstT>& GetFunction(const std::string& name) const
+            //{
+            //    auto cfgIt = mFuncCFGs.find(name);
+            //    if (cfgIt != mFuncCFGs.end())
+            //        return cfgIt->second;
+            //    else
+            //        return nullptr;
+            //}
 
         public:
             /*

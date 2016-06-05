@@ -129,7 +129,7 @@ namespace TosLang
         class ReturnStmt : public Stmt
         {
         public:
-            ReturnStmt(const Utils::SourceLocation& srcLoc) : Stmt{ NodeKind::RETURN_STMT } { mSrcLoc = srcLoc; }
+            explicit ReturnStmt(const Utils::SourceLocation& srcLoc) : Stmt{ NodeKind::RETURN_STMT } { mSrcLoc = srcLoc; }
             virtual ~ReturnStmt() = default;
 
         public:
