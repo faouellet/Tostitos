@@ -22,7 +22,7 @@ matrix:
             - ubuntu-toolchain-r-test
           packages: g++-5
       os: linux
-      env: CONFIG=Debug CXX=g++5.0
+      env: CONFIG=Debug COMPILER=g++-5
 ##### Linux GCC Release build #####
     - compiler: gcc
       addons:
@@ -31,7 +31,7 @@ matrix:
             - ubuntu-toolchain-r-test
           packages: g++-5
       os: linux
-      env: CONFIG=Release CXX=g++5.0
+      env: CONFIG=Release COMPILER=g++-5
 ##### OSX GCC Debug build #####
     - compiler: gcc
       addons:
@@ -40,7 +40,7 @@ matrix:
             - ubuntu-toolchain-r-test
           packages: g++-5
       os: osx
-      env: CONFIG=Debug CXX=g++5.0
+      env: CONFIG=Debug COMPILER=g++-5
 ##### OSX GCC Release build #####
     - compiler: gcc
       addons:
@@ -49,7 +49,7 @@ matrix:
             - ubuntu-toolchain-r-test
           packages: g++-5
       os: osx
-      env: CONFIG=Release CXX=g++5.0
+      env: CONFIG=Release COMPILER=g++-5
 ##### Linux Clang Debug build #####
     - compiler: clang
       addons:
@@ -58,7 +58,7 @@ matrix:
             - llvm-toolchain-precise-3.7
           packages: clang-3.7
       os: linux
-      env: CONFIG=Debug CXX=clang++3.7
+      env: CONFIG=Debug COMPILER=clang++-3.7
 ##### Linux Clang Release build #####
     - compiler: clang
       addons:
@@ -67,7 +67,7 @@ matrix:
             - llvm-toolchain-precise-3.7
           packages: clang-3.7
       os: linux
-      env: CONFIG=Release CXX=clang++3.7
+      env: CONFIG=Release COMPILER=clang++-3.7
 ##### OSX Clang Debug build #####
     - compiler: clang
       addons:
@@ -76,7 +76,7 @@ matrix:
             - llvm-toolchain-precise-3.7
           packages: clang-3.7
       os: osx
-      env: CONFIG=Debug CXX=clang++3.7
+      env: CONFIG=Debug COMPILER=clang++-3.7
 ##### OSX Clang Release build #####
     - compiler: clang
       addons:
@@ -85,7 +85,7 @@ matrix:
             - llvm-toolchain-precise-3.7
           packages: clang-3.7
       os: osx
-      env: CONFIG=Release CXX=clang++3.7
+      env: CONFIG=Release COMPILER=clang++-3.7
 ##### Currently allowing Linux+Clang builds to fail because of apt repo problems #####
   allow_failures:
     - compiler: clang
@@ -115,7 +115,7 @@ install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install cppcheck; fi
   
   # Getting Boost for testing
-  #- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install libboost-test-dev; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install libboost-test-dev; fi
   
   # Getting latest version of LCOV for the linux debug build
   - |
@@ -159,7 +159,7 @@ script:
   # The coverity branch doesn't require explicit build commands
   - |
     if [[ ${COVERITY_SCAN_BRANCH} != 1 ]]; then
-       make
+       make CXX=$COMPILER
        ctest --verbose
     fi
 
