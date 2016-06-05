@@ -22,7 +22,7 @@ matrix:
             - ubuntu-toolchain-r-test
           packages: g++-5
       os: linux
-      env: CONFIG=Debug
+      env: CONFIG=Debug COMPILER=g++5.0
 ##### Linux GCC Release build #####
     - compiler: gcc
       addons:
@@ -31,7 +31,7 @@ matrix:
             - ubuntu-toolchain-r-test
           packages: g++-5
       os: linux
-      env: CONFIG=Release
+      env: CONFIG=Release COMPILER=g++5.0
 ##### OSX GCC Debug build #####
     - compiler: gcc
       addons:
@@ -40,7 +40,7 @@ matrix:
             - ubuntu-toolchain-r-test
           packages: g++-5
       os: osx
-      env: CONFIG=Debug
+      env: CONFIG=Debug COMPILER=g++5.0
 ##### OSX GCC Release build #####
     - compiler: gcc
       addons:
@@ -49,7 +49,7 @@ matrix:
             - ubuntu-toolchain-r-test
           packages: g++-5
       os: osx
-      env: CONFIG=Release
+      env: CONFIG=Release COMPILER=g++5.0
 ##### Linux Clang Debug build #####
     - compiler: clang
       addons:
@@ -58,7 +58,7 @@ matrix:
             - llvm-toolchain-precise-3.7
           packages: clang-3.7
       os: linux
-      env: CONFIG=Debug
+      env: CONFIG=Debug COMPILER=clang++3.7
 ##### Linux Clang Release build #####
     - compiler: clang
       addons:
@@ -67,7 +67,7 @@ matrix:
             - llvm-toolchain-precise-3.7
           packages: clang-3.7
       os: linux
-      env: CONFIG=Release
+      env: CONFIG=Release COMPILER=clang++3.7
 ##### OSX Clang Debug build #####
     - compiler: clang
       addons:
@@ -76,7 +76,7 @@ matrix:
             - llvm-toolchain-precise-3.7
           packages: clang-3.7
       os: osx
-      env: CONFIG=Debug
+      env: CONFIG=Debug COMPILER=clang++3.7
 ##### OSX Clang Release build #####
     - compiler: clang
       addons:
@@ -85,7 +85,7 @@ matrix:
             - llvm-toolchain-precise-3.7
           packages: clang-3.7
       os: osx
-      env: CONFIG=Release
+      env: CONFIG=Release COMPILER=clang++3.7
 ##### Currently allowing Linux+Clang builds to fail because of apt repo problems #####
   allow_failures:
     - compiler: clang
@@ -104,15 +104,6 @@ addons:
     branch_pattern: coverity_scan
 
 
-# Addons for the latest compilers versions
-addons:
-  apt:
-    sources:
-      - boost-latest
-    packages:
-      - libboost-test-dev
-
-
 before_install:
   - if [["$TRAVIS_OS_NAME" == "linux"]]; then sudo apt-get update -qq; fi
   - if [["$TRAVIS_OS_NAME" == "osx"]]; then brew update; fi
@@ -123,9 +114,9 @@ install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install cppcheck; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install cppcheck; fi
   
-  # Getting the latest version of Boost Unit Test Framework
+  # Getting Boost for testing
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install libboost-test-dev; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install libboost-test-dev; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install boost; fi
   
   # Getting latest version of LCOV for the linux debug build
   - |
