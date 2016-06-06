@@ -14,7 +14,7 @@ BOOST_FIXTURE_TEST_SUITE( ParseTestSuite, TosLangParserFixture )
 
 BOOST_AUTO_TEST_CASE( ParseWhileLiteralCondTest )
 {
-    auto& cNodes = GetProgramAST("../programs/while/while_literal_cond.tos");
+    auto& cNodes = GetProgramAST("../sources/while/while_literal_cond.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0] != nullptr);
@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE( ParseWhileLiteralCondTest )
 
 BOOST_AUTO_TEST_CASE( ParseWhileSimpleCondTest )
 {
-    auto& cNodes = GetProgramAST("../programs/while/while_simple_cond.tos");
+    auto& cNodes = GetProgramAST("../sources/while/while_simple_cond.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0] != nullptr);
@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE( ParseWhileSimpleCondTest )
 
 BOOST_AUTO_TEST_CASE( ParseWhileMultiCondTest )
 {
-    auto& cNodes = GetProgramAST("../programs/while/while_bin_bool_cond.tos");
+    auto& cNodes = GetProgramAST("../sources/while/while_bin_bool_cond.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
@@ -128,7 +128,7 @@ BOOST_AUTO_TEST_CASE( ParseWhileMultiCondTest )
 
 BOOST_AUTO_TEST_CASE( ParseBadWhileNoCondTest )
 {
-    auto& cNodes = GetProgramAST("../programs/while/while_no_cond.tos");
+    auto& cNodes = GetProgramAST("../sources/while/while_no_cond.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
@@ -151,7 +151,7 @@ BOOST_AUTO_TEST_CASE( ParseBadWhileNoCondTest )
 
 BOOST_AUTO_TEST_CASE( ParseBadWhileNoBodyTest )
 {
-    auto& cNodes = GetProgramAST("../programs/while/while_no_body.tos");
+    auto& cNodes = GetProgramAST("../sources/while/while_no_body.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::FUNCTION_DECL);
@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE( ParseBadWhileNoBodyTest )
 
 BOOST_AUTO_TEST_CASE( ParseBadWhileGlobalScopeTest )
 {
-    auto& cNodes = GetProgramAST("../programs/while/while_global_scope.tos");
+    auto& cNodes = GetProgramAST("../sources/while/while_global_scope.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::ERROR);

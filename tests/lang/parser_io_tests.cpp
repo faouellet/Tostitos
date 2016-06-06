@@ -14,7 +14,7 @@ BOOST_FIXTURE_TEST_SUITE( ParseTestSuite, TosLangParserFixture )
 
 BOOST_AUTO_TEST_CASE( ParseHelloWorldTest )
 {
-    auto& cNodes = GetProgramAST("../programs/io/print_string_literal.tos");
+    auto& cNodes = GetProgramAST("../sources/io/print_string_literal.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0] != nullptr);
@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE( ParseHelloWorldTest )
 
 BOOST_AUTO_TEST_CASE( ParseBasicIOTest )
 {
-    auto& cNodes = GetProgramAST("../programs/io/io.tos");
+    auto& cNodes = GetProgramAST("../sources/io/io.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0] != nullptr);
@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE( ParseBasicIOTest )
 
 BOOST_AUTO_TEST_CASE( ParseIOBinOp )
 {
-    auto& cNodes = GetProgramAST("../programs/io/print_bin_op.tos");
+    auto& cNodes = GetProgramAST("../sources/io/print_bin_op.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0] != nullptr);
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE( ParseIOBinOp )
 
 BOOST_AUTO_TEST_CASE( ParseIOBoolLiteral )
 {
-    auto& cNodes = GetProgramAST("../programs/io/print_bool.tos");
+    auto& cNodes = GetProgramAST("../sources/io/print_bool.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0] != nullptr);
@@ -131,7 +131,7 @@ BOOST_AUTO_TEST_CASE( ParseIOBoolLiteral )
 
 BOOST_AUTO_TEST_CASE( ParseIOCall )
 {
-    auto& cNodes = GetProgramAST("../programs/io/print_call.tos");
+    auto& cNodes = GetProgramAST("../sources/io/print_call.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 2);
 
     BOOST_REQUIRE(cNodes[1] != nullptr);
@@ -158,7 +158,7 @@ BOOST_AUTO_TEST_CASE( ParseIOCall )
 
 BOOST_AUTO_TEST_CASE( ParseBadIOTest )
 {
-    auto& cNodes = GetProgramAST("../programs/io/bad_io.tos");
+    auto& cNodes = GetProgramAST("../sources/io/bad_io.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0] != nullptr);
@@ -187,7 +187,7 @@ BOOST_AUTO_TEST_CASE( ParseBadIOTest )
 
 BOOST_AUTO_TEST_CASE( ParseBadIOGlobalScopeTest )
 {
-    auto& cNodes = GetProgramAST("../programs/io/io_global_scope.tos");
+    auto& cNodes = GetProgramAST("../sources/io/io_global_scope.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0] != nullptr);

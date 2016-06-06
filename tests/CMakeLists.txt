@@ -9,7 +9,7 @@ include_directories("${CMAKE_SOURCE_DIR}/TosLang")
 
 # Copy files for lang
 file(COPY lang/asts DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY lang/programs DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY lang/sources DESTINATION ${CMAKE_BINARY_DIR})
 
 find_package(Boost COMPONENTS unit_test_framework)
 if(Boost_FOUND)

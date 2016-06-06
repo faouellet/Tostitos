@@ -16,7 +16,7 @@ BOOST_FIXTURE_TEST_SUITE( ParseTestSuite, TosLangParserFixture )
 
 BOOST_AUTO_TEST_CASE( ParseVarDeclTest )
 {
-    auto& cNodes = GetProgramAST("../programs/var/var_decl.tos");
+    auto& cNodes = GetProgramAST("../sources/var/var_decl.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 3);
 
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::VAR_DECL);
@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE( ParseVarDeclTest )
 
 BOOST_AUTO_TEST_CASE( ParseVarInitBoolTest )
 {
-    auto& cNodes = GetProgramAST("../programs/var/var_init_bool.tos");
+    auto& cNodes = GetProgramAST("../sources/var/var_init_bool.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 2);
 	
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::VAR_DECL);
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE( ParseVarInitBoolTest )
 
 BOOST_AUTO_TEST_CASE( ParseVarInitIntTest )
 {
-    auto& cNodes = GetProgramAST("../programs/var/var_init_int.tos");
+    auto& cNodes = GetProgramAST("../sources/var/var_init_int.tos");
 	BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
 	BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::VAR_DECL);
@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE( ParseVarInitIntTest )
 
 BOOST_AUTO_TEST_CASE( ParseVarInitIdentifierTest )
 {
-    auto& cNodes = GetProgramAST("../programs/var/var_init_identifier.tos");
+    auto& cNodes = GetProgramAST("../sources/var/var_init_identifier.tos");
 	BOOST_REQUIRE_EQUAL(cNodes.size(), 2);
 
 	BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::VAR_DECL);
@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE( ParseVarInitIdentifierTest )
 
 BOOST_AUTO_TEST_CASE( ParseVarInitStringTest )
 {
-    auto& cNodes = GetProgramAST("../programs/var/var_init_string.tos");
+    auto& cNodes = GetProgramAST("../sources/var/var_init_string.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 1);
 
     BOOST_REQUIRE(cNodes[0]->GetKind() == ASTNode::NodeKind::VAR_DECL);
@@ -115,7 +115,7 @@ BOOST_AUTO_TEST_CASE( ParseVarInitStringTest )
 
 BOOST_AUTO_TEST_CASE( ParseVarInitBoolBinOpTest )
 {
-    auto& cNodes = GetProgramAST("../programs/var/binary_op_bool.tos");
+    auto& cNodes = GetProgramAST("../sources/var/binary_op_bool.tos");
     const size_t childExpectedSize = 4;
     BOOST_REQUIRE_EQUAL(cNodes.size(), childExpectedSize);
 
@@ -177,7 +177,7 @@ BOOST_AUTO_TEST_CASE( ParseVarInitBoolBinOpTest )
 
 BOOST_AUTO_TEST_CASE( ParseVarInitIntBinOpTest )
 {
-    auto& cNodes = GetProgramAST("../programs/var/binary_op_int.tos");
+    auto& cNodes = GetProgramAST("../sources/var/binary_op_int.tos");
     const size_t childExpectedSize = 9;
     BOOST_REQUIRE_EQUAL(cNodes.size(), childExpectedSize);
 
@@ -223,7 +223,7 @@ BOOST_AUTO_TEST_CASE( ParseVarInitIntBinOpTest )
 BOOST_AUTO_TEST_CASE( ParserBadInitTest )
 {
     Parser parser;
-    BOOST_REQUIRE(parser.ParseProgram("../programs/var/var_decl.cpp") == nullptr);
+    BOOST_REQUIRE(parser.ParseProgram("../sources/var/var_decl.cpp") == nullptr);
     BOOST_REQUIRE(parser.ParseProgram("BadFile.tos") == nullptr);
 
     std::vector<std::string> messages{ GetErrorMessages() };
@@ -236,7 +236,7 @@ BOOST_AUTO_TEST_CASE( ParserBadInitTest )
 
 BOOST_AUTO_TEST_CASE( ParseBadVarDeclTest )
 {
-    auto& cNodes = GetProgramAST("../programs/var/bad_var_decl.tos");
+    auto& cNodes = GetProgramAST("../sources/var/bad_var_decl.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 10);
         
     // Check if the correct error messages got printed
@@ -254,7 +254,7 @@ BOOST_AUTO_TEST_CASE( ParseBadVarDeclTest )
 
 BOOST_AUTO_TEST_CASE( ParseBadVarInitBinOpTest )
 {
-    auto& cNodes = GetProgramAST("../programs/var/bad_binary_op.tos");
+    auto& cNodes = GetProgramAST("../sources/var/bad_binary_op.tos");
     BOOST_REQUIRE_EQUAL(cNodes.size(), 3);
 
     // Check that we have only error nodes.

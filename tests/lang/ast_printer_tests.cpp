@@ -16,7 +16,7 @@ using namespace TosLang::Utils;
 BOOST_AUTO_TEST_CASE( ASTPrinterTest )
 {
     Parser parser;
-    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../programs/var/var_init_bool.tos");
+    std::unique_ptr<ASTNode> rootNode = parser.ParseProgram("../sources/var/var_init_bool.tos");
     BOOST_REQUIRE(rootNode != nullptr);
 
     const std::string expectedFile = "../asts/var/var_init_bool.ast";
