@@ -140,7 +140,7 @@ install:
 before_script:
   # Initialize coverage to 0 on the Linux debug build
   - |
-    if [[ "$TRAVIS_OS_NAME" == "linux" && "$CONFIG" == "DEBUG" ]]; then 
+    if [[ "$TRAVIS_OS_NAME" == "linux" && "$CONFIG" == "DEBUG" && ${COVERITY_SCAN_BRANCH} != 1 ]]; then 
        cd ${TRAVIS_BUILD_DIR}
        lcov --directory . --zerocounters
     fi
