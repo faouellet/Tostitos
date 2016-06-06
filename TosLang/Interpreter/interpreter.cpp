@@ -15,7 +15,7 @@ using namespace TosLang::FrontEnd;
 void Interpreter::Run(const std::unique_ptr<ASTNode>& root, const std::shared_ptr<SymbolTable>& symTab) 
 {
     mSymTable = symTab;
-    mCallStack.clear();
+    mCallStack.Clear();
     
     // Program entry is always the 'main' function
     const ASTNode* mainNode = mSymTable->FindFunctionDecl({ { Type::VOID }, 0, "main" });
@@ -28,7 +28,7 @@ void Interpreter::Run(const std::unique_ptr<ASTNode>& root, const std::shared_pt
     // Push the global frame onto the call stack
     // This frame will contains all global scope level informations that are available to all the functions in the program.
     // This make it the only frame that can be accessed by any other.
-    mCallStack.push_back({ });
+    mCallStack.EnterNewFrame(nullptr);
 
     HandleFunction(mainNode);
 }
@@ -87,11 +87,8 @@ InterpretedValue Interpreter::HandleVarDecl(const FrontEnd::ASTNode* node)
         }
     }
 
-    if (varSym->IsGlobal())
-        mCallStack.front().AddOrUpdateSymbolValue(varSym, initVal);
-    else
-        mCallStack.back().AddOrUpdateSymbolValue(varSym, initVal);
-
+    mCallStack.AddOrUpdateSymbolValue(varSym, initVal, varSym->IsGlobal());
+    
     return initVal;
 }
 
@@ -113,10 +110,7 @@ InterpretedValue Interpreter::HandleBinaryExpr(const FrontEnd::ASTNode* node)
         // Fetch the identifier symbol
         const Symbol* identSym = GetSymbol(bExpr->GetLHS());;
 
-        if (identSym->IsGlobal())
-            mCallStack.front().AddOrUpdateSymbolValue(identSym, rhsval);
-        else
-            mCallStack.back().AddOrUpdateSymbolValue(identSym, rhsval);
+        mCallStack.AddOrUpdateSymbolValue(identSym, rhsval, identSym->IsGlobal());
 
         return rhsval;
     }
@@ -186,7 +180,7 @@ InterpretedValue Interpreter::HandleCallExpr(const FrontEnd::ASTNode* node)
     assert(fDecl != nullptr);
 
     // Pushing a new frame on the call stack for the function we're about to call
-    mCallStack.push_back({});
+    mCallStack.EnterNewFrame(fDecl);
 
     // Initializing the function's parameters in the new stack frame
     const ParamVarDecls* pVDecls = fDecl->GetParametersDecl();
@@ -194,8 +188,14 @@ InterpretedValue Interpreter::HandleCallExpr(const FrontEnd::ASTNode* node)
     for (size_t iArg = 0; iArg < callVals.size(); ++iArg)
     {
         const Symbol* argSym = GetSymbol(pVDecls->GetParameters()[iArg].get());
-        mCallStack.back().AddOrUpdateSymbolValue(argSym, callVals[iArg]);
+        mCallStack.AddOrUpdateSymbolValue(argSym, callVals[iArg], false);
     }
+
+    // Executing the call
+    InterpretedValue fVal{ HandleFunction(fDecl) };
+    
+    // Popping the function frame from the call stack
+    mCallStack.ExitCurrentFrame();
 
     return{}; 
 }
@@ -206,11 +206,8 @@ InterpretedValue Interpreter::HandleIdentifierExpr(const FrontEnd::ASTNode* node
     InterpretedValue identVal;
     bool foundVal = false;
 
-    if (identSym->IsGlobal())
-        foundVal = mCallStack.front().TryGetSymbolValue(identSym, identVal);
-    else
-        foundVal = mCallStack.back().TryGetSymbolValue(identSym, identVal);
-
+    foundVal = mCallStack.TryGetSymbolValue(identSym, identVal, identSym->IsGlobal());
+    
     // Since we're working with a pull model, it is possible that we had yet to encounter this variable.
     // In that case, we just need to evaluate the associated variable declaration.
     if (!foundVal)

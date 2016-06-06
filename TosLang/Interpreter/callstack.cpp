@@ -2,6 +2,8 @@
 
 using namespace TosLang;
 
+////////// Stack Frame //////////
+
 void StackFrame::AddOrUpdateSymbolValue(const FrontEnd::Symbol* sym, InterpretedValue value)
 {
     mCurrentVals[sym] = value;
@@ -18,3 +20,24 @@ bool StackFrame::TryGetSymbolValue(const FrontEnd::Symbol* sym, InterpretedValue
     return found;
 }
 
+////////// Call Stack //////////
+void CallStack::AddOrUpdateSymbolValue(const FrontEnd::Symbol* sym, InterpretedValue value, bool isGlobalSymol)
+{
+    if (isGlobalSymol)
+        mFrames.front().AddOrUpdateSymbolValue(sym, value);
+    else
+        mFrames.back().AddOrUpdateSymbolValue(sym, value);
+}
+
+void CallStack::EnterNewFrame(const FrontEnd::ASTNode* fnNode)
+{
+    mFrames.push_back(StackFrame(fnNode));
+}
+
+bool CallStack::TryGetSymbolValue(const FrontEnd::Symbol* sym, InterpretedValue& value, bool isGlobalSymol)
+{
+    if (isGlobalSymol)
+        return mFrames.front().TryGetSymbolValue(sym, value);
+    else
+        return mFrames.back().TryGetSymbolValue(sym, value);
+}
