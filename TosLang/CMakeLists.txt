@@ -4,7 +4,7 @@ file(GLOB AST_SOURCES			"AST/*")
 file(GLOB CFG_SOURCES			"CFG/*")
 #file(GLOB CODEGEN_SOURCES		"CodeGen/*")
 file(GLOB COMMON_SOURCES		"Common/*")
-file(GLOB INTERPRETER_SOURCES	"Interpreter/*")
+file(GLOB EXECUTION_SOURCES		"Execution/*")
 file(GLOB PARSE_SOURCES			"Parse/*")
 file(GLOB SEMA_SOURCES			"Sema/*")
 #file(GLOB SSA_SOURCES 			"SSA/*")
@@ -37,17 +37,17 @@ add_library( lang STATIC
 		${LLVM_BACKEND_SOURCES}
 		)
 		
-add_library( interpreter STATIC
-		${INTERPRETER_SOURCES}
+add_library( execution STATIC
+		${EXECUTION_SOURCES}
 		)
 				
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 		
-add_executable (TosLang toslangdriver.h toslangdriver.cpp main.cpp)
+add_executable (TosLang main.cpp)
 if(${USE_LLVM_BACKEND})
 	llvm_map_components_to_libnames(llvm_libs support core)
-	target_link_libraries(TosLang lang interpreter ${llvm_libs})    
+	target_link_libraries(TosLang lang execution ${llvm_libs})    
 else()
-	target_link_libraries(TosLang lang interpreter)
+	target_link_libraries(TosLang lang execution)
 endif()
 

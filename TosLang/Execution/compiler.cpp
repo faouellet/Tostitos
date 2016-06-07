@@ -1,14 +1,13 @@
-#include "toslangdriver.h"
+#include "Compiler.h"
 
 //#include "CodeGen/instructionselector.h"
-#include "CFG/module.h"
-#include "Interpreter/interpreter.h"
-#include "Parse/parser.h"
-#include "Sema/symbolcollector.h"
-#include "Sema/symboltable.h"
-#include "Sema/typechecker.h"
-#include "SSA/cfgbuilder.h"
-#include "Utils/astprinter.h"
+#include "../CFG/module.h"
+#include "../Parse/parser.h"
+#include "../Sema/symbolcollector.h"
+#include "../Sema/symboltable.h"
+#include "../Sema/typechecker.h"
+#include "../SSA/cfgbuilder.h"
+#include "../Utils/astprinter.h"
 
 #ifdef USE_LLVM_BACKEND
 #include "LLVMBackend/llvmgenerator.h"
@@ -16,18 +15,17 @@
 
 #include <iostream>
 
+using namespace Execution;
 using namespace TosLang;
 using namespace TosLang::BackEnd;
 using namespace TosLang::FrontEnd;
 
-TosLangDriver::TosLangDriver()
+Compiler::Compiler()
 {
     mParser.reset(new Parser{});
     
     mSymTable.reset(new SymbolTable{});
     
-    mInterpreter.reset(new Interpreter{});
-
     mSymCollector.reset(new SymbolCollector{ mSymTable });
     mTChecker.reset(new TypeChecker{});
 
@@ -40,9 +38,9 @@ TosLangDriver::TosLangDriver()
 #endif
 }
 
-TosLangDriver::~TosLangDriver() { }   // Required because of the forward declarations used in the header for our member pointers
+Compiler::~Compiler() { }   // Required because of the forward declarations used in the header for our member pointers
 
-void TosLangDriver::Compile(const std::string& programFile)
+void Compiler::Compile(const std::string& programFile)
 {
     auto programAST = ParseProgram(programFile);
     if (programAST == nullptr)
@@ -57,7 +55,7 @@ void TosLangDriver::Compile(const std::string& programFile)
         return;
 }
 
-void TosLangDriver::DumpAST(const std::string& programFile)
+void Compiler::DumpAST(const std::string& programFile)
 {
     auto programAST = ParseProgram(programFile);
     if (programAST == nullptr)
@@ -68,7 +66,7 @@ void TosLangDriver::DumpAST(const std::string& programFile)
     printer.Run(programAST);
 }
 
-//void TosLangDriver::DumpCFG(const std::string& programFile)
+//void Compiler::DumpCFG(const std::string& programFile)
 //{
 //    auto programAST = ParseProgram(programFile);
 //    if (programAST == nullptr)
@@ -102,7 +100,7 @@ void Compiler::DumpLLVMIR(const std::string& programFile)
 }
 #endif
 
-std::unique_ptr<ASTNode> TosLangDriver::ParseProgram(const std::string & programFile)
+std::unique_ptr<ASTNode> Compiler::ParseProgram(const std::string & programFile)
 {
     return mParser->ParseProgram(programFile);
 }

@@ -7,7 +7,7 @@
 
 // TODO: Comments
 
-namespace TosLang
+namespace Execution
 {
     class InterpretedValue
     {

@@ -23,25 +23,28 @@ namespace TosLang
         //class InstructionSelector;
         class LLVMGenerator;
     }
+}
 
+namespace Execution
+{
     /*
-    * \class TosLangDriver
+    * \class Compiler
     * \brief The TosLang driver
     */
-    class TosLangDriver
+    class Compiler
     {
     public:
         /*
-        * \fn TosLangDriver
+        * \fn Compiler
         * \brief Ctor
         */
-        TosLangDriver();
+        Compiler();
 
         /*
-        * \fn ~TosLangDriver
+        * \fn ~Compiler
         * \brief Dtor
         */
-        ~TosLangDriver();
+        ~Compiler();
 
     public:
         /*
@@ -82,16 +85,14 @@ namespace TosLang
         * \param programFile    Name (including path) of the .tos file to compile
         * \return               Root node of the program's AST
         */
-        std::unique_ptr<FrontEnd::ASTNode> ParseProgram(const std::string& programFile);
+        std::unique_ptr<TosLang::FrontEnd::ASTNode> ParseProgram(const std::string& programFile);
 
     private:
-        std::shared_ptr<FrontEnd::SymbolTable> mSymTable;           /*!< Symbol table for a program */
+        std::shared_ptr<TosLang::FrontEnd::SymbolTable> mSymTable;           /*!< Symbol table for a program */
 
-        std::unique_ptr<Interpreter> mInterpreter;                  /*!< Interpreter */
-        
-        std::unique_ptr<FrontEnd::Parser> mParser;                  /*!< Parser */
-        std::unique_ptr<FrontEnd::SymbolCollector> mSymCollector;   /*!< Symbol collector */
-        std::unique_ptr<FrontEnd::TypeChecker> mTChecker;           /*!< Type checker */
+        std::unique_ptr<TosLang::FrontEnd::Parser> mParser;                  /*!< Parser */
+        std::unique_ptr<TosLang::FrontEnd::SymbolCollector> mSymCollector;   /*!< Symbol collector */
+        std::unique_ptr<TosLang::FrontEnd::TypeChecker> mTChecker;           /*!< Type checker */
         //std::unique_ptr<BackEnd::CFGBuilder> mBuilder;              /*!< CFG Builder */
         //std::unique_ptr<BackEnd::InstructionSelector> mISel;        /*!< Instruction selector */
 

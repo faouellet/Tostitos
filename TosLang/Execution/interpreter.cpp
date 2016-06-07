@@ -8,6 +8,7 @@
 #include <cassert>
 #include <iostream> // TODO: Printing to standard IO for now. Should this be redirected to Tostitos later on?
 
+using namespace Execution;
 using namespace TosLang;
 using namespace TosLang::Common;
 using namespace TosLang::FrontEnd;

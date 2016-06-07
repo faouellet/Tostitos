@@ -1,5 +1,6 @@
 #include "callstack.h"
 
+using namespace Execution;
 using namespace TosLang;
 
 ////////// Stack Frame //////////
