@@ -78,7 +78,7 @@ namespace Execution
         void DumpLLVMIR(const std::string& programFile);
 #endif
 
-    private:
+    public:
         /*
         * \fn                   ParseProgram
         * \brief                Parse a TosLang program to produce an AST
@@ -86,6 +86,8 @@ namespace Execution
         * \return               Root node of the program's AST
         */
         std::unique_ptr<TosLang::FrontEnd::ASTNode> ParseProgram(const std::string& programFile);
+
+        const TosLang::FrontEnd::SymbolTable* GetSymbolTable(const std::unique_ptr<TosLang::FrontEnd::ASTNode>& root);
 
     private:
         std::shared_ptr<TosLang::FrontEnd::SymbolTable> mSymTable;           /*!< Symbol table for a program */

@@ -1,4 +1,4 @@
-#include "Compiler.h"
+#include "compiler.h"
 
 //#include "CodeGen/instructionselector.h"
 #include "../CFG/module.h"
@@ -103,4 +103,17 @@ void Compiler::DumpLLVMIR(const std::string& programFile)
 std::unique_ptr<ASTNode> Compiler::ParseProgram(const std::string & programFile)
 {
     return mParser->ParseProgram(programFile);
+}
+
+const SymbolTable* Compiler::GetSymbolTable(const std::unique_ptr<ASTNode>& root)
+{
+    size_t errorCount = mSymCollector->Run(root);
+    if (errorCount != 0)
+        return nullptr;
+
+    errorCount = mTChecker->Run(root, mSymTable);
+    if (errorCount != 0)
+        return nullptr;
+
+    return mSymTable.get();
 }

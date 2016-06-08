@@ -13,7 +13,7 @@ using namespace TosLang;
 using namespace TosLang::Common;
 using namespace TosLang::FrontEnd;
 
-void Interpreter::Run(const std::unique_ptr<ASTNode>& root, const std::shared_ptr<SymbolTable>& symTab) 
+void Interpreter::Run(const std::unique_ptr<ASTNode>& root, const SymbolTable* symTab) 
 {
     mSymTable = symTab;
     mCallStack.Clear();

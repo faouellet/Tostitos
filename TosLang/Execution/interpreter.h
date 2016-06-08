@@ -24,7 +24,7 @@ namespace Execution
 
     public:
         void Run(const std::unique_ptr<TosLang::FrontEnd::ASTNode>& root, 
-                 const std::shared_ptr<TosLang::FrontEnd::SymbolTable>& symTab);
+                 const TosLang::FrontEnd::SymbolTable* symTab);
     
     protected:  // Declarations
         InterpretedValue HandleFunction(const TosLang::FrontEnd::ASTNode* node);
@@ -53,7 +53,7 @@ namespace Execution
     private:
         size_t mCurrentScope;
         const TosLang::FrontEnd::ASTNode* mCurrentNode;
-        std::shared_ptr<TosLang::FrontEnd::SymbolTable> mSymTable;
+        const TosLang::FrontEnd::SymbolTable* mSymTable;
         CallStack mCallStack;
     };
 }

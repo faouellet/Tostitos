@@ -18,6 +18,12 @@ namespace Execution
         UNKNOWN,
     };
 
+    struct ExecutionInfo
+    {
+        ExecutionCommand command;
+        std::string programFile;
+    };
+
     void ShowHelp()
     {
         std::cout << "Correct usage: tc [options] <filename>"                                       << std::endl
@@ -31,12 +37,12 @@ namespace Execution
                   << "                              (Requires Tostitos to works)"                   << std::endl;
     }
 
-    ExecutionCommand ParseCommandLine(const std::vector<std::string>& args)
+    ExecutionInfo ParseCommandLine(const std::vector<std::string>& args)
     {
         if (args.size() > 3)
         {
             ShowHelp();
-            return ExecutionCommand::UNKNOWN;
+            return{ ExecutionCommand::UNKNOWN };
         }
 
         std::string arg = args[1];
@@ -46,7 +52,7 @@ namespace Execution
             {
                 std::cout << "Not supported yet\n";
                 //return ExecutionCommand::COMPILE_CHIP16;
-                return ExecutionCommand::UNKNOWN;
+                return{ ExecutionCommand::UNKNOWN };
             }
             else if (arg.find("llvm"))
             {
@@ -54,18 +60,18 @@ namespace Execution
                 return ExecutionCommand::COMPILE_LLVM;
 #else
                 std::cout << "Requires building TosLang with LLVM backend\n";
-                return ExecutionCommand::UNKNOWN;
+                return{ ExecutionCommand::UNKNOWN };
 #endif
             }
             else
             {
                 std::cout << "Unknown format\n";
-                return ExecutionCommand::UNKNOWN;
+                return{ ExecutionCommand::UNKNOWN };
             }
         }
         else if (arg == "-dump-ast")
         {
-            return ExecutionCommand::DUMP_AST;
+            return{ ExecutionCommand::DUMP_AST, args.back() };
         }
         //else if (arg == "-dump-cfg")
         //{
@@ -77,17 +83,17 @@ namespace Execution
             return ExecutionCommand::DUMP_LLVM;
 #else
             std::cout << "Requires building TosLang with LLVM backend\n";
-            return ExecutionCommand::UNKNOWN;
+            return{ ExecutionCommand::UNKNOWN };
 #endif
         }
         else if (arg == "-interpret")
         {
-            return ExecutionCommand::INTERPRET;
+            return{ ExecutionCommand::INTERPRET, args.back() };
         }
         else
         {
             std::cout << "Unrecognized option\n";
-            return ExecutionCommand::UNKNOWN;
+            return{ ExecutionCommand::UNKNOWN };
         }
     }
 }
