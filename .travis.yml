@@ -159,7 +159,7 @@ script:
     if [[ ${COVERITY_SCAN_BRANCH} != 1 ]]; then
        cmake -DCMAKE_BUILD_TYPE=$CONFIG -DCMAKE_CXX_COMPILER=$COMPILER ..
        make
-       ctest --verbose
+       ctest
     fi
 
 
