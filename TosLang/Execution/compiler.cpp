@@ -1,12 +1,9 @@
 #include "compiler.h"
 
-//#include "CodeGen/instructionselector.h"
-#include "../CFG/module.h"
 #include "../Parse/parser.h"
 #include "../Sema/symbolcollector.h"
 #include "../Sema/symboltable.h"
 #include "../Sema/typechecker.h"
-#include "../SSA/cfgbuilder.h"
 #include "../Utils/astprinter.h"
 
 #ifdef USE_LLVM_BACKEND
