@@ -1,0 +1,8 @@
+// EXPECTED: 42
+
+fn main() -> Void
+{
+	var MyLocal : Int = 42;
+	print MyLocal;
+	return;
+}

@@ -1,0 +1,9 @@
+// EXPECTED: 42
+
+var MyGlobal : Int = 42;
+
+fn main() -> Void
+{
+	print MyGlobal;
+	return;
+}

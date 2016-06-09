@@ -7,9 +7,13 @@ set(Boost_USE_STATIC_RUNTIME OFF)
 include_directories("${CMAKE_SOURCE_DIR}/Tostitos/machine")
 include_directories("${CMAKE_SOURCE_DIR}/TosLang")
 
-# Copy files for lang
+# Copy test files
+file(COPY interpreter/programs DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY lang/asts DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY lang/sources DESTINATION ${CMAKE_BINARY_DIR})
+
+# Copy test runner
+file(COPY testrunner.py DESTINATION ${CMAKE_BINARY_DIR})
 
 find_package(Boost COMPONENTS unit_test_framework)
 if(Boost_FOUND)
