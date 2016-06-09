@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 import os
 import re
 import subprocess
@@ -5,7 +7,7 @@ import subprocess
 def run_tests():
 	expected_regex = re.compile("EXPECTED: (?P<result>.*)")
 
-	for program in os.listdir("./interpreter"):
+	for program in os.listdir("./interpreter/programs"):
 		# Fetch the expected result(s)
 		f = open(program)
 		expected_results = [m.group('result') for l in f.readlines() for m in [expected_regex.search(l)] if m]
