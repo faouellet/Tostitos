@@ -10,7 +10,7 @@ import pdb
 def run_tests(test_dir, exec_dir):
 	expected_regex = re.compile("EXPECTED: (?P<result>.*)")
 	
-	for program in os.listdir(test_folder):
+	for program in os.listdir(test_dir):
 		# Fetch the expected result(s)
 		f = open(os.path.join(test_dir, program))
 		expected_results = [m.group('result') for l in f.readlines() for m in [expected_regex.search(l)] if m]
