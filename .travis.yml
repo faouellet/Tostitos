@@ -36,24 +36,12 @@ matrix:
       env: CONFIG=RELEASE COMPILER=g++-5
 ##### OSX GCC Debug build #####
     - compiler: gcc
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages: 
-            - g++-5
       os: osx
-      env: CONFIG=DEBUG COMPILER=g++-5
+      env: CONFIG=DEBUG COMPILER=g++
 ##### OSX GCC Release build #####
     - compiler: gcc
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages: 
-            - g++-5
       os: osx
-      env: CONFIG=RELEASE COMPILER=g++-5
+      env: CONFIG=RELEASE COMPILER=g++
 ##### Linux Clang Debug build #####
     - compiler: clang
       addons:
@@ -76,24 +64,12 @@ matrix:
       env: CONFIG=RELEASE COMPILER=clang++-3.7
 ##### OSX Clang Debug build #####
     - compiler: clang
-      addons:
-        apt:
-          sources:
-            - llvm-toolchain-precise-3.7
-          packages: 
-            - clang-3.7
       os: osx
-      env: CONFIG=DEBUG COMPILER=clang++-3.7
+      env: CONFIG=DEBUG COMPILER=clang++
 ##### OSX Clang Release build #####
     - compiler: clang
-      addons:
-        apt:
-          sources:
-            - llvm-toolchain-precise-3.7
-          packages: 
-            - clang-3.7
       os: osx
-      env: CONFIG=RELEASE COMPILER=clang++-3.7
+      env: CONFIG=RELEASE COMPILER=clang++
 ##### Currently allowing Linux+Clang builds to fail because of apt repo problems #####
   allow_failures:
     - compiler: clang
@@ -160,7 +136,7 @@ script:
        cmake -DCMAKE_BUILD_TYPE=$CONFIG -DCMAKE_CXX_COMPILER=$COMPILER ..
        make
        ctest
-       python testrunner.py ${TRAVIS_BUILD_DIR} ${TRAVIS_BUILD_DIR}
+       #python testrunner.py ${TRAVIS_BUILD_DIR} ${TRAVIS_BUILD_DIR}
     fi
 
 
