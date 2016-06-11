@@ -36,12 +36,6 @@ matrix:
       env: CONFIG=RELEASE COMPILER=g++-5
 ##### OSX GCC Debug build #####
     - compiler: gcc
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages: 
-            - libstdc++-5
       os: osx
       osx_image: xcode6.4
       env: CONFIG=DEBUG COMPILER=g++-5
