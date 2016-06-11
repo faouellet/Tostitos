@@ -37,11 +37,13 @@ matrix:
 ##### OSX GCC Debug build #####
     - compiler: gcc
       os: osx
-      env: CONFIG=DEBUG COMPILER=g++
+      osx_image: xcode6.4
+      env: CONFIG=DEBUG COMPILER=g++-5
 ##### OSX GCC Release build #####
     - compiler: gcc
       os: osx
-      env: CONFIG=RELEASE COMPILER=g++
+      osx_image: xcode6.4
+      env: CONFIG=RELEASE COMPILER=g++-5
 ##### Linux Clang Debug build #####
     - compiler: clang
       addons:
@@ -65,10 +67,12 @@ matrix:
 ##### OSX Clang Debug build #####
     - compiler: clang
       os: osx
+      osx_image: xcode6.4
       env: CONFIG=DEBUG COMPILER=clang++
 ##### OSX Clang Release build #####
     - compiler: clang
       os: osx
+      osx_image: xcode6.4
       env: CONFIG=RELEASE COMPILER=clang++
 ##### Currently allowing Linux+Clang builds to fail because of apt repo problems #####
   allow_failures:
