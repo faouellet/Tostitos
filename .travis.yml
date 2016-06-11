@@ -160,6 +160,7 @@ script:
        cmake -DCMAKE_BUILD_TYPE=$CONFIG -DCMAKE_CXX_COMPILER=$COMPILER ..
        make
        ctest
+       python testrunner.py ${TRAVIS_BUILD_DIR} ${TRAVIS_BUILD_DIR}
     fi
 
 
