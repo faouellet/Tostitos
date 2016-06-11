@@ -107,6 +107,7 @@ install:
   
   # Getting Boost for testing
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install libboost-test-dev; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install boost --c++11; fi
   
   # Getting latest version of LCOV for the linux debug build
   - |
