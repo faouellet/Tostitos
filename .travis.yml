@@ -103,7 +103,7 @@ install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install cppcheck; fi
   
   # Getting g++-5 for the OSX builds
-  - if [[ "$TRAVIS_OS_NAME" == "osx" && "COMPILER" == "g++-5" ]]; then brew install homebrew/versions/gcc5; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" && "$COMPILER" == "g++-5" ]]; then brew install homebrew/versions/gcc5; fi
   
   # Getting Boost for testing
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install libboost-test-dev; fi
