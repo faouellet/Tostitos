@@ -6,7 +6,7 @@
 #include <limits>
 #include <string>
 
-#ifdef __unix__ 
+#if defined(__unix__) || defined(__apple__)
 #include <string.h>
 #endif
 
@@ -16,7 +16,6 @@ using MachineEngine::ProcessorSpace::Utils::Int16;
 CPU::CPU() : mFR{ 0 }, mPC{ 0 }, mSP{ STACK_START }, mErrorCode{ NO_ERROR }
 {
     memset(mRegisters, 0, sizeof(UInt16)*16);
-    
 }
 
 UInt16 CPU::DumpFlagRegister() const
