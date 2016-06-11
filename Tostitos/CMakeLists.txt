@@ -11,7 +11,6 @@ add_subdirectory(threads)
 set( SOURCES main.cpp system.h system.cpp )
 
 add_executable (Tostitos ${SOURCES})
-set_target_properties (Tostitos PROPERTIES LINKER_LANGUAGE C)
 target_link_libraries (Tostitos communicationWithHost fileSystem machine memory threads)
 
 if(NOT WIN32)
