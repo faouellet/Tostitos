@@ -19,7 +19,8 @@ void Interpreter::Run(const std::unique_ptr<ASTNode>& root, const SymbolTable* s
     mCallStack.Clear();
     
     // Program entry is always the 'main' function
-    const ASTNode* mainNode = mSymTable->FindFunctionDecl({ { Type::VOID }, 0, "main" });
+    std::vector<Type> fnTypes{ Type::VOID };
+    const ASTNode* mainNode = mSymTable->FindFunctionDecl({ fnTypes, 0, "main" });
     if (mainNode == nullptr)
     {
         // TODO: Log error and add a unit test for it

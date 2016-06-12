@@ -230,7 +230,7 @@ const ASTNode* SymbolTable::FindVarDecl(const ASTNode* identExpr, size_t scopeID
     Symbol expectedSym{ iExpr->GetType(), scopeID, iExpr->GetName() };
 
     // Going from the deepest scope to the global scope, we search for a suitable variable declaration
-    while (scopeID > 0)
+    while (scopeID >= 0)
     {
         auto identIt = std::find_if(mTable.begin(), mTable.end(), [&](const std::pair<const ASTNode*, Symbol> nodeSym)
         {
