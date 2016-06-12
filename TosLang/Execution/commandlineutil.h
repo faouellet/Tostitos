@@ -46,15 +46,15 @@ namespace Execution
         }
 
         std::string arg = args[1];
-        if (arg.find("-compile"))
+        if (arg.find("-compile") != std::string::npos)
         {
-            if (arg.find("chip16"))
+            if (arg.find("chip16") != std::string::npos)
             {
                 std::cout << "Not supported yet\n";
                 //return ExecutionCommand::COMPILE_CHIP16;
                 return{ ExecutionCommand::UNKNOWN };
             }
-            else if (arg.find("llvm"))
+            else if (arg.find("llvm") != std::string::npos)
             {
 #ifdef USE_LLVM_BACKEND
                 return ExecutionCommand::COMPILE_LLVM;
