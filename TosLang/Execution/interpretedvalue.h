@@ -29,30 +29,19 @@ namespace Execution
             new (&strVal) std::string(val);
         }
 
-        InterpretedValue(const InterpretedValue& iVal) : mType{ iVal.mType }
-        {
-            if (iVal.mType == ValueType::BOOLEAN)
-                boolVal = iVal.boolVal;
-            if (iVal.mType == ValueType::INTEGER)
-                intVal = iVal.intVal;
-            if (iVal.mType == ValueType::STRING)
-                new (&strVal) std::string(iVal.strVal);
-        }
+        InterpretedValue(const InterpretedValue& val) { AssignFrom(val); }
 
-        ~InterpretedValue()
-        {
-            if (mType == ValueType::STRING)
-            {
-                // Using statement is necessary to compile with Clang
-                using std::string;
-                strVal.~string();
-            }
-        }
+        ~InterpretedValue() { Destroy(); }
 
     public:
-        InterpretedValue& operator=(InterpretedValue val)
+        InterpretedValue& operator=(const InterpretedValue& val)
         {
-            std::swap(val, *this);
+            if (&val != this)
+            {
+                Destroy();
+                AssignFrom(val);
+            }
+
             return *this;
         }
 
@@ -81,6 +70,37 @@ namespace Execution
         bool GetBoolVal() const { assert(mType == ValueType::BOOLEAN); return boolVal; }
         int GetIntVal() const { assert(mType == ValueType::INTEGER); return intVal; }
         std::string GetStrVal() const { assert(mType == ValueType::STRING); return strVal; }
+
+    private:
+        void Destroy()
+        {
+            if (mType == ValueType::STRING)
+            {
+                // Using statement is necessary to compile with Clang
+                using std::string;
+                strVal.~string();
+            }
+        }
+
+        void AssignFrom(const InterpretedValue& val)
+        {
+            switch (val.mType)
+            {
+            case ValueType::BOOLEAN:
+                boolVal = val.boolVal;
+                break;
+            case ValueType::INTEGER:
+                intVal = val.intVal;
+                break;
+            case ValueType::STRING:
+                new (&strVal) std::string(val.strVal);
+                break;
+            default:
+                assert(false);  // Should never happen
+            }
+
+            mType = val.mType;
+        }
 
     private:
         ValueType mType;
