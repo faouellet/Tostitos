@@ -47,11 +47,6 @@ else()
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-omit-frame-pointer")
         set(CMAKE_EXE_LINKER_FLAGS "-fsanitize=address")
 	endif()
-	
-	# Making sure to link with the correct standard library on OSX
-	if((${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU") AND APPLE)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-	endif()
 endif()
 
 add_subdirectory (Tostitos)
