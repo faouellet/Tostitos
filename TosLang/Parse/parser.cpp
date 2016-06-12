@@ -47,6 +47,9 @@ std::unique_ptr<ASTNode> Parser::ParseProgramDecl()
         case Lexer::Token::FUNCTION:
              node.reset(ParseFunctionDecl().release());
             break;
+        case Lexer::Token::COMMENT:
+        case Lexer::Token::ML_COMMENT:
+            break;
         default:
             ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::EXPECTED_DECL, mLexer.GetCurrentLocation());
             break;
