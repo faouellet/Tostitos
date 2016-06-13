@@ -1,0 +1,17 @@
+// EXPECTED: 6
+
+fn GCD(a : Int, b : Int) -> Int
+{
+	if b == 0
+	{
+		return a;
+	}
+	
+	return GCD(b, a % b);
+}
+
+fn main() -> Void
+{
+	print GCD(42, 24);
+	return;
+}

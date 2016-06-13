@@ -1,0 +1,7 @@
+// EXPECTED: Hello World
+
+fn main() -> Void
+{
+	print "Hello World";
+	return;
+}
