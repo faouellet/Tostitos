@@ -262,10 +262,9 @@ BOOST_AUTO_TEST_CASE( ParseBadVarInitBinOpTest )
 
     // Check if the correct error messages got printed
     std::vector<std::string> messages{ GetErrorMessages() };
-    BOOST_REQUIRE_EQUAL(messages.size(), 3);
+    BOOST_REQUIRE_EQUAL(messages.size(), 2);
     BOOST_REQUIRE_EQUAL(messages[0], "ERROR: Not an acceptable use of a binary operation at line 1, column 14");
     BOOST_REQUIRE_EQUAL(messages[1], "ERROR: Missing right hand side in binary expression at line 2, column 15");
-    BOOST_REQUIRE_EQUAL(messages[2], "ERROR: Not an acceptable binary operation at line 3, column 18");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -573,9 +573,8 @@ BOOST_AUTO_TEST_CASE( ParseBadCallMissingCommaTest )
     
     // Check if the correct error message got printed
     std::vector<std::string> messages{ GetErrorMessages() };
-    BOOST_REQUIRE_EQUAL(messages.size(), 2);
-    BOOST_REQUIRE_EQUAL(messages[0], "ERROR: Not an acceptable binary operation at line 9, column 15");
-    BOOST_REQUIRE_EQUAL(messages[1], "CALL ERROR: Incorrect function call arguments at line 9, column 15");
+    BOOST_REQUIRE_EQUAL(messages.size(), 1);
+    BOOST_REQUIRE_EQUAL(messages[0], "CALL ERROR: Incorrect function call arguments at line 9, column 15");
 }
 
 BOOST_AUTO_TEST_CASE( ParseBadCallMissingParenTest )

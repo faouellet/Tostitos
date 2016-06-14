@@ -245,23 +245,41 @@ std::unique_ptr<Expr> Parser::ParseExpr()
 
     // Look what comes next
     mCurrentToken = mLexer.GetNextToken();
-    
+
+    const Lexer::Token exprTerminators[] = { Lexer::Token::SEMI_COLON, Lexer::Token::LEFT_BRACE, 
+                                             Lexer::Token::RIGHT_BRACE, Lexer::Token::RIGHT_PAREN, Lexer::Token::COMMA };
+    const auto& terminatorsBegin = std::begin(exprTerminators);
+    const auto& terminatorsEnd = std::end(exprTerminators);
+
     // Here, what could happen is one of the following cases:
     //      1- The expression could be part of a binary expression
     //      2- The expression could be a function call
     //      3- The expression is done being parsed
-    if ((Lexer::Token::OP_START <= mCurrentToken) && (mCurrentToken <= Lexer::Token::OP_END))
-        return ParseBinaryOpExpr(mCurrentToken, std::move(node));
-    else if(mCurrentToken == Lexer::Token::LEFT_PAREN)
-        return ParseCallExpr(std::move(node));
-    else if ((mCurrentToken == Lexer::Token::SEMI_COLON) 
-        || (mCurrentToken == Lexer::Token::LEFT_BRACE)
-        || (mCurrentToken == Lexer::Token::RIGHT_BRACE)
-        || (mCurrentToken == Lexer::Token::RIGHT_PAREN)
-        || (mCurrentToken == Lexer::Token::COMMA))
+    while (std::find(terminatorsBegin, terminatorsEnd, mCurrentToken) == terminatorsEnd)
+    {
+        if ((Lexer::Token::OP_START <= mCurrentToken) && (mCurrentToken <= Lexer::Token::OP_END))
+        {
+            node.reset(ParseBinaryOpExpr(mCurrentToken, std::move(node)).release());
+        }
+        else if (mCurrentToken == Lexer::Token::LEFT_PAREN)
+        {
+            node.reset(ParseCallExpr(std::move(node)).release());
+        }
+        else
+        {
+            // The expression has a trailing part and isn't well-formed, log an error
+            //ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_OPERATION, mLexer.GetCurrentLocation());
+            return nullptr;
+        }
+    }
+    
+    // The expression has come to its natural end, return the expression node we built
+    if (std::find(terminatorsBegin, terminatorsEnd, mCurrentToken) != terminatorsEnd)
+    {
         return std::move(node);
+    }
 
-    // The expression has a second part and isn't well-formed, log an error
+    // The expression has a trailing part and isn't well-formed, log an error
     ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_OPERATION, mLexer.GetCurrentLocation());
     return nullptr;
 }
