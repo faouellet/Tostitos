@@ -7,6 +7,8 @@
 
 #include "../Utils/errorlogger.h"
 
+#include <algorithm>
+
 using namespace TosLang::FrontEnd;
 using namespace TosLang::Common;
 using namespace TosLang::Utils;
