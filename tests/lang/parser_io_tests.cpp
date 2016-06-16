@@ -182,7 +182,7 @@ BOOST_AUTO_TEST_CASE( ParseBadIOTest )
     BOOST_REQUIRE_EQUAL(messages[2], "SCAN ERROR: Missing input variable at line 3, column 6");
     BOOST_REQUIRE_EQUAL(messages[3], "SCAN ERROR: Input variable is not an identfier at line 4, column 6");
     BOOST_REQUIRE_EQUAL(messages[4], "ERROR: Not an acceptable use of a binary operation at line 5, column 7");
-    BOOST_REQUIRE_EQUAL(messages[5], "PRINT ERROR: Wrong message for printing at line 5, column 7");
+    BOOST_REQUIRE_EQUAL(messages[5], "PRINT ERROR: Cannot print given expression at line 5, column 7");
 }
 
 BOOST_AUTO_TEST_CASE( ParseBadIOGlobalScopeTest )

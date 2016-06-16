@@ -448,7 +448,7 @@ std::unique_ptr<PrintStmt> Parser::ParsePrintStmt()
 
         if (msgExpr == nullptr)
         {
-            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::PRINT_WRONG_MSG, mLexer.GetCurrentLocation());
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::PRINT_WRONG_INPUT_TYPE, mLexer.GetCurrentLocation());
             pStmt->SetErrorMessage();
         }
         else

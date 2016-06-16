@@ -42,7 +42,7 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
     { ErrorType::IF_MISSING_COND,             "IF ERROR: Missing if condition" },
 
     // IO
-    { ErrorType::PRINT_WRONG_MSG,             "PRINT ERROR: Wrong message for printing" },
+    { ErrorType::PRINT_WRONG_INPUT_TYPE,      "PRINT ERROR: Cannot print given expression" },
     { ErrorType::SCAN_MISSING_INPUT_VAR,      "SCAN ERROR: Missing input variable" },
     { ErrorType::SCAN_WRONG_INPUT_TYPE,       "SCAN ERROR: Input variable is not an identfier" },
 

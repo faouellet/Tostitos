@@ -58,7 +58,6 @@ namespace TosLang
 
                 // IO
                 PRINT_WRONG_INPUT_TYPE,
-                PRINT_WRONG_MSG,
                 SCAN_MISSING_INPUT_VAR,
                 SCAN_WRONG_INPUT_TYPE,
 

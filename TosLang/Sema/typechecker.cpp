@@ -56,11 +56,23 @@ size_t TypeChecker::Run(const std::unique_ptr<ASTNode>& root, const std::shared_
 
 bool TypeChecker::CheckExprEvaluateToType(const Expr* expr, Type type)
 {
-    if (expr->GetKind() != ASTNode::NodeKind::CALL_EXPR)
+    // In the most common case, we already know the type of the expression
+    if ((expr->GetKind() != ASTNode::NodeKind::BINARY_EXPR) 
+        && (expr->GetKind() != ASTNode::NodeKind::CALL_EXPR))
     {
         return mNodeTypes.at(expr) == type;
     }
-    else
+
+    // TODO: unit test with binary expression containing multiple function calls
+
+    // However, there are two cases when the node type might still be undecided
+    // 1- A call expression will still have an undecided type at this point because 
+    //    we're still not done with its overload resolution. We currently know of 
+    //    every potential function candidates that share its argument types. All that's 
+    //    left to do is the final matching by matching the expected return type.
+    // 2- A binary expression containing call expression(s) won't have its type decided 
+    //    until the call expression(s) are finally resolved
+    if (expr->GetKind() == ASTNode::NodeKind::CALL_EXPR)
     {
         const CallExpr* cExpr = static_cast<const CallExpr*>(expr);
         assert(cExpr != nullptr);
@@ -92,6 +104,32 @@ bool TypeChecker::CheckExprEvaluateToType(const Expr* expr, Type type)
             ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::CALL_RETURN_ERROR,
                                               mCurrentNode->GetSourceLocation());
             ++mErrorCount;
+            return false;
+        }
+    }
+    else    // Binary expression
+    {
+        const BinaryOpExpr* bExpr = static_cast<const BinaryOpExpr*>(expr);
+        assert(bExpr != nullptr);
+
+        // We force the evaluation of the binary expression operands
+         
+        Type typeForEval = type;
+        // A '<' or a '>' requires numbers to be compared to one another
+        if ((bExpr->GetOperation() == Operation::GREATER_THAN) || (bExpr->GetOperation() == Operation::LESS_THAN))
+            typeForEval = Type::NUMBER;
+
+        bool evalutesToType = CheckExprEvaluateToType(bExpr->GetLHS(), typeForEval);
+        evalutesToType &= CheckExprEvaluateToType(bExpr->GetRHS(), typeForEval);
+        
+        if (evalutesToType)
+        {
+            mNodeTypes[expr] = type;
+            return true;
+        }
+        else
+        {
+            // TODO: Log an error?
             return false;
         }
     }
@@ -163,10 +201,7 @@ void TypeChecker::HandleBinaryExpr()
         switch (children[i]->GetKind())
         {
         case ASTNode::NodeKind::BINARY_EXPR:
-        {
-            const BinaryOpExpr* innerBExpr = static_cast<const BinaryOpExpr*>(children[i].get());
-            operandTypes[i] = mNodeTypes.at(innerBExpr);
-        }
+            operandTypes[i] = mNodeTypes.at(children[i].get());
             break;
         case ASTNode::NodeKind::BOOLEAN_EXPR:
             operandTypes[i] = Type::BOOL;
@@ -331,22 +366,23 @@ void TypeChecker::HandleIfStmt()
 
 void TypeChecker::HandlePrintStmt()
 {
-    const PrintStmt* pStmt = static_cast<const PrintStmt*>(this->mCurrentNode);
-    assert(pStmt != nullptr);
-
-    const Expr* msgExpr = pStmt->GetMessage();
-    if (msgExpr != nullptr)
-    {
-        const ASTNode::NodeKind kind = msgExpr->GetKind();
-        if (kind != ASTNode::NodeKind::IDENTIFIER_EXPR 
-            && kind != ASTNode::NodeKind::NUMBER_EXPR
-            && kind!= ASTNode::NodeKind::STRING_EXPR)
-        {
-            // Expression is not an identifier or a number or a string literal, log an error
-            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::PRINT_WRONG_INPUT_TYPE, pStmt->GetSourceLocation());
-            ++mErrorCount;
-        }
-    }
+    // TODO: Still needed?
+    //const PrintStmt* pStmt = static_cast<const PrintStmt*>(this->mCurrentNode);
+    //assert(pStmt != nullptr);
+    //
+    //const Expr* msgExpr = pStmt->GetMessage();
+    //if (msgExpr != nullptr)
+    //{
+    //    const ASTNode::NodeKind kind = msgExpr->GetKind();
+    //    if (kind != ASTNode::NodeKind::IDENTIFIER_EXPR 
+    //        && kind != ASTNode::NodeKind::NUMBER_EXPR
+    //        && kind!= ASTNode::NodeKind::STRING_EXPR)
+    //    {
+    //        // Expression is not an identifier or a number or a string literal, log an error
+    //        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::PRINT_WRONG_INPUT_TYPE, pStmt->GetSourceLocation());
+    //        ++mErrorCount;
+    //    }
+    //}
 }
 
 void TosLang::FrontEnd::TypeChecker::HandleReturnStmt()
