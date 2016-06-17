@@ -27,7 +27,7 @@ namespace Execution
         explicit StackFrame(const TosLang::FrontEnd::ASTNode* caller) : mCaller{ caller }, mCurrentVals{ } { }
 
     public:
-        void AddOrUpdateSymbolValue(const TosLang::FrontEnd::Symbol* sym, InterpretedValue value);
+        void AddOrUpdateSymbolValue(const TosLang::FrontEnd::Symbol* sym, const InterpretedValue& value);
         bool TryGetSymbolValue(const TosLang::FrontEnd::Symbol* sym, InterpretedValue& value);
 
     private:
@@ -38,7 +38,7 @@ namespace Execution
     class CallStack
     {
     public:
-        void AddOrUpdateSymbolValue(const TosLang::FrontEnd::Symbol* sym, InterpretedValue value, bool isGlobalSymol);
+        void AddOrUpdateSymbolValue(const TosLang::FrontEnd::Symbol* sym, const InterpretedValue& value, bool isGlobalSymol);
         bool TryGetSymbolValue(const TosLang::FrontEnd::Symbol* sym, InterpretedValue& value, bool isGlobalSymol);
 
         void EnterNewFrame(const TosLang::FrontEnd::ASTNode* fnNode);

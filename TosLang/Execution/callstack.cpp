@@ -5,7 +5,7 @@ using namespace TosLang;
 
 ////////// Stack Frame //////////
 
-void StackFrame::AddOrUpdateSymbolValue(const FrontEnd::Symbol* sym, InterpretedValue value)
+void StackFrame::AddOrUpdateSymbolValue(const FrontEnd::Symbol* sym, const InterpretedValue& value)
 {
     mCurrentVals[sym] = value;
 }
@@ -22,7 +22,7 @@ bool StackFrame::TryGetSymbolValue(const FrontEnd::Symbol* sym, InterpretedValue
 }
 
 ////////// Call Stack //////////
-void CallStack::AddOrUpdateSymbolValue(const FrontEnd::Symbol* sym, InterpretedValue value, bool isGlobalSymol)
+void CallStack::AddOrUpdateSymbolValue(const FrontEnd::Symbol* sym, const InterpretedValue& value, bool isGlobalSymol)
 {
     if (isGlobalSymol)
         mFrames.front().AddOrUpdateSymbolValue(sym, value);
