@@ -162,6 +162,17 @@ const ASTNode* SymbolTable::FindFunctionDecl(const Symbol& fnSym) const
         return nullptr;
 }
 
+const ASTNode* SymbolTable::GetFunctionDecl(const ASTNode* callExpr) const
+{
+    assert(callExpr->GetKind() == ASTNode::NodeKind::CALL_EXPR);
+    return mUseDefs.at(callExpr);
+}
+
+const ASTNode* SymbolTable::GetVarDecl(const ASTNode* identExpr) const
+{
+    assert(identExpr->GetKind() == ASTNode::NodeKind::IDENTIFIER_EXPR);
+    return mUseDefs.at(identExpr);
+}
 
 bool SymbolTable::IsFunctionSymbolValid(const Symbol& fnSym) const
 {
@@ -222,28 +233,3 @@ bool SymbolTable::IsGlobalVariable(const ASTNode* node) const
     return symIt->second.GetScopeID() == 0;
 }
 
-const ASTNode* SymbolTable::FindVarDecl(const ASTNode* identExpr, size_t scopeID) const
-{
-    const IdentifierExpr* iExpr = static_cast<const IdentifierExpr*>(identExpr);
-    assert(iExpr != nullptr);
-
-    Symbol expectedSym{ iExpr->GetType(), scopeID, iExpr->GetName() };
-
-    // Going from the deepest scope to the global scope, we search for a suitable variable declaration
-    while (scopeID >= 0)
-    {
-        auto identIt = std::find_if(mTable.begin(), mTable.end(), [&](const std::pair<const ASTNode*, Symbol> nodeSym)
-        {
-            return nodeSym.first->GetKind() == ASTNode::NodeKind::VAR_DECL
-                && nodeSym.first->GetName() == identExpr->GetName()
-                && nodeSym.second.GetScopeID() == scopeID;
-        });
-
-        if (identIt != mTable.end())
-            return identIt->first;
-
-        expectedSym = Symbol{ iExpr->GetType(), --scopeID, iExpr->GetName() };
-    }
-    
-    return nullptr;
-}

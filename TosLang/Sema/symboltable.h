@@ -143,7 +143,12 @@ namespace TosLang
             /*
             * TODO
             */
-            const ASTNode* FindVarDecl(const ASTNode* identExpr, const size_t scopeID) const;
+            const ASTNode* GetFunctionDecl(const ASTNode* identExpr) const;
+
+            /*
+            * TODO
+            */
+            const ASTNode* GetVarDecl(const ASTNode* identExpr) const;
             
             /*
             * \fn           IsFunctionNameValid

@@ -46,11 +46,32 @@ TypeChecker::TypeChecker()
 
 size_t TypeChecker::Run(const std::unique_ptr<ASTNode>& root, const std::shared_ptr<SymbolTable>& symTab)
 {
+    // Cleanup before starting a new run
     mErrorCount = 0;
     mSymbolTable = symTab;
     mNodeTypes.clear();
     mOverloadMap.clear();
+
     this->VisitPostOrder(root);
+
+    // Some calls may still be unresolved because of lack of context at their call sites 
+    // (mostly due to an ignored returned value). We try to resolve these calls by going over
+    // their overload sets and checking if there's a valid function candidate. If there's 
+    // more than one, we have a problem. If there's none we should already have flagged the problem.
+    for (const auto& callOverloads : mOverloadMap)
+    {
+        if (callOverloads.second.size() == 1)
+        {
+            const CallExpr* cExpr = dynamic_cast<const CallExpr*>(callOverloads.first);
+            mSymbolTable->AddFunctionUse(cExpr, *callOverloads.second.front());
+        }
+        else if (!callOverloads.second.empty())
+        {
+            // TODO: Log an error
+            ++mErrorCount;
+        }
+    }
+
     return mErrorCount;
 }
 
@@ -97,6 +118,10 @@ bool TypeChecker::CheckExprEvaluateToType(const Expr* expr, Type type)
         if (matchIt != overloadSet.end())
         {
             mSymbolTable->AddFunctionUse(cExpr, **matchIt);
+
+            // No need for the overload set anymore
+            mOverloadMap.erase(oSetIt);
+
             return true;
         }
         else

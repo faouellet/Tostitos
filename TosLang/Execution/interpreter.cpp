@@ -176,8 +176,7 @@ InterpretedValue Interpreter::HandleCallExpr(const FrontEnd::ASTNode* node)
     }
 
     // We need to find the function that is being called
-    Symbol expectedFnSym{ fnTypes, 0, cExpr->GetCalleeName() };
-    const ASTNode* fnNode = mSymTable->FindFunctionDecl(expectedFnSym);
+    const ASTNode* fnNode = mSymTable->GetFunctionDecl(cExpr);
     const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(fnNode);
     assert(fDecl != nullptr);
 
@@ -214,7 +213,7 @@ InterpretedValue Interpreter::HandleIdentifierExpr(const FrontEnd::ASTNode* node
     // In that case, we just need to evaluate the associated variable declaration.
     if (!foundVal)
     {
-        const ASTNode* varDecl = mSymTable->FindVarDecl(node, mCurrentScope);
+        const ASTNode* varDecl = mSymTable->GetVarDecl(node);
         identVal = HandleVarDecl(varDecl);
     }
 
@@ -243,13 +242,9 @@ InterpretedValue Interpreter::HandleCompoundStmt(const FrontEnd::ASTNode* node)
     const CompoundStmt* cStmt = dynamic_cast<const CompoundStmt*>(node);
     assert(cStmt != nullptr);
 
-    ++mCurrentScope;
-
     for (const auto& stmt : cStmt->GetStatements())
         DispatchNode(stmt.get());
 
-    --mCurrentScope;
-    
     return{};
 }
 
