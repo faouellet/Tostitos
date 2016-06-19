@@ -389,6 +389,10 @@ std::unique_ptr<CompoundStmt> Parser::ParseCompoundStmt()
         case Lexer::Token::SCAN:
             node.reset(ParseScanStmt().release());
             break;
+        case Lexer::Token::COMMENT:
+        case Lexer::Token::ML_COMMENT:
+            mCurrentToken = mLexer.GetNextToken();
+            continue;
         case Lexer::Token::FUNCTION:
             ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::FN_INTERNAL, mLexer.GetCurrentLocation());
             // We skip everything until either the end of the internal function, the end of the function currently
