@@ -20,15 +20,15 @@ int main(int argc, char** argv)
     switch (info.command)
     {
     case Execution::ExecutionCommand::COMPILE_CHIP16:
-        return 0;
+        return 1;
     case Execution::ExecutionCommand::COMPILE_LLVM:
-        return 0;
+        return 1;
     case Execution::ExecutionCommand::DUMP_AST:
-        return 0;
+        compiler.DumpAST(info.programFile);
     case Execution::ExecutionCommand::DUMP_CFG:
-        return 0;
+        return 1;
     case Execution::ExecutionCommand::DUMP_LLVM:
-        return 0;
+        return 1;
     case Execution::ExecutionCommand::INTERPRET:
     {
         auto programAST = compiler.ParseProgram(info.programFile);
@@ -41,10 +41,9 @@ int main(int argc, char** argv)
             }
         }
     }
-        return 0;
-    case Execution::ExecutionCommand::UNKNOWN:
-        return 1;
     default:
         return 1;
     }
+
+    return 0;
 }
