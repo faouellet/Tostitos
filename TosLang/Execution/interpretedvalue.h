@@ -17,6 +17,7 @@ namespace Execution
             BOOLEAN,
             INTEGER,
             STRING,
+            VOID,
             UNKNOWN,
         };
 
@@ -32,6 +33,14 @@ namespace Execution
         InterpretedValue(const InterpretedValue& val) { AssignFrom(val); }
 
         ~InterpretedValue() { Destroy(); }
+
+    public:
+        static InterpretedValue CreateVoidValue() 
+        {
+            InterpretedValue val;
+            val.mType = ValueType::VOID;
+            return val;
+        }
 
     public:
         InterpretedValue& operator=(const InterpretedValue& val)
@@ -94,6 +103,8 @@ namespace Execution
                 break;
             case ValueType::STRING:
                 new (&strVal) std::string(val.strVal);
+                break;
+            case ValueType::VOID:
                 break;
             default:
                 assert(false);  // Should never happen

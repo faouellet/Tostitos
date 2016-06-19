@@ -41,7 +41,16 @@ InterpretedValue Interpreter::HandleFunction(const FrontEnd::ASTNode* node)
     const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(node);
     assert(fDecl != nullptr);
 
-    return DispatchNode(fDecl->GetBody());
+    DispatchNode(fDecl->GetBody());
+
+    // Done with callee but not with caller
+    mDoneWithCurrentFunc = false;
+
+    // If we're returning from 'main', we won't have a callstack to fetch the return value from
+    if (mCallStack.Empty())
+        return{};
+    else
+        return mCallStack.GetReturnValue();
 }
 
 // We are using a pull model for variable initialization. What this means is that a variable will only 
@@ -144,45 +153,28 @@ InterpretedValue Interpreter::HandleBooleanExpr(const FrontEnd::ASTNode* node)
 
 InterpretedValue Interpreter::HandleCallExpr(const FrontEnd::ASTNode* node) 
 { 
+    // TODO: Make sure that no function can call the 'main' function
+
     const CallExpr* cExpr = dynamic_cast<const CallExpr*>(node);
     assert(cExpr != nullptr);
      
     // Evaluating all the argument expressions to find out the values the function is being called with
     std::vector<InterpretedValue> callVals;
-    std::vector<Common::Type> fnTypes;
     for (const auto& arg : cExpr->GetArgs())
     {
         InterpretedValue argVal{ DispatchNode(arg.get()) };
 
         callVals.push_back(argVal);
-
-        // While we're at it, we also record the type of the argument.
-        // This is done to help us find the function being called later on
-        switch (argVal.GetType())
-        {
-        case InterpretedValue::ValueType::BOOLEAN:  
-            fnTypes.push_back(Common::Type::BOOL);
-            break;
-        case InterpretedValue::ValueType::INTEGER:
-            fnTypes.push_back(Common::Type::NUMBER);
-            break;
-        case InterpretedValue::ValueType::STRING:
-            fnTypes.push_back(Common::Type::STRING);
-            break;
-        default:
-            assert(false);  // Something went wrong when evaluating the argument's value
-            break;
-        }
     }
+
+    // Pushing a new frame on the call stack for the function call we're about to make
+    mCallStack.EnterNewFrame(cExpr);
 
     // We need to find the function that is being called
     const ASTNode* fnNode = mSymTable->GetFunctionDecl(cExpr);
     const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(fnNode);
     assert(fDecl != nullptr);
-
-    // Pushing a new frame on the call stack for the function we're about to call
-    mCallStack.EnterNewFrame(fDecl);
-
+    
     // Initializing the function's parameters in the new stack frame
     const ParamVarDecls* pVDecls = fDecl->GetParametersDecl();
     assert(pVDecls->GetParameters().size() == callVals.size());
@@ -193,12 +185,7 @@ InterpretedValue Interpreter::HandleCallExpr(const FrontEnd::ASTNode* node)
     }
 
     // Executing the call
-    InterpretedValue fVal{ HandleFunction(fDecl) };
-    
-    // Popping the function frame from the call stack
-    mCallStack.ExitCurrentFrame();
-
-    return{}; 
+    return HandleFunction(fDecl);
 }
 
 InterpretedValue Interpreter::HandleIdentifierExpr(const FrontEnd::ASTNode* node) 
@@ -243,7 +230,8 @@ InterpretedValue Interpreter::HandleCompoundStmt(const FrontEnd::ASTNode* node)
     assert(cStmt != nullptr);
 
     for (const auto& stmt : cStmt->GetStatements())
-        DispatchNode(stmt.get());
+        if (!mDoneWithCurrentFunc)
+            DispatchNode(stmt.get());
 
     return{};
 }
@@ -288,11 +276,23 @@ InterpretedValue Interpreter::HandleReturnStmt(const FrontEnd::ASTNode* node)
     const ReturnStmt* rStmt = dynamic_cast<const ReturnStmt*>(node);
     assert(rStmt != nullptr);
 
+    // There might be a return value
     const Expr* rExpr = rStmt->GetReturnExpr();
+    InterpretedValue returnVal = InterpretedValue::CreateVoidValue();
+
     if (rExpr != nullptr)
-        return DispatchNode(rExpr);
-    else
-        return{};
+        returnVal = DispatchNode(rExpr);
+
+    // And we're done here
+    mDoneWithCurrentFunc = true;
+    
+    // If we can, we place the return value in the caller's stack frame.
+    // We can't do this when returning from the main function, since no function can call it.
+    mCallStack.ExitCurrentFrame();
+    if (!mCallStack.Empty())
+        mCallStack.SetReturnValue(returnVal);
+
+    return returnVal;
 }
 
 InterpretedValue Interpreter::HandleScanStmt(const FrontEnd::ASTNode* node) 

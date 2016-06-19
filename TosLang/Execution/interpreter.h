@@ -20,7 +20,7 @@ namespace Execution
     class Interpreter
     {
     public:
-        Interpreter() : mCurrentScope{ 0 }, mCurrentNode{ nullptr }, mSymTable{ nullptr }, mCallStack{ } { }
+        Interpreter() : mDoneWithCurrentFunc{ false }, mCurrentNode{ nullptr }, mSymTable{ nullptr }, mCallStack{ } { }
 
     public:
         void Run(const std::unique_ptr<TosLang::FrontEnd::ASTNode>& root, 
@@ -51,7 +51,7 @@ namespace Execution
         const TosLang::FrontEnd::Symbol* GetSymbol(const TosLang::FrontEnd::ASTNode* node) const;
 
     private:
-        size_t mCurrentScope;
+        bool mDoneWithCurrentFunc;
         const TosLang::FrontEnd::ASTNode* mCurrentNode;
         const TosLang::FrontEnd::SymbolTable* mSymTable;
         CallStack mCallStack;

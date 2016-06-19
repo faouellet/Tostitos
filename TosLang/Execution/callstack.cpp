@@ -32,7 +32,7 @@ void CallStack::AddOrUpdateSymbolValue(const FrontEnd::Symbol* sym, const Interp
 
 void CallStack::EnterNewFrame(const FrontEnd::ASTNode* fnNode)
 {
-    mFrames.push_back(StackFrame(fnNode));
+    mFrames.emplace_back(fnNode);
 }
 
 bool CallStack::TryGetSymbolValue(const FrontEnd::Symbol* sym, InterpretedValue& value, bool isGlobalSymol)
