@@ -23,6 +23,7 @@ fn fibSeq(i : Int) -> Int
 		temp = fib1 + fib2;
 		fib2 = fib1;
 		fib1 = temp;
+		cpt = cpt + 1;
 	}
 	
 	return fib1;
