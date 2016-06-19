@@ -9,10 +9,11 @@ namespace TosLang
 
         enum class Operation : unsigned int
         {
+            ASSIGNMENT,
             AND_BOOL,
             AND_INT,
             DIVIDE,
-            ASSIGNMENT,
+            EQUAL,
             GREATER_THAN,
             LEFT_SHIFT,
             LESS_THAN,

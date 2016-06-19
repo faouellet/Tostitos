@@ -3,7 +3,7 @@ ProgramDecl
 			ParamVarDecl: i Type: 2 SrcLoc: 1, 11
 		CompoundStmt
 			ReturnStmt SrcLoc: 2, 7
-				BinaryOpExpr: 13 SrcLoc: 2, 8
+				BinaryOpExpr: 14 SrcLoc: 2, 8
 					IdentifierExpr: i SrcLoc: 2, 8
 					NumberExpr: 1 SrcLoc: 2, 8
 	FunctionDecl: increment Return Type: 2 SrcLoc: 5, 18
@@ -11,7 +11,7 @@ ProgramDecl
 			ParamVarDecl: inc Type: 2 SrcLoc: 5, 18
 		CompoundStmt
 			ReturnStmt SrcLoc: 6, 7
-				BinaryOpExpr: 13 SrcLoc: 6, 12
+				BinaryOpExpr: 14 SrcLoc: 6, 12
 					IdentifierExpr: i SrcLoc: 6, 8
 					IdentifierExpr: inc SrcLoc: 6, 12
 	FunctionDecl: main Return Type: 4 SrcLoc: 10, 6

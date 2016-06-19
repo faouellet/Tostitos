@@ -11,7 +11,7 @@ ProgramDecl
 			VarDecl: MyInt2 Type: 2 SrcLoc: 7, 10
 				NumberExpr: 2 SrcLoc: 7, 16
 			CallExpr: identity SrcLoc: 9, 14
-				BinaryOpExpr: 13 SrcLoc: 9, 21
+				BinaryOpExpr: 14 SrcLoc: 9, 21
 					IdentifierExpr: MyInt1 SrcLoc: 9, 14
 					IdentifierExpr: MyInt2 SrcLoc: 9, 21
 			ReturnStmt SrcLoc: 11, 7

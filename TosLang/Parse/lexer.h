@@ -39,6 +39,7 @@ namespace TosLang
                 // Operators
                 AND_BOOL,
                 AND_INT,
+                ASSIGN,
                 DIVIDE,
                 EQUAL,
                 GREATER_THAN,

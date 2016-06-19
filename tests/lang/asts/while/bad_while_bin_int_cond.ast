@@ -4,10 +4,10 @@ ProgramDecl
 			VarDecl: BoolVar Type: 1 SrcLoc: 2, 11
 				BooleanExpr: True SrcLoc: 2, 20
 			WhileStmt SrcLoc: 4, 7
-				BinaryOpExpr: 13 SrcLoc: 4, 9
+				BinaryOpExpr: 14 SrcLoc: 4, 9
 					NumberExpr: 1 SrcLoc: 4, 7
 					NumberExpr: 2 SrcLoc: 4, 9
 				CompoundStmt
-					BinaryOpExpr: 3 SrcLoc: 5, 15
+					BinaryOpExpr: 0 SrcLoc: 5, 15
 						IdentifierExpr: BoolVar SrcLoc: 5, 9
 						BooleanExpr: False SrcLoc: 5, 15

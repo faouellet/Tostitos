@@ -67,9 +67,16 @@ Lexer::Token Lexer::GetNextToken()
 	case ')':
 		++mBufferIt;
 		return Token::RIGHT_PAREN;
-	case '=':
-		++mBufferIt;
-		return Token::EQUAL;
+	case '=':   // TODO: Add test to verify that a distinction is made between assignment and equality
+        if (*(++mBufferIt) == '=')
+        {
+            ++mBufferIt;
+            return Token::EQUAL;
+        }
+        else
+        {
+            return Token::ASSIGN;
+        }
 	case '+':
 		++mBufferIt;
 		return Token::PLUS;

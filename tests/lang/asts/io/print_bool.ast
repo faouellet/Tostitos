@@ -1,3 +1,5 @@
 ProgramDecl
 	FunctionDecl: main Return Type: 4 SrcLoc: 1, 6
 		CompoundStmt
+			PrintStmt SrcLoc: 2, 6
+				BooleanExpr: True SrcLoc: 2, 10

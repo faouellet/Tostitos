@@ -6,6 +6,6 @@ ProgramDecl
 			IfStmt SrcLoc: 4, 10
 				IdentifierExpr: BoolVar SrcLoc: 4, 10
 				CompoundStmt
-					BinaryOpExpr: 3 SrcLoc: 5, 15
+					BinaryOpExpr: 0 SrcLoc: 5, 15
 						IdentifierExpr: BoolVar SrcLoc: 5, 9
 						BooleanExpr: False SrcLoc: 5, 15

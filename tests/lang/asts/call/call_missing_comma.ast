@@ -4,7 +4,7 @@ ProgramDecl
 			ParamVarDecl: i2 Type: 2 SrcLoc: 1, 12
 		CompoundStmt
 			ReturnStmt SrcLoc: 2, 7
-				BinaryOpExpr: 13 SrcLoc: 2, 12
+				BinaryOpExpr: 14 SrcLoc: 2, 12
 					IdentifierExpr: i1 SrcLoc: 2, 9
 					IdentifierExpr: i2 SrcLoc: 2, 12
 	FunctionDecl: main Return Type: 4 SrcLoc: 5, 6

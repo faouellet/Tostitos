@@ -6,6 +6,6 @@ ProgramDecl
 			VarDecl: i Type: 2 SrcLoc: 3, 5
 				NumberExpr: 2 SrcLoc: 3, 11
 			ReturnStmt SrcLoc: 5, 7
-				BinaryOpExpr: 13 SrcLoc: 5, 10
+				BinaryOpExpr: 14 SrcLoc: 5, 10
 					IdentifierExpr: i SrcLoc: 5, 8
 					IdentifierExpr: i SrcLoc: 5, 10

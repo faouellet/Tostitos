@@ -6,6 +6,6 @@ ProgramDecl
 			WhileStmt SrcLoc: 4, 7
 				NumberExpr: 42 SrcLoc: 4, 7
 				CompoundStmt
-					BinaryOpExpr: 3 SrcLoc: 5, 15
+					BinaryOpExpr: 0 SrcLoc: 5, 15
 						IdentifierExpr: BoolVar SrcLoc: 5, 9
 						BooleanExpr: False SrcLoc: 5, 15

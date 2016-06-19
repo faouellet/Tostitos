@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE( LexerBadStrLitTest )
     BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::COLON);
     BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::TYPE);
     BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "String");
-    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::EQUAL);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::ASSIGN);
     BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::UNKNOWN);
     BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::SEMI_COLON);
 
@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE( LexerBadStrLitTest )
     BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::COLON);
     BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::TYPE);
     BOOST_REQUIRE_EQUAL(lex.GetCurrentStr(), "String");
-    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::EQUAL);
+    BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::ASSIGN);
     BOOST_REQUIRE(lex.GetNextToken() == Lexer::Token::UNKNOWN);
 
     // End of file

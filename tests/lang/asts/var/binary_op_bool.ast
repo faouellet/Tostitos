@@ -1,17 +1,17 @@
 ProgramDecl
 	VarDecl: V1 Type: 1 SrcLoc: 1, 5
-		BinaryOpExpr: 0 SrcLoc: 1, 21
+		BinaryOpExpr: 1 SrcLoc: 1, 21
 			BooleanExpr: True SrcLoc: 1, 15
 			BooleanExpr: False SrcLoc: 1, 21
 	VarDecl: V2 Type: 1 SrcLoc: 2, 5
-		BinaryOpExpr: 11 SrcLoc: 2, 21
+		BinaryOpExpr: 12 SrcLoc: 2, 21
 			BooleanExpr: True SrcLoc: 2, 15
 			BooleanExpr: False SrcLoc: 2, 21
 	VarDecl: V3 Type: 1 SrcLoc: 3, 5
-		BinaryOpExpr: 4 SrcLoc: 3, 14
+		BinaryOpExpr: 5 SrcLoc: 3, 14
 			NumberExpr: 1 SrcLoc: 3, 12
 			NumberExpr: 2 SrcLoc: 3, 14
 	VarDecl: V4 Type: 1 SrcLoc: 4, 5
-		BinaryOpExpr: 6 SrcLoc: 4, 14
+		BinaryOpExpr: 7 SrcLoc: 4, 14
 			NumberExpr: 1 SrcLoc: 4, 12
 			NumberExpr: 2 SrcLoc: 4, 14

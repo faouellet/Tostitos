@@ -5,8 +5,8 @@ ProgramDecl
 			ParamVarDecl: arg3 Type: 2 SrcLoc: 1, 25
 		CompoundStmt
 			ReturnStmt SrcLoc: 2, 10
-				BinaryOpExpr: 13 SrcLoc: 2, 19
+				BinaryOpExpr: 14 SrcLoc: 2, 19
 					IdentifierExpr: arg1 SrcLoc: 2, 14
-					BinaryOpExpr: 13 SrcLoc: 2, 24
+					BinaryOpExpr: 14 SrcLoc: 2, 24
 						IdentifierExpr: arg2 SrcLoc: 2, 19
 						IdentifierExpr: arg3 SrcLoc: 2, 24

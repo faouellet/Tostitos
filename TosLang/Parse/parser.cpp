@@ -188,7 +188,7 @@ std::unique_ptr<VarDecl> Parser::ParseVarDecl()
     mCurrentToken = mLexer.GetNextToken();
 
     // Variable declaration with initialization
-    if (mCurrentToken == Lexer::Token::EQUAL)
+    if (mCurrentToken == Lexer::Token::ASSIGN)
     {
         mCurrentToken = mLexer.GetNextToken();
         if (!vDecl->AddInitialization(ParseExpr()))
@@ -522,6 +522,8 @@ static Operation TokenToOpcode(Lexer::Token tok)
 {
     switch (tok)
     {
+    case TosLang::FrontEnd::Lexer::Token::ASSIGN:
+        return Operation::ASSIGNMENT;
     case TosLang::FrontEnd::Lexer::Token::AND_BOOL:
         return Operation::AND_BOOL;
     case TosLang::FrontEnd::Lexer::Token::AND_INT:
@@ -529,7 +531,7 @@ static Operation TokenToOpcode(Lexer::Token tok)
     case TosLang::FrontEnd::Lexer::Token::DIVIDE:
         return Operation::DIVIDE;
     case TosLang::FrontEnd::Lexer::Token::EQUAL:
-        return Operation::ASSIGNMENT;
+        return Operation::EQUAL;
     case TosLang::FrontEnd::Lexer::Token::GREATER_THAN:
         return Operation::GREATER_THAN;
     case TosLang::FrontEnd::Lexer::Token::LEFT_SHIFT:

@@ -5,9 +5,9 @@ ProgramDecl
 			ParamVarDecl: i3 Type: 2 SrcLoc: 1, 18
 		CompoundStmt
 			ReturnStmt SrcLoc: 2, 7
-				BinaryOpExpr: 13 SrcLoc: 2, 12
+				BinaryOpExpr: 14 SrcLoc: 2, 12
 					IdentifierExpr: i1 SrcLoc: 2, 9
-					BinaryOpExpr: 13 SrcLoc: 2, 15
+					BinaryOpExpr: 14 SrcLoc: 2, 15
 						IdentifierExpr: i2 SrcLoc: 2, 12
 						IdentifierExpr: i3 SrcLoc: 2, 15
 	FunctionDecl: main Return Type: 4 SrcLoc: 5, 6
@@ -19,7 +19,7 @@ ProgramDecl
 			VarDecl: MyInt3 Type: 2 SrcLoc: 8, 10
 				NumberExpr: 3 SrcLoc: 8, 16
 			CallExpr: sum SrcLoc: 10, 9
-				BinaryOpExpr: 13 SrcLoc: 10, 16
+				BinaryOpExpr: 14 SrcLoc: 10, 16
 					IdentifierExpr: MyInt1 SrcLoc: 10, 9
 					IdentifierExpr: MyInt1 SrcLoc: 10, 16
 				IdentifierExpr: MyInt2 SrcLoc: 10, 22
