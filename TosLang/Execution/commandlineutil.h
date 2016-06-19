@@ -39,7 +39,7 @@ namespace Execution
 
     ExecutionInfo ParseCommandLine(const std::vector<std::string>& args)
     {
-        if (args.size() > 3)
+        if (args.size() < 3)
         {
             ShowHelp();
             return{ ExecutionCommand::UNKNOWN };
