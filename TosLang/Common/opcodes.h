@@ -5,8 +5,10 @@ namespace TosLang
 {
     namespace Common
     {
-        // TODO: Put them in alphabetical order and regenerate the ASTs used for testing
-
+        /**
+        * \enum Operation
+        * \brief Operations available in TosLang
+        */
         enum class Operation : unsigned int
         {
             ASSIGNMENT,

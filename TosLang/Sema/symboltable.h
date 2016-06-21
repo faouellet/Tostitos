@@ -133,20 +133,26 @@ namespace TosLang
             std::vector<const Symbol*> GetOverloadCandidates(const std::string& fnName) const;
             
             /*
-            * \fn           FindFunctionDecl
+            * \fn           GetFunctionDecl
             * \brief        Gets the function declaration which matches the given symbol
             * \param fnSym  Symbol of the desired function
-            * \return       Pointer to the function AST node. Nullptr if no matching declaration is found
+            * \return       Pointer to the function declaration node. Nullptr if no matching declaration is found
             */
-            const ASTNode* FindFunctionDecl(const Symbol& fnSym) const;
+            const ASTNode* GetFunctionDecl(const Symbol& fnSym) const;
 
             /*
-            * TODO
+            * \fn           GetFunctionDecl
+            * \brief        Gets the function declaration which is referred to by the given call expression node
+            * \param fnSym  Call expression node
+            * \return       Pointer to the function declaration node. Nullptr if no matching declaration is found
             */
             const ASTNode* GetFunctionDecl(const ASTNode* identExpr) const;
 
             /*
-            * TODO
+            * \fn           GetVarDecl
+            * \brief        Gets the variable declaration which is referred to by the given identifier expression node
+            * \param fnSym  Identifier expression node
+            * \return       Pointer to the variable declaration node. Nullptr if no matching declaration is found
             */
             const ASTNode* GetVarDecl(const ASTNode* identExpr) const;
             

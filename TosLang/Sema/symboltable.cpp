@@ -148,7 +148,7 @@ std::vector<const Symbol*> SymbolTable::GetOverloadCandidates(const std::string&
     return overloadCandidates;
 }
 
-const ASTNode* SymbolTable::FindFunctionDecl(const Symbol& fnSym) const
+const ASTNode* SymbolTable::GetFunctionDecl(const Symbol& fnSym) const
 {
     auto fnIt = std::find_if(mTable.begin(), mTable.end(),
                              [&fnSym](const std::pair<const ASTNode*, Symbol>& nodeSym)

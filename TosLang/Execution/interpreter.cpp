@@ -20,7 +20,7 @@ void Interpreter::Run(const std::unique_ptr<ASTNode>& root, const SymbolTable* s
     
     // Program entry is always the 'main' function
     std::vector<Type> fnTypes{ Type::VOID };
-    const ASTNode* mainNode = mSymTable->FindFunctionDecl({ fnTypes, 0, "main" });
+    const ASTNode* mainNode = mSymTable->GetFunctionDecl({ fnTypes, 0, "main" });
     if (mainNode == nullptr)
     {
         // TODO: Log error and add a unit test for it
@@ -128,6 +128,7 @@ InterpretedValue Interpreter::HandleBinaryExpr(const FrontEnd::ASTNode* node)
     case Operation::AND_BOOL:       return InterpretedValue{ lhsval.GetBoolVal() && rhsval.GetBoolVal() };
     case Operation::AND_INT:        return InterpretedValue{ lhsval.GetIntVal() & rhsval.GetIntVal() };
     case Operation::DIVIDE:         return InterpretedValue{ lhsval.GetIntVal() / rhsval.GetIntVal() };
+    case Operation::EQUAL:          return InterpretedValue{ lhsval.GetIntVal() == rhsval.GetIntVal() };
     case Operation::GREATER_THAN:   return InterpretedValue{ lhsval.GetIntVal() > rhsval.GetIntVal() };
     case Operation::LEFT_SHIFT:     return InterpretedValue{ lhsval.GetIntVal() << rhsval.GetIntVal() };
     case Operation::LESS_THAN:      return InterpretedValue{ lhsval.GetIntVal() < rhsval.GetIntVal() };

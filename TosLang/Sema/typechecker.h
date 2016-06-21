@@ -62,7 +62,6 @@ namespace TosLang
 
         protected:  // Statements
             void HandleIfStmt();
-            void HandlePrintStmt();
             void HandleReturnStmt();
             void HandleWhileStmt();
 

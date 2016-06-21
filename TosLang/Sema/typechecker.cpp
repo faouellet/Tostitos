@@ -137,13 +137,18 @@ bool TypeChecker::CheckExprEvaluateToType(const Expr* expr, Type type)
         const BinaryOpExpr* bExpr = static_cast<const BinaryOpExpr*>(expr);
         assert(bExpr != nullptr);
 
-        // We force the evaluation of the binary expression operands
+        // We force the evaluation of the binary expression operands if necessary. This happens when 
+        // one of the operands is a function call. It is reflected in the type checker by the binary
+        // expression node not having any associated type
+        auto bExprIt = mNodeTypes.find(bExpr);
+        if (bExprIt != mNodeTypes.end())
+            return bExprIt->second == type;
          
         Type typeForEval = type;
         // A '<' or a '>' requires numbers to be compared to one another
         if ((bExpr->GetOperation() == Operation::GREATER_THAN) || (bExpr->GetOperation() == Operation::LESS_THAN))
             typeForEval = Type::NUMBER;
-
+        
         bool evalutesToType = CheckExprEvaluateToType(bExpr->GetLHS(), typeForEval);
         evalutesToType &= CheckExprEvaluateToType(bExpr->GetRHS(), typeForEval);
         
@@ -256,8 +261,10 @@ void TypeChecker::HandleBinaryExpr()
         return;
     }
 
-    if ((bExpr->GetOperation() == Operation::GREATER_THAN) || (bExpr->GetOperation() == Operation::LESS_THAN))
-        // When using either '<' or '>', the resulting type will be different than the operand types.
+    if ((bExpr->GetOperation() == Operation::EQUAL) || 
+        (bExpr->GetOperation() == Operation::GREATER_THAN) || 
+        (bExpr->GetOperation() == Operation::LESS_THAN))
+        // When using '<', '>' or '=', the resulting type will be different than the operand types.
         // It is using number expressions to produce a boolean expression.
         mNodeTypes[bExpr] = Type::BOOL;
     else
@@ -387,27 +394,6 @@ void TypeChecker::HandleIfStmt()
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_COND_EXPR_TYPE, ifStmt->GetCondExpr()->GetSourceLocation());
         ++mErrorCount;
     }
-}
-
-void TypeChecker::HandlePrintStmt()
-{
-    // TODO: Still needed?
-    //const PrintStmt* pStmt = static_cast<const PrintStmt*>(this->mCurrentNode);
-    //assert(pStmt != nullptr);
-    //
-    //const Expr* msgExpr = pStmt->GetMessage();
-    //if (msgExpr != nullptr)
-    //{
-    //    const ASTNode::NodeKind kind = msgExpr->GetKind();
-    //    if (kind != ASTNode::NodeKind::IDENTIFIER_EXPR 
-    //        && kind != ASTNode::NodeKind::NUMBER_EXPR
-    //        && kind!= ASTNode::NodeKind::STRING_EXPR)
-    //    {
-    //        // Expression is not an identifier or a number or a string literal, log an error
-    //        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::PRINT_WRONG_INPUT_TYPE, pStmt->GetSourceLocation());
-    //        ++mErrorCount;
-    //    }
-    //}
 }
 
 void TosLang::FrontEnd::TypeChecker::HandleReturnStmt()
