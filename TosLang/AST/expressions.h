@@ -21,6 +21,31 @@ namespace TosLang
             virtual bool IsLiteral() const { return false; }
         };
 
+        /*
+        * \class ArrayExpr
+        * \brief Node of the AST representing an array expression.
+        *        Example: { 1, 2, 3 }
+        */
+        class ArrayExpr : public Expr
+        {
+        public:
+            ArrayExpr(const Utils::SourceLocation& srcLoc)
+                : Expr{ NodeKind::ARRAY_EXPR }
+            {
+                mSrcLoc = srcLoc;
+            }
+
+            virtual ~ArrayExpr() = default;
+
+        public:
+            /*
+            * \fn           AddArrayElement
+            * \brief        Add an element to the array expression
+            * \param elem   Element to be added
+            */
+            void AddArrayElement(std::unique_ptr<Expr>&& elem) { AddChildNode(std::move(elem)); }
+        };
+
 		/*
 		* \class BinaryOpExpr
 		* \brief Node of the AST representing a binary expression be it arithmetic (+, -, *, \, %) or logical (||, &&)
@@ -196,6 +221,7 @@ namespace TosLang
                 mName = value;
                 mSrcLoc = srcLoc;
             }
+
             virtual ~StringExpr() = default;
         };
     }

@@ -17,6 +17,9 @@ namespace TosLang
             VOID,
 
             // Arrays
+            BOOL_ARRAY,
+            NUMBER_ARRAY,
+            STRING_ARRAY,
 
             UNKNOWN,
         };

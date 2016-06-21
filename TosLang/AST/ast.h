@@ -35,6 +35,7 @@ namespace TosLang
                 VAR_DECL,
 
                 // Expressions
+                ARRAY_EXPR,
                 BINARY_EXPR,
                 BOOLEAN_EXPR,
                 CALL_EXPR,
