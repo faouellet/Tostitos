@@ -40,6 +40,7 @@ namespace TosLang
                 BOOLEAN_EXPR,
                 CALL_EXPR,
                 IDENTIFIER_EXPR,
+                INDEX_EXPR,
                 NUMBER_EXPR,
                 STRING_EXPR,
 

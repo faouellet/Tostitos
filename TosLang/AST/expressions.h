@@ -180,6 +180,26 @@ namespace TosLang
         };
 
         /*
+        * \class IndexExpr
+        * \brief Node of the AST representing an indexed value
+        *        Example: tab[i]
+        */
+        class IndexExpr : public Expr
+        {
+        public:
+            IndexExpr(std::unique_ptr<IdentifierExpr>&& arrayIdentifier, std::unique_ptr<Expr>&& indexExpr, const Utils::SourceLocation& srcLoc)
+                : Expr{ NodeKind::INDEX_EXPR }
+            {
+                mName = arrayIdentifier->GetName();
+                mSrcLoc = srcLoc;
+
+                AddChildNode(std::move(arrayIdentifier));
+                AddChildNode(std::move(indexExpr));
+            }
+            virtual ~IndexExpr() = default;
+        };
+
+        /*
         * \class NumberExpr
         * \brief Node of the AST representing a number literal
         */
