@@ -54,14 +54,15 @@ namespace TosLang
         /*
         * \class VarDecl
         * \brief Node of the AST representing a variable declaration.
-        *        For example: var MyIntVar: Int
+        *        For example: var MyIntVar : Int
+        *                     var MyIntArrayVar : Int[10]
         */
         class VarDecl : public Decl
         {
         public:
-            VarDecl() : Decl{ NodeKind::ERROR }, mType{ Common::Type::ERROR }, mIsFunctionParameter{ false } { }
-            VarDecl(const std::string& varName, Common::Type type, bool isFuncParam, const Utils::SourceLocation& srcLoc)
-                : Decl{ NodeKind::VAR_DECL }, mType{ type }, mIsFunctionParameter{ isFuncParam }
+            VarDecl() : Decl{ NodeKind::ERROR }, mType{ Common::Type::ERROR }, mIsFunctionParameter{ false }, mVarSize{ 0 } { }
+            VarDecl(const std::string& varName, Common::Type type, bool isFuncParam, int varSize, const Utils::SourceLocation& srcLoc)
+                : Decl{ NodeKind::VAR_DECL }, mType{ type }, mIsFunctionParameter{ isFuncParam }, mVarSize{ varSize }
             {
                 mName = varName; 
                 mSrcLoc = srcLoc;
@@ -119,6 +120,7 @@ namespace TosLang
         private:
             Common::Type mType;         /*!< Variable type */
             bool mIsFunctionParameter;  /*!< Is the variable a function parameter */
+            int mVarSize;               /*!< Number of elements contained in the variable. Only makes sense for an array */
         };
 
         /*

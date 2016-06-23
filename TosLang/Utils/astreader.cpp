@@ -12,6 +12,8 @@
 using namespace TosLang::FrontEnd;
 using namespace TosLang::Utils;
 
+// TODO: Modify the AST printer and the AST reader to handle array variables
+
 ASTReader::ASTReader() : mStream{}, mCurrentLine{}, mSrcLocRegex{ ".*SrcLoc: ([1-9][0-9]*), ([1-9][0-9]*)" }
 {
     // TODO: Should be a constexpr member variable
@@ -113,7 +115,7 @@ std::unique_ptr<VarDecl> ASTReader::ReadVarDecl(const bool isFuncParam)
     // Create the VarDecl node
     auto vDecl = std::make_unique<VarDecl>(mCurrentMatch[1].str(), 
                                            static_cast<Common::Type>(std::stoi(mCurrentMatch[2].str())), 
-                                           /*isFuncParam=*/isFuncParam, srcLoc);
+                                           /*isFuncParam=*/isFuncParam, 0, srcLoc);
 
     // Add an initialization expression if needed
     size_t oldIndent = std::count(mCurrentLine.begin(), mCurrentLine.end(), '\t');

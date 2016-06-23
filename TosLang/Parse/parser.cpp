@@ -114,9 +114,43 @@ std::unique_ptr<FunctionDecl> Parser::ParseFunctionDecl()
             ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::PARAM_MISSING_TYPE, mLexer.GetCurrentLocation());
             return std::move(fnNode);
         }
-        param.reset(std::make_unique<VarDecl>(varName, mLexer.GetCurrentType(), /*isFunctionParam=*/true, srcLoc).release());
 
+        // TODO: Extract to separate function
+        // Is the variable a scalar or an array?
         mCurrentToken = mLexer.GetNextToken();
+        int varSize = 0;    // We define a scalar as having a size of zero. A zero-length array is thus illegal.
+        if (mCurrentToken == Lexer::Token::LEFT_BRACKET)
+        {
+            // Get the size of the array
+            mCurrentToken = mLexer.GetNextToken();
+            if (mCurrentToken != Lexer::Token::NUMBER)
+            {
+                // The size of the array must be a number literal
+                // TODO: Log an error and test it
+                return std::move(fnNode);
+            }
+
+            varSize = mLexer.GetCurrentNumber();
+            if (varSize == 0)
+            {
+                // It's not possible to have a zero-length array
+                // TODO: Log an error and test it
+                return std::move(fnNode);
+            }
+
+            mCurrentToken = mLexer.GetNextToken();
+            if (mCurrentToken != Lexer::Token::RIGHT_BRACKET)
+            {
+                // The array must be correctly terminated
+                // TODO: Log an error and test it
+                return std::move(fnNode);
+            }
+
+            mCurrentToken = mLexer.GetNextToken();
+        }
+
+        param.reset(std::make_unique<VarDecl>(varName, mLexer.GetCurrentType(), /*isFunctionParam=*/true, varSize, srcLoc).release());
+
         if ((mCurrentToken != Lexer::Token::RIGHT_PAREN) && (mCurrentToken != Lexer::Token::COMMA))
         {
             ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::FN_MISSING_RIGHT_PAREN, mLexer.GetCurrentLocation());
@@ -170,23 +204,58 @@ std::unique_ptr<VarDecl> Parser::ParseVarDecl()
         return std::move(node);
     }
 
-    // Get the type of the variable
+    // Check that a type token is following the colon in the variable declaration
     if ((mCurrentToken = mLexer.GetNextToken()) != Lexer::Token::TYPE)
     {
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_MISSING_TYPE, mLexer.GetCurrentLocation());
         return std::move(node);
     }
+    
+    // Get the type of the variable
     Common::Type vType = mLexer.GetCurrentType();
+
+    // Void is not an acceptable type for a variable
     if (vType == Common::Type::VOID)
     {
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::VAR_VOID_TYPE, mLexer.GetCurrentLocation());
         return std::move(node);
     }
-     
-    VarDecl* vDecl = new VarDecl(varName, vType, /*isFunctionParam=*/false, srcLoc);
-    
-    mCurrentToken = mLexer.GetNextToken();
 
+    // Is the variable a scalar or an array?
+    mCurrentToken = mLexer.GetNextToken();
+    int varSize = 0;    // We define a scalar as having a size of zero. A zero-length array is thus illegal.
+    if (mCurrentToken == Lexer::Token::LEFT_BRACKET)
+    {
+        // Get the size of the array
+        mCurrentToken = mLexer.GetNextToken();
+        if (mCurrentToken != Lexer::Token::NUMBER)
+        {
+            // The size of the array must be a number literal
+            // TODO: Log an error and test it
+            return std::move(node);
+        }
+
+        varSize = mLexer.GetCurrentNumber();
+        if (varSize == 0)
+        {
+            // It's not possible to have a zero-length array
+            // TODO: Log an error and test it
+            return std::move(node);
+        }
+
+        mCurrentToken = mLexer.GetNextToken();
+        if (mCurrentToken != Lexer::Token::RIGHT_BRACKET)
+        {
+            // The array must be correctly terminated
+            // TODO: Log an error and test it
+            return std::move(node);
+        }
+    
+        mCurrentToken = mLexer.GetNextToken();
+    }
+    
+    VarDecl* vDecl = new VarDecl(varName, vType, /*isFunctionParam=*/false, varSize, srcLoc);
+    
     // Variable declaration with initialization
     if (mCurrentToken == Lexer::Token::ASSIGN)
     {

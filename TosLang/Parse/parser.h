@@ -66,9 +66,11 @@ namespace TosLang
 			/*
 			* \fn       ParseExpr
 			* \brief    expr 
-			*               ::= binopexpr
+            *               ::= arrayexpr
+            *               ::= binopexpr
             *               ::= booleanexpr
             *               ::= identifierexpr
+            *               ::= indexexpr
             *               ::= numberexpr
 			* \return   A node representing an expression
 			*/
