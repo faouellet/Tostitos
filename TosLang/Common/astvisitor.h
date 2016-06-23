@@ -93,7 +93,13 @@ namespace TosLang
 
         protected:  // Expressions
             /*
-            * \fn       HandleBinrayExpr
+            * \fn       HandleArrayExpr
+            * \brief    Handle a node of the ARRAY_EXPR kind
+            */
+            void HandleArrayExpr() { }
+
+            /*
+            * \fn       HandleBinaryExpr
             * \brief    Handle a node of the BINARY_EXPR kind
             */
             void HandleBinaryExpr() { }
@@ -115,6 +121,12 @@ namespace TosLang
             * \brief    Handle a node of the IDENTIFIER_EXPR kind
             */
             void HandleIdentifierExpr() { }
+
+            /*
+            * \fn       HandleIndexExpr
+            * \brief    Handle a node of the INDEX_EXPR kind
+            */
+            void HandleIndexExpr() { }
 
             /*
             * \fn       HandleNumberExpr
@@ -199,6 +211,9 @@ namespace TosLang
                     GetDerived().HandleVarDecl();
                     break;
                     ////// Expressions //////
+                case FrontEnd::ASTNode::NodeKind::ARRAY_EXPR:
+                    GetDerived().HandleArrayExpr();
+                    break;
                 case FrontEnd::ASTNode::NodeKind::BINARY_EXPR:
                     GetDerived().HandleBinaryExpr();
                     break;
@@ -210,6 +225,9 @@ namespace TosLang
                     break;
                 case FrontEnd::ASTNode::NodeKind::IDENTIFIER_EXPR:
                     GetDerived().HandleIdentifierExpr();
+                    break;
+                case FrontEnd::ASTNode::NodeKind::INDEX_EXPR:
+                    GetDerived().HandleIndexExpr();
                     break;
                 case FrontEnd::ASTNode::NodeKind::NUMBER_EXPR:
                     GetDerived().HandleNumberExpr();
