@@ -29,21 +29,16 @@ namespace TosLang
         class ArrayExpr : public Expr
         {
         public:
-            ArrayExpr(const Utils::SourceLocation& srcLoc)
+            ArrayExpr(std::vector<std::unique_ptr<Expr>>&& arrElems, const Utils::SourceLocation& srcLoc)
                 : Expr{ NodeKind::ARRAY_EXPR }
             {
                 mSrcLoc = srcLoc;
+
+                for (auto&& elem : arrElems)
+                    AddChildNode(std::move(elem));
             }
 
             virtual ~ArrayExpr() = default;
-
-        public:
-            /*
-            * \fn           AddArrayElement
-            * \brief        Add an element to the array expression
-            * \param elem   Element to be added
-            */
-            void AddArrayElement(std::unique_ptr<Expr>&& elem) { AddChildNode(std::move(elem)); }
         };
 
 		/*

@@ -74,6 +74,17 @@ namespace TosLang
 			*/
 			std::unique_ptr<Expr> ParseExpr();
 
+            /*
+            * \fn           ParseArrayExpr
+            * \brief        arrayexpr 
+            *                   ::= '{' '}'
+            *                   ::= '{' expr(',' expr)* '}'
+            * \param lhs    The left hand side expression of the binary expression
+            * \param op     The operation in the binary expression
+            * \return       A node representing a binary expression
+            */
+            std::unique_ptr<Expr> ParseArrayExpr();
+
 			/*
 			* \fn           ParseBinaryOpExpr
 			* \brief        binopexpr ::= expr OP expr

@@ -233,6 +233,9 @@ std::unique_ptr<Expr> Parser::ParseExpr()
         break;
     case Lexer::Token::SEMI_COLON:
         return nullptr;
+    case Lexer::Token::LEFT_BRACKET:
+        node = ParseArrayExpr();
+        break;
     case Lexer::Token::STRING_LITERAL:
         node = std::make_unique<StringExpr>(mLexer.GetCurrentStr(), mLexer.GetCurrentLocation());
         break;
@@ -284,6 +287,29 @@ std::unique_ptr<Expr> Parser::ParseExpr()
     // The expression has a trailing part and isn't well-formed, log an error
     ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_OPERATION, mLexer.GetCurrentLocation());
     return nullptr;
+}
+
+std::unique_ptr<Expr> Parser::ParseArrayExpr()
+{
+    const SourceLocation srcLoc = mLexer.GetCurrentLocation();
+    std::unique_ptr<Expr> aExpr;
+    std::vector<std::unique_ptr<Expr>> arrElems;
+
+    while ((mCurrentToken = mLexer.GetNextToken()) != Lexer::Token::RIGHT_BRACE)
+    {
+        arrElems.emplace_back(ParseExpr());
+
+        // Array elements must be separated by a comma
+        if (mCurrentToken != Lexer::Token::COMMA)
+        {
+            // TODO: Log an error and add a unit for it
+            return aExpr;
+        }
+    }
+
+    aExpr.reset(new ArrayExpr(std::move(arrElems), srcLoc));
+
+    return aExpr;
 }
 
 std::unique_ptr<Expr> Parser::ParseBinaryOpExpr(Lexer::Token op, std::unique_ptr<Expr>&& lhs)
