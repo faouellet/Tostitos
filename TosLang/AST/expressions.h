@@ -5,6 +5,8 @@
 #include "../Common/opcodes.h"
 #include "../Common/type.h"
 
+#include <cassert>
+
 namespace TosLang
 {
     namespace FrontEnd
@@ -182,9 +184,11 @@ namespace TosLang
         class IndexExpr : public Expr
         {
         public:
-            IndexExpr(std::unique_ptr<IdentifierExpr>&& arrayIdentifier, std::unique_ptr<Expr>&& indexExpr, const Utils::SourceLocation& srcLoc)
+            IndexExpr(std::unique_ptr<Expr>&& arrayIdentifier, std::unique_ptr<Expr>&& indexExpr, const Utils::SourceLocation& srcLoc)
                 : Expr{ NodeKind::INDEX_EXPR }
             {
+                assert(arrayIdentifier->GetKind() == ASTNode::NodeKind::IDENTIFIER_EXPR);
+
                 mName = arrayIdentifier->GetName();
                 mSrcLoc = srcLoc;
 

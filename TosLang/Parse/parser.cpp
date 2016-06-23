@@ -248,7 +248,7 @@ std::unique_ptr<Expr> Parser::ParseExpr()
         return nullptr;
     }
 
-    // Look what comes next
+    // Look at what comes next
     mCurrentToken = mLexer.GetNextToken();
 
     const Lexer::Token exprTerminators[] = { Lexer::Token::SEMI_COLON, Lexer::Token::LEFT_BRACE, 
@@ -259,7 +259,8 @@ std::unique_ptr<Expr> Parser::ParseExpr()
     // Here, what could happen is one of the following cases:
     //      1- The expression could be part of a binary expression
     //      2- The expression could be a function call
-    //      3- The expression is done being parsed
+    //      3- The expression could be an indexed expression
+    //      4- The expression is done being parsed
     while (std::find(terminatorsBegin, terminatorsEnd, mCurrentToken) == terminatorsEnd)
     {
         if ((Lexer::Token::OP_START <= mCurrentToken) && (mCurrentToken <= Lexer::Token::OP_END))
@@ -269,6 +270,21 @@ std::unique_ptr<Expr> Parser::ParseExpr()
         else if (mCurrentToken == Lexer::Token::LEFT_PAREN)
         {
             node.reset(ParseCallExpr(std::move(node)).release());
+        }
+        else if (mCurrentToken == Lexer::Token::LEFT_BRACKET)
+        {
+            // TODO: Check that it really is an identifier we're trying to index, if not log an error (also unit test this)
+            std::unique_ptr<Expr> identExpr{ node.release() };
+            std::unique_ptr<Expr> indexExpr = ParseExpr();
+            SourceLocation arraySrcLoc = mLexer.GetCurrentLocation();
+
+            if (mCurrentToken == Lexer::Token::RIGHT_BRACKET)
+            {
+                // TODO: Log an error and add a test for it
+                return nullptr;
+            }
+
+            node.reset(new IndexExpr(std::move(identExpr), std::move(indexExpr), arraySrcLoc));
         }
         else
         {
