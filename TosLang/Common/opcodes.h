@@ -6,7 +6,7 @@ namespace TosLang
     namespace Common
     {
         /**
-        * \enum Operation
+        * \enum  Operation
         * \brief Operations available in TosLang
         */
         enum class Operation : unsigned int

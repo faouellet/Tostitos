@@ -5,6 +5,10 @@ namespace TosLang
 {
     namespace Common
     {
+        /*
+        * \enum     Type
+        * \brief    Possible types of a variable or identifier
+        */
         enum class Type : int
         {
             // Default
