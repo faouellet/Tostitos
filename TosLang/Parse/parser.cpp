@@ -390,10 +390,17 @@ std::unique_ptr<Expr> Parser::ParseArrayExpr()
         if (mCurrentToken == Lexer::Token::RIGHT_BRACE)
             break;
 
+        // The statement ended before we were finished with the array expression
+        if (mCurrentToken == Lexer::Token::SEMI_COLON)
+        {
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::ARRAY_UNEXPECTED_END, mLexer.GetCurrentLocation());
+            return aExpr;
+        }
+
         // Array elements must be separated by a comma
         if (mCurrentToken != Lexer::Token::COMMA)
         {
-            // TODO: Log an error and add a unit for it
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::ARRAY_MISSING_COMMA, mLexer.GetCurrentLocation());
             return aExpr;
         }
     }

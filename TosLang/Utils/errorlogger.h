@@ -24,6 +24,10 @@ namespace TosLang
             */
             enum class ErrorType : unsigned int
             {
+                // Array
+                ARRAY_UNEXPECTED_END,
+                ARRAY_MISSING_COMMA,
+
                 // Binary Expr
                 MISSING_RHS,
                 WRONG_OPERATION,

@@ -123,4 +123,20 @@ BOOST_AUTO_TEST_CASE( ParseArrayInitStringTest )
 
 //////////////////// ERROR USE CASES ////////////////////
 
+BOOST_AUTO_TEST_CASE( ParseBadArrayExprTest )
+{
+    auto& cNodes = GetProgramAST("../sources/array/bad_array_expr.tos");
+    BOOST_REQUIRE_EQUAL(cNodes.size(), 3);
+
+    // We should only have error nodes
+    BOOST_REQUIRE(std::all_of(cNodes.begin(), cNodes.end(), [](const std::unique_ptr<ASTNode>& node) { return node->GetKind() == ASTNode::NodeKind::ERROR; }));
+
+    // Check if the correct error messages got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
+    BOOST_REQUIRE_EQUAL(messages.size(), 3);
+    BOOST_REQUIRE_EQUAL(messages[0], "ERROR: Expected a ; at line 1, column 21");
+    BOOST_REQUIRE_EQUAL(messages[1], "ERROR: Unexpected end of array expression at line 2, column 25");
+    BOOST_REQUIRE_EQUAL(messages[2], "ERROR: Missing comma between two array elements at line 3, column 23");
+}
+
 BOOST_AUTO_TEST_SUITE_END()
