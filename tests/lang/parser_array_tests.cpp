@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE( ParseArrayInitBoolTest )
     BOOST_REQUIRE(aExpr != nullptr);
 
     const ChildrenNodes& arrayElems = aExpr->GetChildrenNodes();
-    BOOST_REQUIRE(arrayElems.size(), 2);
+    BOOST_REQUIRE_EQUAL(arrayElems.size(), 2);
     BOOST_REQUIRE(arrayElems[0]->GetKind() == ASTNode::NodeKind::BOOLEAN_EXPR);
     BOOST_REQUIRE(arrayElems[1]->GetKind() == ASTNode::NodeKind::BOOLEAN_EXPR);
 }
@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE( ParseArrayInitIntTest )
     BOOST_REQUIRE(aExpr != nullptr);
 
     const ChildrenNodes& arrayElems = aExpr->GetChildrenNodes();
-    BOOST_REQUIRE(arrayElems.size(), 10);
+    BOOST_REQUIRE_EQUAL(arrayElems.size(), 10);
 
     for(size_t i = 0; i < arrayElems.size(); ++i)
         BOOST_REQUIRE(arrayElems[0]->GetKind() == ASTNode::NodeKind::NUMBER_EXPR);
@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE( ParseArrayInitIdentifierTest )
     BOOST_REQUIRE(aExpr != nullptr);
 
     const ChildrenNodes& arrayElems = aExpr->GetChildrenNodes();
-    BOOST_REQUIRE(arrayElems.size(), 2);
+    BOOST_REQUIRE_EQUAL(arrayElems.size(), 2);
     BOOST_REQUIRE(arrayElems[0]->GetKind() == ASTNode::NodeKind::IDENTIFIER_EXPR);
     BOOST_REQUIRE(arrayElems[1]->GetKind() == ASTNode::NodeKind::IDENTIFIER_EXPR);
 }
@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE( ParseArrayInitStringTest )
     BOOST_REQUIRE(aExpr != nullptr);
 
     const ChildrenNodes& arrayElems = aExpr->GetChildrenNodes();
-    BOOST_REQUIRE(arrayElems.size(), 2);
+    BOOST_REQUIRE_EQUAL(arrayElems.size(), 2);
     BOOST_REQUIRE(arrayElems[0]->GetKind() == ASTNode::NodeKind::STRING_EXPR);
     BOOST_REQUIRE(arrayElems[1]->GetKind() == ASTNode::NodeKind::STRING_EXPR);
 }

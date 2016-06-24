@@ -1,13 +1,13 @@
 #include "type.h"
 
 #include <cassert>
-#include <unordered_map>
+#include <map>
 
 using namespace TosLang::Common;
 
 Type TosLang::Common::GetArrayVersion(const Type type)
 {
-    static std::unordered_map<Type, Type> tyToArrayTy{
+    static std::map<Type, Type> tyToArrayTy{
         { Type::BOOL, Type::BOOL_ARRAY },
         { Type::NUMBER, Type::NUMBER_ARRAY },
         { Type::STRING, Type::STRING_ARRAY }
