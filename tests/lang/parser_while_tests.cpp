@@ -145,8 +145,8 @@ BOOST_AUTO_TEST_CASE( ParseBadWhileNoCondTest )
 
     // Check if the correct error messages got printed
     std::vector<std::string> messages{ GetErrorMessages() };
-    BOOST_REQUIRE_EQUAL(messages.size(), 1);
-    BOOST_REQUIRE_EQUAL(messages[0], "WHILE ERROR: Missing while condition at line 4, column 7");
+    BOOST_REQUIRE_EQUAL(messages.size(), 3); // TODO: We might need to introduce a ParenExpr...
+    BOOST_REQUIRE_EQUAL(messages[0], "WHILE ERROR: Missing while condition at line 6, column 2");
 }
 
 BOOST_AUTO_TEST_CASE( ParseBadWhileNoBodyTest )

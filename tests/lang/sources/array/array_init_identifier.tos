@@ -1,0 +1,3 @@
+var MyTrueVar : Bool = True;
+var MyFalseVar : Bool = False;
+var MyBoolArrayVar: Bool[2] = { MyTrueVar, MyFalseVar };

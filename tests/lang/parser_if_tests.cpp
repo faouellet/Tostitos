@@ -138,8 +138,8 @@ BOOST_AUTO_TEST_CASE( ParseBadIfNoCondTest )
 
     // Check if the correct error messages got printed
     std::vector<std::string> messages{ GetErrorMessages() };
-    BOOST_REQUIRE_EQUAL(messages.size(), 1);
-    BOOST_REQUIRE_EQUAL(messages[0], "IF ERROR: Missing if condition at line 4, column 4");
+    BOOST_REQUIRE_EQUAL(messages.size(), 3);    // TODO: We might need to introduce a ParenExpr...
+    BOOST_REQUIRE_EQUAL(messages[0], "IF ERROR: Missing if condition at line 6, column 2");
 }
 
 BOOST_AUTO_TEST_CASE( ParseBadIfNoBodyTest )

@@ -5,8 +5,6 @@
 #include "../Common/opcodes.h"
 #include "../Common/type.h"
 
-#include <cassert>
-
 namespace TosLang
 {
     namespace FrontEnd

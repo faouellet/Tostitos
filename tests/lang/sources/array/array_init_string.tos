@@ -1,0 +1,1 @@
+var MyStringArrayVar: String[2] = { "Hello", "World" };

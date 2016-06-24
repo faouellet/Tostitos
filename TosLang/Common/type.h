@@ -27,6 +27,14 @@ namespace TosLang
 
             UNKNOWN,
         };
+
+        /*
+        * \fn           GetArrayVersion
+        * \param type   Type to convert
+        * \brief        Converts a scalar type to an array type
+        * \return       Array version of the type given
+        */
+        Type GetArrayVersion(const Type type);
     }
 }
 

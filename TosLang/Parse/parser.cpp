@@ -226,6 +226,8 @@ std::unique_ptr<VarDecl> Parser::ParseVarDecl()
     int varSize = 0;    // We define a scalar as having a size of zero. A zero-length array is thus illegal.
     if (mCurrentToken == Lexer::Token::LEFT_BRACKET)
     {
+        vType = GetArrayVersion(vType);
+
         // Get the size of the array
         mCurrentToken = mLexer.GetNextToken();
         if (mCurrentToken != Lexer::Token::NUMBER)
@@ -302,7 +304,7 @@ std::unique_ptr<Expr> Parser::ParseExpr()
         break;
     case Lexer::Token::SEMI_COLON:
         return nullptr;
-    case Lexer::Token::LEFT_BRACKET:
+    case Lexer::Token::LEFT_BRACE:
         node = ParseArrayExpr();
         break;
     case Lexer::Token::STRING_LITERAL:
@@ -383,6 +385,10 @@ std::unique_ptr<Expr> Parser::ParseArrayExpr()
     while ((mCurrentToken = mLexer.GetNextToken()) != Lexer::Token::RIGHT_BRACE)
     {
         arrElems.emplace_back(ParseExpr());
+
+        // We're at a right brace, we're done
+        if (mCurrentToken == Lexer::Token::RIGHT_BRACE)
+            break;
 
         // Array elements must be separated by a comma
         if (mCurrentToken != Lexer::Token::COMMA)
