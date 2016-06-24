@@ -104,18 +104,25 @@ namespace TosLang
             const std::string& GetVarName() const { return mName; }
 
             /*
+            * \fn       GetVarSize
+            * \brief    Gets the number of elements of the variable when it is an array. 0 otherwise.
+            * \return   Size of the variable
+            */
+            int GetVarSize() const { return mVarSize; }
+
+            /*
             * \fn       GetVarType
             * \brief    Gets the type of the variable
             * \return   Type of the variable
             */
-            const Common::Type GetVarType() const { return mType; }
+            Common::Type GetVarType() const { return mType; }
 
             /*
             * \fn       IsFunctionParameter
             * \brief    Indicates if the variable is a function parameter
             * \return   True if the variable is a function parameter
             */
-            const bool IsFunctionParameter() const { return mIsFunctionParameter; }
+            bool IsFunctionParameter() const { return mIsFunctionParameter; }
 
         private:
             Common::Type mType;         /*!< Variable type */
@@ -184,7 +191,7 @@ namespace TosLang
             * \brief    Gets the type of the value returned by the function
             * \return   Type of the value returned by the function
             */
-            const Common::Type GetReturnType() const { return mReturnType; }
+            Common::Type GetReturnType() const { return mReturnType; }
 
             /*
             * \fn       GetParametersDecl

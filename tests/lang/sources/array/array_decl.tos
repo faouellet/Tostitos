@@ -1,0 +1,3 @@
+var MyIntArrayVar: Int[10];
+var MyBoolArrayVar: Bool[10];
+var MyStringArrayVar: String[10];
