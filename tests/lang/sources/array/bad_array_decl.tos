@@ -1,0 +1,4 @@
+var MyIntArrayVar: Int[3;
+var MyIntArrayVar: Int[];
+var MyIntArrayVar: Int[True];
+var MyIntArrayVar: Int[0];

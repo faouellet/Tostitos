@@ -123,6 +123,23 @@ BOOST_AUTO_TEST_CASE( ParseArrayInitStringTest )
 
 //////////////////// ERROR USE CASES ////////////////////
 
+BOOST_AUTO_TEST_CASE( ParseBadArrayDeclTest )
+{
+    auto& cNodes = GetProgramAST("../sources/array/bad_array_decl.tos");
+    BOOST_REQUIRE_EQUAL(cNodes.size(), 4);
+
+    // We should only have error nodes
+    BOOST_REQUIRE(std::all_of(cNodes.begin(), cNodes.end(), [](const std::unique_ptr<ASTNode>& node) { return node->GetKind() == ASTNode::NodeKind::ERROR; }));
+
+    // Check if the correct error messages got printed
+    std::vector<std::string> messages{ GetErrorMessages() };
+    BOOST_REQUIRE_EQUAL(messages.size(), 4);
+    BOOST_REQUIRE_EQUAL(messages[0], "ERROR: Missing right bracket in array specification at line 1, column 19");
+    BOOST_REQUIRE_EQUAL(messages[1], "ERROR: Missing array length specifier at line 2, column 19");
+    BOOST_REQUIRE_EQUAL(messages[2], "ERROR: Array length specifier must be a number literal at line 3, column 22");
+    BOOST_REQUIRE_EQUAL(messages[3], "ERROR: Array length must be greater than 0 at line 4, column 19");
+}
+
 BOOST_AUTO_TEST_CASE( ParseBadArrayExprTest )
 {
     auto& cNodes = GetProgramAST("../sources/array/bad_array_expr.tos");

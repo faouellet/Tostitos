@@ -27,6 +27,10 @@ namespace TosLang
                 // Array
                 ARRAY_UNEXPECTED_END,
                 ARRAY_MISSING_COMMA,
+                ARRAY_MISSING_NUMBER,
+                ARRAY_MISSING_RIGHT_BRACKET,
+                ARRAY_NOT_A_NUMBER,
+                ARRAY_ZERO_LENGTH,
 
                 // Binary Expr
                 MISSING_RHS,

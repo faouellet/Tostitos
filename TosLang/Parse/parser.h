@@ -146,7 +146,7 @@ namespace TosLang
             * \return       A node representing a while statement
             */
             std::unique_ptr<WhileStmt> ParseWhileStmt();
-
+            
         private:
             Lexer mLexer;                               /*!< Lexer used by the parser to acquire tokens */
             Lexer::Token mCurrentToken;                 /*!< Current token being treated by the parser */

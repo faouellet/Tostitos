@@ -8,9 +8,14 @@ using namespace TosLang::Utils;
 
 std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHash> ErrorLogger::mErrorMessages =
 {
+
     // Array
     { ErrorType::ARRAY_MISSING_COMMA,           "ERROR: Missing comma between two array elements" },
+    { ErrorType::ARRAY_MISSING_NUMBER,          "ERROR: Missing array length specifier" },
+    { ErrorType::ARRAY_MISSING_RIGHT_BRACKET,   "ERROR: Missing right bracket in array specification" },
+    { ErrorType::ARRAY_NOT_A_NUMBER,            "ERROR: Array length specifier must be a number literal" },
     { ErrorType::ARRAY_UNEXPECTED_END,          "ERROR: Unexpected end of array expression" },
+    { ErrorType::ARRAY_ZERO_LENGTH,             "ERROR: Array length must be greater than 0" },
 
     // Binary Expr
     { ErrorType::MISSING_RHS,                   "ERROR: Missing right hand side in binary expression" },

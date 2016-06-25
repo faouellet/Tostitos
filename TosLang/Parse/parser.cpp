@@ -230,10 +230,16 @@ std::unique_ptr<VarDecl> Parser::ParseVarDecl()
 
         // Get the size of the array
         mCurrentToken = mLexer.GetNextToken();
-        if (mCurrentToken != Lexer::Token::NUMBER)
+        if (mCurrentToken == Lexer::Token::RIGHT_BRACKET)
+        {
+            // There has to be a number to specify the array length
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::ARRAY_MISSING_NUMBER, mLexer.GetCurrentLocation());
+            return std::move(node);
+        }
+        else if (mCurrentToken != Lexer::Token::NUMBER)
         {
             // The size of the array must be a number literal
-            // TODO: Log an error and test it
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::ARRAY_NOT_A_NUMBER, mLexer.GetCurrentLocation());
             return std::move(node);
         }
 
@@ -241,7 +247,7 @@ std::unique_ptr<VarDecl> Parser::ParseVarDecl()
         if (varSize == 0)
         {
             // It's not possible to have a zero-length array
-            // TODO: Log an error and test it
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::ARRAY_ZERO_LENGTH, mLexer.GetCurrentLocation());
             return std::move(node);
         }
 
@@ -249,7 +255,7 @@ std::unique_ptr<VarDecl> Parser::ParseVarDecl()
         if (mCurrentToken != Lexer::Token::RIGHT_BRACKET)
         {
             // The array must be correctly terminated
-            // TODO: Log an error and test it
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::ARRAY_MISSING_RIGHT_BRACKET, mLexer.GetCurrentLocation());
             return std::move(node);
         }
     
