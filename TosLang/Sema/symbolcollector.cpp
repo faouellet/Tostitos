@@ -91,7 +91,7 @@ void SymbolCollector::HandleFunctionDecl()
     }
 
     // Add the function symbol to the table
-    if (!mSymbolTable->AddSymbol(fnDecl, { fnType, 0, fnDecl->GetName() }))
+    if (!mSymbolTable->AddSymbol(fnDecl, { fnType, fnDecl->GetName() }))
     {
         // Couldn't insert the function in the symbol table because it's trying to redefine another function
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::FN_REDEFINITION, fnDecl->GetSourceLocation());
@@ -113,7 +113,7 @@ void SymbolCollector::HandleParamVarDecl()
         paramTypes.push_back(paramVar->GetVarType());
 
         // Add the parameter to the symbols defined in the scope of the current function
-        if (!mSymbolTable->AddSymbol(param.get(), { paramVar->GetVarType(), mCurrentScopeID + 1, paramVar->GetName() }))
+        if (!mSymbolTable->AddSymbol(param.get(), { paramVar->GetVarType(), mCurrentScopeID + 1, paramVar->GetName(), paramVar->GetVarSize() }))
         {
             // Couldn't insert the param in the symbol table because it's trying to redefine another param
             ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::PARAM_REDEFINITION, paramVar->GetSourceLocation());
@@ -135,7 +135,7 @@ void SymbolCollector::HandleVarDecl()
     if (varDecl->IsFunctionParameter())
         return;
 
-    bool isNotAlreadyDefined  = mSymbolTable->AddSymbol(varDecl, { varDecl->GetVarType(), mCurrentScopeID, varDecl->GetName() });
+    bool isNotAlreadyDefined  = mSymbolTable->AddSymbol(varDecl, { varDecl->GetVarType(), mCurrentScopeID, varDecl->GetName(), varDecl->GetVarSize() });
 
     if (!isNotAlreadyDefined)
     {

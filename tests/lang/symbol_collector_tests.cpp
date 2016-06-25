@@ -20,13 +20,13 @@ BOOST_AUTO_TEST_CASE( CollectSymbolVar )
     size_t errorCount = GetProgramSymbolTable("../asts/var/var_decl.ast", symbolTable);
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 
-    Symbol intVarSymbol{ TosLang::Common::Type::NUMBER, 0, "MyIntVar" };
+    Symbol intVarSymbol{ TosLang::Common::Type::NUMBER, 0, "MyIntVar", 0 };
     BOOST_REQUIRE(symbolTable->IsVariableSymbolValid(intVarSymbol));
 
-    Symbol boolVarSymbol{ TosLang::Common::Type::BOOL, 0, "MyBoolVar" };
+    Symbol boolVarSymbol{ TosLang::Common::Type::BOOL, 0, "MyBoolVar", 0 };
     BOOST_REQUIRE(symbolTable->IsVariableSymbolValid(boolVarSymbol));
 
-    Symbol strVarSymbol{ TosLang::Common::Type::STRING, 0, "MyStringVar" };
+    Symbol strVarSymbol{ TosLang::Common::Type::STRING, 0, "MyStringVar", 0 };
     BOOST_REQUIRE(symbolTable->IsVariableSymbolValid(strVarSymbol));
 }
 
@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionNoParam )
     size_t errorCount = GetProgramSymbolTable("../asts/function/fn_def_void.ast", symbolTable);
     BOOST_REQUIRE_EQUAL(errorCount, 0);
 
-    Symbol fnSymbol{ std::vector<TosLang::Common::Type>{ TosLang::Common::Type::VOID }, 0, "MyFunc" };
+    Symbol fnSymbol{ std::vector<TosLang::Common::Type>{ TosLang::Common::Type::VOID }, "MyFunc" };
     BOOST_REQUIRE(symbolTable->IsFunctionSymbolValid(fnSymbol));
 }
 
@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionMultiParam )
                                                         TosLang::Common::Type::NUMBER, 
                                                         TosLang::Common::Type::NUMBER 
                                                      };
-    Symbol fnSymbol{ myFuncTypes, 0, "MyFunc" };
+    Symbol fnSymbol{ myFuncTypes, "MyFunc" };
     BOOST_REQUIRE(symbolTable->IsFunctionSymbolValid(fnSymbol));
 
     auto paramTypes = fnSymbol.GetFunctionParamTypes();
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionMultiParam )
         std::stringstream sStream;
         sStream << "arg";
         sStream << i + 1;
-        Symbol paramSym{ TosLang::Common::Type::NUMBER, 1, sStream.str() };
+        Symbol paramSym{ TosLang::Common::Type::NUMBER, 1, sStream.str(), 0 };
         BOOST_REQUIRE(symbolTable->IsVariableSymbolValid(paramSym));
     }
 }
@@ -77,20 +77,20 @@ BOOST_AUTO_TEST_CASE( CollectSymbolFunctionWithLocalVar )
 
     // Validate the identity function symbol
     std::vector<TosLang::Common::Type> identityTypes{ TosLang::Common::Type::NUMBER, TosLang::Common::Type::NUMBER };
-    Symbol identityFnSymbol{ identityTypes, 0, "identity" };
+    Symbol identityFnSymbol{ identityTypes, "identity" };
     BOOST_REQUIRE(symbolTable->IsFunctionSymbolValid(identityFnSymbol));
     
     // Validate the identity function parameter
-    Symbol paramSym{ TosLang::Common::Type::NUMBER, 1, "i" };
+    Symbol paramSym{ TosLang::Common::Type::NUMBER, 1, "i", 0 };
     BOOST_REQUIRE(symbolTable->IsVariableSymbolValid(paramSym));
     
     // Validate the main function symbol
     std::vector<TosLang::Common::Type> mainTypes{ TosLang::Common::Type::VOID };
-    Symbol mainFnSymbol{ mainTypes, 0, "main" };
+    Symbol mainFnSymbol{ mainTypes, "main" };
     BOOST_REQUIRE(symbolTable->IsFunctionSymbolValid(mainFnSymbol));
     
     // Validate main's local variable
-    Symbol mainVarSymbol{ TosLang::Common::Type::NUMBER, 2, "MyInt" };
+    Symbol mainVarSymbol{ TosLang::Common::Type::NUMBER, 2, "MyInt", 0 };
     BOOST_REQUIRE(symbolTable->IsVariableSymbolValid(mainVarSymbol));
 }
 

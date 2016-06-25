@@ -20,7 +20,7 @@ void Interpreter::Run(const std::unique_ptr<ASTNode>& root, const SymbolTable* s
     
     // Program entry is always the 'main' function
     std::vector<Type> fnTypes{ Type::VOID };
-    const ASTNode* mainNode = mSymTable->GetFunctionDecl({ fnTypes, 0, "main" });
+    const ASTNode* mainNode = mSymTable->GetFunctionDecl({ fnTypes, "main" });
     if (mainNode == nullptr)
     {
         // TODO: Log error and add a unit test for it
