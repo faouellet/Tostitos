@@ -115,41 +115,16 @@ std::unique_ptr<FunctionDecl> Parser::ParseFunctionDecl()
             return std::move(fnNode);
         }
 
-        // TODO: Extract to separate function
+        Common::Type vType = mLexer.GetCurrentType();
+
         // Is the variable a scalar or an array?
         mCurrentToken = mLexer.GetNextToken();
         int varSize = 0;    // We define a scalar as having a size of zero. A zero-length array is thus illegal.
         if (mCurrentToken == Lexer::Token::LEFT_BRACKET)
-        {
-            // Get the size of the array
-            mCurrentToken = mLexer.GetNextToken();
-            if (mCurrentToken != Lexer::Token::NUMBER)
-            {
-                // The size of the array must be a number literal
-                // TODO: Log an error and test it
+            if (ParseArrayType(varSize, vType))
                 return std::move(fnNode);
-            }
 
-            varSize = mLexer.GetCurrentNumber();
-            if (varSize == 0)
-            {
-                // It's not possible to have a zero-length array
-                // TODO: Log an error and test it
-                return std::move(fnNode);
-            }
-
-            mCurrentToken = mLexer.GetNextToken();
-            if (mCurrentToken != Lexer::Token::RIGHT_BRACKET)
-            {
-                // The array must be correctly terminated
-                // TODO: Log an error and test it
-                return std::move(fnNode);
-            }
-
-            mCurrentToken = mLexer.GetNextToken();
-        }
-
-        param.reset(std::make_unique<VarDecl>(varName, mLexer.GetCurrentType(), /*isFunctionParam=*/true, varSize, srcLoc).release());
+        param.reset(std::make_unique<VarDecl>(varName, vType, /*isFunctionParam=*/true, varSize, srcLoc).release());
 
         if ((mCurrentToken != Lexer::Token::RIGHT_PAREN) && (mCurrentToken != Lexer::Token::COMMA))
         {
@@ -177,8 +152,14 @@ std::unique_ptr<FunctionDecl> Parser::ParseFunctionDecl()
     }
     Common::Type fnType = mLexer.GetCurrentType();
 
-    // Parse the function body
+    // Is the variable a scalar or an array?
     mCurrentToken = mLexer.GetNextToken();
+    int varSize = 0;    // We define a scalar as having a size of zero. A zero-length array is thus illegal.
+    if (mCurrentToken == Lexer::Token::LEFT_BRACKET)
+        if (ParseArrayType(varSize, fnType))
+            return std::move(fnNode);
+
+    // Parse the function body
     std::unique_ptr<CompoundStmt> body = ParseCompoundStmt();
     // TODO: Check if the body is not null. If it is, we need to log an error
     fnNode.reset(new FunctionDecl(fnName, fnType, std::move(params), std::move(body), srcLoc));
@@ -225,42 +206,8 @@ std::unique_ptr<VarDecl> Parser::ParseVarDecl()
     mCurrentToken = mLexer.GetNextToken();
     int varSize = 0;    // We define a scalar as having a size of zero. A zero-length array is thus illegal.
     if (mCurrentToken == Lexer::Token::LEFT_BRACKET)
-    {
-        vType = GetArrayVersion(vType);
-
-        // Get the size of the array
-        mCurrentToken = mLexer.GetNextToken();
-        if (mCurrentToken == Lexer::Token::RIGHT_BRACKET)
-        {
-            // There has to be a number to specify the array length
-            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::ARRAY_MISSING_NUMBER, mLexer.GetCurrentLocation());
+        if (!ParseArrayType(varSize, vType))
             return std::move(node);
-        }
-        else if (mCurrentToken != Lexer::Token::NUMBER)
-        {
-            // The size of the array must be a number literal
-            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::ARRAY_NOT_A_NUMBER, mLexer.GetCurrentLocation());
-            return std::move(node);
-        }
-
-        varSize = mLexer.GetCurrentNumber();
-        if (varSize == 0)
-        {
-            // It's not possible to have a zero-length array
-            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::ARRAY_ZERO_LENGTH, mLexer.GetCurrentLocation());
-            return std::move(node);
-        }
-
-        mCurrentToken = mLexer.GetNextToken();
-        if (mCurrentToken != Lexer::Token::RIGHT_BRACKET)
-        {
-            // The array must be correctly terminated
-            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::ARRAY_MISSING_RIGHT_BRACKET, mLexer.GetCurrentLocation());
-            return std::move(node);
-        }
-    
-        mCurrentToken = mLexer.GetNextToken();
-    }
     
     VarDecl* vDecl = new VarDecl(varName, vType, /*isFunctionParam=*/false, varSize, srcLoc);
     
@@ -645,6 +592,45 @@ std::unique_ptr<WhileStmt> Parser::ParseWhileStmt()
     if ((condExpr != nullptr) && (body != nullptr))
         whileStmt.reset(new WhileStmt(std::move(condExpr), std::move(body), srcLoc));
     return whileStmt;
+}
+
+bool Parser::ParseArrayType(int& arraySize, Type& arrayType)
+{
+    arrayType = GetArrayVersion(arrayType);
+
+    // Get the size of the array
+    mCurrentToken = mLexer.GetNextToken();
+    if (mCurrentToken == Lexer::Token::RIGHT_BRACKET)
+    {
+        // There has to be a number to specify the array length
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::ARRAY_MISSING_NUMBER, mLexer.GetCurrentLocation());
+        return false;
+    }
+    else if (mCurrentToken != Lexer::Token::NUMBER)
+    {
+        // The size of the array must be a number literal
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::ARRAY_NOT_A_NUMBER, mLexer.GetCurrentLocation());
+        return false;
+    }
+
+    arraySize = mLexer.GetCurrentNumber();
+    if (arraySize == 0)
+    {
+        // It's not possible to have a zero-length array
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::ARRAY_ZERO_LENGTH, mLexer.GetCurrentLocation());
+        return false;
+    }
+
+    mCurrentToken = mLexer.GetNextToken();
+    if (mCurrentToken != Lexer::Token::RIGHT_BRACKET)
+    {
+        // The array must be correctly terminated
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::ARRAY_MISSING_RIGHT_BRACKET, mLexer.GetCurrentLocation());
+        return false;
+    }
+
+    mCurrentToken = mLexer.GetNextToken();
+    return true;
 }
 
 //////////////////// Static functions ////////////////////

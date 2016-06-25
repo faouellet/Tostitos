@@ -147,6 +147,16 @@ namespace TosLang
             */
             std::unique_ptr<WhileStmt> ParseWhileStmt();
             
+        private:    // Helpers
+            /*
+            * \fn                       ParseArrayType
+            * \brief                    Parses an array type specification
+            * \param[OUT]    arraySize  Size of the array
+            * \param[IN/OUT] arrayType  Type of the array
+            * \return                   Success
+            */
+            bool ParseArrayType(int& arraySize, Common::Type& arrayType);
+
         private:
             Lexer mLexer;                               /*!< Lexer used by the parser to acquire tokens */
             Lexer::Token mCurrentToken;                 /*!< Current token being treated by the parser */
