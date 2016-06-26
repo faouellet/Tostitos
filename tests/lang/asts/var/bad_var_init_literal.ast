@@ -1,3 +1,3 @@
 ProgramDecl
-	VarDecl: MyIntVar Type: 2 SrcLoc: 1, 11
+	VarDecl: MyIntVar Type: 2 Size: 0 SrcLoc: 1, 11
 		StringExpr: "Hello World" SrcLoc: 1, 16

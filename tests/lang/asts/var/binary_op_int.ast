@@ -1,37 +1,37 @@
 ProgramDecl
-	VarDecl: V1 Type: 2 SrcLoc: 1, 5
+	VarDecl: V1 Type: 2 Size: 0 SrcLoc: 1, 5
 		BinaryOpExpr: 14 SrcLoc: 1, 13
 			NumberExpr: 1 SrcLoc: 1, 11
 			NumberExpr: 1 SrcLoc: 1, 13
-	VarDecl: V2 Type: 2 SrcLoc: 2, 5
+	VarDecl: V2 Type: 2 Size: 0 SrcLoc: 2, 5
 		BinaryOpExpr: 8 SrcLoc: 2, 13
 			NumberExpr: 1 SrcLoc: 2, 11
 			NumberExpr: 1 SrcLoc: 2, 13
-	VarDecl: V3 Type: 2 SrcLoc: 3, 5
+	VarDecl: V3 Type: 2 Size: 0 SrcLoc: 3, 5
 		BinaryOpExpr: 10 SrcLoc: 3, 13
 			NumberExpr: 1 SrcLoc: 3, 11
 			NumberExpr: 1 SrcLoc: 3, 13
-	VarDecl: V4 Type: 2 SrcLoc: 4, 5
+	VarDecl: V4 Type: 2 Size: 0 SrcLoc: 4, 5
 		BinaryOpExpr: 3 SrcLoc: 4, 13
 			NumberExpr: 1 SrcLoc: 4, 11
 			NumberExpr: 1 SrcLoc: 4, 13
-	VarDecl: V5 Type: 2 SrcLoc: 5, 5
+	VarDecl: V5 Type: 2 Size: 0 SrcLoc: 5, 5
 		BinaryOpExpr: 9 SrcLoc: 5, 13
 			NumberExpr: 1 SrcLoc: 5, 11
 			NumberExpr: 1 SrcLoc: 5, 13
-	VarDecl: V6 Type: 2 SrcLoc: 6, 5
+	VarDecl: V6 Type: 2 Size: 0 SrcLoc: 6, 5
 		BinaryOpExpr: 2 SrcLoc: 6, 13
 			NumberExpr: 1 SrcLoc: 6, 11
 			NumberExpr: 1 SrcLoc: 6, 13
-	VarDecl: V7 Type: 2 SrcLoc: 7, 5
+	VarDecl: V7 Type: 2 Size: 0 SrcLoc: 7, 5
 		BinaryOpExpr: 13 SrcLoc: 7, 13
 			NumberExpr: 1 SrcLoc: 7, 11
 			NumberExpr: 1 SrcLoc: 7, 13
-	VarDecl: V8 Type: 2 SrcLoc: 8, 5
+	VarDecl: V8 Type: 2 Size: 0 SrcLoc: 8, 5
 		BinaryOpExpr: 15 SrcLoc: 8, 13
 			NumberExpr: 1 SrcLoc: 8, 11
 			NumberExpr: 1 SrcLoc: 8, 13
-	VarDecl: V9 Type: 2 SrcLoc: 9, 5
+	VarDecl: V9 Type: 2 Size: 0 SrcLoc: 9, 5
 		BinaryOpExpr: 6 SrcLoc: 9, 13
 			NumberExpr: 1 SrcLoc: 9, 11
 			NumberExpr: 1 SrcLoc: 9, 13

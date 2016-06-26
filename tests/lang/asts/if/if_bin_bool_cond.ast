@@ -1,7 +1,7 @@
 ProgramDecl
 	FunctionDecl: main Return Type: 4 SrcLoc: 1, 6
 		CompoundStmt
-			VarDecl: BoolVar Type: 1 SrcLoc: 2, 11
+			VarDecl: BoolVar Type: 1 Size: 0 SrcLoc: 2, 11
 				BooleanExpr: True SrcLoc: 2, 20
 			IfStmt SrcLoc: 4, 7
 				BinaryOpExpr: 1 SrcLoc: 4, 13

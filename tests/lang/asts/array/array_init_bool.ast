@@ -1,0 +1,5 @@
+ProgramDecl
+	VarDecl: MyBoolArrayVar Type: 5 Size: 2 SrcLoc: 1, 17
+		ArrayExpr: SrcLoc: 1, 23
+			BooleanExpr: True SrcLoc: 1, 27
+			BooleanExpr: False SrcLoc: 1, 32

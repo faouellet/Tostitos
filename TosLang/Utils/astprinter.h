@@ -80,13 +80,28 @@ namespace TosLang
                 const std::string kindStr = vDecl->IsFunctionParameter() ? "ParamVarDecl: " : "VarDecl: ";
                 mStream << kindStr << vDecl->GetVarName() 
                         << " Type: " << static_cast<std::underlying_type<Common::Type>::type>(vDecl->GetVarType()) 
+                        << " Size: " << vDecl->GetVarSize() 
                         << " ";
                 PrintSourceLocation(vDecl->GetSourceLocation());
             }
 
         protected:  // Expressions
             /*
-            * \fn       HandleBinaryOpExpr
+            * \fn       HandleArrayExpr
+            * \brief    Prints a node of the ARRAY_EXPR kind
+            */
+            void HandleArrayExpr()
+            {
+                const FrontEnd::ArrayExpr* aExpr = static_cast<const FrontEnd::ArrayExpr*>(this->mCurrentNode);
+                assert(aExpr != nullptr);
+
+                Indent();
+                mStream << "ArrayExpr: ";
+                PrintSourceLocation(aExpr->GetSourceLocation());
+            }
+
+            /*
+            * \fn       HandleBinaryExpr
             * \brief    Prints a node of the BINARY_EXPR kind
             */
             void HandleBinaryExpr()

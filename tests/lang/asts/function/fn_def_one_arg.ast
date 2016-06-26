@@ -1,6 +1,6 @@
 ProgramDecl
 	FunctionDecl: MyFunc Return Type: 2 SrcLoc: 1, 10
-			ParamVarDecl: arg Type: 2 SrcLoc: 1, 10
+			ParamVarDecl: arg Type: 2 Size: 0 SrcLoc: 1, 10
 		CompoundStmt
 			ReturnStmt SrcLoc: 2, 10
 				IdentifierExpr: arg SrcLoc: 2, 13

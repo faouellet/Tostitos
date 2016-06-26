@@ -1,7 +1,7 @@
 ProgramDecl
 	FunctionDecl: isGreater Return Type: 1 SrcLoc: 1, 18
-			ParamVarDecl: i1 Type: 2 SrcLoc: 1, 12
-			ParamVarDecl: i2 Type: 2 SrcLoc: 1, 18
+			ParamVarDecl: i1 Type: 2 Size: 0 SrcLoc: 1, 12
+			ParamVarDecl: i2 Type: 2 Size: 0 SrcLoc: 1, 18
 		CompoundStmt
 			ReturnStmt SrcLoc: 2, 7
 				BinaryOpExpr: 5 SrcLoc: 2, 12
@@ -9,7 +9,7 @@ ProgramDecl
 					IdentifierExpr: i2 SrcLoc: 2, 12
 	FunctionDecl: main Return Type: 4 SrcLoc: 5, 6
 		CompoundStmt
-			VarDecl: BoolVar Type: 1 SrcLoc: 6, 11
+			VarDecl: BoolVar Type: 1 Size: 0 SrcLoc: 6, 11
 				BooleanExpr: True SrcLoc: 6, 20
 			WhileStmt SrcLoc: 8, 15
 				CallExpr: isGreater SrcLoc: 8, 15

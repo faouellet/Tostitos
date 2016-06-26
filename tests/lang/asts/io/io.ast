@@ -1,7 +1,7 @@
 ProgramDecl
 	FunctionDecl: main Return Type: 4 SrcLoc: 1, 6
 		CompoundStmt
-			VarDecl: Message Type: 3 SrcLoc: 2, 11
+			VarDecl: Message Type: 3 Size: 0 SrcLoc: 2, 11
 			ScanStmt SrcLoc: 4, 12
 				IdentifierExpr: Message SrcLoc: 4, 12
 			PrintStmt SrcLoc: 5, 6

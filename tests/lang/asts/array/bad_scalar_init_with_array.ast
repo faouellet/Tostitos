@@ -1,0 +1,6 @@
+ProgramDecl
+	VarDecl: MyIntVar Type: 2 Size: 0 SrcLoc: 1, 11
+		ArrayExpr: SrcLoc: 1, 17
+			NumberExpr: 1 SrcLoc: 1, 18
+			NumberExpr: 2 SrcLoc: 1, 19
+			NumberExpr: 3 SrcLoc: 1, 20

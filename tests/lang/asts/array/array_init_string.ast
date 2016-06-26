@@ -1,0 +1,5 @@
+ProgramDecl
+	VarDecl: MyStringArrayVar Type: 7 Size: 2 SrcLoc: 1, 19
+		ArrayExpr: SrcLoc: 1, 27
+			StringExpr: "Hello" SrcLoc: 1, 28
+			StringExpr: "World" SrcLoc: 1, 29

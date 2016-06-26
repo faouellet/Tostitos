@@ -1,0 +1,9 @@
+ProgramDecl
+	FunctionDecl: MyFunc Return Type: 2 SrcLoc: 1, 18
+			ParamVarDecl: arg1 Type: 2 Size: 0 SrcLoc: 1, 11
+			ParamVarDecl: arg2 Type: 2 Size: 0 SrcLoc: 1, 18
+		CompoundStmt
+			ReturnStmt SrcLoc: 2, 10
+				BinaryOpExpr: 14 SrcLoc: 2, 19
+					IdentifierExpr: arg1 SrcLoc: 2, 14
+					IdentifierExpr: arg2 SrcLoc: 2, 19

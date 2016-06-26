@@ -1,0 +1,6 @@
+ProgramDecl
+	VarDecl: MyIntArrayVar Type: 6 Size: 3 SrcLoc: 1, 16
+		ArrayExpr: SrcLoc: 1, 22
+			NumberExpr: 1 SrcLoc: 1, 23
+			BooleanExpr: True SrcLoc: 1, 27
+			NumberExpr: 3 SrcLoc: 1, 28

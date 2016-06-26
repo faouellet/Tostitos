@@ -1,7 +1,7 @@
 ProgramDecl
 	FunctionDecl: sum Return Type: 2 SrcLoc: 1, 12
-			ParamVarDecl: i1 Type: 2 SrcLoc: 1, 6
-			ParamVarDecl: i2 Type: 2 SrcLoc: 1, 12
+			ParamVarDecl: i1 Type: 2 Size: 0 SrcLoc: 1, 6
+			ParamVarDecl: i2 Type: 2 Size: 0 SrcLoc: 1, 12
 		CompoundStmt
 			ReturnStmt SrcLoc: 2, 7
 				BinaryOpExpr: 14 SrcLoc: 2, 12
@@ -9,7 +9,7 @@ ProgramDecl
 					IdentifierExpr: i2 SrcLoc: 2, 12
 	FunctionDecl: main Return Type: 4 SrcLoc: 5, 6
 		CompoundStmt
-			VarDecl: MyInt1 Type: 2 SrcLoc: 6, 10
+			VarDecl: MyInt1 Type: 2 Size: 0 SrcLoc: 6, 10
 				NumberExpr: 1 SrcLoc: 6, 16
-			VarDecl: MyInt2 Type: 2 SrcLoc: 7, 10
+			VarDecl: MyInt2 Type: 2 Size: 0 SrcLoc: 7, 10
 				NumberExpr: 2 SrcLoc: 7, 16

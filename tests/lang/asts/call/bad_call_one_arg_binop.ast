@@ -1,14 +1,14 @@
 ProgramDecl
 	FunctionDecl: identity Return Type: 2 SrcLoc: 1, 10
-			ParamVarDecl: i Type: 2 SrcLoc: 1, 10
+			ParamVarDecl: i Type: 2 Size: 0 SrcLoc: 1, 10
 		CompoundStmt
 			ReturnStmt SrcLoc: 2, 7
 				IdentifierExpr: i SrcLoc: 2, 8
 	FunctionDecl: main Return Type: 4 SrcLoc: 5, 6
 		CompoundStmt
-			VarDecl: MyInt1 Type: 1 SrcLoc: 6, 10
+			VarDecl: MyInt1 Type: 1 Size: 0 SrcLoc: 6, 10
 				BooleanExpr: True SrcLoc: 6, 20
-			VarDecl: MyInt2 Type: 1 SrcLoc: 7, 10
+			VarDecl: MyInt2 Type: 1 Size: 0 SrcLoc: 7, 10
 				BooleanExpr: False SrcLoc: 7, 21
 			CallExpr: identity SrcLoc: 9, 14
 				BinaryOpExpr: 1 SrcLoc: 9, 21

@@ -1,0 +1,4 @@
+ProgramDecl
+	VarDecl: MyIntArrayVar Type: 6 Size: 10 SrcLoc: 1, 16
+	VarDecl: MyBoolArrayVar Type: 5 Size: 10 SrcLoc: 2, 17
+	VarDecl: MyStringArrayVar Type: 7 Size: 10 SrcLoc: 3, 19

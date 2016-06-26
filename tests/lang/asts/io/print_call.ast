@@ -1,6 +1,6 @@
 ProgramDecl
 	FunctionDecl: identity Return Type: 2 SrcLoc: 1, 10
-			ParamVarDecl: i Type: 2 SrcLoc: 1, 10
+			ParamVarDecl: i Type: 2 Size: 0 SrcLoc: 1, 10
 		CompoundStmt
 			ReturnStmt SrcLoc: 2, 7
 				IdentifierExpr: i SrcLoc: 2, 8
