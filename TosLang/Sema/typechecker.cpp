@@ -172,35 +172,50 @@ void TypeChecker::HandleVarDecl()
         
     // We only perform a type check when a variable is declared AND initialized at the same time
     const Expr* initExpr = static_cast<const Expr*>(vDecl->GetInitExpr());
-    if (initExpr != nullptr)
+    if (initExpr == nullptr)
+        return;
+     
+    const Symbol* varSymbol;
+    bool symFound;
+    std::tie(symFound, varSymbol) = mSymbolTable->TryGetSymbol(vDecl);
+
+    assert(symFound);
+
+    if (!CheckExprEvaluateToType(initExpr, varSymbol->GetVariableType()))
     {
-        const Symbol* varSymbol;
-        bool symFound;
-        std::tie(symFound, varSymbol) = mSymbolTable->TryGetSymbol(vDecl);
-
-        assert(symFound);
-
-        if (!CheckExprEvaluateToType(initExpr, varSymbol->GetVariableType()))
+        switch (initExpr->GetKind())
         {
-            switch (initExpr->GetKind())
-            {
-            case ASTNode::NodeKind::BOOLEAN_EXPR:
-            case ASTNode::NodeKind::NUMBER_EXPR:
-            case ASTNode::NodeKind::STRING_EXPR:
-                ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_LITERAL_TYPE, initExpr->GetSourceLocation());
-                ++mErrorCount;
-                break;
-            case ASTNode::NodeKind::BINARY_EXPR:
-                ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_EXPR_TYPE, initExpr->GetSourceLocation());
-                ++mErrorCount;
-                break;
-            case ASTNode::NodeKind::IDENTIFIER_EXPR:
-                ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_VARIABLE_TYPE, mCurrentNode->GetSourceLocation());
-                ++mErrorCount;
-                break;
-            }
+        case ASTNode::NodeKind::BOOLEAN_EXPR:
+        case ASTNode::NodeKind::NUMBER_EXPR:
+        case ASTNode::NodeKind::STRING_EXPR:
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_LITERAL_TYPE, initExpr->GetSourceLocation());
+            ++mErrorCount;
+            break;
+        case ASTNode::NodeKind::BINARY_EXPR:
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_EXPR_TYPE, initExpr->GetSourceLocation());
+            ++mErrorCount;
+            break;
+        case ASTNode::NodeKind::IDENTIFIER_EXPR:
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_VARIABLE_TYPE, mCurrentNode->GetSourceLocation());
+            ++mErrorCount;
+            break;
         }
     }
+
+    // If we're dealing with an array, we need to check that the array length matches the number of elements in the array expression
+    if (initExpr->GetKind() == ASTNode::NodeKind::ARRAY_EXPR)
+    {
+        const ArrayExpr* aExpr = static_cast<const ArrayExpr*>(initExpr);
+        assert(aExpr != nullptr);
+
+        if (vDecl->GetVarSize() != aExpr->GetChildrenNodes().size())
+        {
+            // TODO: Log an error and test it
+            ++mErrorCount;
+            return;
+        }
+    }
+    
 }
 
 void TypeChecker::HandleArrayExpr()
@@ -230,7 +245,7 @@ void TypeChecker::HandleArrayExpr()
         }
     }
 
-    mNodeTypes[aExpr] = arrayType;
+    mNodeTypes[aExpr] = GetArrayVersion(arrayType);
 }
 
 void TypeChecker::HandleBooleanExpr()
