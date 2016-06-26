@@ -185,10 +185,17 @@ void TypeChecker::HandleVarDecl()
     {
         switch (initExpr->GetKind())
         {
+        case ASTNode::NodeKind::ARRAY_EXPR:
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_INIT_SCALAR_ARRAY, initExpr->GetSourceLocation());
+            ++mErrorCount;
+            break;
         case ASTNode::NodeKind::BOOLEAN_EXPR:
         case ASTNode::NodeKind::NUMBER_EXPR:
         case ASTNode::NodeKind::STRING_EXPR:
-            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_LITERAL_TYPE, initExpr->GetSourceLocation());
+            if(vDecl->GetVarSize() == 0)
+                ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_LITERAL_TYPE, initExpr->GetSourceLocation());
+            else
+                ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::WRONG_INIT_ARRAY_SCALAR, initExpr->GetSourceLocation());
             ++mErrorCount;
             break;
         case ASTNode::NodeKind::BINARY_EXPR:
@@ -203,7 +210,7 @@ void TypeChecker::HandleVarDecl()
     }
 
     // If we're dealing with an array, we need to check that the array length matches the number of elements in the array expression
-    if (initExpr->GetKind() == ASTNode::NodeKind::ARRAY_EXPR)
+    if ((vDecl->GetVarSize() != 0) && (initExpr->GetKind() == ASTNode::NodeKind::ARRAY_EXPR))
     {
         const ArrayExpr* aExpr = static_cast<const ArrayExpr*>(initExpr);
         assert(aExpr != nullptr);
@@ -228,7 +235,7 @@ void TypeChecker::HandleArrayExpr()
     // An empty array expression doesn't make any sense
     if (children.empty())
     {
-        // TODO: Log an error and test it
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::ARRAY_EMPTY_EXPR, aExpr->GetSourceLocation());
         ++mErrorCount;
         return;
     }
@@ -239,7 +246,7 @@ void TypeChecker::HandleArrayExpr()
     {
         if (mNodeTypes[arrayElem.get()] != arrayType)
         {
-            // TODO: Log an error and test it
+            ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::ARRAY_MULTIPLE_TYPES, aExpr->GetSourceLocation());
             ++mErrorCount;
             return;
         }

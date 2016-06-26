@@ -25,10 +25,12 @@ namespace TosLang
             enum class ErrorType : unsigned int
             {
                 // Array
+                ARRAY_EMPTY_EXPR,
                 ARRAY_UNEXPECTED_END,
                 ARRAY_MISSING_COMMA,
                 ARRAY_MISSING_NUMBER,
                 ARRAY_MISSING_RIGHT_BRACKET,
+                ARRAY_MULTIPLE_TYPES,
                 ARRAY_NOT_A_NUMBER,
                 ARRAY_ZERO_LENGTH,
 
@@ -87,6 +89,8 @@ namespace TosLang
                 WRONG_BIN_EXPR_TYPE,
                 WRONG_COND_EXPR_TYPE,
                 WRONG_EXPR_TYPE,
+                WRONG_INIT_ARRAY_SCALAR,
+                WRONG_INIT_SCALAR_ARRAY,
                 WRONG_LITERAL_TYPE,
                 WRONG_RETURN_TYPE,
                 WRONG_VARIABLE_TYPE,

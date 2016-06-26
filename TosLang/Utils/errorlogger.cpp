@@ -10,9 +10,11 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
 {
 
     // Array
+    { ErrorType::ARRAY_EMPTY_EXPR,              "ERROR: Empty array expression" },
     { ErrorType::ARRAY_MISSING_COMMA,           "ERROR: Missing comma between two array elements" },
     { ErrorType::ARRAY_MISSING_NUMBER,          "ERROR: Missing array length specifier" },
     { ErrorType::ARRAY_MISSING_RIGHT_BRACKET,   "ERROR: Missing right bracket in array specification" },
+    { ErrorType::ARRAY_MULTIPLE_TYPES,          "ERROR: Every expression in an array expression must be of the same type" },
     { ErrorType::ARRAY_NOT_A_NUMBER,            "ERROR: Array length specifier must be a number literal" },
     { ErrorType::ARRAY_UNEXPECTED_END,          "ERROR: Unexpected end of array expression" },
     { ErrorType::ARRAY_ZERO_LENGTH,             "ERROR: Array length must be greater than 0" },
@@ -78,6 +80,8 @@ std::unordered_map<ErrorLogger::ErrorType, std::string, ErrorLogger::ErrorTypeHa
     { ErrorType::WRONG_BIN_EXPR_TYPE,           "TYPE ERROR: Mismatch between binary expression operands type" },
     { ErrorType::WRONG_COND_EXPR_TYPE,          "TYPE ERROR: Conditional expression must evaluate to a boolean value" },
     { ErrorType::WRONG_EXPR_TYPE,               "TYPE ERROR: Trying to instantiate variable with an expression of the wrong type" },
+    { ErrorType::WRONG_INIT_ARRAY_SCALAR,       "TYPE ERROR: Trying to instantiate an array variable with a scalar value" },
+    { ErrorType::WRONG_INIT_SCALAR_ARRAY,       "TYPE ERROR: Trying to instantiate a scalar variable with an array expression" },
     { ErrorType::WRONG_LITERAL_TYPE,            "TYPE ERROR: Trying to instantiate variable with a literal of the wrong type" },
     { ErrorType::WRONG_RETURN_TYPE,             "TYPE ERROR: Returned value type doesn't match the function specified return type" },
     { ErrorType::WRONG_VARIABLE_TYPE,           "TYPE ERROR: Trying to initialize a variable with another variable of a different type" },
