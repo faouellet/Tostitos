@@ -53,6 +53,7 @@ namespace TosLang
             void HandleVarDecl();
 
         protected:  // Expressions
+            void HandleArrayExpr();
             void HandleBooleanExpr();
             void HandleBinaryExpr();
             void HandleCallExpr();

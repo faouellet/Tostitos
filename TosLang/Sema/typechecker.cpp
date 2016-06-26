@@ -203,6 +203,36 @@ void TypeChecker::HandleVarDecl()
     }
 }
 
+void TypeChecker::HandleArrayExpr()
+{
+    const ArrayExpr* aExpr = static_cast<const ArrayExpr*>(this->mCurrentNode);
+    assert(aExpr != nullptr);
+
+    const ChildrenNodes& children = aExpr->GetChildrenNodes();
+
+    // An empty array expression doesn't make any sense
+    if (children.empty())
+    {
+        // TODO: Log an error and test it
+        ++mErrorCount;
+        return;
+    }
+
+    // Every element in the array expression must have the same type
+    const Common::Type arrayType = mNodeTypes[children.front().get()];
+    for (const auto& arrayElem : children)
+    {
+        if (mNodeTypes[arrayElem.get()] != arrayType)
+        {
+            // TODO: Log an error and test it
+            ++mErrorCount;
+            return;
+        }
+    }
+
+    mNodeTypes[aExpr] = arrayType;
+}
+
 void TypeChecker::HandleBooleanExpr()
 {
     mNodeTypes[this->mCurrentNode] = Type::BOOL;
