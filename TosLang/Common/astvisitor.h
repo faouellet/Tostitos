@@ -135,6 +135,12 @@ namespace TosLang
             void HandleNumberExpr() { }
 
             /*
+            * \fn       HandleSpawnExpr
+            * \brief    Handle a node of the SPAWN_EXPR kind
+            */
+            void HandleSpawnExpr() { }
+
+            /*
             * \fn       HandleStringExpr
             * \brief    Handle a node of the STRING_EXPR kind
             */
@@ -231,6 +237,9 @@ namespace TosLang
                     break;
                 case FrontEnd::ASTNode::NodeKind::NUMBER_EXPR:
                     GetDerived().HandleNumberExpr();
+                    break;
+                case FrontEnd::ASTNode::NodeKind::SPAWN_EXPR:
+                    GetDerived().HandleSpawnExpr();
                     break;
                 case FrontEnd::ASTNode::NodeKind::STRING_EXPR:
                     GetDerived().HandleStringExpr();
