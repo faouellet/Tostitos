@@ -42,6 +42,7 @@ namespace TosLang
                 IDENTIFIER_EXPR,
                 INDEX_EXPR,
                 NUMBER_EXPR,
+                SPAWN_EXPR,
                 STRING_EXPR,
 
                 // Statements
@@ -50,6 +51,7 @@ namespace TosLang
                 PRINT_STMT,
                 RETURN_STMT,
                 SCAN_STMT,
+                SYNC_STMT,
                 WHILE_STMT,
             };
 

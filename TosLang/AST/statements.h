@@ -186,6 +186,17 @@ namespace TosLang
         };
 
         /*
+        * \class SyncStmt
+        * \brief Node of the AST representing a SYNC
+        */
+        class SyncStmt : public Stmt
+        {
+        public:
+            SyncStmt() : Stmt{ NodeKind::SYNC_STMT } { }
+            virtual ~SyncStmt() = default;
+        };
+
+        /*
         * \class WhileStmt
         * \brief Node of the AST representing a WHILE
         */

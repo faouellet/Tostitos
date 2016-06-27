@@ -209,7 +209,7 @@ namespace TosLang
                 mName = std::to_string(value); 
                 mSrcLoc = srcLoc;
             }
-            virtual ~NumberExpr() { }
+            virtual ~NumberExpr() = default;
 
             virtual bool IsLiteral() const override { return true; }
         
@@ -223,6 +223,23 @@ namespace TosLang
 
         private:
             int mValue;     /*!< Integer value of the number literal */
+        };
+
+        /*
+        * \class SpawnExpr
+        * \brief Node of the AST representing a function call that spawns a thread
+        */
+        class SpawnExpr : public Expr
+        {
+        public:
+            SpawnExpr(std::unique_ptr<CallExpr>&& call, const Utils::SourceLocation& srcLoc)
+                : Expr{ NodeKind::SPAWN_EXPR }
+            {
+                mName = call->GetName();
+                AddChildNode(std::move(call));
+                mSrcLoc = srcLoc;
+            }
+            virtual ~SpawnExpr() = default;
         };
 
         /*
