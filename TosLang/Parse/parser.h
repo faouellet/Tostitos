@@ -72,6 +72,8 @@ namespace TosLang
             *               ::= identifierexpr
             *               ::= indexexpr
             *               ::= numberexpr
+            *               ::= spawnexpr
+            *               ::= stringexpr
 			* \return   A node representing an expression
 			*/
 			std::unique_ptr<Expr> ParseExpr();
@@ -97,12 +99,13 @@ namespace TosLang
 			std::unique_ptr<Expr> ParseBinaryOpExpr(Lexer::Token operationToken, std::unique_ptr<Expr>&& lhs);
 
             /*
-            * \fn           ParseCallExpr
-            * \brief        callexpr ::= identifierexpr '(' expr* ')'
-            * \param fn     The function to be called
-            * \return       A node representing function call expression
+            * \fn                   ParseCallExpr
+            * \brief                callexpr ::= identifierexpr '(' expr* ')'
+            * \param fn             The function to be called
+            * \param isSpawnedExpr  Is this a regular function call or one that'll spawn a thread?
+            * \return               A node representing function call expression
             */
-            std::unique_ptr<Expr> ParseCallExpr(std::unique_ptr<Expr>&& fn);
+            std::unique_ptr<Expr> ParseCallExpr(std::unique_ptr<Expr>&& fn, const bool isSpawnedExpr);
 
         private:    // Statements
             /*

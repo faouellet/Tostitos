@@ -232,9 +232,10 @@ namespace TosLang
         class SpawnExpr : public Expr
         {
         public:
-            SpawnExpr(std::unique_ptr<CallExpr>&& call, const Utils::SourceLocation& srcLoc)
+            SpawnExpr(std::unique_ptr<Expr>&& call, const Utils::SourceLocation& srcLoc)
                 : Expr{ NodeKind::SPAWN_EXPR }
             {
+                assert(call->GetKind() == ASTNode::NodeKind::CALL_EXPR);
                 mName = call->GetName();
                 AddChildNode(std::move(call));
                 mSrcLoc = srcLoc;

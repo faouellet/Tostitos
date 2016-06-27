@@ -239,6 +239,7 @@ std::unique_ptr<VarDecl> Parser::ParseVarDecl()
 std::unique_ptr<Expr> Parser::ParseExpr()
 {
     std::unique_ptr<Expr> node;
+    bool isSpawnedExpr = false;
 
     // Parse the beginning of the expression
     switch (mCurrentToken)
@@ -259,6 +260,10 @@ std::unique_ptr<Expr> Parser::ParseExpr()
         return nullptr;
     case Lexer::Token::LEFT_BRACE:
         node = ParseArrayExpr();
+        break;
+    case Lexer::Token::SPAWN:
+        isSpawnedExpr = true;
+        mCurrentToken = mLexer.GetNextToken();
         break;
     case Lexer::Token::STRING_LITERAL:
         node = std::make_unique<StringExpr>(mLexer.GetCurrentStr(), mLexer.GetCurrentLocation());
@@ -293,7 +298,7 @@ std::unique_ptr<Expr> Parser::ParseExpr()
         }
         else if (mCurrentToken == Lexer::Token::LEFT_PAREN)
         {
-            node.reset(ParseCallExpr(std::move(node)).release());
+            node.reset(ParseCallExpr(std::move(node), isSpawnedExpr).release());
         }
         else if (mCurrentToken == Lexer::Token::LEFT_BRACKET)
         {
@@ -382,7 +387,7 @@ std::unique_ptr<Expr> Parser::ParseBinaryOpExpr(Lexer::Token op, std::unique_ptr
     }
 }
 
-std::unique_ptr<Expr> Parser::ParseCallExpr(std::unique_ptr<Expr>&& fn)
+std::unique_ptr<Expr> Parser::ParseCallExpr(std::unique_ptr<Expr>&& fn, bool isSpawnedExpr)
 {
     std::unique_ptr<Expr> cExpr;
     std::vector<std::unique_ptr<Expr>> args;
@@ -424,6 +429,9 @@ std::unique_ptr<Expr> Parser::ParseCallExpr(std::unique_ptr<Expr>&& fn)
 
     cExpr.reset(new CallExpr(fn->GetName(), std::move(args), srcLoc));
 
+    if (isSpawnedExpr)
+        cExpr.reset(new SpawnExpr(std::move(cExpr), srcLoc));
+    
     return cExpr;
 }
 
@@ -465,6 +473,12 @@ std::unique_ptr<CompoundStmt> Parser::ParseCompoundStmt()
             break;
         case Lexer::Token::SCAN:
             node.reset(ParseScanStmt().release());
+            break;
+        case Lexer::Token::SPAWN:
+            node.reset(ParseExpr().release());
+            break;
+        case Lexer::Token::SYNC:
+            node.reset(new SyncStmt());
             break;
         case Lexer::Token::COMMENT:
         case Lexer::Token::ML_COMMENT:
