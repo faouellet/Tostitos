@@ -59,6 +59,7 @@ namespace TosLang
             void HandleCallExpr();
             void HandleIdentifierExpr();
             void HandleNumberExpr();
+            void HandleSpawnExpr();
             void HandleStringExpr();
 
         protected:  // Statements

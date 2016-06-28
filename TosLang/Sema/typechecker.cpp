@@ -436,6 +436,18 @@ void TypeChecker::HandleStringExpr()
     mNodeTypes[this->mCurrentNode] = Type::STRING;
 }
 
+void TypeChecker::HandleSpawnExpr()
+{
+    const SpawnExpr* sExpr = static_cast<const SpawnExpr*>(this->mCurrentNode);
+    assert(sExpr != nullptr);
+
+    // A spawn can only be put before a function call
+    if (sExpr->GetChildrenNodes().front()->GetKind() != ASTNode::NodeKind::CALL_EXPR)
+    {
+        ++mErrorCount;
+    }
+}
+
 void TypeChecker::HandleIfStmt()
 {
     const IfStmt* ifStmt = static_cast<const IfStmt*>(this->mCurrentNode);
