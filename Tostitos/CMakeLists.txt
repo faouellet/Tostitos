@@ -8,7 +8,7 @@ add_subdirectory(machine)
 add_subdirectory(memory)
 add_subdirectory(threads)
 
-set( SOURCES main.cpp system.h system.cpp )
+set( SOURCES main.cpp system.h )
 
 add_executable (Tostitos ${SOURCES})
 target_link_libraries (Tostitos communicationWithHost fileSystem machine memory threads)
