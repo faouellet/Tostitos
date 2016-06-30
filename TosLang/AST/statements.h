@@ -200,6 +200,13 @@ namespace TosLang
                 AddChildNode(std::move(count));
             }
             virtual ~SleepStmt() = default;
+
+            /*
+            * \fn       GetCountExpr
+            * \brief    Gets the expression representing the number of seconds the sleep will be in effect
+            * \return   Count expression
+            */
+            const Expr* GetCountExpr() const { assert(mChildren.size() == 1); return GetChildNodeAs<Expr>(0); }
         };
 
         /*

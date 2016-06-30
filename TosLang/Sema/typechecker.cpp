@@ -489,6 +489,18 @@ void TosLang::FrontEnd::TypeChecker::HandleReturnStmt()
     }
 }
 
+void TypeChecker::HandleSleepStmt()
+{
+    const SleepStmt* sStmt = static_cast<const SleepStmt*>(this->mCurrentNode);
+    assert(sStmt != nullptr);
+
+    if (!CheckExprEvaluateToType(sStmt->GetCountExpr(), Type::NUMBER))
+    {
+        // TODO: Log an error and test it
+        ++mErrorCount;
+    }
+}
+
 void TypeChecker::HandleWhileStmt()
 {
     const WhileStmt* wStmt = static_cast<const WhileStmt*>(this->mCurrentNode);
