@@ -17,6 +17,7 @@ namespace TosLang
         class PrintStmt;
         class ReturnStmt;
         class ScanStmt;
+        class SleepStmt;
         class VarDecl;
         class WhileStmt;
         
@@ -139,9 +140,16 @@ namespace TosLang
             /*
             * \fn           ParseScanStmt
             * \brief        scanstmt ::= 'scan' identifierexpr
-            * \return       A node representing an if statement
+            * \return       A node representing a scan statement
             */
             std::unique_ptr<ScanStmt> ParseScanStmt();
+
+            /*
+            * \fn           ParseSleepStmt
+            * \brief        sleepstmt ::= 'sleep' expr
+            * \return       A node representing a sleep statement
+            */
+            std::unique_ptr<SleepStmt> ParseSleepStmt();
 
             /*
             * \fn           ParseWhileStmt

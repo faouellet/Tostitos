@@ -192,7 +192,8 @@ namespace TosLang
         class SleepStmt : public Stmt
         {
         public:
-            SleepStmt(std::unique_ptr<Expr>&& count, const Utils::SourceLocation& srcLoc) 
+            SleepStmt() : Stmt{ NodeKind::ERROR } { }
+            SleepStmt(std::unique_ptr<Expr>&& count, const Utils::SourceLocation& srcLoc)
                 : Stmt{ NodeKind::SLEEP_STMT } 
             {
                 mSrcLoc = srcLoc;

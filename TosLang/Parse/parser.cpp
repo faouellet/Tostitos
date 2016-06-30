@@ -264,6 +264,7 @@ std::unique_ptr<Expr> Parser::ParseExpr()
     case Lexer::Token::SPAWN:
         isSpawnedExpr = true;
         mCurrentToken = mLexer.GetNextToken();
+        // TODO: the next token must be an identifier
         break;
     case Lexer::Token::STRING_LITERAL:
         node = std::make_unique<StringExpr>(mLexer.GetCurrentStr(), mLexer.GetCurrentLocation());
@@ -477,8 +478,11 @@ std::unique_ptr<CompoundStmt> Parser::ParseCompoundStmt()
         case Lexer::Token::SPAWN:
             node.reset(ParseExpr().release());
             break;
+        case Lexer::Token::SLEEP:
+            node.reset(ParseSleepStmt().release());
+            break;
         case Lexer::Token::SYNC:
-            node.reset(new SyncStmt());
+            node.reset(new SyncStmt(mLexer.GetCurrentLocation()));
             break;
         case Lexer::Token::COMMENT:
         case Lexer::Token::ML_COMMENT:
@@ -585,6 +589,25 @@ std::unique_ptr<ScanStmt> Parser::ParseScanStmt()
     else
         sStmt.reset(new ScanStmt(std::make_unique<IdentifierExpr>(inputExpr->GetName(), mLexer.GetCurrentLocation()), srcLoc));
         
+    return sStmt;
+}
+
+std::unique_ptr<SleepStmt> Parser::ParseSleepStmt()
+{
+    std::unique_ptr<SleepStmt> sStmt = std::make_unique<SleepStmt>();
+
+    mCurrentToken = mLexer.GetNextToken();
+    const SourceLocation srcLoc = mLexer.GetCurrentLocation();
+
+    std::unique_ptr<Expr> inputExpr = ParseExpr();
+
+    if (inputExpr == nullptr)
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::SCAN_MISSING_INPUT_VAR, mLexer.GetCurrentLocation());
+    else if (inputExpr->GetKind() != ASTNode::NodeKind::IDENTIFIER_EXPR)
+        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::SCAN_WRONG_INPUT_TYPE, mLexer.GetCurrentLocation());
+    else
+        sStmt.reset(new SleepStmt(std::move(inputExpr), srcLoc));
+
     return sStmt;
 }
 
