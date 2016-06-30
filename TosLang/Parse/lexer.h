@@ -135,7 +135,7 @@ namespace TosLang
             std::string mCurrentStr;            /*!< Current string in the lexer buffer */
 
             std::string mBuffer;                /*!< The lexer buffer */
-            std::string::iterator mBufferIt;    /*!< Iterator of the lexer buffer */
+            std::string::const_iterator mBufferIt;    /*!< Iterator of the lexer buffer */
             std::locale mLoc;                   /*!< The source locale */
         };
     }
