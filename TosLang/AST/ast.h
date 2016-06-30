@@ -51,6 +51,7 @@ namespace TosLang
                 PRINT_STMT,
                 RETURN_STMT,
                 SCAN_STMT,
+                SLEEP_STMT,
                 SYNC_STMT,
                 WHILE_STMT,
             };

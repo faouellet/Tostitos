@@ -186,13 +186,32 @@ namespace TosLang
         };
 
         /*
+        * \class SleepStmt
+        * \brief Node of the AST representing a SLEEP
+        */
+        class SleepStmt : public Stmt
+        {
+        public:
+            SleepStmt(std::unique_ptr<Expr>&& count, const Utils::SourceLocation& srcLoc) 
+                : Stmt{ NodeKind::SLEEP_STMT } 
+            {
+                mSrcLoc = srcLoc;
+                AddChildNode(std::move(count));
+            }
+            virtual ~SleepStmt() = default;
+        };
+
+        /*
         * \class SyncStmt
         * \brief Node of the AST representing a SYNC
         */
         class SyncStmt : public Stmt
         {
         public:
-            SyncStmt() : Stmt{ NodeKind::SYNC_STMT } { }
+            SyncStmt(const Utils::SourceLocation& srcLoc) : Stmt{ NodeKind::SYNC_STMT } 
+            {
+                mSrcLoc = srcLoc;
+            }
             virtual ~SyncStmt() = default;
         };
 
