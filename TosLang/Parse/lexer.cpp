@@ -247,6 +247,8 @@ Lexer::Token Lexer::GetNextToken()
 				return Token::WHILE;
 			else if (mCurrentStr == "spawn")
 				return Token::SPAWN;
+            else if (mCurrentStr == "sleep")
+                return Token::SLEEP;    // TODO: Test it
 			else if (mCurrentStr == "sync")
 				return Token::SYNC;
 			else if (mCurrentStr == "return")

@@ -27,6 +27,7 @@ namespace TosLang
                 RETURN,
                 SCAN,
                 SPAWN,
+                SLEEP,
                 SYNC,
                 TYPE,
                 VAR,
