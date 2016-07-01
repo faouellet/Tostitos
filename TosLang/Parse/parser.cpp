@@ -314,7 +314,7 @@ std::unique_ptr<Expr> Parser::ParseExpr()
                 return nullptr;
             }
 
-            node.reset(new IndexExpr(std::move(identExpr), std::move(indexExpr), arraySrcLoc));
+            node.reset(new IndexedExpr(std::move(identExpr), std::move(indexExpr), arraySrcLoc));
         }
         else
         {
@@ -603,8 +603,6 @@ std::unique_ptr<SleepStmt> Parser::ParseSleepStmt()
 
     if (inputExpr == nullptr)
         ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::SCAN_MISSING_INPUT_VAR, mLexer.GetCurrentLocation());
-    else if (inputExpr->GetKind() != ASTNode::NodeKind::IDENTIFIER_EXPR)
-        ErrorLogger::PrintErrorAtLocation(ErrorLogger::ErrorType::SCAN_WRONG_INPUT_TYPE, mLexer.GetCurrentLocation());
     else
         sStmt.reset(new SleepStmt(std::move(inputExpr), srcLoc));
 

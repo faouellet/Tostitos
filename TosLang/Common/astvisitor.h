@@ -123,10 +123,10 @@ namespace TosLang
             void HandleIdentifierExpr() { }
 
             /*
-            * \fn       HandleIndexExpr
+            * \fn       HandleIndexedExpr
             * \brief    Handle a node of the INDEX_EXPR kind
             */
-            void HandleIndexExpr() { }
+            void HandleIndexedExpr() { }
 
             /*
             * \fn       HandleNumberExpr
@@ -233,7 +233,7 @@ namespace TosLang
                     GetDerived().HandleIdentifierExpr();
                     break;
                 case FrontEnd::ASTNode::NodeKind::INDEX_EXPR:
-                    GetDerived().HandleIndexExpr();
+                    GetDerived().HandleIndexedExpr();
                     break;
                 case FrontEnd::ASTNode::NodeKind::NUMBER_EXPR:
                     GetDerived().HandleNumberExpr();

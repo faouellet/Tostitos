@@ -71,7 +71,7 @@ namespace TosLang
             *               ::= binopexpr
             *               ::= booleanexpr
             *               ::= identifierexpr
-            *               ::= indexexpr
+            *               ::= indexedexpr
             *               ::= numberexpr
             *               ::= spawnexpr
             *               ::= stringexpr

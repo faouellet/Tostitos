@@ -175,14 +175,14 @@ namespace TosLang
         };
 
         /*
-        * \class IndexExpr
+        * \class IndexedExpr
         * \brief Node of the AST representing an indexed value
         *        Example: tab[i]
         */
-        class IndexExpr : public Expr
+        class IndexedExpr : public Expr
         {
         public:
-            IndexExpr(std::unique_ptr<Expr>&& arrayIdentifier, std::unique_ptr<Expr>&& indexExpr, const Utils::SourceLocation& srcLoc)
+            IndexedExpr(std::unique_ptr<Expr>&& arrayIdentifier, std::unique_ptr<Expr>&& indexExpr, const Utils::SourceLocation& srcLoc)
                 : Expr{ NodeKind::INDEX_EXPR }
             {
                 assert(arrayIdentifier->GetKind() == ASTNode::NodeKind::IDENTIFIER_EXPR);
@@ -193,7 +193,21 @@ namespace TosLang
                 AddChildNode(std::move(arrayIdentifier));
                 AddChildNode(std::move(indexExpr));
             }
-            virtual ~IndexExpr() = default;
+            virtual ~IndexedExpr() = default;
+          
+            /*
+            * \fn       GetIdentifier
+            * \brief    Gets the identifier of the indexed array
+            * \return   Array identifier
+            */
+            const Expr* GetIdentifier() const { assert(mChildren.size() == 2); return GetChildNodeAs<Expr>(0); }
+
+            /*
+            * \fn       GetIndex
+            * \brief    Gets the expression to be used as the index
+            * \return   Index expression
+            */
+            const Expr* GetIndex() const { assert(mChildren.size() == 2); return GetChildNodeAs<Expr>(1); }
         };
 
         /*
