@@ -2,8 +2,11 @@
 #define INTERPRETED_VALUE_H__TOSTITOS
 
 #include <cassert>
+#include <iterator>
+#include <memory>
 #include <ostream>
 #include <string>
+#include <vector>
 
 // TODO: Comments
 
@@ -15,20 +18,27 @@ namespace Execution
         enum class ValueType
         {
             BOOLEAN,
+            BOOLEAN_ARRAY,
             INTEGER,
+            INTEGER_ARRAY,
             STRING,
+            STRING_ARRAY,
             VOID,
             UNKNOWN,
         };
 
     public:
         InterpretedValue() : mType{ ValueType::UNKNOWN } { }
-        explicit InterpretedValue(bool val) : mType{ ValueType::BOOLEAN }, boolVal{ val } { }
-        explicit InterpretedValue(int val) : mType{ ValueType::INTEGER }, intVal{ val } { }
-        explicit InterpretedValue(const std::string& val): mType{ ValueType::STRING }, strVal{ val }
-        {
-            new (&strVal) std::string(val);
-        }
+        explicit InterpretedValue(bool val) : mType{ ValueType::BOOLEAN }, boolVal{ new bool{ val } } { }
+        explicit InterpretedValue(int val) : mType{ ValueType::INTEGER }, intVal{ new int { val } } { }
+        explicit InterpretedValue(const std::string& val) : mType{ ValueType::STRING }, strVal{ new std::string{ val } } { }
+        
+        explicit InterpretedValue(const std::vector<bool>& vals) 
+            : mType{ ValueType::BOOLEAN_ARRAY }, boolArrayVal{ new std::vector<bool>{ vals } } { }
+        explicit InterpretedValue(const std::vector<int>& vals) 
+            : mType{ ValueType::INTEGER_ARRAY }, intArrayVal{ new std::vector<int>{ vals } } { }
+        explicit InterpretedValue(const std::vector<std::string>& vals) 
+            : mType{ ValueType::STRING_ARRAY }, strArrayVal{ new std::vector<std::string>{ vals } } { }
 
         InterpretedValue(const InterpretedValue& val) { AssignFrom(val); }
 
@@ -60,14 +70,25 @@ namespace Execution
             switch (val.mType)
             {
             case InterpretedValue::ValueType::BOOLEAN:
-                stream << val.boolVal;
+                stream << *val.boolVal;
+                break;
+            case InterpretedValue::ValueType::BOOLEAN_ARRAY:
+                std::copy(val.boolArrayVal->begin(), val.boolArrayVal->end(), std::ostream_iterator<bool>(stream, ","));
                 break;
             case InterpretedValue::ValueType::INTEGER:
-                stream << val.intVal;
+                stream << *val.intVal;
+                break;
+            case InterpretedValue::ValueType::INTEGER_ARRAY:
+                std::copy(val.intArrayVal->begin(), val.intArrayVal->end(), std::ostream_iterator<int>(stream, ","));
                 break;
             case InterpretedValue::ValueType::STRING:
-                stream << val.strVal;
+                stream << *val.strVal;
                 break;
+            case InterpretedValue::ValueType::STRING_ARRAY:
+                std::copy(val.strArrayVal->begin(), val.strArrayVal->end(), std::ostream_iterator<std::string>(stream, ","));
+                break;
+            default:
+                assert(false);  // Should never happen
             }
 
             return stream;
@@ -76,18 +97,41 @@ namespace Execution
     public:
         ValueType GetType() const { return mType; }
 
-        bool GetBoolVal() const { assert(mType == ValueType::BOOLEAN); return boolVal; }
-        int GetIntVal() const { assert(mType == ValueType::INTEGER); return intVal; }
-        std::string GetStrVal() const { assert(mType == ValueType::STRING); return strVal; }
+        bool GetBoolVal() const { assert(mType == ValueType::BOOLEAN); return *boolVal; }
+        int GetIntVal() const { assert(mType == ValueType::INTEGER); return *intVal; }
+        const std::string& GetStrVal() const { assert(mType == ValueType::STRING); return *strVal; }
+
+        const std::vector<bool>& GetBoolArrayVal() const { assert(mType == ValueType::BOOLEAN_ARRAY); return *boolArrayVal; }
+        const std::vector<int>& GetIntArrayVal() const { assert(mType == ValueType::INTEGER_ARRAY); return *intArrayVal; }
+        const std::vector<std::string>& GetStrArrayVal() const { assert(mType == ValueType::STRING_ARRAY); return *strArrayVal; }
 
     private:
         void Destroy()
         {
-            if (mType == ValueType::STRING)
+            switch (mType)
             {
-                // Using statement is necessary to compile with Clang
-                using std::string;
-                strVal.~string();
+            case ValueType::BOOLEAN:
+                boolVal.reset();
+                break;
+            case ValueType::BOOLEAN_ARRAY:
+                boolArrayVal.reset();
+                break;
+            case ValueType::INTEGER:
+                intVal.reset();
+                break;
+            case ValueType::INTEGER_ARRAY:
+                intArrayVal.reset();
+                break;
+            case ValueType::STRING:
+                strVal.reset();
+                break;
+            case ValueType::STRING_ARRAY:
+                strArrayVal.reset();
+                break;
+            case ValueType::VOID:
+                break;
+            default:
+                assert(false);  // Should never happen
             }
         }
 
@@ -96,13 +140,22 @@ namespace Execution
             switch (val.mType)
             {
             case ValueType::BOOLEAN:
-                boolVal = val.boolVal;
+                boolVal.reset(new bool{ *val.boolVal });
+                break;
+            case ValueType::BOOLEAN_ARRAY:
+                boolArrayVal.reset(new std::vector<bool>{ *val.boolArrayVal });
                 break;
             case ValueType::INTEGER:
-                intVal = val.intVal;
+                intVal.reset(new int{ *val.intVal });
+                break;
+            case ValueType::INTEGER_ARRAY:
+                intArrayVal.reset(new std::vector<int>{ *val.intArrayVal });
                 break;
             case ValueType::STRING:
-                new (&strVal) std::string(val.strVal);
+                strVal.reset(new std::string{ *val.strVal });
+                break;
+            case ValueType::STRING_ARRAY:
+                strArrayVal.reset(new std::vector<std::string>{ *val.strArrayVal });
                 break;
             case ValueType::VOID:
                 break;
@@ -117,9 +170,13 @@ namespace Execution
         ValueType mType;
         union
         {
-            bool boolVal;
-            int intVal;
-            std::string strVal;
+            std::unique_ptr<bool> boolVal;
+            std::unique_ptr<int> intVal;
+            std::unique_ptr<std::string> strVal;
+
+            std::unique_ptr<std::vector<bool>> boolArrayVal;
+            std::unique_ptr<std::vector<int>> intArrayVal;
+            std::unique_ptr<std::vector<std::string>> strArrayVal;
         };
     };
 }
