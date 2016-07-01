@@ -58,6 +58,7 @@ namespace TosLang
             void HandleBinaryExpr();
             void HandleCallExpr();
             void HandleIdentifierExpr();
+            void HandleIndexedExpr();
             void HandleNumberExpr();
             void HandleSpawnExpr();
             void HandleStringExpr();

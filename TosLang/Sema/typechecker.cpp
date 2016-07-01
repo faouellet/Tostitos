@@ -426,6 +426,23 @@ void TypeChecker::HandleIdentifierExpr()
     iExpr->SetType(varSym->GetVariableType());
 }
 
+void TypeChecker::HandleIndexedExpr()
+{
+    const IndexedExpr* iExpr = static_cast<const IndexedExpr*>(this->mCurrentNode);
+    assert(iExpr != nullptr);
+
+    // The index used in the expression must evaluate to a number
+    if (!CheckExprEvaluateToType(iExpr->GetIndex(), Type::NUMBER))
+    {
+        // TODO: Log an error and test it
+        ++mErrorCount;
+    }
+
+    // If the expression is correct, we associate it with the type of its identifier
+    mNodeTypes[iExpr] = mNodeTypes.at(iExpr->GetIdentifier());
+}
+
+
 void TypeChecker::HandleNumberExpr()
 {
     mNodeTypes[this->mCurrentNode] = Type::NUMBER;
