@@ -42,9 +42,7 @@ namespace TosLang
         private:	// Declarations
             /*
             * \fn       ParseProgramDecl
-            * \brief    programdecl
-            *                   ::= decls
-            *                   ::= stmts
+            * \brief    programdecl ::= decls
             * \return   A node representing a program
             */
             std::unique_ptr<ASTNode> ParseProgramDecl();

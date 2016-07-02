@@ -6,8 +6,6 @@
 
 namespace TosLang
 {
-    class Interpreter;
-
     namespace FrontEnd
     {
         class ASTNode;
