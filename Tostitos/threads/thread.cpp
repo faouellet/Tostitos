@@ -1,16 +1,13 @@
 #include "thread.h"
 
-#include "../machine/machine.h"
-
+using namespace Execution;
 using namespace Threads;
-using MachineEngine::ProcessorSpace::ThreadContext;
 
-Thread::Thread(const std::string&) : mFinished{ false }, mWaitForChildren{ false }, mTimeToWakeup{ 0 }
-{
-	mContext = std::make_unique<ThreadContext>();
-	// TODO: Should check if the ROM was correctly acquired
-    // MachineEngine::Machine::GetInstance().getInterpreter().AcquireROM(Filename);
-}
+namespace chr = std::chrono;
+
+Thread::Thread(Executor&& exec) 
+    : mFinished{ false }, mWaitForChildren{ false }, mTimeToWakeup{ 0 }, 
+      mTimePoint{ }, mExecutor{ }, mChildren{ } { }
 
 bool Thread::IsWaitingForChildren()
 {
@@ -22,7 +19,7 @@ bool Thread::IsWaitingForChildren()
 
 bool Thread::IsSleeping()
 {
-	if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - mTimePoint).count() > mTimeToWakeup)
+	if (chr::duration_cast<chr::seconds>(chr::high_resolution_clock::now() - mTimePoint).count() > mTimeToWakeup)
 	{
 		mTimeToWakeup = 0;
 		return false;
@@ -30,11 +27,10 @@ bool Thread::IsSleeping()
 	return true;
 }
 
-Thread * Thread::Fork(const std::string & filename)
+Thread* Thread::Fork(Executor&& exec)
 {
-    Thread * Child = new Thread(filename);
-    mChildren.push_back(Child);
-    return Child;
+    mChildren.emplace_back(std::make_unique<Thread>(std::move(exec)));
+    return mChildren.back().get();
 }
 
 void Thread::Sleep(const unsigned int time)

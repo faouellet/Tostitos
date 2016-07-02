@@ -4,11 +4,11 @@
 #include "../machine/machine.h"
 
 using namespace Threads;
-using MachineEngine::ProcessorSpace::ThreadAction;
 
 void Kernel::Init(const std::string & ProgramName)
 {
-    mCurrentThread = new Thread(ProgramName);
+    // TODO: Fix the kernel
+    //mCurrentThread = new Thread(ProgramName);
 	// Scheduler::GetInstance().ScheduleThread(mCurrentThread);
 	// MachineEngine::Machine::GetInstance().getCpu().SwitchContext(mCurrentThread->DumpContext());
 }
