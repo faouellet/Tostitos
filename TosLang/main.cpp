@@ -25,22 +25,14 @@ int main(int argc, char** argv)
         return 1;
     case Execution::ExecutionCommand::DUMP_AST:
         compiler.DumpAST(info.programFile);
+        break;
     case Execution::ExecutionCommand::DUMP_CFG:
         return 1;
     case Execution::ExecutionCommand::DUMP_LLVM:
         return 1;
     case Execution::ExecutionCommand::INTERPRET:
-    {
-        auto programAST = compiler.ParseProgram(info.programFile);
-        if (programAST != nullptr)
-        {
-            auto symTable = compiler.GetSymbolTable(programAST);
-            if (symTable != nullptr)
-            {
-                interpreter.Run(programAST, symTable);
-            }
-        }
-    }
+        interpreter.Run(info.programFile);
+        break;
     default:
         return 1;
     }

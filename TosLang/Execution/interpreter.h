@@ -1,17 +1,20 @@
 #ifndef INTERPRETER_H__TOSTITOS
 #define INTERPRETER_H__TOSTITOS
 
-#include "callstack.h"
+// TODO: Comments
 
 #include <memory>
+#include <string>
 
 namespace TosLang
 {
     namespace FrontEnd
     {
         class ASTNode;
-        class Symbol;
+        class Parser;
+        class SymbolCollector;
         class SymbolTable;
+        class TypeChecker;
     }
 }
 
@@ -20,41 +23,24 @@ namespace Execution
     class Interpreter
     {
     public:
-        Interpreter() : mDoneWithCurrentFunc{ false }, mCurrentNode{ nullptr }, mSymTable{ nullptr }, mCallStack{ } { }
+        Interpreter();
+        ~Interpreter();
 
     public:
-        void Run(const std::unique_ptr<TosLang::FrontEnd::ASTNode>& root, 
-                 const TosLang::FrontEnd::SymbolTable* symTab);
-    
-    protected:  // Declarations
-        InterpretedValue HandleFunction(const TosLang::FrontEnd::ASTNode* node);
-        InterpretedValue HandleVarDecl(const TosLang::FrontEnd::ASTNode* node);
-    
-    protected:  // Expressions
-        InterpretedValue HandleBinaryExpr(const TosLang::FrontEnd::ASTNode* node);
-        InterpretedValue HandleBooleanExpr(const TosLang::FrontEnd::ASTNode* node);
-        InterpretedValue HandleCallExpr(const TosLang::FrontEnd::ASTNode* node);
-        InterpretedValue HandleIdentifierExpr(const TosLang::FrontEnd::ASTNode* node);
-        InterpretedValue HandleNumberExpr(const TosLang::FrontEnd::ASTNode* node);
-        InterpretedValue HandleStringExpr(const TosLang::FrontEnd::ASTNode* node);
-    
-    protected:  // Statements
-        InterpretedValue HandleCompoundStmt(const TosLang::FrontEnd::ASTNode* node);
-        InterpretedValue HandleIfStmt(const TosLang::FrontEnd::ASTNode* node);
-        InterpretedValue HandlePrintStmt(const TosLang::FrontEnd::ASTNode* node);
-        InterpretedValue HandleReturnStmt(const TosLang::FrontEnd::ASTNode* node);
-        InterpretedValue HandleScanStmt(const TosLang::FrontEnd::ASTNode* node);
-        InterpretedValue HandleWhileStmt(const TosLang::FrontEnd::ASTNode* node);
-    
-    private:
-        InterpretedValue DispatchNode(const TosLang::FrontEnd::ASTNode* node);
-        const TosLang::FrontEnd::Symbol* GetSymbol(const TosLang::FrontEnd::ASTNode* node) const;
+        /*
+        * \fn                   Run
+        * \brief                Runs a TosLang program
+        * \param programFile    Name (including path) of the .tos file to compile
+        * \return               Has the program correctly terminated?
+        */
+        bool Run(const std::string& programFile);
 
     private:
-        bool mDoneWithCurrentFunc;
-        const TosLang::FrontEnd::ASTNode* mCurrentNode;
-        const TosLang::FrontEnd::SymbolTable* mSymTable;
-        CallStack mCallStack;
+        std::shared_ptr<TosLang::FrontEnd::SymbolTable> mSymTable;           /*!< Symbol table for a program */
+
+        std::unique_ptr<TosLang::FrontEnd::Parser> mParser;                  /*!< Parser */
+        std::unique_ptr<TosLang::FrontEnd::SymbolCollector> mSymCollector;   /*!< Symbol collector */
+        std::unique_ptr<TosLang::FrontEnd::TypeChecker> mTChecker;           /*!< Type checker */
     };
 }
 
