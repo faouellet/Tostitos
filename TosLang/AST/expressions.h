@@ -255,6 +255,14 @@ namespace TosLang
                 mSrcLoc = srcLoc;
             }
             virtual ~SpawnExpr() = default;
+
+            /*
+            * \fn       GetCall
+            * \brief    Gets the function call expression used to spawn a thread
+            * \return   Function call expression
+            */
+            const CallExpr* GetCall() const { assert(mChildren.size() == 1); return GetChildNodeAs<CallExpr>(0); }
+
         };
 
         /*

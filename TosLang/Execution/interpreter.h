@@ -26,7 +26,6 @@ namespace Execution
         Interpreter();
         ~Interpreter();
 
-    public:
         /*
         * \fn                   Run
         * \brief                Runs a TosLang program
@@ -34,8 +33,10 @@ namespace Execution
         * \return               Has the program correctly terminated?
         */
         bool Run(const std::string& programFile);
-
+        
     private:
+        std::unique_ptr<TosLang::FrontEnd::ASTNode> mAST;                   /*!< Symbol table for a program */
+      
         std::shared_ptr<TosLang::FrontEnd::SymbolTable> mSymTable;           /*!< Symbol table for a program */
 
         std::unique_ptr<TosLang::FrontEnd::Parser> mParser;                  /*!< Parser */

@@ -1,13 +1,13 @@
 #include "scheduler.h"
 
-#include "../machine/machine.h"
+#include "../threading/thread.h"
 
 #include <algorithm>
 
-using namespace Threads;
-using namespace MachineEngine;
+using namespace KernelSpace;
+using namespace Threading;
 
-Thread * Scheduler::FindNextThreadToRun(Thread * RunningThread)
+Thread* Scheduler::FindNextThreadToRun(Thread* RunningThread)
 {
 	if (!RunningThread->HasFinished() && !RunningThread->IsWaitingForChildren() && !RunningThread->IsSleeping())
 	{
@@ -20,7 +20,7 @@ Thread * Scheduler::FindNextThreadToRun(Thread * RunningThread)
 
 	if (!mThreadList.empty())
 	{
-		Thread * NewRunningThread = *mThreadList.begin();
+		Thread* NewRunningThread = *mThreadList.begin();
 		// Machine::GetInstance().getCpu().SwitchContext(NewRunningThread->DumpContext());
         return NewRunningThread;
 	}
@@ -35,7 +35,7 @@ void Scheduler::ScheduleThread(Thread * T)
 	mThreadList.push_back(T);
 }
 
-void Scheduler::TerminateThread(Thread * T)
+void Scheduler::TerminateThread(Thread* T)
 {
-	delete T;
+    mThreadList.erase(std::remove(mThreadList.begin(), mThreadList.end(), T));
 }

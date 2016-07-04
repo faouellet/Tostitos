@@ -1,26 +1,33 @@
 #include "executor.h"
 
-#include "../AST/declarations.h"
-#include "../Common/opcodes.h"
-#include "../Common/type.h"
-#include "../Sema/symboltable.h"
+#include "../../TosLang/AST/declarations.h"
+#include "../../TosLang/Common/opcodes.h"
+#include "../../TosLang/Common/type.h"
+#include "../../TosLang/Sema/symboltable.h"
+
+#include "../../Tostitos/threading/threadutil.h"
 
 #include <cassert>
 #include <iostream> // TODO: Printing to standard IO for now. Should this be redirected to Tostitos later on?
 
-using namespace Execution;
+using namespace Threading::impl;
 using namespace TosLang;
 using namespace TosLang::Common;
 using namespace TosLang::FrontEnd;
 
-void Executor::Run(const TosLang::FrontEnd::ASTNode* root,
+Executor::Executor(const TosLang::FrontEnd::ASTNode* root,
                    const TosLang::FrontEnd::SymbolTable* symTab,
                    CallStack&& stack)
-{
-    mSymTable = symTab;
-    mCallStack = stack;
+    : mDoneWithCurrentFunc{ false }, mCurrentNode{ root }, mSymTable{ symTab }, mCallStack{ stack } { }
 
-    HandleFunction(root);
+void Executor::Run()
+{
+    if (mCurrentNode == nullptr)
+    {
+        return;
+    }
+
+    HandleFunction(mCurrentNode);
 }
 
 ////////// Declarations //////////
@@ -157,31 +164,12 @@ InterpretedValue Executor::HandleCallExpr(const FrontEnd::ASTNode* node)
     const CallExpr* cExpr = dynamic_cast<const CallExpr*>(node);
     assert(cExpr != nullptr);
 
-    // Evaluating all the argument expressions to find out the values the function is being called with
-    std::vector<InterpretedValue> callVals;
-    for (const auto& arg : cExpr->GetArgs())
-    {
-        InterpretedValue argVal{ DispatchNode(arg.get()) };
-
-        callVals.push_back(argVal);
-    }
-
     // Pushing a new frame on the call stack for the function call we're about to make
-    mCallStack.EnterNewFrame(cExpr);
+    mCallStack.PushFrame(PrepareNewFrame(cExpr));
 
-    // We need to find the function that is being called
     const ASTNode* fnNode = mSymTable->GetFunctionDecl(cExpr);
     const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(fnNode);
     assert(fDecl != nullptr);
-
-    // Initializing the function's parameters in the new stack frame
-    const ParamVarDecls* pVDecls = fDecl->GetParametersDecl();
-    assert(pVDecls->GetParameters().size() == callVals.size());
-    for (size_t iArg = 0; iArg < callVals.size(); ++iArg)
-    {
-        const Symbol* argSym = GetSymbol(pVDecls->GetParameters()[iArg].get());
-        mCallStack.AddOrUpdateSymbolValue(argSym, callVals[iArg], false);
-    }
 
     // Executing the call
     return HandleFunction(fDecl);
@@ -240,7 +228,21 @@ InterpretedValue Executor::HandleSpawnExpr(const FrontEnd::ASTNode* node)
     const SpawnExpr* sExpr = dynamic_cast<const SpawnExpr*>(node);
     assert(sExpr != nullptr);
 
-    return InterpretedValue{ sExpr->GetName() };
+    // The call stack for a thread will contain two things:
+    // 1- The global frame
+    // 2- The frame of the function being called
+    CallStack stack;
+    stack.PushFrame(mCallStack.GetGlobalFrame());
+    stack.PushFrame(PrepareNewFrame(sExpr->GetCall()));
+
+    // We need to find the function that is being called
+    const ASTNode* fnNode = mSymTable->GetFunctionDecl(sExpr->GetCall());
+    const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(fnNode);
+    assert(fDecl != nullptr);
+
+    //Threads::Kernel::GetInstance().CreateThread({ fnNode, mSymTable, std::move(stack) });
+
+    return InterpretedValue{ };
 }
 
 InterpretedValue Executor::HandleStringExpr(const FrontEnd::ASTNode* node)
@@ -338,22 +340,22 @@ InterpretedValue Executor::HandleSleepStmt(const FrontEnd::ASTNode* node)
     const SleepStmt* sStmt = dynamic_cast<const SleepStmt*>(node);
     assert(sStmt != nullptr);
 
-    // TODO
+    InterpretedValue timeVal = DispatchNode(sStmt->GetCountExpr());
+
+    //Threads::Kernel::GetInstance().SleepFor(timeVal.GetIntVal());
 
     return{};
 }
-
 
 InterpretedValue Executor::HandleSyncStmt(const FrontEnd::ASTNode* node)
 {
     const SyncStmt* sStmt = dynamic_cast<const SyncStmt*>(node);
     assert(sStmt != nullptr);
 
-    // TODO
+    Sync();
 
     return{};
 }
-
 
 InterpretedValue Executor::HandleWhileStmt(const FrontEnd::ASTNode* node)
 {
@@ -372,7 +374,6 @@ InterpretedValue Executor::HandleWhileStmt(const FrontEnd::ASTNode* node)
 
     return{};
 }
-
 
 InterpretedValue Executor::DispatchNode(const ASTNode* node)
 {
@@ -408,3 +409,33 @@ const Symbol* Executor::GetSymbol(const ASTNode* node) const
     assert(found);
     return varSym;
 }
+
+StackFrame Executor::PrepareNewFrame(const TosLang::FrontEnd::CallExpr* call)
+{
+    // Evaluating all the argument expressions to find out the values the function is being called with
+    std::vector<InterpretedValue> callVals;
+    for (const auto& arg : call->GetArgs())
+    {
+        InterpretedValue argVal{ DispatchNode(arg.get()) };
+
+        callVals.push_back(argVal);
+    }
+
+    // We need to find the function that is being called
+    const ASTNode* fnNode = mSymTable->GetFunctionDecl(call);
+    const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(fnNode);
+    assert(fDecl != nullptr);
+
+    // Initializing the function's parameters in the new stack frame
+    StackFrame frame;
+    const ParamVarDecls* pVDecls = fDecl->GetParametersDecl();
+    assert(pVDecls->GetParameters().size() == callVals.size());
+    for (size_t iArg = 0; iArg < callVals.size(); ++iArg)
+    {
+        const Symbol* argSym = GetSymbol(pVDecls->GetParameters()[iArg].get());
+        frame.AddOrUpdateSymbolValue(argSym, callVals[iArg]);
+    }
+
+    return frame;
+}
+

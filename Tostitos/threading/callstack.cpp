@@ -1,6 +1,6 @@
 #include "callstack.h"
 
-using namespace Execution;
+using namespace Threading::impl;
 using namespace TosLang;
 
 ////////// Stack Frame //////////
@@ -30,9 +30,14 @@ void CallStack::AddOrUpdateSymbolValue(const FrontEnd::Symbol* sym, const Interp
         mFrames.back().AddOrUpdateSymbolValue(sym, value);
 }
 
-void CallStack::EnterNewFrame(const FrontEnd::ASTNode* fnNode)
+void CallStack::PushFrame(const StackFrame& frame)
 {
-    mFrames.emplace_back(fnNode);
+    mFrames.push_back(frame);
+}
+
+void CallStack::PushFrame(StackFrame&& frame)
+{
+    mFrames.emplace_back(frame);
 }
 
 bool CallStack::TryGetSymbolValue(const FrontEnd::Symbol* sym, InterpretedValue& value, bool isGlobalSymol)

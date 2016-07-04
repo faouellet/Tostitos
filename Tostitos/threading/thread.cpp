@@ -1,13 +1,17 @@
 #include "thread.h"
 
-using namespace Execution;
-using namespace Threads;
+#include "executor.h"
+
+using namespace Threading;
+using namespace Threading::impl;
 
 namespace chr = std::chrono;
 
 Thread::Thread(Executor&& exec) 
     : mFinished{ false }, mWaitForChildren{ false }, mTimeToWakeup{ 0 }, 
-      mTimePoint{ }, mExecutor{ }, mChildren{ } { }
+      mTimePoint{ }, mExecutor{ std::make_unique<Executor>(std::move(exec)) }, mChildren{ } { }
+
+Thread::~Thread() = default;
 
 bool Thread::IsWaitingForChildren()
 {
@@ -33,7 +37,7 @@ Thread* Thread::Fork(Executor&& exec)
     return mChildren.back().get();
 }
 
-void Thread::Sleep(const unsigned int time)
+void Thread::Sleep(size_t time)
 {
 	mTimeToWakeup = time;
 	mTimePoint = std::chrono::high_resolution_clock::now();
@@ -43,4 +47,3 @@ void Thread::Barrier()
 {
 	mWaitForChildren = true;
 }
-

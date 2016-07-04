@@ -10,7 +10,7 @@ namespace TosLang
     namespace Utils
     {
         class SourceLocation;
-
+        
         /*
         * \class ErrorLogger
         * \brief Singleton class providing error logging services for the whole TosLang compiler

@@ -1,6 +1,8 @@
-#include "threads/kernel.h"
+#include "kernel/kernel.h"
 #include "machine/hardDrive.h"
 #include "communicationWithHost/hardDriveHelper.h"
+
+#include "dataStructures/allocators.h"
 
 #include <iostream>
 #include <chrono>
@@ -10,8 +12,8 @@
 #include "system.h"
 
 using namespace MachineEngine::DiskSpace;
-using namespace Threads;
-
+using namespace KernelSpace;
+using namespace Threading;
 
 void TestRotate()
 {
@@ -94,9 +96,7 @@ void TestCommunicationReadWrite()
 
 void TestKernel()
 {
-    Kernel kernel;
-    kernel.Init("scripts/memory.tos");
-    kernel.Run();
+    Kernel::GetInstance().Run("scripts/memory.tos");
 }
 
 int main()
