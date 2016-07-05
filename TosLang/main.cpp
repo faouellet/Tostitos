@@ -2,8 +2,6 @@
 #include "Execution/compiler.h"
 #include "Execution/interpreter.h"
 
-#include "AST/ast.h"    // TODO: Refactoring to remove this include
-
 using namespace Execution;
 
 int main(int argc, char** argv)

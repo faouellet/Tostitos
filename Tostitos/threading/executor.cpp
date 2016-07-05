@@ -5,8 +5,6 @@
 #include "../../TosLang/Common/type.h"
 #include "../../TosLang/Sema/symboltable.h"
 
-#include "../../Tostitos/threading/threadutil.h"
-
 #include <cassert>
 #include <iostream> // TODO: Printing to standard IO for now. Should this be redirected to Tostitos later on?
 
@@ -352,7 +350,7 @@ InterpretedValue Executor::HandleSyncStmt(const FrontEnd::ASTNode* node)
     const SyncStmt* sStmt = dynamic_cast<const SyncStmt*>(node);
     assert(sStmt != nullptr);
 
-    Sync();
+    //Sync();
 
     return{};
 }
