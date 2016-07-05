@@ -1,6 +1,10 @@
 #ifndef THREAD_UTIL_H__TOSTITOS
 #define THREAD_UTIL_H__TOSTITOS
 
+#if defined(__unix__) || defined(__APPLE__)
+#include <cstddef>
+#endif
+
 // TODO: Comments
 
 namespace TosLang

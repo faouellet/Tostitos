@@ -13,7 +13,9 @@ using namespace KernelSpace;
 using namespace Threading::impl;
 using namespace TosLang::FrontEnd;
 
-void Threading::Fork(const ASTNode* root, const SymbolTable* symTab)
+namespace Threading
+{
+void Fork(const ASTNode* root, const SymbolTable* symTab)
 {
     // Create a call stack for the main thread then push the (empty for now) global 
     // frame onto it. This frame will contains all global scope level informations 
@@ -33,12 +35,13 @@ void Threading::Fork(const ASTNode* root, const SymbolTable* symTab)
 }
 
 
-void Threading::SleepFor(size_t nbSecs)
+void SleepFor(size_t nbSecs)
 {
     Kernel::GetInstance().SleepFor(nbSecs);
 }
 
-void Threading::Sync()
+void Sync()
 {
     Kernel::GetInstance().Sync();
+}
 }
