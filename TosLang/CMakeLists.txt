@@ -25,6 +25,8 @@ if(${USE_LLVM_BACKEND})
     SOURCE_GROUP(lang\\LLVMBackend FILES ${LLVM_BACKEND_SOURCES})
 endif()
 
+include_directories("${CMAKE_SOURCE_DIR}/Tostitos/threading")
+
 add_library( lang STATIC
 		${AST_SOURCES}
 		${CFG_SOURCES}
@@ -42,7 +44,7 @@ add_library( execution STATIC
 		)
 				
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
-		
+	
 add_executable (TosLang main.cpp)
 if(${USE_LLVM_BACKEND})
 	llvm_map_components_to_libnames(llvm_libs support core)
