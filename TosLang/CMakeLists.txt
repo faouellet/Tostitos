@@ -25,8 +25,6 @@ if(${USE_LLVM_BACKEND})
     SOURCE_GROUP(lang\\LLVMBackend FILES ${LLVM_BACKEND_SOURCES})
 endif()
 
-include_directories("${CMAKE_SOURCE_DIR}/Tostitos/threading")
-
 add_library( lang STATIC
 		${AST_SOURCES}
 		${CFG_SOURCES}
@@ -38,7 +36,12 @@ add_library( lang STATIC
 		${UTILS_SOURCES}
 		${LLVM_BACKEND_SOURCES}
 		)
-		
+
+if(UNIX AND NOT APPLE)
+	include_directories("${CMAKE_SOURCE_DIR}/TosLang/")
+	include_directories("${CMAKE_SOURCE_DIR}/Tostitos/threading")
+endif()
+
 add_library( execution STATIC
 		${EXECUTION_SOURCES}
 		)
