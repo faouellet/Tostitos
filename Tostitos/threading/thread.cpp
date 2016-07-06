@@ -13,6 +13,11 @@ Thread::Thread(Executor&& exec)
 
 Thread::~Thread() = default;
 
+void Thread::Run()
+{
+    mExecutor->Run();
+}
+
 bool Thread::IsWaitingForChildren()
 {
 	if (mWaitForChildren)

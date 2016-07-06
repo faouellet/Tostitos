@@ -21,6 +21,7 @@ namespace Threading
 		explicit Thread(impl::Executor&& exec);
         ~Thread();
 
+        void Run();
 		void Finish() { mFinished = true; }
 		bool HasFinished() const { return mFinished; }
 		bool IsWaitingForChildren();

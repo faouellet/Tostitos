@@ -12,7 +12,7 @@ add_subdirectory(threading)
 set( SOURCES main.cpp system.h )
 
 add_executable (Tostitos ${SOURCES})
-target_link_libraries (Tostitos communicationWithHost fileSystem kernel machine memory threading)
+target_link_libraries (Tostitos communicationWithHost fileSystem kernel machine memory threading lang)
 
 if(NOT WIN32)
   target_link_libraries (Tostitos pthread)

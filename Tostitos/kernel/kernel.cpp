@@ -40,20 +40,21 @@ void Kernel::Run(const std::string& programName)
 	//}
 }
 
-//void Kernel::CreateThread(Execution::Executor&& exec)
-//{
-//    mThreads.emplace_back(std::make_unique<Thread>(std::move(exec)));
-//
-//    // Don't forget to schedule it
-//    Scheduler::GetInstance().ScheduleThread(mThreads.back().get());
-//}
+void Kernel::RunThread(std::unique_ptr<Thread>&& thread)
+{
+    // Take ownership of the thread
+    mThreads.emplace_back(std::move(thread));
+
+    // And then schedule it to run
+    mScheduler.ScheduleThread(mThreads.back().get());
+}
 
 void Kernel::SleepFor(size_t nbSecs)
 {
-    //mCurrentThread->Sleep(nbSecs);
+    mCurrentThread->Sleep(nbSecs);
 }
 
 void Kernel::Sync()
 {
-    //mCurrentThread->Barrier();
+    mCurrentThread->Barrier();
 }

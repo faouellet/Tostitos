@@ -25,7 +25,7 @@ namespace KernelSpace
         void Run(const std::string & programName);
 
     public:
-        //void CreateThread(Execution::Executor&& exec);
+        void RunThread(std::unique_ptr<Threading::Thread>&& thread);
         void SleepFor(size_t nbSecs);
         void Sync();
 

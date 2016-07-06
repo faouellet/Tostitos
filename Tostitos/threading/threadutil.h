@@ -18,10 +18,10 @@ namespace TosLang
 
 namespace Threading
 {
-    void Fork(const TosLang::FrontEnd::ASTNode* root,
-              const TosLang::FrontEnd::SymbolTable* symTab);
-    void SleepFor(size_t nbSecs);
-    void Sync();
+    void CreateThread(const TosLang::FrontEnd::ASTNode* root,
+                      const TosLang::FrontEnd::SymbolTable* symTab);
+    void CurrentThreadSleepFor(size_t nbSecs);
+    void CurrentThreadSync();
 }
 
 #endif // THREAD_UTIL_H__TOSTITOS

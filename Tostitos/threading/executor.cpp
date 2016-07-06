@@ -5,6 +5,8 @@
 #include "../../TosLang/Common/type.h"
 #include "../../TosLang/Sema/symboltable.h"
 
+#include "threadutil.h"
+
 #include <cassert>
 #include <iostream> // TODO: Printing to standard IO for now. Should this be redirected to Tostitos later on?
 
@@ -238,7 +240,7 @@ InterpretedValue Executor::HandleSpawnExpr(const FrontEnd::ASTNode* node)
     const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(fnNode);
     assert(fDecl != nullptr);
 
-    //Threads::Kernel::GetInstance().CreateThread({ fnNode, mSymTable, std::move(stack) });
+    CreateThread(fDecl, mSymTable);
 
     return InterpretedValue{ };
 }
@@ -340,7 +342,7 @@ InterpretedValue Executor::HandleSleepStmt(const FrontEnd::ASTNode* node)
 
     InterpretedValue timeVal = DispatchNode(sStmt->GetCountExpr());
 
-    //Threads::Kernel::GetInstance().SleepFor(timeVal.GetIntVal());
+    CurrentThreadSleepFor(timeVal.GetIntVal());
 
     return{};
 }
@@ -350,7 +352,7 @@ InterpretedValue Executor::HandleSyncStmt(const FrontEnd::ASTNode* node)
     const SyncStmt* sStmt = dynamic_cast<const SyncStmt*>(node);
     assert(sStmt != nullptr);
 
-    //Sync();
+    CurrentThreadSync();
 
     return{};
 }
