@@ -37,14 +37,11 @@ add_library( lang STATIC
 		${LLVM_BACKEND_SOURCES}
 		)
 
-if(UNIX AND NOT APPLE)
-	include_directories("${CMAKE_SOURCE_DIR}/TosLang/")
-	include_directories("${CMAKE_SOURCE_DIR}/Tostitos/threading")
-endif()
-
 add_library( execution STATIC
 		${EXECUTION_SOURCES}
 		)
+
+target_link_libraries(execution lang threading)
 				
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 	

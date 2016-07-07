@@ -12,4 +12,6 @@ add_library( threading STATIC
 		threadutil.cpp
 		)
 	   
+target_link_libraries(threading kernel execution)
+
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
