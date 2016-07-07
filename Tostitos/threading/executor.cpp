@@ -8,12 +8,23 @@
 #include "threadutil.h"
 
 #include <cassert>
-#include <iostream> // TODO: Printing to standard IO for now. Should this be redirected to Tostitos later on?
+#include <exception>    // TODO: Should we develop our own exception mechanism for Tostitos?
+#include <iostream>     // TODO: Printing to standard IO for now. Should this be redirected to Tostitos later on?
 
 using namespace Threading::impl;
 using namespace TosLang;
 using namespace TosLang::Common;
 using namespace TosLang::FrontEnd;
+
+const std::string INVALID_ARRAY_INDEX = "RUNTIME ERROR: Invalid index";
+const std::string VALUE_NOT_READY = "RUNTIME ERROR: Value not ready";
+
+// TODO: Comments
+class RuntimeException : public std::runtime_error
+{
+public:
+    RuntimeException(const std::string& msg) : std::runtime_error{ msg } { }
+};
 
 Executor::Executor(const TosLang::FrontEnd::ASTNode* root,
                    const TosLang::FrontEnd::SymbolTable* symTab,
@@ -27,7 +38,14 @@ void Executor::Run()
         return;
     }
 
-    HandleFunction(mCurrentNode);
+    try
+    {
+        HandleFunction(mCurrentNode);
+    }
+    catch (const RuntimeException& e)
+    {
+        std::cout << e.what() << std::endl;
+    }    
 }
 
 ////////// Declarations //////////
@@ -116,6 +134,10 @@ InterpretedValue Executor::HandleBinaryExpr(const FrontEnd::ASTNode* node)
 
     InterpretedValue lhsval{ DispatchNode(bExpr->GetLHS()) };
     InterpretedValue rhsval{ DispatchNode(bExpr->GetRHS()) };
+
+    // Both values must be usable at this point, if not there's a serious runtime error
+    if (!lhsval.IsReady() || !rhsval.IsReady())
+        throw RuntimeException{ VALUE_NOT_READY };
 
     // Since type checking has been performed beforehand, we can assume that 
     // a certain operation only works with a certain type
@@ -207,10 +229,8 @@ InterpretedValue Executor::HandleIndexedExpr(const FrontEnd::ASTNode* node)
     InterpretedValue arrayVal{ DispatchNode(iExpr->GetIdentifier()) };
 
     // We might have a runtime error if the index value doesn't fit in [0, array length[
-    //if (idx < 0 || arrayVal.)
-    {
-        // TODO: Handle it
-    }
+    if (idx < 0 /*TODO: || arrayVal.*/)
+        throw RuntimeException{ INVALID_ARRAY_INDEX };
 
     return{};
 }
@@ -275,6 +295,9 @@ InterpretedValue Executor::HandleIfStmt(const FrontEnd::ASTNode* node)
 
     InterpretedValue condVal{ DispatchNode(condExpr) };
 
+    if (!condVal.IsReady())
+        throw RuntimeException{ VALUE_NOT_READY };
+
     if (condVal.GetBoolVal())
         DispatchNode(iStmt->GetBody());
 
@@ -290,6 +313,10 @@ InterpretedValue Executor::HandlePrintStmt(const FrontEnd::ASTNode* node)
     if (msgExpr != nullptr)
     {
         InterpretedValue msgVal{ DispatchNode(msgExpr) };
+
+        if (!msgVal.IsReady())
+            throw RuntimeException{ VALUE_NOT_READY };
+
         std::cout << msgVal << std::endl;
     }
     else
@@ -342,6 +369,9 @@ InterpretedValue Executor::HandleSleepStmt(const FrontEnd::ASTNode* node)
 
     InterpretedValue timeVal = DispatchNode(sStmt->GetCountExpr());
 
+    if (!timeVal.IsReady())
+        throw RuntimeException{ VALUE_NOT_READY };
+
     CurrentThreadSleepFor(timeVal.GetIntVal());
 
     return{};
@@ -367,6 +397,9 @@ InterpretedValue Executor::HandleWhileStmt(const FrontEnd::ASTNode* node)
     {
         const Expr* condExpr = wStmt->GetCondExpr();
         condVal = DispatchNode(condExpr);
+
+        if (!condVal.IsReady())
+            throw RuntimeException{ VALUE_NOT_READY };
 
         if (condVal.GetBoolVal())
             DispatchNode(wStmt->GetBody());

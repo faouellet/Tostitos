@@ -98,6 +98,7 @@ namespace Threading
 
         public:
             ValueType GetType() const { return mType; }
+            bool IsReady() const { return mIsReady; }
 
             bool GetBoolVal() const { assert(mType == ValueType::BOOLEAN); return *boolVal; }
             int GetIntVal() const { assert(mType == ValueType::INTEGER); return *intVal; }
