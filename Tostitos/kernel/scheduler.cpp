@@ -7,35 +7,38 @@
 using namespace KernelSpace;
 using namespace Threading;
 
-Thread* Scheduler::FindNextThreadToRun(Thread* RunningThread)
+Thread* Scheduler::FindNextThreadToRun(Thread* runningThread)
 {
-	if (!RunningThread->HasFinished() && !RunningThread->IsWaitingForChildren() && !RunningThread->IsSleeping())
-	{
-		return RunningThread;
-	}
-	else if (RunningThread->HasFinished())
-	{
-		mThreadList.erase(std::find(mThreadList.begin(), mThreadList.end(), RunningThread));
-	}
+    if (runningThread != nullptr)
+    {
+        // If it's not done and not stopped, keep going
+        if (!runningThread->HasFinished() &&
+            !runningThread->IsWaitingForChildren() &&
+            !runningThread->IsSleeping())
+        {
+            return runningThread;
+        }
 
+        // If it's done, remove it from the list
+        if (runningThread->HasFinished())
+        {
+            mThreadList.erase(std::find(mThreadList.begin(), mThreadList.end(), runningThread));
+        }
+    }
+
+    // The next thread to run will simply be the first one in our list
 	if (!mThreadList.empty())
-	{
-		Thread* NewRunningThread = *mThreadList.begin();
-		// Machine::GetInstance().getCpu().SwitchContext(NewRunningThread->DumpContext());
-        return NewRunningThread;
-	}
+        return mThreadList.front();
 	else
-	{
 		return nullptr;
-	}
 }
 
-void Scheduler::ScheduleThread(Thread * T)
+void Scheduler::ScheduleThread(Thread* thread)
 {
-	mThreadList.push_back(T);
+	mThreadList.push_back(thread);
 }
 
-void Scheduler::TerminateThread(Thread* T)
+void Scheduler::TerminateThread(Thread* thread)
 {
-    mThreadList.erase(std::remove(mThreadList.begin(), mThreadList.end(), T));
+    mThreadList.erase(std::remove(mThreadList.begin(), mThreadList.end(), thread));
 }
