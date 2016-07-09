@@ -94,7 +94,7 @@ void TestCommunicationReadWrite()
 
 void TestKernel()
 {
-    Kernel::GetInstance().RunProgram("scripts/memory.tos");
+    //Kernel::GetInstance().RunProgram("scripts/memory.tos");
 }
 
 int main()
