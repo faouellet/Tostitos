@@ -96,6 +96,22 @@ namespace Threading
                 return stream;
             }
 
+            InterpretedValue operator[](int idx)
+            {
+                switch (mType)
+                {
+                case ValueType::BOOLEAN_ARRAY:
+                    return InterpretedValue{ (*boolArrayVal).at(idx) };
+                case ValueType::INTEGER_ARRAY:
+                    return InterpretedValue{ (*intArrayVal).at(idx) };
+                case ValueType::STRING_ARRAY:
+                    return InterpretedValue{ (*strArrayVal).at(idx) };
+                default:
+                    assert(false);
+                    return{};
+                }
+            }
+
         public:
             ValueType GetType() const { return mType; }
             bool IsReady() const { return mIsReady; }
