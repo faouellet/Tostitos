@@ -1,7 +1,11 @@
 #include "kernel.h"
 
 #include "scheduler.h"
+#include "../threading/executor.h"
 #include "../threading/thread.h"
+
+#include "../../TosLang/AST/ast.h"
+#include "../../TosLang/Execution/compiler.h"
 
 using namespace KernelSpace;
 using namespace Threading;
@@ -15,32 +19,27 @@ Kernel& Kernel::GetInstance()
     return Instance;
 }
 
-void Kernel::Run(const std::string& programName)
+void Kernel::RunProgram(const std::string& programName)
 {
-    //ThreadAction currentAction;
-	//while (mCurrentThread != nullptr)
-	//{
-	//	if (mCurrentThread->IsSleeping())
-	//	{
-	//		mCurrentThread = Scheduler::GetInstance().FindNextThreadToRun(mCurrentThread);
-	//	}
-	//	else
-	//	{
-	//		currentAction = MachineEngine::Machine::GetInstance().getCpu().InterpretOne();
+    Execution::Compiler compiler;
 
-	//		switch (currentAction)
-	//		{
-    //          // TODO
-	//			default:
-	//			{
-	//				break;
-	//			}
-	//		}
-	//	}
-	//}
+    mRoot = compiler.ParseProgram(programName);
+
+    if (mRoot != nullptr)
+    {
+        mSymTable = compiler.GetSymbolTable(mRoot);
+
+        Threading::impl::Executor mainExec{ mRoot.get(), mSymTable.get() };
+
+        auto mainThread = std::make_unique<Thread>(std::move(mainExec));
+
+        mScheduler.ScheduleThread(mThreads.back().get());
+    }
+
+    Run();
 }
 
-void Kernel::RunThread(std::unique_ptr<Thread>&& thread)
+void Kernel::AddThread(std::unique_ptr<Thread>&& thread)
 {
     // Take ownership of the thread
     mThreads.emplace_back(std::move(thread));
@@ -57,4 +56,21 @@ void Kernel::SleepFor(size_t nbSecs)
 void Kernel::Sync()
 {
     mCurrentThread->Barrier();
+}
+
+void Kernel::Run()
+{
+    mCurrentThread = mScheduler.FindNextThreadToRun(mCurrentThread);
+
+    while (!mCurrentThread->HasFinished())
+    {
+        mCurrentThread->ExecuteOne();
+
+        if (mCurrentThread->IsSleeping() || mCurrentThread->IsWaitingForChildren())
+        {
+            mCurrentThread = mScheduler.FindNextThreadToRun(mCurrentThread);
+        }
+    }
+
+    // TODO: Clean up the rest of the threads?
 }

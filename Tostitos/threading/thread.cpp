@@ -13,9 +13,10 @@ Thread::Thread(Executor&& exec)
 
 Thread::~Thread() = default;
 
-void Thread::Run()
+void Thread::ExecuteOne()
 {
-    mExecutor->Run();
+    if (!mExecutor->ExecuteOne())
+        mFinished = true;
 }
 
 bool Thread::IsWaitingForChildren()

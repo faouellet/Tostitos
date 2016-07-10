@@ -16,61 +16,57 @@ using namespace TosLang;
 using namespace TosLang::Common;
 using namespace TosLang::FrontEnd;
 
-const std::string INVALID_ARRAY_INDEX = "RUNTIME ERROR: Invalid index";
-const std::string VALUE_NOT_READY = "RUNTIME ERROR: Value not ready";
-
-// TODO: Comments
-class RuntimeException : public std::runtime_error
+Executor::Executor(const TosLang::FrontEnd::ASTNode* root,
+    const TosLang::FrontEnd::SymbolTable* symTab)
+    : mSymTable { symTab }, mCallStack{}
 {
-public:
-    RuntimeException(const std::string& msg) : std::runtime_error{ msg } { }
-};
+    // Create a call stack for the main thread then push the (empty for now) global 
+    // frame onto it. This frame will contains all global scope level informations 
+    // that are available to all the functions in the program. This make it the only
+    // frame that can be accessed by any other.
+    mCallStack.PushFrame({});
+    mNextNodesToRun.push({});
+    mNextNodesToRun.top().push_back(root);
+}
 
 Executor::Executor(const TosLang::FrontEnd::ASTNode* root,
                    const TosLang::FrontEnd::SymbolTable* symTab,
                    CallStack&& stack)
-    : mDoneWithCurrentFunc{ false }, mCurrentNode{ root }, mSymTable{ symTab }, mCallStack{ stack } { }
-
-void Executor::Run()
+    : mSymTable { symTab }, mCallStack{ stack }
 {
-    if (mCurrentNode == nullptr)
+    mNextNodesToRun.push({});
+    mNextNodesToRun.top().push_back(root);
+}
+
+bool Executor::ExecuteOne()
+{
+    if (mNextNodesToRun.empty())
     {
-        return;
+        return false;
     }
 
-    try
-    {
-        HandleFunction(mCurrentNode);
-    }
-    catch (const RuntimeException& e)
-    {
-        std::cout << e.what() << std::endl;
-    }    
+    DispatchNode(mNextNodesToRun.top().front());
+    return true;
 }
 
 ////////// Declarations //////////
-InterpretedValue Executor::HandleFunction(const FrontEnd::ASTNode* node)
+void Executor::HandleFunction(const FrontEnd::ASTNode* node)
 {
     const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(node);
     assert(fDecl != nullptr);
 
-    DispatchNode(fDecl->GetBody());
+    // Popping the function node
+    mNextNodesToRun.top().pop_front();
 
-    // Done with callee but not with caller
-    mDoneWithCurrentFunc = false;
-
-    // If we're returning from 'main', we won't have a callstack to fetch the return value from
-    if (mCallStack.Empty())
-        return{};
-    else
-        return mCallStack.GetReturnValue();
+    // Fill it up with the content of the compound statement
+    HandleCompoundStmt(fDecl->GetBody());
 }
 
 // We are using a pull model for variable initialization. What this means is that a variable will only 
 // be initialized the first time it is encountered in the program. This will reduce the number of variables
 // we need to keep track of at any given time. It also allows us to skip global variable initialization
 // which would require another AST pass.
-InterpretedValue Executor::HandleVarDecl(const FrontEnd::ASTNode* node)
+void Executor::HandleVarDecl(const FrontEnd::ASTNode* node)
 {
     const VarDecl* vDecl = dynamic_cast<const VarDecl*>(node);
     assert(vDecl != nullptr);
@@ -78,22 +74,26 @@ InterpretedValue Executor::HandleVarDecl(const FrontEnd::ASTNode* node)
     if (vDecl->IsFunctionParameter())
     {
         // Function paramters are not handled here
-        return{};
+        return;
     }
 
     const Symbol* varSym = GetSymbol(node);
     const Expr* initExpr = vDecl->GetInitExpr();
 
-    // Initialize the variable with the value of the initialization expression if possible
+    // If there's no initialization expression, the variable will 
+    // be initialized with the default value for its type. Otherwise, mCurrentValue
+    // should contains the initialization value
     InterpretedValue initVal;
     if (initExpr != nullptr)
     {
-        initVal = DispatchNode(initExpr);
+        if (!mCallStack.TryGetExprValue(initExpr, initVal))
+        {
+            mNextNodesToRun.top().push_front(initExpr);
+            return;
+        }
     }
     else
     {
-        // If there's no initialization expression, the variable will 
-        // be initialized with the default value for its type
         switch (varSym->GetVariableType())
         {
         case Type::BOOL:
@@ -112,35 +112,48 @@ InterpretedValue Executor::HandleVarDecl(const FrontEnd::ASTNode* node)
     }
 
     mCallStack.AddOrUpdateSymbolValue(varSym, initVal, varSym->IsGlobal());
-
-    return initVal;
+    mNextNodesToRun.top().pop_front();
 }
 
 ////////// Expressions //////////
-InterpretedValue Executor::HandleArrayExpr(const FrontEnd::ASTNode* node)
+void Executor::HandleArrayExpr(const FrontEnd::ASTNode* node)
 {
     const ArrayExpr* aExpr = dynamic_cast<const ArrayExpr*>(node);
     assert(aExpr != nullptr);
 
+    // TODO
     //aExpr->
-
-    return{};
 }
 
-InterpretedValue Executor::HandleBinaryExpr(const FrontEnd::ASTNode* node)
+void Executor::HandleBinaryExpr(const FrontEnd::ASTNode* node)
 {
     const BinaryOpExpr* bExpr = dynamic_cast<const BinaryOpExpr*>(node);
     assert(bExpr != nullptr);
+    
+    InterpretedValue lhsval;
+    if (!mCallStack.TryGetExprValue(bExpr->GetLHS(), lhsval))
+    {
+        mNextNodesToRun.top().push_front(bExpr->GetLHS());
+        return;
+    }
 
-    InterpretedValue lhsval{ DispatchNode(bExpr->GetLHS()) };
-    InterpretedValue rhsval{ DispatchNode(bExpr->GetRHS()) };
+    InterpretedValue rhsval;
+    if (!mCallStack.TryGetExprValue(bExpr->GetRHS(), lhsval))
+    {
+        mNextNodesToRun.top().push_front(bExpr->GetRHS());
+        return;
+    }
 
-    // Both values must be usable at this point, if not there's a serious runtime error
+    // Both values must be usable at this point, if not, then there's a serious runtime error
     if (!lhsval.IsReady() || !rhsval.IsReady())
-        throw RuntimeException{ VALUE_NOT_READY };
-
+    {
+        mNextNodesToRun.pop();
+        return;
+    }
+    
     // Since type checking has been performed beforehand, we can assume that 
     // a certain operation only works with a certain type
+    InterpretedValue binValue;
     switch (bExpr->GetOperation())
     {
     case Operation::ASSIGNMENT:
@@ -149,55 +162,83 @@ InterpretedValue Executor::HandleBinaryExpr(const FrontEnd::ASTNode* node)
         const Symbol* identSym = GetSymbol(bExpr->GetLHS());;
 
         mCallStack.AddOrUpdateSymbolValue(identSym, rhsval, identSym->IsGlobal());
+    }
+    case Operation::AND_BOOL:       binValue = InterpretedValue{ lhsval.GetBoolVal() && rhsval.GetBoolVal() }; break;
+    case Operation::AND_INT:        binValue = InterpretedValue{ lhsval.GetIntVal() & rhsval.GetIntVal() }; break;
+    case Operation::DIVIDE:         binValue = InterpretedValue{ lhsval.GetIntVal() / rhsval.GetIntVal() }; break;
+    case Operation::EQUAL:          binValue = InterpretedValue{ lhsval.GetIntVal() == rhsval.GetIntVal() }; break;
+    case Operation::GREATER_THAN:   binValue = InterpretedValue{ lhsval.GetIntVal() > rhsval.GetIntVal() }; break;
+    case Operation::LEFT_SHIFT:     binValue = InterpretedValue{ lhsval.GetIntVal() << rhsval.GetIntVal() }; break;
+    case Operation::LESS_THAN:      binValue = InterpretedValue{ lhsval.GetIntVal() < rhsval.GetIntVal() }; break;
+    case Operation::MINUS:          binValue = InterpretedValue{ lhsval.GetIntVal() - rhsval.GetIntVal() }; break;
+    case Operation::MODULO:         binValue = InterpretedValue{ lhsval.GetIntVal() % rhsval.GetIntVal() }; break;
+    case Operation::MULT:           binValue = InterpretedValue{ lhsval.GetIntVal() && rhsval.GetIntVal() }; break;
+    //TODO: case Operation::NOT:    binValue = InterpretedValue{ lhsval.GetBoolVal() && rhsval.GetBoolVal() }; break;
+    case Operation::OR_BOOL:        binValue = InterpretedValue{ lhsval.GetBoolVal() || rhsval.GetBoolVal() }; break;
+    case Operation::OR_INT:         binValue = InterpretedValue{ lhsval.GetIntVal() | rhsval.GetIntVal() }; break;
+    case Operation::PLUS:           binValue = InterpretedValue{ lhsval.GetIntVal() + rhsval.GetIntVal() }; break;
+    case Operation::RIGHT_SHIFT:    binValue = InterpretedValue{ lhsval.GetIntVal() >> rhsval.GetIntVal() }; break;
+    default:                        binValue = {}; break;
+    }
 
-        return rhsval;
-    }
-    case Operation::AND_BOOL:       return InterpretedValue{ lhsval.GetBoolVal() && rhsval.GetBoolVal() };
-    case Operation::AND_INT:        return InterpretedValue{ lhsval.GetIntVal() & rhsval.GetIntVal() };
-    case Operation::DIVIDE:         return InterpretedValue{ lhsval.GetIntVal() / rhsval.GetIntVal() };
-    case Operation::EQUAL:          return InterpretedValue{ lhsval.GetIntVal() == rhsval.GetIntVal() };
-    case Operation::GREATER_THAN:   return InterpretedValue{ lhsval.GetIntVal() > rhsval.GetIntVal() };
-    case Operation::LEFT_SHIFT:     return InterpretedValue{ lhsval.GetIntVal() << rhsval.GetIntVal() };
-    case Operation::LESS_THAN:      return InterpretedValue{ lhsval.GetIntVal() < rhsval.GetIntVal() };
-    case Operation::MINUS:          return InterpretedValue{ lhsval.GetIntVal() - rhsval.GetIntVal() };
-    case Operation::MODULO:         return InterpretedValue{ lhsval.GetIntVal() % rhsval.GetIntVal() };
-    case Operation::MULT:           return InterpretedValue{ lhsval.GetIntVal() && rhsval.GetIntVal() };
-                                    //TODO: case Operation::NOT:            return InterpretedValue{ lhsval.GetBoolVal() && rhsval.GetBoolVal() };
-    case Operation::OR_BOOL:        return InterpretedValue{ lhsval.GetBoolVal() || rhsval.GetBoolVal() };
-    case Operation::OR_INT:         return InterpretedValue{ lhsval.GetIntVal() | rhsval.GetIntVal() };
-    case Operation::PLUS:           return InterpretedValue{ lhsval.GetIntVal() + rhsval.GetIntVal() };
-    case Operation::RIGHT_SHIFT:    return InterpretedValue{ lhsval.GetIntVal() >> rhsval.GetIntVal() };
-    default:                        return{};
-    }
+    mNextNodesToRun.top().pop_front();
+    mCallStack.SetExprValue(bExpr, binValue, mCallStack.GetCurrentFrameID());
 }
 
-InterpretedValue Executor::HandleBooleanExpr(const FrontEnd::ASTNode* node)
+void Executor::HandleBooleanExpr(const FrontEnd::ASTNode* node)
 {
     const BooleanExpr* bExpr = dynamic_cast<const BooleanExpr*>(node);
     assert(bExpr != nullptr);
 
-    return InterpretedValue{ bExpr->GetValue() };
+    mCallStack.SetExprValue(bExpr, InterpretedValue{ bExpr->GetValue() }, mCallStack.GetCurrentFrameID());
+    mNextNodesToRun.top().pop_front();
 }
 
-InterpretedValue Executor::HandleCallExpr(const FrontEnd::ASTNode* node)
+void Executor::HandleCallExpr(const FrontEnd::ASTNode* node)
 {
     // TODO: Make sure that no function can call the 'main' function
 
     const CallExpr* cExpr = dynamic_cast<const CallExpr*>(node);
     assert(cExpr != nullptr);
 
-    // Pushing a new frame on the call stack for the function call we're about to make
-    mCallStack.PushFrame(PrepareNewFrame(cExpr));
+    const auto& args = cExpr->GetArgs();
+    if (!args.empty())
+    {
+        InterpretedValue argValue;
 
-    const ASTNode* fnNode = mSymTable->GetFunctionDecl(cExpr);
-    const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(fnNode);
-    assert(fDecl != nullptr);
+        if (!mCallStack.TryGetExprValue(args.front().get(), argValue))
+        {
+            for (const auto& arg : args)
+                mNextNodesToRun.top().push_front(arg.get());
 
-    // Executing the call
-    return HandleFunction(fDecl);
+            return;
+        }
+        else
+        {
+            // Pushing a new frame on the call stack for the function call we're about to make
+            mCallStack.PushFrame(PrepareNewFrame(cExpr));
+        }
+    }
+
+    InterpretedValue callValue;
+    if (!mCallStack.TryGetExprValue(cExpr, callValue))
+    {
+        const ASTNode* fnNode = mSymTable->GetFunctionDecl(cExpr);
+        const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(fnNode);
+        assert(fDecl != nullptr);
+
+        // Setting up the function for execution
+        mNextNodesToRun.top().pop_front();
+        mNextNodesToRun.top().push_front(fDecl);
+    }
+    else
+    {
+        mCallStack.SetExprValue(cExpr, mCallStack.GetReturnValue(), mCallStack.GetCurrentFrameID());
+        mNextNodesToRun.top().pop_front();
+    }
 }
 
-InterpretedValue Executor::HandleIdentifierExpr(const FrontEnd::ASTNode* node)
+void Executor::HandleIdentifierExpr(const FrontEnd::ASTNode* node)
 {
     const Symbol* identSym = GetSymbol(node);
     InterpretedValue identVal;
@@ -210,40 +251,51 @@ InterpretedValue Executor::HandleIdentifierExpr(const FrontEnd::ASTNode* node)
     if (!foundVal)
     {
         const ASTNode* varDecl = mSymTable->GetVarDecl(node);
-        identVal = HandleVarDecl(varDecl);
+        mNextNodesToRun.top().push_front(varDecl);
+        return;
     }
 
-    return identVal;
+    mCallStack.SetExprValue(node, identVal, mCallStack.GetCurrentFrameID());
 }
 
-InterpretedValue Executor::HandleIndexedExpr(const FrontEnd::ASTNode* node)
+void Executor::HandleIndexedExpr(const FrontEnd::ASTNode* node)
 {
     const IndexedExpr* iExpr = dynamic_cast<const IndexedExpr*>(node);
     assert(iExpr != nullptr);
 
     // Get the index value
-    InterpretedValue indexVal{ DispatchNode(iExpr->GetIndex()) };
-    const int idx = indexVal.GetIntVal();
+    InterpretedValue idxValue;
+    if(mCallStack.TryGetExprValue(iExpr->GetIndex(), idxValue))
+    {
+        mNextNodesToRun.top().push_front(iExpr->GetIndex());
+        return;
+    }
+    
+    const int idx = idxValue.GetIntVal();;
 
     // Get the array to index
-    InterpretedValue arrayVal{ DispatchNode(iExpr->GetIdentifier()) };
+    InterpretedValue arrayValue;
+    if (mCallStack.TryGetExprValue(iExpr->GetIdentifier(), arrayValue))
+    {
+        mNextNodesToRun.top().push_front(iExpr->GetIdentifier());
+        return;
+    }
 
     // We might have a runtime error if the index value doesn't fit in [0, array length[
-    if (idx < 0 /*TODO: || arrayVal.*/)
-        throw RuntimeException{ INVALID_ARRAY_INDEX };
-
-    return{};
+    // TODO: bounds checking
+    mCallStack.SetExprValue(iExpr, arrayValue[idx], mCallStack.GetCurrentFrameID());
 }
 
-InterpretedValue Executor::HandleNumberExpr(const FrontEnd::ASTNode* node)
+void Executor::HandleNumberExpr(const FrontEnd::ASTNode* node)
 {
     const NumberExpr* nExpr = dynamic_cast<const NumberExpr*>(node);
     assert(nExpr != nullptr);
 
-    return InterpretedValue{ nExpr->GetValue() };
+    mNextNodesToRun.top().pop_front();
+    mCallStack.SetExprValue(nExpr, InterpretedValue{ nExpr->GetValue() }, mCallStack.GetCurrentFrameID());
 }
 
-InterpretedValue Executor::HandleSpawnExpr(const FrontEnd::ASTNode* node)
+void Executor::HandleSpawnExpr(const FrontEnd::ASTNode* node)
 {
     const SpawnExpr* sExpr = dynamic_cast<const SpawnExpr*>(node);
     assert(sExpr != nullptr);
@@ -260,51 +312,55 @@ InterpretedValue Executor::HandleSpawnExpr(const FrontEnd::ASTNode* node)
     const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(fnNode);
     assert(fDecl != nullptr);
 
+    // TODO: Rethink this
     CreateThread(fDecl, mSymTable);
-
-    return InterpretedValue{ };
 }
 
-InterpretedValue Executor::HandleStringExpr(const FrontEnd::ASTNode* node)
+void Executor::HandleStringExpr(const FrontEnd::ASTNode* node)
 {
     const StringExpr* sExpr = dynamic_cast<const StringExpr*>(node);
     assert(sExpr != nullptr);
 
-    return InterpretedValue{ sExpr->GetName() };
+    mCallStack.SetExprValue(sExpr, InterpretedValue{ sExpr->GetName() }, mCallStack.GetCurrentFrameID());
+    mNextNodesToRun.top().pop_front();
 }
 
 ////////// Statements //////////
-InterpretedValue Executor::HandleCompoundStmt(const FrontEnd::ASTNode* node)
+void Executor::HandleCompoundStmt(const FrontEnd::ASTNode* node)
 {
     const CompoundStmt* cStmt = dynamic_cast<const CompoundStmt*>(node);
     assert(cStmt != nullptr);
 
-    for (const auto& stmt : cStmt->GetStatements())
-        if (!mDoneWithCurrentFunc)
-            DispatchNode(stmt.get());
+    // New queue for the new scope
+    mNextNodesToRun.push({});
 
-    return{};
+    for (const auto& stmt : cStmt->GetStatements())
+        mNextNodesToRun.top().push_back(stmt.get());
 }
 
-InterpretedValue Executor::HandleIfStmt(const FrontEnd::ASTNode* node)
+void Executor::HandleIfStmt(const FrontEnd::ASTNode* node)
 {
     const IfStmt* iStmt = dynamic_cast<const IfStmt*>(node);
     assert(iStmt != nullptr);
 
     const Expr* condExpr = iStmt->GetCondExpr();
 
-    InterpretedValue condVal{ DispatchNode(condExpr) };
+    InterpretedValue condValue;
+    assert(mCallStack.TryGetExprValue(condExpr, condValue));
 
-    if (!condVal.IsReady())
-        throw RuntimeException{ VALUE_NOT_READY };
+    if (!condValue.IsReady())
+    {
+        mNextNodesToRun.pop();
+        return;
+    }
 
-    if (condVal.GetBoolVal())
-        DispatchNode(iStmt->GetBody());
+    mNextNodesToRun.top().pop_front();
 
-    return{};
+    if (condValue.GetBoolVal())
+        HandleCompoundStmt(iStmt->GetBody());
 }
 
-InterpretedValue Executor::HandlePrintStmt(const FrontEnd::ASTNode* node)
+void Executor::HandlePrintStmt(const FrontEnd::ASTNode* node)
 {
     const PrintStmt* pStmt = dynamic_cast<const PrintStmt*>(node);
     assert(pStmt != nullptr);
@@ -312,12 +368,20 @@ InterpretedValue Executor::HandlePrintStmt(const FrontEnd::ASTNode* node)
     const Expr* msgExpr = pStmt->GetMessage();
     if (msgExpr != nullptr)
     {
-        InterpretedValue msgVal{ DispatchNode(msgExpr) };
+        InterpretedValue printValue;
+        if (mCallStack.TryGetExprValue(msgExpr, printValue))
+        {
+            mNextNodesToRun.top().push_front(msgExpr);
+            return;
+        }
 
-        if (!msgVal.IsReady())
-            throw RuntimeException{ VALUE_NOT_READY };
+        if (!printValue.IsReady())
+        {
+            mNextNodesToRun.pop();
+            return;
+        }
 
-        std::cout << msgVal << std::endl;
+        std::cout << printValue << std::endl;
     }
     else
     {
@@ -325,112 +389,115 @@ InterpretedValue Executor::HandlePrintStmt(const FrontEnd::ASTNode* node)
         std::cout << std::endl;
     }
 
-    return{};
+    mNextNodesToRun.top().pop_front();
 }
 
-InterpretedValue Executor::HandleReturnStmt(const FrontEnd::ASTNode* node)
+void Executor::HandleReturnStmt(const FrontEnd::ASTNode* node)
 {
     const ReturnStmt* rStmt = dynamic_cast<const ReturnStmt*>(node);
     assert(rStmt != nullptr);
 
     // There might be a return value
     const Expr* rExpr = rStmt->GetReturnExpr();
-    InterpretedValue returnVal = InterpretedValue::CreateVoidValue();
-
-    if (rExpr != nullptr)
-        returnVal = DispatchNode(rExpr);
-
-    // And we're done here
-    mDoneWithCurrentFunc = true;
+    InterpretedValue returnValue;
+    if (!mCallStack.TryGetExprValue(rExpr, returnValue))
+    {
+        returnValue = InterpretedValue::CreateVoidValue();
+    }
 
     // If we can, we place the return value in the caller's stack frame.
     // We can't do this when returning from the main function, since no function can call it.
     mCallStack.ExitCurrentFrame();
-    if (!mCallStack.Empty())
-        mCallStack.SetReturnValue(returnVal);
+    if (!mCallStack.Empty() && rExpr != nullptr)
+        mCallStack.SetReturnValue(returnValue);
 
-    return returnVal;
+    mNextNodesToRun.top().pop_front();
 }
 
-InterpretedValue Executor::HandleScanStmt(const FrontEnd::ASTNode* node)
+void Executor::HandleScanStmt(const FrontEnd::ASTNode* node)
 {
     const ScanStmt* sStmt = dynamic_cast<const ScanStmt*>(node);
     assert(sStmt != nullptr);
 
     // TODO
-
-    return{};
 }
 
-InterpretedValue Executor::HandleSleepStmt(const FrontEnd::ASTNode* node)
+void Executor::HandleSleepStmt(const FrontEnd::ASTNode* node)
 {
     const SleepStmt* sStmt = dynamic_cast<const SleepStmt*>(node);
     assert(sStmt != nullptr);
 
-    InterpretedValue timeVal = DispatchNode(sStmt->GetCountExpr());
+    InterpretedValue sleepValue;
+    assert(mCallStack.TryGetExprValue(sStmt->GetCountExpr(), sleepValue));
 
-    if (!timeVal.IsReady())
-        throw RuntimeException{ VALUE_NOT_READY };
+    if (!sleepValue.IsReady())
+    {
+        mNextNodesToRun.pop();
+        return;
+    }
 
-    CurrentThreadSleepFor(timeVal.GetIntVal());
-
-    return{};
+    CurrentThreadSleepFor(sleepValue.GetIntVal());
+    mNextNodesToRun.top().pop_front();
 }
 
-InterpretedValue Executor::HandleSyncStmt(const FrontEnd::ASTNode* node)
+void Executor::HandleSyncStmt(const FrontEnd::ASTNode* node)
 {
     const SyncStmt* sStmt = dynamic_cast<const SyncStmt*>(node);
     assert(sStmt != nullptr);
 
     CurrentThreadSync();
-
-    return{};
+    mNextNodesToRun.top().pop_front();
 }
 
-InterpretedValue Executor::HandleWhileStmt(const FrontEnd::ASTNode* node)
+void Executor::HandleWhileStmt(const FrontEnd::ASTNode* node)
 {
     const WhileStmt* wStmt = dynamic_cast<const WhileStmt*>(node);
     assert(wStmt != nullptr);
 
-    InterpretedValue condVal;
-    do
+    InterpretedValue condValue;
+    if (!mCallStack.TryGetExprValue(wStmt->GetCondExpr(), condValue))
     {
-        const Expr* condExpr = wStmt->GetCondExpr();
-        condVal = DispatchNode(condExpr);
+        mNextNodesToRun.top().push_front(wStmt->GetCondExpr());
+        return;
+    }
 
-        if (!condVal.IsReady())
-            throw RuntimeException{ VALUE_NOT_READY };
+    if (condValue.GetBoolVal())
+    {
+        // Push the condition node
+        mNextNodesToRun.top().push_front(wStmt->GetCondExpr());
 
-        if (condVal.GetBoolVal())
-            DispatchNode(wStmt->GetBody());
-    } while (condVal.GetBoolVal());
-
-    return{};
+        // Push the body
+        HandleCompoundStmt(wStmt->GetBody());
+    }
+    else
+    {
+        // We're done. Popping the while node
+        mNextNodesToRun.top().pop_front();
+    }
 }
 
-InterpretedValue Executor::DispatchNode(const ASTNode* node)
+void Executor::DispatchNode(const ASTNode* node)
 {
     assert(node != nullptr);
 
     switch (node->GetKind())
     {
-    case ASTNode::NodeKind::BINARY_EXPR:        return HandleBinaryExpr(node);
-    case ASTNode::NodeKind::BOOLEAN_EXPR:       return HandleBooleanExpr(node);
-    case ASTNode::NodeKind::CALL_EXPR:          return HandleCallExpr(node);
-    case ASTNode::NodeKind::COMPOUND_STMT:      return HandleCompoundStmt(node);
-    case ASTNode::NodeKind::FUNCTION_DECL:      return HandleFunction(node);
-    case ASTNode::NodeKind::IDENTIFIER_EXPR:    return HandleIdentifierExpr(node);
-    case ASTNode::NodeKind::IF_STMT:            return HandleIfStmt(node);
-    case ASTNode::NodeKind::NUMBER_EXPR:        return HandleNumberExpr(node);
-    case ASTNode::NodeKind::PRINT_STMT:         return HandlePrintStmt(node);
-    case ASTNode::NodeKind::RETURN_STMT:        return HandleReturnStmt(node);
-    case ASTNode::NodeKind::SCAN_STMT:          return HandleScanStmt(node);
-    case ASTNode::NodeKind::STRING_EXPR:        return HandleStringExpr(node);
-    case ASTNode::NodeKind::VAR_DECL:           return HandleVarDecl(node);
-    case ASTNode::NodeKind::WHILE_STMT:         return HandleWhileStmt(node);
+    case ASTNode::NodeKind::BINARY_EXPR:        HandleBinaryExpr(node);
+    case ASTNode::NodeKind::BOOLEAN_EXPR:       HandleBooleanExpr(node);
+    case ASTNode::NodeKind::CALL_EXPR:          HandleCallExpr(node);
+    case ASTNode::NodeKind::COMPOUND_STMT:      HandleCompoundStmt(node);
+    case ASTNode::NodeKind::FUNCTION_DECL:      HandleFunction(node);
+    case ASTNode::NodeKind::IDENTIFIER_EXPR:    HandleIdentifierExpr(node);
+    case ASTNode::NodeKind::IF_STMT:            HandleIfStmt(node);
+    case ASTNode::NodeKind::NUMBER_EXPR:        HandleNumberExpr(node);
+    case ASTNode::NodeKind::PRINT_STMT:         HandlePrintStmt(node);
+    case ASTNode::NodeKind::RETURN_STMT:        HandleReturnStmt(node);
+    case ASTNode::NodeKind::SCAN_STMT:          HandleScanStmt(node);
+    case ASTNode::NodeKind::STRING_EXPR:        HandleStringExpr(node);
+    case ASTNode::NodeKind::VAR_DECL:           HandleVarDecl(node);
+    case ASTNode::NodeKind::WHILE_STMT:         HandleWhileStmt(node);
     default:
         assert(false); // TODO: Log an error instead?
-        return{};
     }
 }
 
@@ -445,11 +512,12 @@ const Symbol* Executor::GetSymbol(const ASTNode* node) const
 
 StackFrame Executor::PrepareNewFrame(const TosLang::FrontEnd::CallExpr* call)
 {
-    // Evaluating all the argument expressions to find out the values the function is being called with
+    // Setting the arguments
     std::vector<InterpretedValue> callVals;
     for (const auto& arg : call->GetArgs())
     {
-        InterpretedValue argVal{ DispatchNode(arg.get()) };
+        InterpretedValue argVal;
+        assert(mCallStack.TryGetExprValue(arg.get(), argVal));
 
         callVals.push_back(argVal);
     }

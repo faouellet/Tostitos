@@ -85,7 +85,7 @@ namespace Execution
         */
         std::unique_ptr<TosLang::FrontEnd::ASTNode> ParseProgram(const std::string& programFile);
 
-        const TosLang::FrontEnd::SymbolTable* GetSymbolTable(const std::unique_ptr<TosLang::FrontEnd::ASTNode>& root);
+        std::shared_ptr<TosLang::FrontEnd::SymbolTable> GetSymbolTable(const std::unique_ptr<TosLang::FrontEnd::ASTNode>& root);
 
     private:
         std::shared_ptr<TosLang::FrontEnd::SymbolTable> mSymTable;           /*!< Symbol table for a program */

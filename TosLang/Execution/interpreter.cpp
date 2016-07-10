@@ -55,8 +55,8 @@ bool Interpreter::Run(const std::string& programFile)
         return false;
     }
 
-    // TODO: Should this give a handle on the created thread?
-    Threading::CreateThread(mAST.get(), mSymTable.get());
+    // TODO: Disabled for now.
+    //Threading::CreateThread(mAST.get(), mSymTable.get());
     
     return true;
 }

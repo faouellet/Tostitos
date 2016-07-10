@@ -35,7 +35,7 @@ Compiler::Compiler()
 #endif
 }
 
-Compiler::~Compiler() { }   // Required because of the forward declarations used in the header for our member pointers
+Compiler::~Compiler() = default;   // Required because of the forward declarations used in the header for our member pointers
 
 void Compiler::Compile(const std::string& programFile)
 {
@@ -102,7 +102,7 @@ std::unique_ptr<ASTNode> Compiler::ParseProgram(const std::string & programFile)
     return mParser->ParseProgram(programFile);
 }
 
-const SymbolTable* Compiler::GetSymbolTable(const std::unique_ptr<ASTNode>& root)
+std::shared_ptr<SymbolTable> Compiler::GetSymbolTable(const std::unique_ptr<ASTNode>& root)
 {
     size_t errorCount = mSymCollector->Run(root);
     if (errorCount != 0)
@@ -112,5 +112,5 @@ const SymbolTable* Compiler::GetSymbolTable(const std::unique_ptr<ASTNode>& root
     if (errorCount != 0)
         return nullptr;
 
-    return mSymTable.get();
+    return mSymTable;
 }

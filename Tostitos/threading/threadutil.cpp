@@ -31,10 +31,9 @@ namespace Threading
         auto thread = std::make_unique<Thread>(std::move(exec));
     
         // Give the thread to the kernel so it can be executed
-        Kernel::GetInstance().RunThread(std::move(thread));
+        Kernel::GetInstance().AddThread(std::move(thread));
     }
-    
-    
+        
     void CurrentThreadSleepFor(size_t nbSecs)
     {
         Kernel::GetInstance().SleepFor(nbSecs);

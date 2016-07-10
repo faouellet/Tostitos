@@ -11,6 +11,15 @@ namespace Threading
     class Thread;
 }
 
+namespace TosLang
+{
+    namespace FrontEnd
+    {
+        class ASTNode;
+        class SymbolTable;
+    }
+}
+
 namespace KernelSpace
 {
 	class Kernel
@@ -22,10 +31,10 @@ namespace KernelSpace
         static Kernel& GetInstance();
 
 	public:
-        void Run(const std::string & programName);
+        void RunProgram(const std::string& programName);
 
     public:
-        void RunThread(std::unique_ptr<Threading::Thread>&& thread);
+        void AddThread(std::unique_ptr<Threading::Thread>&& thread);
         void SleepFor(size_t nbSecs);
         void Sync();
 
@@ -35,9 +44,16 @@ namespace KernelSpace
         void operator=(const Kernel&) = delete;
 
     private:
+        void Run();
+
+    private:
         Threading::Thread* mCurrentThread;
         std::vector<std::unique_ptr<Threading::Thread>> mThreads;
         Scheduler mScheduler;
+
+    private:    // TODO: Temporarily put there.
+        std::unique_ptr<TosLang::FrontEnd::ASTNode> mRoot;
+        std::shared_ptr<TosLang::FrontEnd::SymbolTable> mSymTable;
 	};
 }
 
