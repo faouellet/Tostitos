@@ -6,6 +6,7 @@
 #include "callstack.h"
 
 #include <deque>
+#include <functional>
 #include <memory>
 #include <stack>
 #include <vector>
@@ -25,6 +26,8 @@ namespace Threading
 {
     namespace impl
     {
+        class InterpretedValue;
+
         class Executor
         {
         public:
@@ -33,7 +36,8 @@ namespace Threading
                      const TosLang::FrontEnd::SymbolTable* symTab);
             Executor(const TosLang::FrontEnd::ASTNode* root,
                      const TosLang::FrontEnd::SymbolTable* symTab,
-                     CallStack&& stack);
+                     CallStack&& stack,
+                     std::function<void(InterpretedValue)>&& callback);
 
         public:
             bool ExecuteOne();
@@ -72,6 +76,7 @@ namespace Threading
             std::stack<std::deque<const TosLang::FrontEnd::ASTNode*>> mNextNodesToRun;
             const TosLang::FrontEnd::SymbolTable* mSymTable;
             CallStack mCallStack;
+            std::function<void(InterpretedValue)> mCallback;
         };
     }   // namespace impl
 }   // namespace Threading

@@ -31,8 +31,9 @@ Executor::Executor(const TosLang::FrontEnd::ASTNode* root,
 
 Executor::Executor(const TosLang::FrontEnd::ASTNode* root,
                    const TosLang::FrontEnd::SymbolTable* symTab,
-                   CallStack&& stack)
-    : mSymTable { symTab }, mCallStack{ stack }
+                   CallStack&& stack,
+                   std::function<void(InterpretedValue)>&& callback)
+    : mSymTable { symTab }, mCallStack{ stack }, mCallback{ callback }
 {
     mNextNodesToRun.push({});
     mNextNodesToRun.top().push_back(root);
@@ -312,8 +313,9 @@ void Executor::HandleSpawnExpr(const FrontEnd::ASTNode* node)
     const FunctionDecl* fDecl = dynamic_cast<const FunctionDecl*>(fnNode);
     assert(fDecl != nullptr);
 
-    // TODO: Rethink this
-    CreateThread(fDecl, mSymTable);
+    const size_t currentFrameID = mCallStack.GetCurrentFrameID();
+
+    CreateThread(fDecl, mSymTable, [this, node, currentFrameID](const InterpretedValue& value) { mCallStack.SetExprValue(node, value, currentFrameID); });
 }
 
 void Executor::HandleStringExpr(const FrontEnd::ASTNode* node)
@@ -411,6 +413,15 @@ void Executor::HandleReturnStmt(const FrontEnd::ASTNode* node)
     if (!mCallStack.Empty() && rExpr != nullptr)
         mCallStack.SetReturnValue(returnValue);
 
+    if (mCallback)
+    {
+        mCallback(mCallStack.GetReturnValue());
+    }
+
+    // Popping the return node
+    mNextNodesToRun.top().pop_front();
+
+    // Popping the function node
     mNextNodesToRun.top().pop_front();
 }
 

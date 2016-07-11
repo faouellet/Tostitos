@@ -1,6 +1,8 @@
 #ifndef THREAD_UTIL_H__TOSTITOS
 #define THREAD_UTIL_H__TOSTITOS
 
+#include <functional>
+
 #if defined(__unix__) || defined(__APPLE__)
 #include <cstddef>
 #endif
@@ -18,8 +20,14 @@ namespace TosLang
 
 namespace Threading
 {
+    namespace impl
+    {
+        class InterpretedValue;
+    }
+
     void CreateThread(const TosLang::FrontEnd::ASTNode* root,
-                      const TosLang::FrontEnd::SymbolTable* symTab);
+                      const TosLang::FrontEnd::SymbolTable* symTab,
+                      std::function<void(impl::InterpretedValue)>&& fn);
     void CurrentThreadSleepFor(size_t nbSecs);
     void CurrentThreadSync();
 }

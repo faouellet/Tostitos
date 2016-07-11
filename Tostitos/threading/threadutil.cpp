@@ -15,7 +15,7 @@ using namespace TosLang::FrontEnd;
 
 namespace Threading
 {
-    void CreateThread(const ASTNode* root, const SymbolTable* symTab)
+    void CreateThread(const ASTNode* root, const SymbolTable* symTab, std::function<void(InterpretedValue)>&& callback)
     {
         // Create a call stack for the main thread then push the (empty for now) global 
         // frame onto it. This frame will contains all global scope level informations 
@@ -25,7 +25,7 @@ namespace Threading
         cStack.PushFrame({});
     
         // Create the execution agent
-        Executor exec{ root, symTab, std::move(cStack) };
+        Executor exec{ root, symTab, std::move(cStack), std::move(callback) };
     
         // Create the thread on which the execution agent will run
         auto thread = std::make_unique<Thread>(std::move(exec));

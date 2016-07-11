@@ -16,7 +16,9 @@ Thread::~Thread() = default;
 void Thread::ExecuteOne()
 {
     if (!mExecutor->ExecuteOne())
+    {
         mFinished = true;
+    }
 }
 
 bool Thread::IsWaitingForChildren()
