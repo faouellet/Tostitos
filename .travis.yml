@@ -86,7 +86,7 @@ matrix:
 addons:
   coverity_scan:
     project:
-      name: "Alex-B09/Tostitos"
+      name: "faouellet/Tostitos"
       description: "Build submitted via Travis CI"
     notification_email: faouellet@gmail.com
     build_command_prepend: "mkdir build; cd build; cmake .."
