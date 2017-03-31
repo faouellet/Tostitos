@@ -41,15 +41,15 @@ add_library( execution STATIC
 		${EXECUTION_SOURCES}
 		)
 
-target_link_libraries(execution lang threading)
+target_link_libraries(execution lang)
 				
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 	
 add_executable (TosLang main.cpp)
 if(${USE_LLVM_BACKEND})
 	llvm_map_components_to_libnames(llvm_libs support core)
-	target_link_libraries(TosLang kernel lang threading execution ${llvm_libs})    
+	target_link_libraries(TosLang lang execution ${llvm_libs})    
 else()
-	target_link_libraries(TosLang kernel lang threading execution)
+	target_link_libraries(TosLang lang execution)
 endif()
 

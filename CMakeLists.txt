@@ -49,7 +49,6 @@ else()
 	endif()
 endif()
 
-add_subdirectory (Tostitos)
 add_subdirectory (TosLang)
 add_subdirectory (tests)
 
